@@ -1,0 +1,19 @@
+﻿{
+  "Entities": [
+    {
+      "Name": "Pet",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Type": "string",
+          "Filter": true
+        },
+        {
+          "Name": "Type",
+          "Type": "string",
+          "Filter": true
+        }
+      ]
+    }
+  ]
+}
