@@ -1,5 +1,6 @@
 ﻿namespace Craftsman
 {
+    using Craftsman.Commands;
     using Craftsman.Models;
     using Newtonsoft.Json;
     using System;
@@ -21,9 +22,12 @@
             Console.WriteLine(args[1]);*/
 
             // create a factory for handling arguements
-            // -a or --api to scaffold an entire API with a required yaml arguement
-            // -m or --model to create a model. some kind of dto command? to include or not (not by default)
-            // -h or --help to console.writeline all the options
+            // -l, --list : for a list of all options and commands
+            // -a, --api : to scaffold an entire API with a required yaml arguement
+            // -e, --entity : to create an enity. 
+            // -ed, --entitydto create an entity with dtos
+
+            // -h, help after any command display help for that command
             // no arguments has a list of commands as well?
 
             // parse model: https://github.com/assyadh/cli/blob/6c9942bae6830a4f5b370d978d56b21807be49ba/src/dotnet/Program.cs
@@ -35,57 +39,20 @@
                 return;
             }
 
-            var modelArgs = new string[] { "-m", "--model" };
+            /*var modelArgs = new string[] { "-e", "--entity" };
             if (args.Length == 2 && (modelArgs.Contains(args[0])))
             {
                 CreateModel(args[1]);
-            }
+            }*/
 
             var Args = new string[] { "-a", "--api" };
             if (args.Length == 2 && (Args.Contains(args[0])))
             {
-                //ReadYaml(args[1]);
-                ReadYaml("");
+                var filePath = args[1];
+                ApiCommand.Run(filePath);
             }
 
             //ShowBot(string.Join(' ', args));
-        }
-
-        public static ApiTemplate ReadYaml(string yamlFile)
-        {
-            yamlFile = $"C:\\Users\\Paul\\Documents\\repos\\Craftsman\\Craftsman\\Model.yml";
-            //make sure file exists
-
-            //make sure it's yaml
-
-
-            var deserializer = new Deserializer();
-            ApiTemplate templatefromYaml = deserializer.Deserialize<ApiTemplate>(File.ReadAllText(yamlFile));
-
-            return templatefromYaml;
-            /*var serializer = new SerializerBuilder().JsonCompatible().Build();
-            var jsonObject = serializer.Serialize(yamlFile);*/
-
-            //process object
-        }
-
-        public static void ReadJson(string jsonFile)
-        {
-            jsonFile = $"C:\\Users\\Paul\\Documents\\repos\\Craftsman\\Craftsman\\Model.json";
-            //make sure file exists
-
-            //make sure it's json
-
-
-
-            var deserializedTemplate1 = JsonConvert.DeserializeObject<ApiTemplate>(File.ReadAllText(jsonFile));
-
-            // deserialize JSON directly from a file
-            using (StreamReader file = File.OpenText(jsonFile))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                var deserializedTemplate2 = (ApiTemplate)serializer.Deserialize(file, typeof(ApiTemplate));
-            }
         }
 
         static void CreateModel(string modelName)
