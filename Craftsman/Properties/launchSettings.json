@@ -2,7 +2,7 @@
   "profiles": {
     "Craftsman": {
       "commandName": "Project",
-      "commandLineArgs": "--api \"C:\\Users\\Paul\\Documents\\repos\\myfirstsite\\composer.json"
+      "commandLineArgs": "--api --help"
     }
   }
 }

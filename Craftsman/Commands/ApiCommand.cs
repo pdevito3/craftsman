@@ -11,9 +11,30 @@
     using System.Text;
     using System.Threading.Tasks;
     using YamlDotNet.Serialization;
+    using static ConsoleWriter;
 
     public static class ApiCommand
     {
+        public static void Help()
+        {
+            WriteHelpHeader(@$"Description:");
+            WriteHelpText(@$"   Scaffolds out API files and projects based on a given template file in a json or yml format.{Environment.NewLine}");
+
+            WriteHelpHeader(@$"Usage:");
+            WriteHelpText(@$"   craftsman --api [options] <filepath>");
+            WriteHelpText(@$"   or");
+            WriteHelpText(@$"   craftsman -a [options] <filepath>{Environment.NewLine}");
+
+            WriteHelpText(@$"   For example:");
+            WriteHelpText(@$"   craftsman --api C:\fullpath\api.json");
+            WriteHelpText(@$"   craftsman --api C:\fullpath\api.yml");
+            WriteHelpText(@$"   craftsman -a C:\fullpath\api.json");
+            WriteHelpText(@$"   craftsman -a C:\fullpath\api.yml{Environment.NewLine}");
+
+            WriteHelpHeader(@$"Options:");
+            WriteHelpText(@$"   -h, --help          Display this help message");
+        }
+
         public static void Run(string filePath)
         {
             try
@@ -25,11 +46,11 @@
             }
             catch (FileNotFoundException)
             {
-                ConsoleWriter.WriteError($"The file `{filePath}` does not exist. Please enter a valid file path.");
+                WriteError($"The file `{filePath}` does not exist. Please enter a valid file path.");
             }
             catch (InvalidFileTypeException)
             {
-                ConsoleWriter.WriteError($"Invalid file type. You need to use a json or yml file.");
+                WriteError($"Invalid file type. You need to use a json or yml file.");
             }
             catch(Exception e)
             {

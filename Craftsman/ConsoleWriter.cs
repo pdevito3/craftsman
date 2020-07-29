@@ -33,5 +33,33 @@
             Console.BackgroundColor = origBgColor;
             Console.ForegroundColor = origTextColor;
         }
+
+        public static void WriteHelpHeader(string message)
+        {
+            var origBgColor = Console.BackgroundColor;
+            var origTextColor = Console.ForegroundColor;
+
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+
+            Console.WriteLine(message);
+
+            Console.BackgroundColor = origBgColor;
+            Console.ForegroundColor = origTextColor;
+        }
+
+        public static void WriteHelpText(string message)
+        {
+            var origBgColor = Console.BackgroundColor;
+            var origTextColor = Console.ForegroundColor;
+
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Green;
+
+            Console.WriteLine(message);
+
+            Console.BackgroundColor = origBgColor;
+            Console.ForegroundColor = origTextColor;
+        }
     }
 }

@@ -49,7 +49,10 @@
             if (args.Length == 2 && (Args.Contains(args[0])))
             {
                 var filePath = args[1];
-                ApiCommand.Run(filePath);
+                if(filePath == "-h" || filePath == "--help")
+                    ApiCommand.Help();
+                else
+                    ApiCommand.Run(filePath);
             }
 
             //ShowBot(string.Join(' ', args));
