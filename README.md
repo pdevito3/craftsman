@@ -62,10 +62,12 @@ This is a custom .NET Core CLI tool to scaffold out new files and projects.
 
 4. Run any of the following commands
 
-   `dotnet run --api C:\fullpath\filename.json`
-   `dotnet run --api C:\fullpath\filename.yml`
-   `dotnet run -a C:\fullpath\filename.json`
-   `dotnet run -a C:\fullpath\filename.yml`
+   - `dotnet run --api C:\fullpath\filename.json`
+   - `dotnet run --api C:\fullpath\filename.yml`
+   - `dotnet run -a C:\fullpath\filename.json`
+   - `dotnet run -a C:\fullpath\filename.yml`
+
+   
 
 5. If successful, the new entity file will be added to the project. When realistically using this, you would be doing it from the installed nuget package and it would be added to your actual project, but this works as well.
 
