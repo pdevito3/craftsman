@@ -9,16 +9,9 @@
     [Serializable]
     class InvalidFileTypeException : Exception
     {
-        public InvalidFileTypeException()
+        public InvalidFileTypeException() : base($"Invalid file type. You need to use a json or yml file.")
         {
 
         }
-
-        public InvalidFileTypeException(string fileType)
-            : base($"Invalid file type of {fileType}.")
-        {
-
-        }
-
     }
 }

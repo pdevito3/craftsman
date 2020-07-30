@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Craftsman.Models
 {
-    public class EntityField
+    public class EntityProperty
     {
         public string Name { get; set; }
         public string Type { get; set; }

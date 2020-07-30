@@ -1,6 +1,6 @@
 ﻿Entities:
 - Name: Pet
-  Fields:
+  Properties:
   - Name: Name
     Type: string
     Filter: true

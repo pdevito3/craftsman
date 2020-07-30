@@ -26,10 +26,10 @@
             WriteHelpText(@$"   craftsman -a [options] <filepath>{Environment.NewLine}");
 
             WriteHelpText(@$"   For example:");
-            WriteHelpText(@$"   craftsman --api C:\fullpath\api.json");
-            WriteHelpText(@$"   craftsman --api C:\fullpath\api.yml");
-            WriteHelpText(@$"   craftsman -a C:\fullpath\api.json");
-            WriteHelpText(@$"   craftsman -a C:\fullpath\api.yml{Environment.NewLine}");
+            WriteHelpText(@$"       craftsman --api C:\fullpath\api.json");
+            WriteHelpText(@$"       craftsman --api C:\fullpath\api.yml");
+            WriteHelpText(@$"       craftsman -a C:\fullpath\api.json");
+            WriteHelpText(@$"       craftsman -a C:\fullpath\api.yml{Environment.NewLine}");
 
             WriteHelpHeader(@$"Options:");
             WriteHelpText(@$"   -h, --help          Display this help message");
@@ -41,8 +41,15 @@
             {
                 RunInitialGuards(filePath);
                 var template = GetApiTemplateFromFile(filePath);
+                WriteInfo($"The template file was parsed successfully.");
 
-                Console.WriteLine($"The API command was successfully completed.");
+                var rootProjectDirectory = Directory.GetCurrentDirectory();
+                foreach (var entity in template.Entities)
+                {
+                    CreateEntityCommand.CreateEntity(rootProjectDirectory, entity);
+                }
+
+                WriteInfo($"The API command was successfully completed.");
             }
             catch (FileNotFoundException)
             {
@@ -89,7 +96,7 @@
         public static bool RunInitialGuards(string filePath)
         {
 
-            if (!FileExists(filePath))
+            if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException();
             }
@@ -101,16 +108,6 @@
             }
 
             return true;
-        }
-
-        public static bool FileExists(string filePath)
-        {
-            if (File.Exists(filePath))
-                return true;
-            else
-            {
-                return false;
-            }
         }
 
         public static bool IsJsonOrYaml(string filePath)

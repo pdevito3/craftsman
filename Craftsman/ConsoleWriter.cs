@@ -6,6 +6,20 @@
 
     public static class ConsoleWriter
     {
+        public static void WriteInfo(string message)
+        {
+            var origBgColor = Console.BackgroundColor;
+            var origTextColor = Console.ForegroundColor;
+
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.WriteLine(message);
+
+            Console.BackgroundColor = origBgColor;
+            Console.ForegroundColor = origTextColor;
+        }
+
         public static void WriteError(string message)
         {
             var origBgColor = Console.BackgroundColor;
