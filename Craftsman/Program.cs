@@ -44,7 +44,14 @@
             {
                 CreateModel(args[1]);
             }*/
+            
+            if(args[0] == "-l" || args[0] == "--list")
+            {
+                //tbd general help command
 
+                //include something like showbot in the command?
+                //ShowBot(string.Join(' ', args));
+            }
             var Args = new string[] { "-a", "--api" };
             if (args.Length == 2 && (Args.Contains(args[0])))
             {
@@ -55,7 +62,6 @@
                     ApiCommand.Run(filePath);
             }
 
-            //ShowBot(string.Join(' ', args));
         }
 
         static void ShowBot(string message)
