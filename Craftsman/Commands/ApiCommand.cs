@@ -18,21 +18,18 @@
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   Scaffolds out API files and projects based on a given template file in a json or yml format.{Environment.NewLine}");
+            WriteHelpText(@$"   Scaffolds out API files and projects based on a given template file in a json or yaml format.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman --api [options] <filepath>");
-            WriteHelpText(@$"   or");
-            WriteHelpText(@$"   craftsman -a [options] <filepath>{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman new:api [options] <filepath>{Environment.NewLine}");
 
             WriteHelpText(@$"   For example:");
-            WriteHelpText(@$"       craftsman --api C:\fullpath\api.json");
-            WriteHelpText(@$"       craftsman --api C:\fullpath\api.yml");
-            WriteHelpText(@$"       craftsman -a C:\fullpath\api.json");
-            WriteHelpText(@$"       craftsman -a C:\fullpath\api.yml{Environment.NewLine}");
+            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yaml");
+            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yml");
+            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.json{Environment.NewLine}");
 
             WriteHelpHeader(@$"Options:");
-            WriteHelpText(@$"   -h, --help          Display this help message");
+            WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
         }
 
         public static void Run(string filePath)
@@ -42,6 +39,8 @@
                 RunInitialGuards(filePath);
                 var template = GetApiTemplateFromFile(filePath);
                 WriteInfo($"The template file was parsed successfully.");
+
+                // create projects
 
                 var rootProjectDirectory = Directory.GetCurrentDirectory();
                 foreach (var entity in template.Entities)
