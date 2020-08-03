@@ -1,9 +1,31 @@
-﻿Entities:
+﻿SolutionName: Test
+Entities:
 - Name: Pet
   Properties:
+  - Name: PetId
+    CanManipulate: false
+    Type: int
+    CanFilter: false
   - Name: Name
     Type: string
-    Filter: true
+    CanFilter: false
   - Name: Type
     Type: string
-    Filter: true
+    CanFilter: false
+- Name: Vet
+  Properties:
+  - Name: VetId
+    IsPrimaryKey: true
+    IsRequired: true
+    CanManipulate: false
+    Type: int
+    CanFilter: true
+  - Name: Name
+    Type: string
+    CanFilter: false
+  - Name: Capacity
+    Type: int
+    CanFilter: true
+  - Name: OpenDate
+    Type: datetime?
+    CanFilter: true
