@@ -29,3 +29,15 @@ Entities:
   - Name: OpenDate
     Type: datetime?
     CanFilter: true
+- Name: City
+  Plural: Cities
+  Properties:
+  - Name: CityId
+    IsPrimaryKey: true
+    IsRequired: true
+    CanManipulate: false
+    Type: int
+    CanFilter: true
+  - Name: Name
+    Type: string
+    CanFilter: false

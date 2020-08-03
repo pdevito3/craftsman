@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,15 +13,20 @@ namespace Craftsman.Models
     /// </summary>
     public class Entity
     {
-        /// <summary>
-        /// This is the directory we want to write the entity class to *relative to the project*
-        /// </summary>
-        //public string ClassDirectory { get; set; }
+        private string _plural;
 
         /// <summary>
         /// The name of the entity
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// The Plural name of the entity. Will default to the entity name with an 's' at the end.
+        /// </summary>
+        public string Plural {
+            get => _plural ?? $"{Name}s";
+            set => _plural = value;
+        }
 
         /// <summary>
         /// List of properties associated to the entity

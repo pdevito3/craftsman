@@ -54,7 +54,7 @@
             try
             {
                 //TODO move these to a dictionary to lookup and overwrite if I want
-                var entityTopPath = $"Application\\Dtos\\{entity.Name}s";
+                var entityTopPath = $"Application\\Dtos\\{entity.Plural}";
                 var entityNamespace = entityTopPath.Replace("\\", ".");
 
                 var entityDir = Path.Combine(solutionDirectory, entityTopPath);
