@@ -12,8 +12,12 @@ namespace Craftsman.Models
     public class ApiTemplate
     {
         /// <summary>
+        /// The name of the solution you want to build
+        /// </summary>
+        public string SolutionName { get; set; }
+        /// <summary>
         /// Complete list of database entities
         /// </summary>
-        public List<Entity> Entities { get; set; }
+        public List<Entity> Entities { get; set; } = new List<Entity>();
     }
 }

@@ -1,15 +1,13 @@
 ﻿namespace Craftsman.Commands
 {
+    using Craftsman.Builders;
     using Craftsman.Exceptions;
     using Craftsman.Models;
     using Newtonsoft.Json;
     using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using YamlDotNet.Serialization;
     using static ConsoleWriter;
 
@@ -40,28 +38,69 @@
                 var template = GetApiTemplateFromFile(filePath);
                 WriteInfo($"The template file was parsed successfully.");
 
-                // create projects
+                RunTemplateGuards(template);
 
-                var rootProjectDirectory = Directory.GetCurrentDirectory();
+                //var rootProjectDirectory = Directory.GetCurrentDirectory().Contains("Debug") ? @"C:\Users\Paul\Documents\testoutput" : Directory.GetCurrentDirectory();
+                var buildSolutionDirectory = @"C:\Users\Paul\Documents\testoutput";
+
+                // create projects
+                CreateNewFoundation(template, buildSolutionDirectory); // todo scaffold this manually instead of using dotnet new foundation
+                var solutionDirectory = $"{buildSolutionDirectory}\\{template.SolutionName}";
+
+                //entities
                 foreach (var entity in template.Entities)
                 {
-                    CreateEntityCommand.CreateEntity(rootProjectDirectory, entity);
+                    EntityDtoBuilder.CreateEntity(solutionDirectory, entity);
+                    EntityDtoBuilder.CreateDtos(solutionDirectory, entity);
                 }
 
                 WriteInfo($"The API command was successfully completed.");
             }
-            catch (FileNotFoundException)
-            {
-                WriteError($"The file `{filePath}` does not exist. Please enter a valid file path.");
-            }
-            catch (InvalidFileTypeException)
-            {
-                WriteError($"Invalid file type. You need to use a json or yml file.");
-            }
             catch(Exception e)
             {
-                ConsoleWriter.WriteError($"An unhandled exception occured when running the API command.\nThe error details are: \n{e.Message}");
+                if(e is FileAlreadyExistsException 
+                    || e is DirectoryAlreadyExistsException 
+                    || e is InvalidSolutionNameException 
+                    || e is FileNotFoundException 
+                    || e is InvalidFileTypeException)
+                {
+                    WriteError($"{e.Message}");
+                }
+                else
+                    WriteError($"An unhandled exception occured when running the API command.\nThe error details are: \n{e.Message}");
             }
+        }
+
+        private static void RunTemplateGuards(ApiTemplate template)
+        {
+            if(template.SolutionName == null || template.SolutionName.Length <= 0)
+            {
+                throw new InvalidSolutionNameException();
+            }
+        }
+
+        private static void CreateNewFoundation(ApiTemplate template, string directory)
+        {
+            var newDir = $"{directory}\\{template.SolutionName}";
+            if (Directory.Exists(newDir))
+                throw new DirectoryAlreadyExistsException(newDir);
+
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "dotnet",
+                    Arguments = @$"new foundation -n {template.SolutionName} -e ""Recipe"" -en ""recipe"" -la ""r""",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    WorkingDirectory = directory
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
         }
 
         private static ApiTemplate GetApiTemplateFromFile(string filePath)
@@ -94,7 +133,6 @@
 
         public static bool RunInitialGuards(string filePath)
         {
-
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException();

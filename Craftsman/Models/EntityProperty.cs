@@ -10,6 +10,10 @@ namespace Craftsman.Models
     {
         public string Name { get; set; }
         public string Type { get; set; }
-        public bool Filter { get; set; }
+        public bool CanFilter { get; set; } = false;
+        public bool CanSort { get; set; } = false;
+        public bool CanManipulate { get; set; } = true;
+        public bool IsPrimaryKey { get; set; } = false;
+        public bool IsRequired { get; set; } = false;
     }
 }

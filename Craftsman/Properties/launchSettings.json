@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Craftsman": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "new:api C:\\Users\\Paul\\Documents\\Model.yaml"
     }
   }
 }
