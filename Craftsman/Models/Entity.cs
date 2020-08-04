@@ -15,11 +15,16 @@ namespace Craftsman.Models
     {
         private string _plural;
         private string _lambda;
+        private string _name;
 
         /// <summary>
         /// The name of the entity
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name ?? Name.UppercaseFirstLetter();
+            set => _name = value;
+        }
 
         /// <summary>
         /// List of properties associated to the entity

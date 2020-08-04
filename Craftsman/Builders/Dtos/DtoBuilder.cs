@@ -27,6 +27,8 @@
                 CreateDtoFile(entityDir, entityNamespace, entity, Dto.Manipulation);
                 CreateDtoFile(entityDir, entityNamespace, entity, Dto.Creation);
                 CreateDtoFile(entityDir, entityNamespace, entity, Dto.Update);
+                CreateDtoFile(entityDir, entityNamespace, entity, Dto.PaginationParamaters);
+                CreateDtoFile(entityDir, entityNamespace, entity, Dto.ReadParamaters);
             }
             catch (FileAlreadyExistsException)
             {
@@ -52,7 +54,7 @@
 
         public static void CreateDtoFile(string entityDir, string entityNamespace, Entity entity, Dto dto)
         {
-            var dtoFileName = DtoNameGenerator(entity.Name.UppercaseFirstLetter(), dto);
+            var dtoFileName = DtoNameGenerator(entity.Name, dto);
             var pathString = Path.Combine(entityDir, $"{dtoFileName}.cs");
             if (File.Exists(pathString))
                 throw new FileAlreadyExistsException(pathString);
@@ -69,11 +71,11 @@
             switch (dto)
             {
                 case Dto.Manipulation:
-                    return $"{entityName}DtoForManipulation";
+                    return $"{entityName}ForManipulationDto";
                 case Dto.Creation:
-                    return $"{entityName}DtoForCreation";
+                    return $"{entityName}ForCreationDto";
                 case Dto.Update:
-                    return $"{entityName}DtoForUpdate";
+                    return $"{entityName}ForUpdateDto";
                 case Dto.Read:
                     return $"{entityName}Dto";
                 case Dto.PaginationParamaters:

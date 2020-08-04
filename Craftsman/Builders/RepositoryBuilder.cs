@@ -1,5 +1,7 @@
 ﻿namespace Craftsman.Builders
 {
+    using Craftsman.Builders.Dtos;
+    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Models;
     using System;
@@ -36,7 +38,7 @@
         private static void CreateIRepositoryClass(string solutionDirectory, Entity entity)
         {
             //TODO move these to a dictionary to lookup and overwrite if I want
-            var repoTopPath = $"Application\\Interfaces\\{entity.Name.UppercaseFirstLetter()}";
+            var repoTopPath = $"Application\\Interfaces\\{entity.Name}";
             var repoNamespace = repoTopPath.Replace("\\", ".");
 
             var entityDir = Path.Combine(solutionDirectory, repoTopPath);
@@ -64,9 +66,9 @@
     using System.Threading.Tasks;
     using Domain.Entities;
 
-    public interface I{entity.Name}Repository
+    public interface {GetRepositoryName(entity, true)}
     {{
-        PagedList <{entity.Name}> Get{entity.Name}s({entity.Name}ParametersDto {entity.Name}Parameters);
+        PagedList <{entity.Name}> Get{entity.Plural}({DtoBuilder.DtoNameGenerator(entity.Name, Dto.ReadParamaters)} {entity.Name}Parameters);
         Task<{entity.Name}> Get{entity.Name}Async(int {entity.Name}Id);
         {entity.Name} Get{entity.Name}(int {entity.Name}Id);
         void Add{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
@@ -203,7 +205,7 @@
 
         public static string GetRepositoryName(Entity entity, bool isInterface)
         {
-            return isInterface ? $"I{entity.Name.UppercaseFirstLetter()}Repository" : $"{entity.Name.UppercaseFirstLetter()}Repository";
+            return isInterface ? $"I{entity.Name}Repository" : $"{entity.Name}Repository";
         }
 
         public static void RegisterRepository(string solutionDirectory, Entity entity)

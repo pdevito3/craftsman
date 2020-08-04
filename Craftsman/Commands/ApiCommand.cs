@@ -56,6 +56,8 @@
                     DtoBuilder.CreateDtos(solutionDirectory, entity);
 
                     RepositoryBuilder.AddRepository(solutionDirectory, entity);
+
+                    ControllerBuilder.CreateController(solutionDirectory, entity);
                 }
 
                 WriteInfo($"The API command was successfully completed.");

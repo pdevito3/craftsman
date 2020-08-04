@@ -26,7 +26,7 @@
                 if (!Directory.Exists(entityDir))
                     Directory.CreateDirectory(entityDir);
 
-                var pathString = Path.Combine(entityDir, $"{entity.Name.UppercaseFirstLetter()}.cs");
+                var pathString = Path.Combine(entityDir, $"{entity.Name}.cs");
                 if (File.Exists(pathString))
                     throw new FileAlreadyExistsException(pathString);
 
