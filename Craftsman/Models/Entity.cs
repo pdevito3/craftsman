@@ -14,6 +14,7 @@ namespace Craftsman.Models
     public class Entity
     {
         private string _plural;
+        private string _lambda;
 
         /// <summary>
         /// The name of the entity
@@ -21,16 +22,34 @@ namespace Craftsman.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// The Plural name of the entity. Will default to the entity name with an 's' at the end.
+        /// List of properties associated to the entity
         /// </summary>
-        public string Plural {
+        public List<EntityProperty> Properties { get; set; } = new List<EntityProperty>();
+
+        /// <summary>
+        /// The Plural name of the entity.
+        /// </summary>
+        public string Plural
+        {
             get => _plural ?? $"{Name}s";
             set => _plural = value;
         }
 
         /// <summary>
-        /// List of properties associated to the entity
+        /// The value to use in lambda expressions for this entity. Will default to the first letter of the entity name if none is given.
         /// </summary>
-        public List<EntityProperty> Properties { get; set; } = new List<EntityProperty>();
+        public string Lambda
+        {
+            get => _lambda?? Name.Substring(0,1);
+            set => _lambda= value;
+        }
+
+        /// <summary>
+        /// The properties that are set to be a key. List of properties in case there is a composite key.
+        /// </summary>
+        public List<EntityProperty> PrimaryKeyProperties
+        {
+            get => Properties.Where(p => p.IsPrimaryKey).ToList();
+        }
     }
 }

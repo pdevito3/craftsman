@@ -1,15 +1,17 @@
 ﻿namespace Craftsman.Commands
 {
     using Craftsman.Builders;
+    using Craftsman.Builders.Dtos;
     using Craftsman.Exceptions;
     using Craftsman.Models;
     using Newtonsoft.Json;
     using System;
+    using System.Data;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using YamlDotNet.Serialization;
-    using static ConsoleWriter;
+    using static Helpers.ConsoleWriter;
 
     public static class ApiCommand
     {
@@ -50,8 +52,10 @@
                 //entities
                 foreach (var entity in template.Entities)
                 {
-                    EntityDtoBuilder.CreateEntity(solutionDirectory, entity);
-                    EntityDtoBuilder.CreateDtos(solutionDirectory, entity);
+                    EntityBuilder.CreateEntity(solutionDirectory, entity);
+                    DtoBuilder.CreateDtos(solutionDirectory, entity);
+
+                    RepositoryBuilder.AddRepository(solutionDirectory, entity);
                 }
 
                 WriteInfo($"The API command was successfully completed.");
@@ -74,9 +78,11 @@
         private static void RunTemplateGuards(ApiTemplate template)
         {
             if(template.SolutionName == null || template.SolutionName.Length <= 0)
-            {
                 throw new InvalidSolutionNameException();
-            }
+
+            if (template.Entities.Where(e => e.PrimaryKeyProperties.Count <= 0).ToList().Count > 0)
+                throw new MissingPrimaryKeyException("One of your entity properties is missing a primary key designation. " +
+                    "Please make sure you have an `IsPrimaryKey: true` option on whichever property you want to be used as your prmary key.");
         }
 
         private static void CreateNewFoundation(ApiTemplate template, string directory)
