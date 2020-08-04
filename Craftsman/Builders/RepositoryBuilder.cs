@@ -11,12 +11,12 @@
 
     public static class RepositoryBuilder
     {
-        public static void AddRepository(string solutionDirectory, Entity entity)
+        public static void AddRepository(string solutionDirectory, Entity entity, TemplateDbContext dbContext)
         {
             try
             {
                 CreateIRepositoryClass(solutionDirectory, entity);
-                CreateRepositoryClass(solutionDirectory, entity);
+                CreateRepositoryClass(solutionDirectory, entity, dbContext);
                 RegisterRepository(solutionDirectory, entity);
             }
             catch (Exception e)
@@ -79,7 +79,7 @@
 }}";
         }
 
-        private static void CreateRepositoryClass(string solutionDirectory, Entity entity)
+        private static void CreateRepositoryClass(string solutionDirectory, Entity entity, TemplateDbContext dbContext)
         {
             //TODO move these to a dictionary to lookup and overwrite if I want
             var repoTopPath = "Infrastructure.Persistence\\Repositories";
@@ -95,13 +95,13 @@
 
             using (FileStream fs = File.Create(pathString))
             {
-                var data = GetRepositoryFileText(repoNamespace, entity);
+                var data = GetRepositoryFileText(repoNamespace, entity, dbContext);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
             WriteInfo($"A new '{entity.Name}' repository file was added here: {pathString}.");
         }
 
-        public static string GetRepositoryFileText(string classNamespace, Entity entity)
+        public static string GetRepositoryFileText(string classNamespace, Entity entity, TemplateDbContext dbContext)
         {
             return @$"namespace {classNamespace}
 {{
@@ -119,10 +119,10 @@
 
     public class {GetRepositoryName(entity, false)} : {GetRepositoryName(entity, true)}
     {{
-        private {entity.Name}DbContext _context;
+        private {dbContext.ContextName} _context;
         private readonly SieveProcessor _sieveProcessor;
 
-        public {entity.Name}Repository({entity.Name}DbContext context,
+        public {entity.Name}Repository({dbContext.ContextName} context,
             SieveProcessor sieveProcessor)
         {{
             _context = context
@@ -139,13 +139,6 @@
             }}
 
             var collection = _context.{entity.Plural} as IQueryable<{entity.Name}>; // TODO: AsNoTracking() should increase performance, but will break the sort tests. need to investigate
-
-            if (!string.IsNullOrWhiteSpace({entity.Name}Parameters.QueryString))
-            {{
-                var QueryString = {entity.Name}Parameters.QueryString.Trim();
-                collection = collection.Where({entity.Lambda} => {entity.Lambda}.{entity.Name}TextField1.Contains(QueryString)
-                    || {entity.Lambda}.{entity.Name}TextField2.Contains(QueryString));
-            }}
 
             var sieveModel = new SieveModel
             {{

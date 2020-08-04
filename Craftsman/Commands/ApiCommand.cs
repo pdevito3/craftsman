@@ -2,6 +2,7 @@
 {
     using Craftsman.Builders;
     using Craftsman.Builders.Dtos;
+    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Models;
     using Newtonsoft.Json;
@@ -45,9 +46,12 @@
                 //var rootProjectDirectory = Directory.GetCurrentDirectory().Contains("Debug") ? @"C:\Users\Paul\Documents\testoutput" : Directory.GetCurrentDirectory();
                 var buildSolutionDirectory = @"C:\Users\Paul\Documents\testoutput";
 
-                // create projects
+                // scaffold projects
                 CreateNewFoundation(template, buildSolutionDirectory); // todo scaffold this manually instead of using dotnet new foundation
                 var solutionDirectory = $"{buildSolutionDirectory}\\{template.SolutionName}";
+
+                // dbcontext
+                DbContextBuilder.CreateDbContext(solutionDirectory, template);
 
                 //entities
                 foreach (var entity in template.Entities)
@@ -55,19 +59,20 @@
                     EntityBuilder.CreateEntity(solutionDirectory, entity);
                     DtoBuilder.CreateDtos(solutionDirectory, entity);
 
-                    RepositoryBuilder.AddRepository(solutionDirectory, entity);
+                    RepositoryBuilder.AddRepository(solutionDirectory, entity, template.DbContext);
 
                     ControllerBuilder.CreateController(solutionDirectory, entity);
                 }
 
                 WriteInfo($"The API command was successfully completed.");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                if(e is FileAlreadyExistsException 
-                    || e is DirectoryAlreadyExistsException 
-                    || e is InvalidSolutionNameException 
-                    || e is FileNotFoundException 
+                if (e is FileAlreadyExistsException
+                    || e is DirectoryAlreadyExistsException
+                    || e is InvalidSolutionNameException
+                    || e is FileNotFoundException
+                    || e is InvalidDbProviderException
                     || e is InvalidFileTypeException)
                 {
                     WriteError($"{e.Message}");

@@ -40,7 +40,6 @@
     public class {DtoBuilder.DtoNameGenerator(entity.Name, dto)} : {DtoBuilder.DtoNameGenerator(entity.Name, Dto.PaginationParamaters)}
     {{
         public string Filters {{ get; set; }}
-        public string QueryString {{ get; set; }}
         public string SortOrder {{ get; set; }}
     }}
 }}";

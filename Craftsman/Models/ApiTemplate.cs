@@ -15,6 +15,12 @@ namespace Craftsman.Models
         /// The name of the solution you want to build
         /// </summary>
         public string SolutionName { get; set; }
+
+        /// <summary>
+        /// The name of the solution you want to build
+        /// </summary>
+        public TemplateDbContext DbContext { get; set; } = new TemplateDbContext();
+
         /// <summary>
         /// Complete list of database entities
         /// </summary>
