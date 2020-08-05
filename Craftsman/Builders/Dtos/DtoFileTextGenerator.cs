@@ -12,7 +12,7 @@
         {
             return @$"namespace {classNamespace}
 {{
-    public abstract class {DtoBuilder.DtoNameGenerator(entity.Name, dto)}
+    public abstract class {Utilities.DtoNameGenerator(entity.Name, dto)}
     {{
         const int maxPageSize = 20;
         public int PageNumber {{ get; set; }} = 1;
@@ -37,7 +37,7 @@
         {
             return @$"namespace {classNamespace}
 {{
-    public class {DtoBuilder.DtoNameGenerator(entity.Name, dto)} : {DtoBuilder.DtoNameGenerator(entity.Name, Dto.PaginationParamaters)}
+    public class {Utilities.DtoNameGenerator(entity.Name, dto)} : {Utilities.DtoNameGenerator(entity.Name, Dto.PaginationParamaters)}
     {{
         public string Filters {{ get; set; }}
         public string SortOrder {{ get; set; }}
@@ -48,7 +48,7 @@
         public static string GetDtoText(string classNamespace, Entity entity, Dto dto)
         {
             var propString = dto == Dto.Creation || dto == Dto.Update ? "" : DtoPropBuilder(entity.Properties, dto);
-            var manipulationString = dto == Dto.Creation || dto == Dto.Update ? $": {DtoBuilder.DtoNameGenerator(entity.Name, Dto.Manipulation)}" : "";
+            var manipulationString = dto == Dto.Creation || dto == Dto.Update ? $": {Utilities.DtoNameGenerator(entity.Name, Dto.Manipulation)}" : "";
             var abstractString = dto == Dto.Manipulation ? $"abstract" : "";
 
             return @$"namespace {classNamespace}
@@ -57,7 +57,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public {abstractString} class {DtoBuilder.DtoNameGenerator(entity.Name, dto)} {manipulationString}
+    public {abstractString} class {Utilities.DtoNameGenerator(entity.Name, dto)} {manipulationString}
     {{
 {propString}
     }}

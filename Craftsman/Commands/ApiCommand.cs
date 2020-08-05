@@ -60,6 +60,7 @@
                     DtoBuilder.CreateDtos(solutionDirectory, entity);
 
                     RepositoryBuilder.AddRepository(solutionDirectory, entity, template.DbContext);
+                    ValidatorBuilder.CreateValidators(solutionDirectory, entity);
 
                     ControllerBuilder.CreateController(solutionDirectory, entity);
                 }

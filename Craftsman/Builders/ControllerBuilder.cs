@@ -56,10 +56,10 @@
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var entityNamePlural = entity.Plural;
-            var readDto = DtoBuilder.DtoNameGenerator(entityName, Dto.Read);
-            var readParamDto = DtoBuilder.DtoNameGenerator(entityName, Dto.ReadParamaters);
-            var creationDto = DtoBuilder.DtoNameGenerator(entityName, Dto.Creation);
-            var updateDto = DtoBuilder.DtoNameGenerator(entityName, Dto.Update);
+            var readDto = Utilities.DtoNameGenerator(entityName, Dto.Read);
+            var readParamDto = Utilities.DtoNameGenerator(entityName, Dto.ReadParamaters);
+            var creationDto = Utilities.DtoNameGenerator(entityName, Dto.Creation);
+            var updateDto = Utilities.DtoNameGenerator(entityName, Dto.Update);
             var primaryKeyProp = entity.PrimaryKeyProperties[0];
 
             return @$"namespace {classNamespace}
@@ -84,10 +84,10 @@
     [ApiVersion(""1.0"")]
     public class {entityNamePlural}Controller: Controller
     {{
-        private readonly {RepositoryBuilder.GetRepositoryName(entity, true)} _{lowercaseEntityVariable}Repository;
+        private readonly {Utilities.GetRepositoryName(entity, true)} _{lowercaseEntityVariable}Repository;
         private readonly IMapper _mapper;
 
-        public {entityNamePlural}Controller({RepositoryBuilder.GetRepositoryName(entity, true)} {lowercaseEntityVariable}Repository
+        public {entityNamePlural}Controller({Utilities.GetRepositoryName(entity, true)} {lowercaseEntityVariable}Repository
             , IMapper mapper)
         {{
             _{lowercaseEntityVariable}Repository = {lowercaseEntityVariable}Repository ??

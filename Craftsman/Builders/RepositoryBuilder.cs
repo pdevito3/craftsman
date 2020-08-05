@@ -3,6 +3,7 @@
     using Craftsman.Builders.Dtos;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
+    using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
     using System.IO;
@@ -45,7 +46,7 @@
             if (!Directory.Exists(entityDir))
                 Directory.CreateDirectory(entityDir);
 
-            var pathString = Path.Combine(entityDir, $"{GetRepositoryName(entity, true)}.cs");
+            var pathString = Path.Combine(entityDir, $"{Utilities.GetRepositoryName(entity, true)}.cs");
             if (File.Exists(pathString))
                 throw new FileAlreadyExistsException(pathString);
 
@@ -66,9 +67,9 @@
     using System.Threading.Tasks;
     using Domain.Entities;
 
-    public interface {GetRepositoryName(entity, true)}
+    public interface {Utilities.GetRepositoryName(entity, true)}
     {{
-        PagedList <{entity.Name}> Get{entity.Plural}({DtoBuilder.DtoNameGenerator(entity.Name, Dto.ReadParamaters)} {entity.Name}Parameters);
+        PagedList <{entity.Name}> Get{entity.Plural}({Utilities.DtoNameGenerator(entity.Name, Dto.ReadParamaters)} {entity.Name}Parameters);
         Task<{entity.Name}> Get{entity.Name}Async(int {entity.Name}Id);
         {entity.Name} Get{entity.Name}(int {entity.Name}Id);
         void Add{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
@@ -89,7 +90,7 @@
             if (!Directory.Exists(entityDir))
                 Directory.CreateDirectory(entityDir);
 
-            var pathString = Path.Combine(entityDir, $"{GetRepositoryName(entity, false)}.cs");
+            var pathString = Path.Combine(entityDir, $"{Utilities.GetRepositoryName(entity, false)}.cs");
             if (File.Exists(pathString))
                 throw new FileAlreadyExistsException(pathString);
 
@@ -117,7 +118,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class {GetRepositoryName(entity, false)} : {GetRepositoryName(entity, true)}
+    public class {Utilities.GetRepositoryName(entity, false)} : {Utilities.GetRepositoryName(entity, true)}
     {{
         private {dbContext.ContextName} _context;
         private readonly SieveProcessor _sieveProcessor;
@@ -196,11 +197,6 @@
 }}";
         }
 
-        public static string GetRepositoryName(Entity entity, bool isInterface)
-        {
-            return isInterface ? $"I{entity.Name}Repository" : $"{entity.Name}Repository";
-        }
-
         public static void RegisterRepository(string solutionDirectory, Entity entity)
         {
             //TODO move these to a dictionary to lookup and overwrite if I want
@@ -226,7 +222,7 @@
                         var newText = $"{line}";
                         if(line.Contains("#region Repositories"))
                         {
-                            newText += @$"{Environment.NewLine}            services.AddScoped<{GetRepositoryName(entity, true)}, {GetRepositoryName(entity, false)}>();";
+                            newText += @$"{Environment.NewLine}            services.AddScoped<{Utilities.GetRepositoryName(entity, true)}, {Utilities.GetRepositoryName(entity, false)}>();";
                         }
                         else if (line.Contains("using") & !interfaceNamespaceAdded)
                         {

@@ -2,6 +2,7 @@
 {
     using Craftsman.Enums;
     using Craftsman.Exceptions;
+    using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
     using System.Collections.Generic;
@@ -54,7 +55,7 @@
 
         public static void CreateDtoFile(string entityDir, string entityNamespace, Entity entity, Dto dto)
         {
-            var dtoFileName = DtoNameGenerator(entity.Name, dto);
+            var dtoFileName = Utilities.DtoNameGenerator(entity.Name, dto);
             var pathString = Path.Combine(entityDir, $"{dtoFileName}.cs");
             if (File.Exists(pathString))
                 throw new FileAlreadyExistsException(pathString);
@@ -63,27 +64,6 @@
                 var data = GetDtoFileText(entityNamespace, entity, dto);
                 fs.Write(Encoding.UTF8.GetBytes(data));
                 WriteInfo($"A new '{dtoFileName}' file was added here: {pathString}.");
-            }
-        }
-
-        public static string DtoNameGenerator(string entityName, Dto dto)
-        {
-            switch (dto)
-            {
-                case Dto.Manipulation:
-                    return $"{entityName}ForManipulationDto";
-                case Dto.Creation:
-                    return $"{entityName}ForCreationDto";
-                case Dto.Update:
-                    return $"{entityName}ForUpdateDto";
-                case Dto.Read:
-                    return $"{entityName}Dto";
-                case Dto.PaginationParamaters:
-                    return $"{entityName}PaginationParameters";
-                case Dto.ReadParamaters:
-                    return $"{entityName}ParametersDto";
-                default:
-                    throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Dto), dto)}");
             }
         }
     }
