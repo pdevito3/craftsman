@@ -65,6 +65,9 @@
                     ControllerBuilder.CreateController(solutionDirectory, entity);
                 }
 
+                //seeders
+                SeederBuilder.AddSeeders(solutionDirectory, template);
+
                 WriteInfo($"The API command was successfully completed.");
             }
             catch (Exception e)

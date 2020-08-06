@@ -28,6 +28,11 @@
             return isInterface ? $"I{entity.Name}Repository" : $"{entity.Name}Repository";
         }
 
+        public static string GetSeederName(Entity entity)
+        {
+            return $"{entity.Name}Seeder";
+        }
+
         public static string DtoNameGenerator(string entityName, Dto dto)
         {
             switch (dto)

@@ -20,20 +20,20 @@
             try
             {
                 //TODO move these to a dictionary to lookup and overwrite if I want
-                var entityTopPath = "Infrastructure.Persistence\\Contexts";
-                var entityNamespace = entityTopPath.Replace("\\", ".");
+                var contextTopPath = "Infrastructure.Persistence\\Contexts";
+                var contextNamespace = contextTopPath.Replace("\\", ".");
 
-                var entityDir = Path.Combine(solutionDirectory, entityTopPath);
-                if (!Directory.Exists(entityDir))
-                    Directory.CreateDirectory(entityDir);
+                var contextDir = Path.Combine(solutionDirectory, contextTopPath);
+                if (!Directory.Exists(contextDir))
+                    Directory.CreateDirectory(contextDir);
 
-                var pathString = Path.Combine(entityDir, $"{template.DbContext.ContextName}.cs");
+                var pathString = Path.Combine(contextDir, $"{template.DbContext.ContextName}.cs");
                 if (File.Exists(pathString))
                     throw new FileAlreadyExistsException(pathString);
 
                 using (FileStream fs = File.Create(pathString))
                 {
-                    var data = GetControllerFileText(entityNamespace, template);
+                    var data = GetContextFileText(contextNamespace, template);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -52,7 +52,7 @@
             }
         }
 
-        public static string GetControllerFileText(string classNamespace, ApiTemplate template)
+        public static string GetContextFileText(string classNamespace, ApiTemplate template)
         {
             return @$"namespace {classNamespace}
 {{
