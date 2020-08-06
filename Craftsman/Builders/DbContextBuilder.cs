@@ -37,6 +37,7 @@
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
+                RegisterContext(solutionDirectory, template);
                 WriteInfo($"A new '{template.DbContext.ContextName}' DbContext file was added here: {pathString}.");
             }
             catch (FileAlreadyExistsException)
@@ -127,6 +128,45 @@
             }
 
             return dbSetText;
+        }
+
+        public static void RegisterContext(string solutionDirectory, ApiTemplate template)
+        {
+            //TODO move these to a dictionary to lookup and overwrite if I want
+            var repoTopPath = "Infrastructure.Persistence";
+
+            var entityDir = Path.Combine(solutionDirectory, repoTopPath);
+            if (!Directory.Exists(entityDir))
+                throw new DirectoryNotFoundException($"The `{entityDir}` directory could not be found.");
+
+            var pathString = Path.Combine(entityDir, $"ServiceRegistration.cs");
+            if (!File.Exists(pathString))
+                throw new FileNotFoundException($"The `{pathString}` file could not be found.");
+
+            var tempPath = $"{pathString}temp";
+            using (var input = File.OpenText(pathString))
+            {
+                using (var output = new StreamWriter(tempPath))
+                {
+                    string line;
+                    while (null != (line = input.ReadLine()))
+                    {
+                        var newText = $"{line}";
+                        if (line.Contains("#region DbContext"))
+                        {
+                            newText += @$"{Environment.NewLine}            services.AddDbContext<{template.DbContext.ContextName}>(opt =>
+                opt.UseInMemoryDatabase($""Database{{Guid.NewGuid()}}""));";
+                        }
+
+                        output.WriteLine(newText);
+                    }
+                }
+            }
+
+            // delete the old file and set the name of the new one to the original nape
+            File.Delete(pathString);
+            File.Move(tempPath, pathString);
+            WriteWarning($"TODO Need a message for the update of Service Registration.");
         }
     }
 }

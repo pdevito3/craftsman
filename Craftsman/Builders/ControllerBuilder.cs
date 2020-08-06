@@ -261,8 +261,7 @@
                             filters = {lowercaseEntityVariable}ParametersDto.Filters,
                             orderBy = {lowercaseEntityVariable}ParametersDto.SortOrder,
                             pageNumber = {lowercaseEntityVariable}ParametersDto.PageNumber - 1,
-                            pageSize = {lowercaseEntityVariable}ParametersDto.PageSize,
-                            searchQuery = {lowercaseEntityVariable}ParametersDto.QueryString
+                            pageSize = {lowercaseEntityVariable}ParametersDto.PageSize
                         }});
                 case ResourceUriType.NextPage:
                     return Url.Link(""Get{entityNamePlural}"",
@@ -271,8 +270,7 @@
                             filters = {lowercaseEntityVariable}ParametersDto.Filters,
                             orderBy = {lowercaseEntityVariable}ParametersDto.SortOrder,
                             pageNumber = {lowercaseEntityVariable}ParametersDto.PageNumber + 1,
-                            pageSize = {lowercaseEntityVariable}ParametersDto.PageSize,
-                            searchQuery = {lowercaseEntityVariable}ParametersDto.QueryString
+                            pageSize = {lowercaseEntityVariable}ParametersDto.PageSize
                         }});
 
                 default:
@@ -282,8 +280,7 @@
                             filters = {lowercaseEntityVariable}ParametersDto.Filters,
                             orderBy = {lowercaseEntityVariable}ParametersDto.SortOrder,
                             pageNumber = {lowercaseEntityVariable}ParametersDto.PageNumber,
-                            pageSize = {lowercaseEntityVariable}ParametersDto.PageSize,
-                            searchQuery = {lowercaseEntityVariable}ParametersDto.QueryString
+                            pageSize = {lowercaseEntityVariable}ParametersDto.PageSize
                         }});
             }}
         }}

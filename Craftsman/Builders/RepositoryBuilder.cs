@@ -104,6 +104,7 @@
 
         public static string GetRepositoryFileText(string classNamespace, Entity entity, TemplateDbContext dbContext)
         {
+            var paramBase = entity.Name.LowercaseFirstLetter();
             return @$"namespace {classNamespace}
 {{
     using Application.Dtos.{entity.Name};
@@ -132,59 +133,59 @@
                 throw new ArgumentNullException(nameof(sieveProcessor));
         }}
 
-        public PagedList<{entity.Name}> Get{entity.Plural}({entity.Name}ParametersDto {entity.Name}Parameters)
+        public PagedList<{entity.Name}> Get{entity.Plural}({entity.Name}ParametersDto {paramBase}Parameters)
         {{
-            if ({entity.Name}Parameters == null)
+            if ({paramBase}Parameters == null)
             {{
-                throw new ArgumentNullException(nameof({entity.Name}Parameters));
+                throw new ArgumentNullException(nameof({paramBase}Parameters));
             }}
 
             var collection = _context.{entity.Plural} as IQueryable<{entity.Name}>; // TODO: AsNoTracking() should increase performance, but will break the sort tests. need to investigate
 
             var sieveModel = new SieveModel
             {{
-                Sorts = {entity.Name}Parameters.SortOrder,
-                Filters = {entity.Name}Parameters.Filters
+                Sorts = {paramBase}Parameters.SortOrder,
+                Filters = {paramBase}Parameters.Filters
             }};
 
             collection = _sieveProcessor.Apply(sieveModel, collection);
 
             return PagedList<{entity.Name}>.Create(collection,
-                {entity.Name}Parameters.PageNumber,
-                {entity.Name}Parameters.PageSize);
+                {paramBase}Parameters.PageNumber,
+                {paramBase}Parameters.PageSize);
         }}
 
-        public async Task<{entity.Name}> Get{entity.Name}Async(int {entity.Name}Id)
+        public async Task<{entity.Name}> Get{entity.Name}Async(int {paramBase}Id)
         {{
-            return await _context.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {entity.Name}Id);
+            return await _context.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
         }}
 
-        public {entity.Name} Get{entity.Name}(int {entity.Name}Id)
+        public {entity.Name} Get{entity.Name}(int {paramBase}Id)
         {{
-            return _context.{entity.Plural}.FirstOrDefault({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {entity.Name}Id);
+            return _context.{entity.Plural}.FirstOrDefault({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
         }}
 
-        public void Add{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()})
+        public void Add{entity.Name}({entity.Name} {paramBase})
         {{
-            if ({entity.Name} == null)
+            if ({paramBase} == null)
             {{
                 throw new ArgumentNullException(nameof({entity.Name}));
             }}
 
-            _context.{entity.Plural}.Add({entity.Name});
+            _context.{entity.Plural}.Add({paramBase});
         }}
 
-        public void Delete{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()})
+        public void Delete{entity.Name}({entity.Name} {paramBase})
         {{
-            if ({entity.Name} == null)
+            if ({paramBase} == null)
             {{
                 throw new ArgumentNullException(nameof({entity.Name}));
             }}
 
-            _context.{entity.Plural}.Remove({entity.Name});
+            _context.{entity.Plural}.Remove({paramBase});
         }}
 
-        public void Update{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()})
+        public void Update{entity.Name}({entity.Name} {paramBase})
         {{
             // no implementation for now
         }}
@@ -238,6 +239,7 @@
             // delete the old file and set the name of the new one to the original nape
             File.Delete(pathString); 
             File.Move(tempPath, pathString);
+            WriteWarning($"TODO Need a message for the update of Service Registration.");
         }
     }
 }
