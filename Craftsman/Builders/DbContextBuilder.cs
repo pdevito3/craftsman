@@ -154,8 +154,19 @@
                         var newText = $"{line}";
                         if (line.Contains("#region DbContext"))
                         {
-                            newText += @$"{Environment.NewLine}            services.AddDbContext<{template.DbContext.ContextName}>(opt =>
-                opt.UseInMemoryDatabase($""{template.DbContext.DatabaseName ?? template.DbContext.ContextName}""));";
+                            newText += @$"{Environment.NewLine}            
+            if (configuration.GetValue<bool>(""UseInMemoryDatabase""))
+            {{
+                services.AddDbContext<{template.DbContext.ContextName}>(options =>
+                    options.UseInMemoryDatabase($""{template.DbContext.DatabaseName ?? template.DbContext.ContextName}""));
+            }}
+            else
+            {{
+                services.AddDbContext<{template.DbContext.ContextName}>(options =>
+                    options.UseSqlServer(
+                        configuration.GetConnectionString(""DefaultConnection""),
+                        builder => builder.MigrationsAssembly(typeof({template.DbContext.ContextName}).Assembly.FullName)));
+            }}";
                         }
 
                         output.WriteLine(newText);
