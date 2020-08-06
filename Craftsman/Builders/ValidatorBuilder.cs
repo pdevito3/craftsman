@@ -22,9 +22,9 @@
                 BuildValidatorClass(solutionDirectory, entity, Validator.Creation);
                 BuildValidatorClass(solutionDirectory, entity, Validator.Update);
             }
-            catch (FileAlreadyExistsException)
+            catch (FileAlreadyExistsException e)
             {
-                WriteError("This file alread exists. Please enter a valid file path.");
+                WriteError(e.Message);
                 throw;
             }
             catch (Exception e)

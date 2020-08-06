@@ -40,9 +40,9 @@
                 RegisterContext(solutionDirectory, template);
                 WriteInfo($"A new '{template.DbContext.ContextName}' DbContext file was added here: {pathString}.");
             }
-            catch (FileAlreadyExistsException)
+            catch (FileAlreadyExistsException e)
             {
-                WriteError("This file alread exists. Please enter a valid file path.");
+                WriteError(e.Message);
                 throw;
             }
             catch (Exception e)
@@ -155,7 +155,7 @@
                         if (line.Contains("#region DbContext"))
                         {
                             newText += @$"{Environment.NewLine}            services.AddDbContext<{template.DbContext.ContextName}>(opt =>
-                opt.UseInMemoryDatabase($""Database{{Guid.NewGuid()}}""));";
+                opt.UseInMemoryDatabase($""{template.DbContext.DatabaseName ?? template.DbContext.ContextName}""));";
                         }
 
                         output.WriteLine(newText);

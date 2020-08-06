@@ -33,6 +33,11 @@
             return $"{entity.Name}Seeder";
         }
 
+        public static string GetProfileName(Entity entity)
+        {
+            return $"{entity.Name}Profile";
+        }
+
         public static string DtoNameGenerator(string entityName, Dto dto)
         {
             switch (dto)

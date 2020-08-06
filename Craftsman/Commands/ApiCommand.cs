@@ -61,6 +61,7 @@
 
                     RepositoryBuilder.AddRepository(solutionDirectory, entity, template.DbContext);
                     ValidatorBuilder.CreateValidators(solutionDirectory, entity);
+                    ProfileBuilder.CreateProfile(solutionDirectory, entity);
 
                     ControllerBuilder.CreateController(solutionDirectory, entity);
                 }

@@ -39,9 +39,9 @@
 
                 WriteInfo($"A new '{entity.Name}' controller file was added here: {pathString}.");
             }
-            catch (FileAlreadyExistsException)
+            catch (FileAlreadyExistsException e)
             {
-                WriteError("This file alread exists. Please enter a valid file path.");
+                WriteError(e.Message);
                 throw;
             }
             catch (Exception e)

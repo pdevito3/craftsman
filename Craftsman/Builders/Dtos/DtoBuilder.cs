@@ -31,9 +31,9 @@
                 CreateDtoFile(entityDir, entityNamespace, entity, Dto.PaginationParamaters);
                 CreateDtoFile(entityDir, entityNamespace, entity, Dto.ReadParamaters);
             }
-            catch (FileAlreadyExistsException)
+            catch (FileAlreadyExistsException e)
             {
-                WriteError("This file alread exists. Please enter a valid file path.");
+                WriteError(e.Message);
                 throw;
             }
             catch (Exception e)
