@@ -4,6 +4,7 @@
     using Craftsman.Builders.Dtos;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
+    using Craftsman.Helpers;
     using Craftsman.Models;
     using Newtonsoft.Json;
     using System;
@@ -37,9 +38,11 @@
         {
             try
             {
+                GlobalSingleton instance = GlobalSingleton.GetInstance();
+
                 RunInitialGuards(filePath);
                 var template = GetApiTemplateFromFile(filePath);
-                WriteInfo($"The template file was parsed successfully.");
+                WriteHelpText($"Your template file was parsed successfully.");
 
                 RunTemplateGuards(template);
 
@@ -68,8 +71,9 @@
 
                 //seeders
                 SeederBuilder.AddSeeders(solutionDirectory, template);
-
-                WriteInfo($"The API command was successfully completed.");
+                
+                WriteFileCreatedUpdatedResponse();
+                WriteHelpHeader($"Your API is ready! Build something amazing.");
             }
             catch (Exception e)
             {

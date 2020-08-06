@@ -55,7 +55,9 @@
                 var data = GetIRepositoryFileText(repoNamespace, entity);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
-            WriteInfo($"A new '{entity.Name}' repository interface file was added here: {pathString}.");
+
+            GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+            //WriteInfo($"A new '{entity.Name}' repository interface file was added here: {pathString}.");
         }
 
         public static string GetIRepositoryFileText(string classNamespace, Entity entity)
@@ -99,7 +101,9 @@
                 var data = GetRepositoryFileText(repoNamespace, entity, dbContext);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
-            WriteInfo($"A new '{entity.Name}' repository file was added here: {pathString}.");
+
+            GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+            //WriteInfo($"A new '{entity.Name}' repository file was added here: {pathString}.");
         }
 
         public static string GetRepositoryFileText(string classNamespace, Entity entity, TemplateDbContext dbContext)
@@ -239,7 +243,9 @@
             // delete the old file and set the name of the new one to the original nape
             File.Delete(pathString); 
             File.Move(tempPath, pathString);
-            WriteWarning($"TODO Need a message for the update of Service Registration.");
+
+            GlobalSingleton.AddUpdatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+            //WriteWarning($"TODO Need a message for the update of Service Registration.");
         }
     }
 }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Craftsman.Exceptions
+﻿namespace Craftsman.Exceptions
 {
+    using System;
+
+    [Serializable]
     public class InvalidDbProviderException : Exception
     {
         public InvalidDbProviderException() : base($"The given database provider was not recognized.")

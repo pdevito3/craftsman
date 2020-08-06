@@ -38,7 +38,10 @@
                 }
 
                 RegisterContext(solutionDirectory, template);
-                WriteInfo($"A new '{template.DbContext.ContextName}' DbContext file was added here: {pathString}.");
+
+
+                GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+                //WriteInfo($"A new '{template.DbContext.ContextName}' DbContext file was added here: {pathString}.");
             }
             catch (FileAlreadyExistsException e)
             {
@@ -177,7 +180,9 @@
             // delete the old file and set the name of the new one to the original nape
             File.Delete(pathString);
             File.Move(tempPath, pathString);
-            WriteWarning($"TODO Need a message for the update of Service Registration.");
+
+            GlobalSingleton.AddUpdatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+            //WriteWarning($"TODO Need a message for the update of Service Registration.");
         }
     }
 }

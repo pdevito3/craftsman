@@ -62,7 +62,9 @@
 
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
-            WriteInfo($"A new '{Utilities.ValidatorNameGenerator(entity.Name, validator)}' validator file was added here: {pathString}.");
+
+            GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+            //WriteInfo($"A new '{Utilities.ValidatorNameGenerator(entity.Name, validator)}' validator file was added here: {pathString}.");
         }
 
         public static string GetCreationValidatorFileText(string classNamespace, Entity entity)

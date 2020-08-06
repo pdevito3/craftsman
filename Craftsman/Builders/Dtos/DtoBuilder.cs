@@ -24,12 +24,12 @@
                 if (!Directory.Exists(entityDir))
                     Directory.CreateDirectory(entityDir);
 
-                CreateDtoFile(entityDir, entityNamespace, entity, Dto.Read);
-                CreateDtoFile(entityDir, entityNamespace, entity, Dto.Manipulation);
-                CreateDtoFile(entityDir, entityNamespace, entity, Dto.Creation);
-                CreateDtoFile(entityDir, entityNamespace, entity, Dto.Update);
-                CreateDtoFile(entityDir, entityNamespace, entity, Dto.PaginationParamaters);
-                CreateDtoFile(entityDir, entityNamespace, entity, Dto.ReadParamaters);
+                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.Read);
+                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.Manipulation);
+                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.Creation);
+                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.Update);
+                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.PaginationParamaters);
+                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.ReadParamaters);
             }
             catch (FileAlreadyExistsException e)
             {
@@ -53,7 +53,7 @@
                 return DtoFileTextGenerator.GetDtoText(classNamespace, entity, dto);
         }
 
-        public static void CreateDtoFile(string entityDir, string entityNamespace, Entity entity, Dto dto)
+        public static void CreateDtoFile(string solutionDirectory, string entityDir, string entityNamespace, Entity entity, Dto dto)
         {
             var dtoFileName = Utilities.DtoNameGenerator(entity.Name, dto);
             var pathString = Path.Combine(entityDir, $"{dtoFileName}.cs");
@@ -63,7 +63,9 @@
             {
                 var data = GetDtoFileText(entityNamespace, entity, dto);
                 fs.Write(Encoding.UTF8.GetBytes(data));
-                WriteInfo($"A new '{dtoFileName}' file was added here: {pathString}.");
+
+                GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+                //WriteInfo($"A new '{dtoFileName}' file was added here: {pathString}.");
             }
         }
     }

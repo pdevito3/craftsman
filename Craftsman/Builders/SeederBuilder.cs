@@ -39,7 +39,8 @@
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
                     
-                    WriteInfo($"A new '{entity.Name}' seeder file was added here: {pathString}.");
+                    GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+                    //WriteInfo($"A new '{entity.Name}' seeder file was added here: {pathString}.");
                 }
 
                 RegisterAllSeeders(solutionDirectory, template);
@@ -118,7 +119,9 @@
             // delete the old file and set the name of the new one to the original nape
             File.Delete(pathString);
             File.Move(tempPath, pathString);
-            WriteWarning($"TODO Need a message for the update of Startup.");
+
+            GlobalSingleton.AddUpdatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+            //WriteWarning($"TODO Need a message for the update of Startup.");
         }
 
         public static string GetSeederContextText(ApiTemplate template)

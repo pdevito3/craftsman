@@ -37,7 +37,8 @@
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
-                WriteInfo($"A new '{entity.Name}' controller file was added here: {pathString}.");
+                GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+                //WriteInfo($"A new '{entity.Name}' controller file was added here: {pathString}.");
             }
             catch (FileAlreadyExistsException e)
             {

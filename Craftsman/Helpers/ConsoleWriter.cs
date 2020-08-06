@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
 
     public static class ConsoleWriter
@@ -74,6 +75,27 @@
 
             Console.BackgroundColor = origBgColor;
             Console.ForegroundColor = origTextColor;
+        }
+
+        public static void WriteFileCreatedUpdatedResponse()
+        {
+            var created = GlobalSingleton.GetCreatedFiles();
+            var updated = GlobalSingleton.GetUpdatedFiles();
+
+            created = created.OrderBy(i => i).Distinct().ToList();
+            updated = updated.OrderBy(i => i).Distinct().ToList();
+
+            WriteHelpHeader($"Files Created:");
+            foreach(var file in created)
+            {
+                WriteHelpText($"    {file}");
+            }
+
+            WriteHelpHeader($"Files Updated:");
+            foreach (var file in updated)
+            {
+                WriteHelpText($"    {file}");
+            }
         }
     }
 }
