@@ -85,10 +85,10 @@
     [ApiVersion(""1.0"")]
     public class {entityNamePlural}Controller: Controller
     {{
-        private readonly {Utilities.GetRepositoryName(entity, true)} _{lowercaseEntityVariable}Repository;
+        private readonly {Utilities.GetRepositoryName(entity.Name, true)} _{lowercaseEntityVariable}Repository;
         private readonly IMapper _mapper;
 
-        public {entityNamePlural}Controller({Utilities.GetRepositoryName(entity, true)} {lowercaseEntityVariable}Repository
+        public {entityNamePlural}Controller({Utilities.GetRepositoryName(entity.Name, true)} {lowercaseEntityVariable}Repository
             , IMapper mapper)
         {{
             _{lowercaseEntityVariable}Repository = {lowercaseEntityVariable}Repository ??

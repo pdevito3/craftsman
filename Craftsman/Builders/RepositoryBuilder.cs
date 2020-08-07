@@ -38,26 +38,21 @@
 
         private static void CreateIRepositoryClass(string solutionDirectory, Entity entity)
         {
-            //TODO move these to a dictionary to lookup and overwrite if I want
-            var repoTopPath = $"Application\\Interfaces\\{entity.Name}";
-            var repoNamespace = repoTopPath.Replace("\\", ".");
+            var classPath = ClassPathHelper.IRepositoryClassPath(solutionDirectory, $"{Utilities.GetRepositoryName(entity.Name, true)}.cs", entity.Name);
 
-            var entityDir = Path.Combine(solutionDirectory, repoTopPath);
-            if (!Directory.Exists(entityDir))
-                Directory.CreateDirectory(entityDir);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-            var pathString = Path.Combine(entityDir, $"{Utilities.GetRepositoryName(entity, true)}.cs");
-            if (File.Exists(pathString))
-                throw new FileAlreadyExistsException(pathString);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-            using (FileStream fs = File.Create(pathString))
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = GetIRepositoryFileText(repoNamespace, entity);
+                var data = GetIRepositoryFileText(classPath.ClassNamespace, entity);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
 
-            GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
-            //WriteInfo($"A new '{entity.Name}' repository interface file was added here: {pathString}.");
+            GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
         }
 
         public static string GetIRepositoryFileText(string classNamespace, Entity entity)
@@ -69,7 +64,7 @@
     using System.Threading.Tasks;
     using Domain.Entities;
 
-    public interface {Utilities.GetRepositoryName(entity, true)}
+    public interface {Utilities.GetRepositoryName(entity.Name, true)}
     {{
         PagedList <{entity.Name}> Get{entity.Plural}({Utilities.DtoNameGenerator(entity.Name, Dto.ReadParamaters)} {entity.Name}Parameters);
         Task<{entity.Name}> Get{entity.Name}Async(int {entity.Name}Id);
@@ -84,26 +79,21 @@
 
         private static void CreateRepositoryClass(string solutionDirectory, Entity entity, TemplateDbContext dbContext)
         {
-            //TODO move these to a dictionary to lookup and overwrite if I want
-            var repoTopPath = "Infrastructure.Persistence\\Repositories";
-            var repoNamespace = repoTopPath.Replace("\\", ".");
+            var classPath = ClassPathHelper.RepositoryClassPath(solutionDirectory, $"{Utilities.GetRepositoryName(entity.Name, false)}.cs");
 
-            var entityDir = Path.Combine(solutionDirectory, repoTopPath);
-            if (!Directory.Exists(entityDir))
-                Directory.CreateDirectory(entityDir);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-            var pathString = Path.Combine(entityDir, $"{Utilities.GetRepositoryName(entity, false)}.cs");
-            if (File.Exists(pathString))
-                throw new FileAlreadyExistsException(pathString);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-            using (FileStream fs = File.Create(pathString))
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = GetRepositoryFileText(repoNamespace, entity, dbContext);
+                var data = GetRepositoryFileText(classPath.ClassNamespace, entity, dbContext);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
 
-            GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
-            //WriteInfo($"A new '{entity.Name}' repository file was added here: {pathString}.");
+            GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
         }
 
         public static string GetRepositoryFileText(string classNamespace, Entity entity, TemplateDbContext dbContext)
@@ -123,7 +113,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class {Utilities.GetRepositoryName(entity, false)} : {Utilities.GetRepositoryName(entity, true)}
+    public class {Utilities.GetRepositoryName(entity.Name, false)} : {Utilities.GetRepositoryName(entity.Name, true)}
     {{
         private {dbContext.ContextName} _context;
         private readonly SieveProcessor _sieveProcessor;
@@ -227,7 +217,7 @@
                         var newText = $"{line}";
                         if(line.Contains("#region Repositories"))
                         {
-                            newText += @$"{Environment.NewLine}            services.AddScoped<{Utilities.GetRepositoryName(entity, true)}, {Utilities.GetRepositoryName(entity, false)}>();";
+                            newText += @$"{Environment.NewLine}            services.AddScoped<{Utilities.GetRepositoryName(entity.Name, true)}, {Utilities.GetRepositoryName(entity.Name, false)}>();";
                         }
                         else if (line.Contains("using") & !interfaceNamespaceAdded)
                         {

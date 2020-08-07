@@ -55,7 +55,10 @@
                 var solutionDirectory = $"{buildSolutionDirectory}\\{template.SolutionName}";
 
                 // remove placeholder valuetoreplaces
-                EntityRemover.Remove(solutionDirectory, "ValueToReplace.cs");
+                var templEntityName = "ValueToReplace";
+                EntityRemover.Remove(solutionDirectory, $"{templEntityName}.cs");
+                IRepositoryRemover.Remove(solutionDirectory, $"{Utilities.GetRepositoryName(templEntityName, true)}.cs", $"{templEntityName}");
+                RepositoryRemover.Remove(solutionDirectory, $"{Utilities.GetRepositoryName(templEntityName, false)}.cs");
 
                 // dbcontext
                 DbContextBuilder.CreateDbContext(solutionDirectory, template);

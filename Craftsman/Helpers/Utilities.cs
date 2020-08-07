@@ -1,9 +1,11 @@
 ﻿namespace Craftsman.Helpers
 {
     using Craftsman.Enums;
+    using Craftsman.Exceptions;
     using Craftsman.Models;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -23,9 +25,9 @@
                 return prop;
         }
 
-        public static string GetRepositoryName(Entity entity, bool isInterface)
+        public static string GetRepositoryName(string entityName, bool isInterface)
         {
-            return isInterface ? $"I{entity.Name}Repository" : $"{entity.Name}Repository";
+            return isInterface ? $"I{entityName}Repository" : $"{entityName}Repository";
         }
 
         public static string GetSeederName(Entity entity)

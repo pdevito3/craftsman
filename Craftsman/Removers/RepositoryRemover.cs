@@ -1,13 +1,14 @@
 ﻿namespace Craftsman.Removers
 {
     using Craftsman.Helpers;
+    using Craftsman.Models;
     using System.IO;
 
-    public static class EntityRemover
+    public static class RepositoryRemover
     {
         public static void Remove(string solutionDirectory, string filename)
         {
-            var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, filename);
+            var classPath = ClassPathHelper.RepositoryClassPath(solutionDirectory, filename);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
