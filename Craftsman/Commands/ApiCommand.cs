@@ -6,6 +6,7 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
+    using Craftsman.Removers;
     using Newtonsoft.Json;
     using System;
     using System.Data;
@@ -52,6 +53,9 @@
                 // scaffold projects
                 CreateNewFoundation(template, buildSolutionDirectory); // todo scaffold this manually instead of using dotnet new foundation
                 var solutionDirectory = $"{buildSolutionDirectory}\\{template.SolutionName}";
+
+                // remove placeholder valuetoreplaces
+                EntityRemover.Remove(solutionDirectory, "ValueToReplace.cs");
 
                 // dbcontext
                 DbContextBuilder.CreateDbContext(solutionDirectory, template);
@@ -112,7 +116,7 @@
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = @$"new foundation -n {template.SolutionName} -e ""Recipe"" -en ""recipe"" -la ""r""",
+                    Arguments = @$"new foundation -n {template.SolutionName}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,

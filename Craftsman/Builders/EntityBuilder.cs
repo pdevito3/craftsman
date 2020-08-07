@@ -18,27 +18,21 @@
         {
             try
             {
-                //TODO move these to a dictionary to lookup and overwrite if I want
-                var entityTopPath = "Domain\\Entities";
-                var entityNamespace = entityTopPath.Replace("\\", ".");
+                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs");
 
-                var entityDir = Path.Combine(solutionDirectory, entityTopPath);
-                if (!Directory.Exists(entityDir))
-                    Directory.CreateDirectory(entityDir);
+                if (!Directory.Exists(classPath.ClassDirectory))
+                    throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
 
-                var pathString = Path.Combine(entityDir, $"{entity.Name}.cs");
-                if (File.Exists(pathString))
-                    throw new FileAlreadyExistsException(pathString);
+                if (File.Exists(classPath.FullClassPath))
+                    throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(pathString))
+                using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetEntityFileText(entityNamespace, entity);
+                    var data = GetEntityFileText(classPath.ClassNamespace, entity);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
-
-                GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
-                //WriteInfo($"A new '{entity.Name}' entity file was added here: {pathString}.");
+                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
             }
             catch (FileAlreadyExistsException e)
             {
