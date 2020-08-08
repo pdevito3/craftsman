@@ -19,28 +19,23 @@
         {
             try
             {
-                //TODO move these to a dictionary to lookup and overwrite if I want
-                var seederTopPath = "Infrastructure.Persistence\\Seeders";
-                var seederNamespace = seederTopPath.Replace("\\", ".");
-
                 foreach(var entity in template.Entities)
                 {
-                    var seederDir = Path.Combine(solutionDirectory, seederTopPath);
-                    if (!Directory.Exists(seederDir))
-                        Directory.CreateDirectory(seederDir);
+                    var classPath = ClassPathHelper.SeederClassPath(solutionDirectory, $"{Utilities.GetSeederName(entity)}.cs");
 
-                    var pathString = Path.Combine(seederDir, $"{Utilities.GetSeederName(entity)}.cs");
-                    if (File.Exists(pathString))
-                        throw new FileAlreadyExistsException(pathString);
+                    if (!Directory.Exists(classPath.ClassDirectory))
+                        Directory.CreateDirectory(classPath.ClassDirectory);
 
-                    using (FileStream fs = File.Create(pathString))
+                    if (File.Exists(classPath.FullClassPath))
+                        throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+                    using (FileStream fs = File.Create(classPath.FullClassPath))
                     {
-                        var data = GetSeederFileText(seederNamespace, entity, template);
+                        var data = GetSeederFileText(classPath.ClassNamespace, entity, template);
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
                     
-                    GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
-                    //WriteInfo($"A new '{entity.Name}' seeder file was added here: {pathString}.");
+                    GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
                 }
 
                 RegisterAllSeeders(solutionDirectory, template);

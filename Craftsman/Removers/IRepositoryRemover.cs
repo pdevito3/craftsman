@@ -6,7 +6,7 @@
 
     public static class IRepositoryRemover
     {
-        public static void Remove(string solutionDirectory, string entityName)
+        public static void RemoveDirectory(string solutionDirectory, string entityName)
         {
             var classPath = ClassPathHelper.IRepositoryClassPath(solutionDirectory, "", entityName); // deleting directory, so I don't need to give a meaningful filename
 

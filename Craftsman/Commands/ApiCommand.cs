@@ -55,14 +55,7 @@
                 var solutionDirectory = $"{buildSolutionDirectory}\\{template.SolutionName}";
 
                 // remove placeholder valuetoreplace files and directories
-                var templEntityName = "ValueToReplace";
-                EntityRemover.RemoveDirectory(solutionDirectory);
-                IRepositoryRemover.Remove(solutionDirectory, $"{templEntityName}");
-                RepositoryRemover.RemoveDirectory(solutionDirectory);
-                ProfileRemover.RemoveDirectory(solutionDirectory);
-                DtoRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
-                ValidationRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
-                DbContextRemover.RemoveDirectory(solutionDirectory);
+                ApiTemplateCleaner.CleanTemplateFilesAndDirectories(solutionDirectory);
 
                 // dbcontext
                 DbContextBuilder.CreateDbContext(solutionDirectory, template);

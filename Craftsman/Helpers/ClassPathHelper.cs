@@ -12,6 +12,11 @@
             return new ClassPath(solutionDirectory, "Domain\\Entities", className);
         }
 
+        internal static ClassPath SeederClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, "Infrastructure.Persistence\\Seeders", className);
+        }
+
         internal static ClassPath DbContextClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "Infrastructure.Persistence\\Contexts", className);
