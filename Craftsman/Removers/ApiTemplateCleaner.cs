@@ -17,6 +17,8 @@
             ValidationRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
             DbContextRemover.RemoveDirectory(solutionDirectory);
             SeederRemover.RemoveDirectory(solutionDirectory);
+
+            InfrastructurePersistenceServicesCleaner.CleanServiceRegistration(solutionDirectory);
         }
     }
 }

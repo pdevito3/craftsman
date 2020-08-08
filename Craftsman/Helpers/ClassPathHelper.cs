@@ -7,22 +7,27 @@
 
     public static class ClassPathHelper
     {
+        public static ClassPath InfraPersistenceServiceProviderClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, "Infrastructure.Persistence", className);
+        }
+
         public static ClassPath EntityClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "Domain\\Entities", className);
         }
 
-        internal static ClassPath SeederClassPath(string solutionDirectory, string className)
+        public static ClassPath SeederClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "Infrastructure.Persistence\\Seeders", className);
         }
 
-        internal static ClassPath DbContextClassPath(string solutionDirectory, string className)
+        public static ClassPath DbContextClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "Infrastructure.Persistence\\Contexts", className);
         }
 
-        internal static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityName)
+        public static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityName)
         {
             return new ClassPath(solutionDirectory, $"Application\\Validation\\{entityName}", className);
         }
@@ -32,7 +37,7 @@
             return new ClassPath(solutionDirectory, $"Application\\Interfaces\\{entityName}", className);
         }
 
-        internal static ClassPath ProfileClassPath(string solutionDirectory, string className)
+        public static ClassPath ProfileClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, $"Application\\Mappings", className);
         }
