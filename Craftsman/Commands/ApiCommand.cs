@@ -54,15 +54,15 @@
                 CreateNewFoundation(template, buildSolutionDirectory); // todo scaffold this manually instead of using dotnet new foundation
                 var solutionDirectory = $"{buildSolutionDirectory}\\{template.SolutionName}";
 
-                // remove placeholder valuetoreplaces
+                // remove placeholder valuetoreplace files and directories
                 var templEntityName = "ValueToReplace";
-                EntityRemover.Remove(solutionDirectory, $"{templEntityName}.cs");
-                IRepositoryRemover.Remove(solutionDirectory, $"{Utilities.GetRepositoryName(templEntityName, true)}.cs", $"{templEntityName}");
-                RepositoryRemover.Remove(solutionDirectory, $"{Utilities.GetRepositoryName(templEntityName, false)}.cs");
-                ProfileRemover.Remove(solutionDirectory, $"{Utilities.GetProfileName(templEntityName)}.cs");
+                EntityRemover.RemoveDirectory(solutionDirectory);
+                IRepositoryRemover.Remove(solutionDirectory, $"{templEntityName}");
+                RepositoryRemover.RemoveDirectory(solutionDirectory);
+                ProfileRemover.RemoveDirectory(solutionDirectory);
                 DtoRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
                 ValidationRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
-                DbContextRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
+                DbContextRemover.RemoveDirectory(solutionDirectory);
 
                 // dbcontext
                 DbContextBuilder.CreateDbContext(solutionDirectory, template);

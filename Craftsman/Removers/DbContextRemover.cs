@@ -6,7 +6,7 @@
 
     public class DbContextRemover
     {
-        public static void RemoveDirectory(string solutionDirectory, string entityName)
+        public static void RemoveDirectory(string solutionDirectory)
         {
             var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, ""); // deleting directory, so I don't need to give a meaningful filename
 
