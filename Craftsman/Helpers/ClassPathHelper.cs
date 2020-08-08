@@ -7,6 +7,16 @@
 
     public static class ClassPathHelper
     {
+        public static ClassPath ControllerClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, "WebApi\\Controllers\\v1", className);
+        }
+
+        public static ClassPath StartupClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, "WebApi", className);
+        }
+
         public static ClassPath InfraPersistenceServiceProviderClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "Infrastructure.Persistence", className);

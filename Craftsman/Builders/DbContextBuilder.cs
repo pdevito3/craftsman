@@ -151,7 +151,7 @@
                         var newText = $"{line}";
                         if (line.Contains("#region DbContext"))
                         {
-                            newText += @$"{Environment.NewLine}            
+                            newText += @$"          
             if (configuration.GetValue<bool>(""UseInMemoryDatabase""))
             {{
                 services.AddDbContext<{template.DbContext.ContextName}>(options =>

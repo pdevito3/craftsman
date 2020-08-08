@@ -6,10 +6,7 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Reflection.Emit;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
@@ -19,26 +16,21 @@
         {
             try
             {
-                //TODO move these to a dictionary to lookup and overwrite if I want
-                var entityTopPath = "WebApi\\Controllers\\v1";
-                var entityNamespace = entityTopPath.Replace("\\", ".");
+                var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{entity.Plural}Controller.cs");
 
-                var entityDir = Path.Combine(solutionDirectory, entityTopPath);
-                if (!Directory.Exists(entityDir))
-                    Directory.CreateDirectory(entityDir);
+                if (!Directory.Exists(classPath.ClassDirectory))
+                    Directory.CreateDirectory(classPath.ClassDirectory);
 
-                var pathString = Path.Combine(entityDir, $"{entity.Plural}Controller.cs");
-                if (File.Exists(pathString))
-                    throw new FileAlreadyExistsException(pathString);
+                if (File.Exists(classPath.FullClassPath))
+                    throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(pathString))
+                using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetControllerFileText(entityNamespace, entity);
+                    var data = GetControllerFileText(classPath.ClassNamespace, entity);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
-                GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
-                //WriteInfo($"A new '{entity.Name}' controller file was added here: {pathString}.");
+                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
             }
             catch (FileAlreadyExistsException e)
             {
