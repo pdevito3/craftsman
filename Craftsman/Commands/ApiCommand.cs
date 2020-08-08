@@ -62,6 +62,7 @@
                 ProfileRemover.Remove(solutionDirectory, $"{Utilities.GetProfileName(templEntityName)}.cs");
                 DtoRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
                 ValidationRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
+                DbContextRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
 
                 // dbcontext
                 DbContextBuilder.CreateDbContext(solutionDirectory, template);

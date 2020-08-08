@@ -21,7 +21,7 @@
                 var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
-                    throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+                    Directory.CreateDirectory(classPath.ClassDirectory);
 
                 if (File.Exists(classPath.FullClassPath))
                     throw new FileAlreadyExistsException(classPath.FullClassPath);

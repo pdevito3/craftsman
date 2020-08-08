@@ -19,29 +19,23 @@
         {
             try
             {
-                //TODO move these to a dictionary to lookup and overwrite if I want
-                var contextTopPath = "Infrastructure.Persistence\\Contexts";
-                var contextNamespace = contextTopPath.Replace("\\", ".");
+                var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{template.DbContext.ContextName}.cs");
 
-                var contextDir = Path.Combine(solutionDirectory, contextTopPath);
-                if (!Directory.Exists(contextDir))
-                    Directory.CreateDirectory(contextDir);
+                if (!Directory.Exists(classPath.ClassDirectory))
+                    Directory.CreateDirectory(classPath.ClassDirectory);
 
-                var pathString = Path.Combine(contextDir, $"{template.DbContext.ContextName}.cs");
-                if (File.Exists(pathString))
-                    throw new FileAlreadyExistsException(pathString);
+                if (File.Exists(classPath.FullClassPath))
+                    throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(pathString))
+                using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetContextFileText(contextNamespace, template);
+                    var data = GetContextFileText(classPath.ClassNamespace, template);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
                 RegisterContext(solutionDirectory, template);
 
-
-                GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
-                //WriteInfo($"A new '{template.DbContext.ContextName}' DbContext file was added here: {pathString}.");
+                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
             }
             catch (FileAlreadyExistsException e)
             {

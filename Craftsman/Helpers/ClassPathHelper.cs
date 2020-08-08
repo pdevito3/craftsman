@@ -12,6 +12,11 @@
             return new ClassPath(solutionDirectory, "Domain\\Entities", className);
         }
 
+        internal static ClassPath DbContextClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, "Infrastructure.Persistence\\Contexts", className);
+        }
+
         internal static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityName)
         {
             return new ClassPath(solutionDirectory, $"Application\\Validation\\{entityName}", className);
