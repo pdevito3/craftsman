@@ -11,6 +11,12 @@
         {
             return new ClassPath(solutionDirectory, "Domain\\Entities", className);
         }
+
+        internal static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityName)
+        {
+            return new ClassPath(solutionDirectory, $"Application\\Validation\\{entityName}", className);
+        }
+
         public static ClassPath IRepositoryClassPath(string solutionDirectory, string className, string entityName)
         {
             return new ClassPath(solutionDirectory, $"Application\\Interfaces\\{entityName}", className);

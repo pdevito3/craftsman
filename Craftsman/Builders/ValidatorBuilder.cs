@@ -36,35 +36,30 @@
 
         private static void BuildValidatorClass(string solutionDirectory, Entity entity, Validator validator)
         {
-            //TODO move these to a dictionary to lookup and overwrite if I want
-            var validatorTopPath = $"Application\\Validation\\{entity.Name}";
-            var repoNamespace = validatorTopPath.Replace("\\", ".");
+            var classPath = ClassPathHelper.ValidationClassPath(solutionDirectory, $"{Utilities.ValidatorNameGenerator(entity.Name, validator)}.cs",entity.Name);
 
-            var entityDir = Path.Combine(solutionDirectory, validatorTopPath);
-            if (!Directory.Exists(entityDir))
-                Directory.CreateDirectory(entityDir);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-            var pathString = Path.Combine(entityDir, $"{Utilities.ValidatorNameGenerator(entity.Name, validator)}.cs");
-            if (File.Exists(pathString))
-                throw new FileAlreadyExistsException(pathString);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-            using (FileStream fs = File.Create(pathString))
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
                 var data = "";
                 if (validator == Validator.Creation)
-                    data = GetCreationValidatorFileText(repoNamespace, entity);
+                    data = GetCreationValidatorFileText(classPath.ClassNamespace, entity);
                 else if (validator == Validator.Update)
-                    data = GetUpdateValidatorFileText(repoNamespace, entity);
+                    data = GetUpdateValidatorFileText(classPath.ClassNamespace, entity);
                 else if (validator == Validator.Manipulation)
-                    data = GetManipulationValidatorFileText(repoNamespace, entity);
+                    data = GetManipulationValidatorFileText(classPath.ClassNamespace, entity);
                 else
                     throw new Exception("Unrecognized validator exception."); // this shouldn't really be possible, so not adding a special validator, but putting here for good measure
 
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
 
-            GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
-            //WriteInfo($"A new '{Utilities.ValidatorNameGenerator(entity.Name, validator)}' validator file was added here: {pathString}.");
+            GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
         }
 
         public static string GetCreationValidatorFileText(string classNamespace, Entity entity)

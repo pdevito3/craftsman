@@ -60,7 +60,8 @@
                 IRepositoryRemover.Remove(solutionDirectory, $"{Utilities.GetRepositoryName(templEntityName, true)}.cs", $"{templEntityName}");
                 RepositoryRemover.Remove(solutionDirectory, $"{Utilities.GetRepositoryName(templEntityName, false)}.cs");
                 ProfileRemover.Remove(solutionDirectory, $"{Utilities.GetProfileName(templEntityName)}.cs");
-                DtoRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}"); 
+                DtoRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
+                ValidationRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}");
 
                 // dbcontext
                 DbContextBuilder.CreateDbContext(solutionDirectory, template);
