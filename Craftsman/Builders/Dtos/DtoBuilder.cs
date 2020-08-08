@@ -16,20 +16,18 @@
         {
             try
             {
-                //TODO move these to a dictionary to lookup and overwrite if I want
-                var entityTopPath = $"Application\\Dtos\\{entity.Name}";
-                var entityNamespace = entityTopPath.Replace("\\", ".");
+                // ****this class path will have an invalid FullClassPath. just need the directory
+                var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
 
-                var entityDir = Path.Combine(solutionDirectory, entityTopPath);
-                if (!Directory.Exists(entityDir))
-                    Directory.CreateDirectory(entityDir);
+                if (!Directory.Exists(classPath.ClassDirectory))
+                    Directory.CreateDirectory(classPath.ClassDirectory);
 
-                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.Read);
-                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.Manipulation);
-                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.Creation);
-                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.Update);
-                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.PaginationParamaters);
-                CreateDtoFile(solutionDirectory, entityDir, entityNamespace, entity, Dto.ReadParamaters);
+                CreateDtoFile(solutionDirectory, entity, Dto.Read);
+                CreateDtoFile(solutionDirectory, entity, Dto.Manipulation);
+                CreateDtoFile(solutionDirectory, entity, Dto.Creation);
+                CreateDtoFile(solutionDirectory, entity, Dto.Update);
+                CreateDtoFile(solutionDirectory, entity, Dto.PaginationParamaters);
+                CreateDtoFile(solutionDirectory, entity, Dto.ReadParamaters);
             }
             catch (FileAlreadyExistsException e)
             {
@@ -53,19 +51,20 @@
                 return DtoFileTextGenerator.GetDtoText(classNamespace, entity, dto);
         }
 
-        public static void CreateDtoFile(string solutionDirectory, string entityDir, string entityNamespace, Entity entity, Dto dto)
+        public static void CreateDtoFile(string solutionDirectory, Entity entity, Dto dto)
         {
-            var dtoFileName = Utilities.DtoNameGenerator(entity.Name, dto);
-            var pathString = Path.Combine(entityDir, $"{dtoFileName}.cs");
-            if (File.Exists(pathString))
-                throw new FileAlreadyExistsException(pathString);
-            using (FileStream fs = File.Create(pathString))
+            var dtoFileName = $"{Utilities.DtoNameGenerator(entity.Name, dto)}.cs";
+            var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, dtoFileName, entity.Name);
+
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = GetDtoFileText(entityNamespace, entity, dto);
+                var data = GetDtoFileText(classPath.ClassNamespace, entity, dto);
                 fs.Write(Encoding.UTF8.GetBytes(data));
 
-                GlobalSingleton.AddCreatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
-                //WriteInfo($"A new '{dtoFileName}' file was added here: {pathString}.");
+                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
             }
         }
     }
