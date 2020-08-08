@@ -59,6 +59,7 @@
                 EntityRemover.Remove(solutionDirectory, $"{templEntityName}.cs");
                 IRepositoryRemover.Remove(solutionDirectory, $"{Utilities.GetRepositoryName(templEntityName, true)}.cs", $"{templEntityName}");
                 RepositoryRemover.Remove(solutionDirectory, $"{Utilities.GetRepositoryName(templEntityName, false)}.cs");
+                ProfileRemover.Remove(solutionDirectory, $"{Utilities.GetProfileName(templEntityName)}.cs");
                 DtoRemover.RemoveDirectory(solutionDirectory, $"{templEntityName}"); 
 
                 // dbcontext

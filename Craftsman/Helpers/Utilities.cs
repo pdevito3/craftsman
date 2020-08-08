@@ -35,9 +35,9 @@
             return $"{entity.Name}Seeder";
         }
 
-        public static string GetProfileName(Entity entity)
+        public static string GetProfileName(string entityName)
         {
-            return $"{entity.Name}Profile";
+            return $"{entityName}Profile";
         }
 
         public static string DtoNameGenerator(string entityName, Dto dto)
