@@ -15,7 +15,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.RepositoryTestClassPath(solutionDirectory, $"Create{entity.Name}RepositoryTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestRepositoryClassPath(solutionDirectory, $"Create{entity.Name}RepositoryTests.cs", entity.Name, template.SolutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);

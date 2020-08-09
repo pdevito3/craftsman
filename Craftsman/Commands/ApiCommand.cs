@@ -57,7 +57,7 @@
                 var solutionDirectory = $"{buildSolutionDirectory}\\{template.SolutionName}";
 
                 // remove placeholder valuetoreplace files and directories
-                ApiTemplateCleaner.CleanTemplateFilesAndDirectories(solutionDirectory);
+                ApiTemplateCleaner.CleanTemplateFilesAndDirectories(solutionDirectory, template);
 
                 // add all files based on the given template config
                 RunTemplateBuilders(solutionDirectory, template);
