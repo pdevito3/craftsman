@@ -15,7 +15,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.ReadRepositoryTestClassPath(solutionDirectory, $"Get{entity.Name}RepositoryTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.RepositoryTestClassPath(solutionDirectory, $"Get{entity.Name}RepositoryTests.cs", entity.Name, template.SolutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -25,7 +25,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = ReadRepositoryTestFileText(classPath.ClassNamespace, template, entity);
+                    var data = ReadRepositoryTestFileText(classPath, template, entity);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -43,7 +43,7 @@
             }
         }
 
-        public static string ReadRepositoryTestFileText(string classNamespace, ApiTemplate template, Entity entity)
+        private static string ReadRepositoryTestFileText(ClassPath classPath, ApiTemplate template, Entity entity)
         {
             var sortTests = "";
 
@@ -54,7 +54,7 @@
             }
 
             return @$"
-namespace {classNamespace}
+namespace {classPath.ClassNamespace}
 {{
     using Application.Dtos.{entity.Name};
     using FluentAssertions;
@@ -71,7 +71,7 @@ namespace {classNamespace}
     using Xunit;
 
     [Collection(""Sequential"")]
-    public class Get{entity.Name}RepositoryTests
+    public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{ 
         {GetEntityTest(template, entity)}
         {GetEntitiesTest(template, entity)}
@@ -83,7 +83,7 @@ namespace {classNamespace}
 }}";
         }
 
-        public static string GetEntityTest(ApiTemplate template, Entity entity)
+        private static string GetEntityTest(ApiTemplate template, Entity entity)
         {
             var assertString = "";
             foreach(var prop in entity.Properties)
@@ -113,13 +113,13 @@ namespace {classNamespace}
                 var service = new {Utilities.GetRepositoryName(entity.Name,false)}(context, new SieveProcessor(sieveOptions));
 
                 //Assert
-                var {entity.Name.LowercaseFirstLetter()}ById = service.Get{entity.Name}(fake{entity.Name}.{entity.Name}Id);
+                var {entity.Name.LowercaseFirstLetter()}ById = service.Get{entity.Name}(fake{entity.Name}.{entity.PrimaryKeyProperties[0].Name});
                 {assertString}
             }}
         }}";
         }
 
-        public static string GetEntitiesTest(ApiTemplate template, Entity entity)
+        private static string GetEntitiesTest(ApiTemplate template, Entity entity)
         {
             return $@"
         [Fact]
@@ -159,7 +159,7 @@ namespace {classNamespace}
         }}";
         }
 
-        public static string GetEntitiesWithPageSizeTest(ApiTemplate template, Entity entity)
+        private static string GetEntitiesWithPageSizeTest(ApiTemplate template, Entity entity)
         {
             return $@"
         [Fact]
@@ -198,7 +198,7 @@ namespace {classNamespace}
         }}";
         }
 
-        public static string GetEntitiesWithPageSizeandNumberTest(ApiTemplate template, Entity entity)
+        private static string GetEntitiesWithPageSizeandNumberTest(ApiTemplate template, Entity entity)
         {
             return $@"
         [Fact]
@@ -236,7 +236,7 @@ namespace {classNamespace}
         }}";
         }
        
-        public static string GetEntitiesListSortedInAscOrder(ApiTemplate template, Entity entity, EntityProperty prop)
+        private static string GetEntitiesListSortedInAscOrder(ApiTemplate template, Entity entity, EntityProperty prop)
         {
             var cleanProp = Utilities.PropTypeCleanup(prop.Type);
             var alpha = "";
@@ -305,7 +305,7 @@ namespace {classNamespace}
         }}{Environment.NewLine}";
         }
 
-        public static string GetEntitiesListSortedInDescOrder(ApiTemplate template, Entity entity, EntityProperty prop)
+        private static string GetEntitiesListSortedInDescOrder(ApiTemplate template, Entity entity, EntityProperty prop)
         {
             var cleanProp = Utilities.PropTypeCleanup(prop.Type);
             var alpha = "";
@@ -374,7 +374,7 @@ namespace {classNamespace}
         }}{Environment.NewLine}";
         }
 
-        public static string GetEntitiesListCanFilterTests(ApiTemplate template, Entity entity)
+        private static string GetEntitiesListCanFilterTests(ApiTemplate template, Entity entity)
         {
             var filterTests = "";
             foreach (var prop in entity.Properties.Where(e => e.CanFilter).ToList())

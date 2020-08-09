@@ -17,7 +17,7 @@
             return new ClassPath(solutionDirectory, "WebApi", className);
         }
 
-        public static ClassPath ReadRepositoryTestClassPath(string solutionDirectory, string className, string entityName, string solutionName)
+        public static ClassPath RepositoryTestClassPath(string solutionDirectory, string className, string entityName, string solutionName)
         {
             return new ClassPath(solutionDirectory, $"{solutionName}.Tests\\RepositoryTests\\{entityName}", className);
         }

@@ -100,6 +100,7 @@
 
                 FakesBuilder.CreateFakes(solutionDirectory, template, entity);
                 ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template, entity);
+                WriteTestBuilder.CreateEntityWriteTests(solutionDirectory, template, entity);
             }
 
             //seeders
