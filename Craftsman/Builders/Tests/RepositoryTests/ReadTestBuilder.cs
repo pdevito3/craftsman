@@ -45,6 +45,14 @@
 
         public static string ReadRepositoryTestFileText(string classNamespace, ApiTemplate template, Entity entity)
         {
+            var sortTests = "";
+
+            foreach(var prop in entity.Properties.Where(e => e.CanSort).ToList())
+            {
+                sortTests += GetEntitiesListSortedInAscOrder(template, entity, prop);
+                sortTests += GetEntitiesListSortedInDescOrder(template, entity, prop);
+            }
+
             return @$"
 namespace {classNamespace}
 {{
@@ -66,6 +74,10 @@ namespace {classNamespace}
     public class Get{entity.Name}RepositoryTests
     {{ 
         {GetEntityTest(template, entity)}
+        {GetEntitiesTest(template, entity)}
+        {GetEntitiesWithPageSizeTest(template,entity)}
+        {GetEntitiesWithPageSizeandNumberTest(template, entity)}
+        {sortTests}
     }} 
 }}";
         }
@@ -104,6 +116,261 @@ namespace {classNamespace}
                 {assertString}
             }}
         }}";
+        }
+
+        public static string GetEntitiesTest(ApiTemplate template, Entity entity)
+        {
+            return $@"
+        [Fact]
+        public void Get{entity.Plural}_CountMatchesAndContainsEquivalentObjects()
+        {{
+            //Arrange
+            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+                .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
+                .Options;
+            var sieveOptions = Options.Create(new SieveOptions());
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
+            var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
+
+            //Act
+            using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
+            {{
+                context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
+                context.SaveChanges();
+
+                var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
+
+                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name,Enums.Dto.ReadParamaters)}());
+
+                //Assert
+                {entity.Name.LowercaseFirstLetter()}Repo.Should()
+                    .NotBeEmpty()
+                    .And.HaveCount(3);
+
+                {entity.Name.LowercaseFirstLetter()}Repo.Should().ContainEquivalentOf(fake{entity.Name}One);
+                {entity.Name.LowercaseFirstLetter()}Repo.Should().ContainEquivalentOf(fake{entity.Name}Two);
+                {entity.Name.LowercaseFirstLetter()}Repo.Should().ContainEquivalentOf(fake{entity.Name}Three);
+
+                context.Database.EnsureDeleted();
+            }}
+        }}";
+        }
+
+        public static string GetEntitiesWithPageSizeTest(ApiTemplate template, Entity entity)
+        {
+            return $@"
+        [Fact]
+        public void Get{entity.Plural}_ReturnExpectedPageSize()
+        {{
+            //Arrange
+            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+                .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
+                .Options;
+            var sieveOptions = Options.Create(new SieveOptions());
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
+            var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
+
+            //Act
+            using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
+            {{
+                context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
+                context.SaveChanges();
+
+                var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
+
+                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ PageSize = 2 }});
+
+                //Assert
+                {entity.Name.LowercaseFirstLetter()}Repo.Should()
+                    .NotBeEmpty()
+                    .And.HaveCount(2);
+
+                {entity.Name.LowercaseFirstLetter()}Repo.Should().ContainEquivalentOf(fake{entity.Name}One);
+                {entity.Name.LowercaseFirstLetter()}Repo.Should().ContainEquivalentOf(fake{entity.Name}Two);
+
+                context.Database.EnsureDeleted();
+            }}
+        }}";
+        }
+
+        public static string GetEntitiesWithPageSizeandNumberTest(ApiTemplate template, Entity entity)
+        {
+            return $@"
+        [Fact]
+        public void Get{entity.Plural}_ReturnExpectedPageNumberAndSize()
+        {{
+            //Arrange
+            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+                .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
+                .Options;
+            var sieveOptions = Options.Create(new SieveOptions());
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
+            var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
+
+            //Act
+            using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
+            {{
+                context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
+                context.SaveChanges();
+
+                var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
+
+                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ PageSize = 1, PageNumber = 2 }});
+
+                //Assert
+                {entity.Name.LowercaseFirstLetter()}Repo.Should()
+                    .NotBeEmpty()
+                    .And.HaveCount(1);
+
+                {entity.Name.LowercaseFirstLetter()}Repo.Should().ContainEquivalentOf(fake{entity.Name}Two);
+
+                context.Database.EnsureDeleted();
+            }}
+        }}";
+        }
+       
+        public static string GetEntitiesListSortedInAscOrder(ApiTemplate template, Entity entity, EntityProperty prop)
+        {
+            var cleanProp = Utilities.PropTypeCleanup(prop.Type);
+            var alpha = "";
+            var bravo = "";
+            var charlie = "";
+
+            if (cleanProp == "string")
+            {
+                alpha = @$"""alpha""";
+                bravo = @$"""bravo""";
+                charlie = @$"""charlie""";
+            }
+            else if (cleanProp.Contains("int"))
+            {
+                alpha = "1";
+                bravo = "2";
+                charlie = "3";
+            }
+            else if (cleanProp.Contains("DateTime"))
+            {
+                alpha = "DateTime.Now.AddDays(1)";
+                bravo = "DateTime.Now.AddDays(2)";
+                charlie = "DateTime.Now.AddDays(3)";
+            }
+            else
+            {
+                //no tests generated for other types at this time
+                return "";
+            }            
+
+            return $@"
+        [Fact]
+        public void Get{entity.Plural}_List{prop.Name}SortedInAscOrder()
+        {{
+            //Arrange
+            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+                .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
+                .Options;
+            var sieveOptions = Options.Create(new SieveOptions());
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            fake{entity.Name}One.{prop.Name} = {bravo};
+
+            var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
+            fake{entity.Name}Two.{prop.Name} = {alpha};
+
+            var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
+            fake{entity.Name}Three.{prop.Name} = {charlie};
+
+            //Act
+            using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
+            {{
+                context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
+                context.SaveChanges();
+
+                var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
+
+                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ SortOrder = ""{prop.Name}"" }});
+
+                //Assert
+                {entity.Name.LowercaseFirstLetter()}Repo.Should()
+                    .ContainInOrder(fake{entity.Name}Two, fake{entity.Name}One, fake{entity.Name}Three);
+
+                context.Database.EnsureDeleted();
+            }}
+        }}{Environment.NewLine}";
+        }
+
+        public static string GetEntitiesListSortedInDescOrder(ApiTemplate template, Entity entity, EntityProperty prop)
+        {
+            var cleanProp = Utilities.PropTypeCleanup(prop.Type);
+            var alpha = "";
+            var bravo = "";
+            var charlie = "";
+
+            if (cleanProp == "string")
+            {
+                alpha = @$"""alpha""";
+                bravo = @$"""bravo""";
+                charlie = @$"""charlie""";
+            }
+            else if (cleanProp.Contains("int"))
+            {
+                alpha = "1";
+                bravo = "2";
+                charlie = "3";
+            }
+            else if (cleanProp.Contains("DateTime"))
+            {
+                alpha = "DateTime.Now.AddDays(1)";
+                bravo = "DateTime.Now.AddDays(2)";
+                charlie = "DateTime.Now.AddDays(3)";
+            }
+            else
+            {
+                //no tests generated for other types at this time
+                return "";
+            }
+
+            return $@"
+        [Fact]
+        public void Get{entity.Plural}_List{prop.Name}SortedInDescOrder()
+        {{
+            //Arrange
+            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+                .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
+                .Options;
+            var sieveOptions = Options.Create(new SieveOptions());
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            fake{entity.Name}One.{prop.Name} = {bravo};
+
+            var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
+            fake{entity.Name}Two.{prop.Name} = {alpha};
+
+            var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
+            fake{entity.Name}Three.{prop.Name} = {charlie};
+
+            //Act
+            using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
+            {{
+                context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
+                context.SaveChanges();
+
+                var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
+
+                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ SortOrder = ""-{prop.Name}"" }});
+
+                //Assert
+                {entity.Name.LowercaseFirstLetter()}Repo.Should()
+                    .ContainInOrder(fake{entity.Name}Three, fake{entity.Name}One, fake{entity.Name}Two);
+
+                context.Database.EnsureDeleted();
+            }}
+        }}{Environment.NewLine}";
         }
     }
 }

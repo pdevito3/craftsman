@@ -68,7 +68,7 @@
 {{
     using Application.Dtos.{entity.Name};
 
-    public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.DtoNameGenerator(entity.Name, Dto.Creation)}>
+    public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.GetDtoName(entity.Name, Dto.Creation)}>
     {{
         public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}()
         {{
@@ -85,7 +85,7 @@
 {{
     using Application.Dtos.{entity.Name};
 
-    public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.DtoNameGenerator(entity.Name, Dto.Update)}>
+    public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.GetDtoName(entity.Name, Dto.Update)}>
     {{
         public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}()
         {{
@@ -104,7 +104,7 @@
     using FluentValidation;
     using System;
 
-    public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {Utilities.DtoNameGenerator(entity.Name, Dto.Manipulation)}
+    public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}
     {{
         public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}()
         {{

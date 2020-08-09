@@ -49,10 +49,10 @@
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var entityNamePlural = entity.Plural;
-            var readDto = Utilities.DtoNameGenerator(entityName, Dto.Read);
-            var readParamDto = Utilities.DtoNameGenerator(entityName, Dto.ReadParamaters);
-            var creationDto = Utilities.DtoNameGenerator(entityName, Dto.Creation);
-            var updateDto = Utilities.DtoNameGenerator(entityName, Dto.Update);
+            var readDto = Utilities.GetDtoName(entityName, Dto.Read);
+            var readParamDto = Utilities.GetDtoName(entityName, Dto.ReadParamaters);
+            var creationDto = Utilities.GetDtoName(entityName, Dto.Creation);
+            var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
             var primaryKeyProp = entity.PrimaryKeyProperties[0];
 
             return @$"namespace {classNamespace}

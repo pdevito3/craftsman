@@ -53,7 +53,7 @@
 
         public static void CreateDtoFile(string solutionDirectory, Entity entity, Dto dto)
         {
-            var dtoFileName = $"{Utilities.DtoNameGenerator(entity.Name, dto)}.cs";
+            var dtoFileName = $"{Utilities.GetDtoName(entity.Name, dto)}.cs";
             var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, dtoFileName, entity.Name);
 
             if (File.Exists(classPath.FullClassPath))

@@ -23,9 +23,9 @@
                     Directory.CreateDirectory(classPath.ClassDirectory);
 
                 CreateFakerFile(solutionDirectory, entity.Name, entity, template);
-                CreateFakerFile(solutionDirectory, Utilities.DtoNameGenerator(entity.Name,Dto.Creation), entity, template);
-                CreateFakerFile(solutionDirectory, Utilities.DtoNameGenerator(entity.Name, Dto.Read), entity, template);
-                CreateFakerFile(solutionDirectory, Utilities.DtoNameGenerator(entity.Name, Dto.Update), entity, template);
+                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name,Dto.Creation), entity, template);
+                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Read), entity, template);
+                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Update), entity, template);
             }
             catch (FileAlreadyExistsException e)
             {

@@ -45,7 +45,7 @@
             return $"{entityName}Profile";
         }
 
-        public static string DtoNameGenerator(string entityName, Dto dto)
+        public static string GetDtoName(string entityName, Dto dto)
         {
             switch (dto)
             {

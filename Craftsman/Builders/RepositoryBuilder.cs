@@ -66,7 +66,7 @@
 
     public interface {Utilities.GetRepositoryName(entity.Name, true)}
     {{
-        PagedList <{entity.Name}> Get{entity.Plural}({Utilities.DtoNameGenerator(entity.Name, Dto.ReadParamaters)} {entity.Name}Parameters);
+        PagedList <{entity.Name}> Get{entity.Plural}({Utilities.GetDtoName(entity.Name, Dto.ReadParamaters)} {entity.Name}Parameters);
         Task<{entity.Name}> Get{entity.Name}Async(int {entity.Name}Id);
         {entity.Name} Get{entity.Name}(int {entity.Name}Id);
         void Add{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});

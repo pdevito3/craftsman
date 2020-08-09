@@ -57,10 +57,10 @@
         public {Utilities.GetProfileName(entity.Name)}()
         {{
             //createmap<to this, from this>
-            CreateMap<{entity.Name}, {Utilities.DtoNameGenerator(entity.Name,Dto.Read)}>()
+            CreateMap<{entity.Name}, {Utilities.GetDtoName(entity.Name,Dto.Read)}>()
                 .ReverseMap();
-            CreateMap<{Utilities.DtoNameGenerator(entity.Name, Dto.Creation)}, {entity.Name}>();
-            CreateMap<{Utilities.DtoNameGenerator(entity.Name, Dto.Update)}, {entity.Name}>()
+            CreateMap<{Utilities.GetDtoName(entity.Name, Dto.Creation)}, {entity.Name}>();
+            CreateMap<{Utilities.GetDtoName(entity.Name, Dto.Update)}, {entity.Name}>()
                 .ReverseMap();
         }}
     }}
