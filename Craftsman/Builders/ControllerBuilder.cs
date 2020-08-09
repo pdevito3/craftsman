@@ -16,7 +16,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{entity.Plural}Controller.cs");
+                var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);

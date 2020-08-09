@@ -17,6 +17,16 @@
             return new ClassPath(solutionDirectory, "WebApi", className);
         }
 
+        public static ClassPath ReadRepositoryTestClassPath(string solutionDirectory, string className, string entityName, string solutionName)
+        {
+            return new ClassPath(solutionDirectory, $"{solutionName}.Tests\\RepositoryTests\\{entityName}", className);
+        }
+
+        public static ClassPath TestFakesClassPath(string solutionDirectory, string className, string entityName, string solutionName)
+        {
+            return new ClassPath(solutionDirectory, $"{solutionName}.Tests\\Fakes\\{entityName}", className);
+        }
+
         public static ClassPath InfraPersistenceServiceProviderClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "Infrastructure.Persistence", className);

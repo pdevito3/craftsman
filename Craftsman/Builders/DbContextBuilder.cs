@@ -120,7 +120,7 @@
 
             foreach(var entity in entities)
             {
-                string newLine = entity == entities.LastOrDefault() ? "" : $"{Environment.NewLine}";
+                var newLine = entity == entities.LastOrDefault() ? "" : $"{Environment.NewLine}";
                 dbSetText += @$"        public DbSet<{entity.Name}> {entity.Plural} {{ get; set; }}{newLine}";
             }
 

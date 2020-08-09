@@ -2,6 +2,8 @@
 {
     using Craftsman.Builders;
     using Craftsman.Builders.Dtos;
+    using Craftsman.Builders.Tests.Fakes;
+    using Craftsman.Builders.Tests.RepositoryTests;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
@@ -57,25 +59,9 @@
                 // remove placeholder valuetoreplace files and directories
                 ApiTemplateCleaner.CleanTemplateFilesAndDirectories(solutionDirectory);
 
-                // dbcontext
-                DbContextBuilder.CreateDbContext(solutionDirectory, template);
+                // add all files based on the given template config
+                RunTemplateBuilders(solutionDirectory, template);
 
-                //entities
-                foreach (var entity in template.Entities)
-                {
-                    EntityBuilder.CreateEntity(solutionDirectory, entity);
-                    DtoBuilder.CreateDtos(solutionDirectory, entity);
-
-                    RepositoryBuilder.AddRepository(solutionDirectory, entity, template.DbContext);
-                    ValidatorBuilder.CreateValidators(solutionDirectory, entity);
-                    ProfileBuilder.CreateProfile(solutionDirectory, entity);
-
-                    ControllerBuilder.CreateController(solutionDirectory, entity);
-                }
-
-                //seeders
-                SeederBuilder.AddSeeders(solutionDirectory, template);
-                
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"Your API is ready! Build something amazing.");
             }
@@ -93,6 +79,31 @@
                 else
                     WriteError($"An unhandled exception occured when running the API command.\nThe error details are: \n{e.Message}");
             }
+        }
+
+        private static void RunTemplateBuilders(string solutionDirectory, ApiTemplate template)
+        {
+            // dbcontext
+            DbContextBuilder.CreateDbContext(solutionDirectory, template);
+
+            //entities
+            foreach (var entity in template.Entities)
+            {
+                EntityBuilder.CreateEntity(solutionDirectory, entity);
+                DtoBuilder.CreateDtos(solutionDirectory, entity);
+
+                RepositoryBuilder.AddRepository(solutionDirectory, entity, template.DbContext);
+                ValidatorBuilder.CreateValidators(solutionDirectory, entity);
+                ProfileBuilder.CreateProfile(solutionDirectory, entity);
+
+                ControllerBuilder.CreateController(solutionDirectory, entity);
+
+                FakesBuilder.CreateFakes(solutionDirectory, template, entity);
+                ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template, entity);
+            }
+
+            //seeders
+            SeederBuilder.AddSeeders(solutionDirectory, template);
         }
 
         private static void RunTemplateGuards(ApiTemplate template)
@@ -145,6 +156,7 @@
 
             return templatefromYaml;
         }
+       
         public static ApiTemplate ReadJson(string jsonFile)
         {
             return JsonConvert.DeserializeObject<ApiTemplate>(File.ReadAllText(jsonFile));
