@@ -9,13 +9,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class WriteTestBuilder
+    public class DeleteTestBuilder
     {
-        public static void CreateEntityWriteTests(string solutionDirectory, ApiTemplate template, Entity entity)
+        public static void DeleteEntityWriteTests(string solutionDirectory, ApiTemplate template, Entity entity)
         {
             try
             {
-                var classPath = ClassPathHelper.TestRepositoryClassPath(solutionDirectory, $"Create{entity.Name}RepositoryTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestRepositoryClassPath(solutionDirectory, $"Delete{entity.Name}RepositoryTests.cs", entity.Name, template.SolutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -25,7 +25,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = WriteRepositoryTestFileText(classPath, template, entity);
+                    var data = DeleteRepositoryTestFileText(classPath, template, entity);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -43,7 +43,7 @@
             }
         }
 
-        private static string WriteRepositoryTestFileText(ClassPath classPath, ApiTemplate template, Entity entity)
+        private static string DeleteRepositoryTestFileText(ClassPath classPath, ApiTemplate template, Entity entity)
         {
             var assertString = "";
             foreach (var prop in entity.Properties)
@@ -72,23 +72,16 @@ namespace {classPath.ClassNamespace}
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{ 
-        {CreateEntityTest(template, entity)}
+        {DeleteEntityTest(template, entity)}
     }} 
 }}";
         }
 
-        private static string CreateEntityTest(ApiTemplate template, Entity entity)
+        private static string DeleteEntityTest(ApiTemplate template, Entity entity)
         {
-            var assertString = "";
-            foreach (var prop in entity.Properties)
-            {
-                var newLine = prop == entity.Properties.LastOrDefault() ? "" : $"{Environment.NewLine}";
-                assertString += @$"                {entity.Name.LowercaseFirstLetter()}ById.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
-            }
-
             return $@"
         [Fact]
-        public void Add{entity.Name}_NewRecordAddedWithProperValues()
+        public void Delete{entity.Name}_ReturnsProperCount()
         {{
             //Arrange
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
@@ -96,27 +89,32 @@ namespace {classPath.ClassNamespace}
                 .Options;
             var sieveOptions = Options.Create(new SieveOptions());
 
-            var fake{entity.Name} = new Fake{entity.Name} {{ }}.Generate();
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
+            var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
 
             //Act
             using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
             {{
-                context.{entity.Plural}.AddRange(fake{entity.Name});
-                context.SaveChanges();
+                context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
 
                 var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
+                service.Delete{entity.Name}(fake{entity.Name}Two);
 
                 context.SaveChanges();
-            }}
 
-            //Assert
-            using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
-            {{
-                context.{entity.Plural}.Count().Should().Be(1);
+                //Assert
+                var {entity.Name.LowercaseFirstLetter()}List = context.{entity.Plural}.ToList();
 
-                var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
-                var {entity.Name.LowercaseFirstLetter()}ById = service.Get{entity.Name}(fake{entity.Name}.{entity.PrimaryKeyProperties[0].Name});
-                {assertString}
+                {entity.Name.LowercaseFirstLetter()}List.Should()
+                    .NotBeEmpty()
+                    .And.HaveCount(2);
+
+                {entity.Name.LowercaseFirstLetter()}List.Should().ContainEquivalentOf(fake{entity.Name}One);
+                {entity.Name.LowercaseFirstLetter()}List.Should().ContainEquivalentOf(fake{entity.Name}Three);
+                Assert.DoesNotContain({entity.Name.LowercaseFirstLetter()}List, {entity.Lambda} => {entity.Lambda} == fake{entity.Name}Two);
+
+                context.Database.EnsureDeleted();
             }}
         }}";
         }
