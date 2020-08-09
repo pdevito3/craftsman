@@ -78,6 +78,7 @@ namespace {classNamespace}
         {GetEntitiesWithPageSizeTest(template,entity)}
         {GetEntitiesWithPageSizeandNumberTest(template, entity)}
         {sortTests}
+        {GetEntitiesListCanFilterTests(template,entity)}
     }} 
 }}";
         }
@@ -371,6 +372,100 @@ namespace {classNamespace}
                 context.Database.EnsureDeleted();
             }}
         }}{Environment.NewLine}";
+        }
+
+        public static string GetEntitiesListCanFilterTests(ApiTemplate template, Entity entity)
+        {
+            var filterTests = "";
+            foreach (var prop in entity.Properties.Where(e => e.CanFilter).ToList())
+            {
+                var cleanProp = Utilities.PropTypeCleanup(prop.Type);
+                var alpha = "";
+                var bravo = "";
+                var charlie = "";
+                var alphaFilterVal = "";
+                var bravoFilterVal = "";
+                var charlieFilterVal = "";
+
+                if (cleanProp == "string")
+                {
+                    alpha = @$"""alpha""";
+                    bravo = @$"""bravo""";
+                    charlie = @$"""charlie""";
+                    alphaFilterVal = "alpha";
+                    bravoFilterVal = "bravo";
+                    charlieFilterVal = "charlie";
+                }
+                else if (cleanProp.Contains("int"))
+                {
+                    alpha = "1";
+                    alphaFilterVal = alpha;
+                    bravo = "2";
+                    bravoFilterVal = bravo;
+                    charlie = "3";
+                    charlieFilterVal = charlie;
+                }
+                else if (cleanProp.Contains("DateTime"))
+                {
+                    alpha = @$"DateTime.Now.AddDays(1)";
+                    bravo = @$"DateTime.Parse(DateTime.Now.AddDays(2).ToString(""MM/dd/yyyy""))"; // fitler by date like this because it needs to be an exact match (in this case)
+                    bravoFilterVal = @$"{{DateTime.Now.AddDays(2).ToString(""MM/dd/yyyy"")}}";
+                    charlie = @$"DateTime.Now.AddDays(3)";
+                }
+                else if (cleanProp.Contains("bool"))
+                {
+                    alpha = "false";
+                    alphaFilterVal = alpha;
+                    bravo = "true";
+                    bravoFilterVal = bravo;
+                    charlie = "false";
+                    charlieFilterVal = charlie;
+                }
+                else
+                {
+                    //no tests generated for other types at this time
+                    return "";
+                }
+
+                filterTests += $@"
+        [Fact]
+        public void Get{entity.Plural}_Filter{prop.Name}ListWithExact()
+        {{
+            //Arrange
+            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+                .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
+                .Options;
+            var sieveOptions = Options.Create(new SieveOptions());
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            fake{entity.Name}One.{prop.Name} = {alpha};
+
+            var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
+            fake{entity.Name}Two.{prop.Name} = {bravo};
+
+            var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
+            fake{entity.Name}Three.{prop.Name} = {charlie};
+
+            //Act
+            using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
+            {{
+                context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
+                context.SaveChanges();
+
+                var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
+
+                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ Filters = $""{prop.Name} == {bravoFilterVal}"" }});
+
+                //Assert
+                {entity.Name.LowercaseFirstLetter()}Repo.Should()
+                    .HaveCount(1);
+
+                context.Database.EnsureDeleted();
+            }}
+        }}{Environment.NewLine}";
+            }
+
+            return filterTests;
         }
     }
 }
