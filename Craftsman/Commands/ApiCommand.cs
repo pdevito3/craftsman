@@ -3,6 +3,7 @@
     using Craftsman.Builders;
     using Craftsman.Builders.Dtos;
     using Craftsman.Builders.Tests.Fakes;
+    using Craftsman.Builders.Tests.IntegrationTests;
     using Craftsman.Builders.Tests.RepositoryTests;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
@@ -100,7 +101,8 @@
 
                 FakesBuilder.CreateFakes(solutionDirectory, template, entity);
                 ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template, entity);
-                WriteTestBuilder.CreateEntityWriteTests(solutionDirectory, template, entity);
+                GetTestBuilder.CreateEntityGetTests(solutionDirectory, template, entity);
+                PostTestBuilder.CreateEntityWriteTests(solutionDirectory, template, entity);
                 DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, template, entity);
             }
 
