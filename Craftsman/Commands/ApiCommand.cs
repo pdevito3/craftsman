@@ -104,6 +104,7 @@
                 GetTestBuilder.CreateEntityGetTests(solutionDirectory, template, entity);
                 PostTestBuilder.CreateEntityWriteTests(solutionDirectory, template, entity);
                 DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, template, entity);
+                WebAppFactoryBuilder.CreateWebAppFactory(solutionDirectory, template, entity);
             }
 
             //seeders

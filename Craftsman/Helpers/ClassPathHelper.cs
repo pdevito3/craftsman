@@ -12,9 +12,14 @@
             return new ClassPath(solutionDirectory, "WebApi\\Controllers\\v1", className);
         }
 
-        public static ClassPath TestIntegrationClassPath(string solutionDirectory, string className, string entityName, string solutionName)
+        public static ClassPath TestEntityIntegrationClassPath(string solutionDirectory, string className, string entityName, string solutionName)
         {
             return new ClassPath(solutionDirectory, $"{solutionName}.Tests\\IntegrationTests\\{entityName}", className);
+        }
+
+        public static ClassPath TestWebAppFactoryClassPath(string solutionDirectory, string className, string solutionName)
+        {
+            return new ClassPath(solutionDirectory, $"{solutionName}.Tests", className);
         }
 
         public static ClassPath StartupClassPath(string solutionDirectory, string className)

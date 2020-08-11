@@ -16,7 +16,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.TestIntegrationClassPath(solutionDirectory, $"Get{entity.Name}IntegrationTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestEntityIntegrationClassPath(solutionDirectory, $"Get{entity.Name}IntegrationTests.cs", entity.Name, template.SolutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -63,11 +63,11 @@ namespace {classPath.ClassNamespace}
     using Microsoft.Extensions.DependencyInjection;
 
     [Collection(""Sequential"")]
-    public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>
     {{ 
-        private readonly CustomWebApplicationFactory<Startup> _factory;
+        private readonly CustomWebApplicationFactory _factory;
 
-        public {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}(CustomWebApplicationFactory<Startup> factory)
+        public {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}(CustomWebApplicationFactory factory)
         {{
             _factory = factory;
         }}
