@@ -64,7 +64,8 @@
                 RunTemplateBuilders(solutionDirectory, template);
 
                 WriteFileCreatedUpdatedResponse();
-                WriteHelpHeader($"Your API is ready! Build something amazing.");
+                WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
+                StarGithubRequest();
             }
             catch (Exception e)
             {

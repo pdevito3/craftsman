@@ -2,7 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Text;
 
     public static class ConsoleWriter
@@ -95,6 +97,41 @@
             foreach (var file in updated)
             {
                 WriteHelpText($"    {file}");
+            }
+        }
+
+        public static void StarGithubRequest()
+        {
+            WriteHelpText(@$"{Environment.NewLine}Would you like to show some love by starring the repo? (y/n) [n]");
+            var starRepo = Console.ReadKey();
+            if(starRepo.Key == ConsoleKey.Y)
+            {
+                var url = "https://www.google.com/";
+                try
+                {
+                    Process.Start(url);
+                }
+                catch
+                {
+                    // hack because of this: https://github.com/dotnet/corefx/issues/10361
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        url = url.Replace("&", "^&");
+                        Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+                    }
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        Process.Start("xdg-open", url);
+                    }
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    {
+                        Process.Start("open", url);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
         }
     }
