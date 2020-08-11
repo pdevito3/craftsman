@@ -104,8 +104,9 @@
         {
             WriteHelpText(@$"{Environment.NewLine}Would you like to show some love by starring the repo? (y/n) [n]");
             var starRepo = Console.ReadKey();
-            if(starRepo.Key == ConsoleKey.Y)
+            if (starRepo.Key == ConsoleKey.Y)
             {
+                WriteHelpText($"{Environment.NewLine}Thanks, it means the world to me!");
                 var url = "https://www.google.com/";
                 try
                 {
@@ -133,6 +134,9 @@
                     }
                 }
             }
-        }
+            else {
+                WriteHelpText($"{Environment.NewLine}I understand, but am not going to pretend I'm not sad about it...");
+            }
+    }
     }
 }
