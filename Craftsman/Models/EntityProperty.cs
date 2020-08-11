@@ -28,6 +28,7 @@ namespace Craftsman.Models
         /// </summary>
         public bool CanSort { get; set; } = false;
 
+        //TODO update to default to true unless primary key == true
         /// <summary>
         /// Determines if the property can be manipulated when creating or updating the associated entity
         /// </summary>

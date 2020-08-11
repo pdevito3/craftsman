@@ -103,6 +103,7 @@
                 ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template, entity);
                 GetTestBuilder.CreateEntityGetTests(solutionDirectory, template, entity);
                 PostTestBuilder.CreateEntityWriteTests(solutionDirectory, template, entity);
+                UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, template, entity);
                 DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, template, entity);
                 WebAppFactoryBuilder.CreateWebAppFactory(solutionDirectory, template, entity);
             }

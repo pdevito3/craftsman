@@ -45,7 +45,7 @@ namespace Craftsman.Models
         /// </summary>
         public string Lambda
         {
-            get => _lambda?? Name.Substring(0,1);
+            get => _lambda ?? Name.Substring(0,1).ToLower();
             set => _lambda= value;
         }
 
