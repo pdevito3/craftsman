@@ -19,20 +19,20 @@
     using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
 
-    public static class ApiCommand
+    public static class AddEntityCommand
     {
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   Scaffolds out API files and projects based on a given template file in a json or yaml format.{Environment.NewLine}");
+            WriteHelpText(@$"   While in your project directory, this command can add one or more new entities to your Accelerate Core project based on a formatted yaml or json file. The file input uses a simplified format from the `new:api` command, only requiring a list of entities.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman new:api [options] <filepath>{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman add:entity [options] <filepath>{Environment.NewLine}");
 
             WriteHelpText(@$"   For example:");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yaml");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yml");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.json{Environment.NewLine}");
+            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.yaml");
+            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.yml");
+            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.json{Environment.NewLine}");
 
             WriteHelpHeader(@$"Options:");
             WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
@@ -46,29 +46,21 @@
 
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
                 var template = FileParsingHelper.GetApiTemplateFromFile(filePath);
+
+                //var solutionDirectory = Directory.GetCurrentDirectory();
+                var solutionDirectory = @"C:\Users\Paul\Documents\testoutput\MyApi.Mine";
+                template = SolutionGuard(solutionDirectory, template);
+                template = GetDbContext(solutionDirectory, template);
+
                 WriteHelpText($"Your template file was parsed successfully.");
 
                 FileParsingHelper.RunPrimaryKeyGuard(template);
-                FileParsingHelper.RunSolutionNameAssignedGuard(template);
-
-                //var rootProjectDirectory = Directory.GetCurrentDirectory().Contains("Debug") ? @"C:\Users\Paul\Documents\testoutput" : Directory.GetCurrentDirectory();
-                var buildSolutionDirectory = @"C:\Users\Paul\Documents\testoutput";
-
-                // scaffold projects
-                // should i add an accelerate.config.yaml file to the root?
-                CreateNewFoundation(template, buildSolutionDirectory); // todo scaffold this manually instead of using dotnet new foundation
-                var solutionDirectory = $"{buildSolutionDirectory}\\{template.SolutionName}";
-
-
-                // remove placeholder valuetoreplace files and directories
-                ApiTemplateCleaner.CleanTemplateFilesAndDirectories(solutionDirectory, template);
 
                 // add all files based on the given template config
-                RunTemplateBuilders(solutionDirectory, template);
+                RunEntityBuilders(solutionDirectory, template);
 
                 WriteFileCreatedUpdatedResponse();
-                WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
-                StarGithubRequest();
+                WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
             }
             catch (Exception e)
             {
@@ -77,7 +69,8 @@
                     || e is InvalidSolutionNameException
                     || e is FileNotFoundException
                     || e is InvalidDbProviderException
-                    || e is InvalidFileTypeException)
+                    || e is InvalidFileTypeException
+                    || e is SolutionNotFoundException)
                 {
                     WriteError($"{e.Message}");
                 }
@@ -86,11 +79,8 @@
             }
         }
 
-        private static void RunTemplateBuilders(string solutionDirectory, ApiTemplate template)
+        private static void RunEntityBuilders(string solutionDirectory, ApiTemplate template)
         {
-            // dbcontext
-            DbContextBuilder.CreateDbContext(solutionDirectory, template);
-
             //entities
             foreach (var entity in template.Entities)
             {
@@ -109,35 +99,33 @@
                 PostTestBuilder.CreateEntityWriteTests(solutionDirectory, template, entity);
                 UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, template, entity);
                 DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, template, entity);
-                WebAppFactoryBuilder.CreateWebAppFactory(solutionDirectory, template, entity);
             }
 
             //seeders
             SeederBuilder.AddSeeders(solutionDirectory, template);
         }
 
-        private static void CreateNewFoundation(ApiTemplate template, string directory)
+        private static string GetSlnFile(string filePath)
         {
-            var newDir = $"{directory}\\{template.SolutionName}";
-            if (Directory.Exists(newDir))
-                throw new DirectoryAlreadyExistsException(newDir);
+            // make sure i'm in the sln directory -- should i add an accelerate.config.yaml file to the root?
+            return Directory.GetFiles(filePath, "*.sln").FirstOrDefault();
+        }
 
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new foundation -n {template.SolutionName}",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    WorkingDirectory = directory
-                }
-            };
+        private static ApiTemplate SolutionGuard(string solutionDirectory, ApiTemplate template)
+        {
+            var slnName = GetSlnFile(solutionDirectory);
+            template.SolutionName = Path.GetFileNameWithoutExtension(slnName) ?? throw new SolutionNotFoundException();
 
-            process.Start();
-            process.WaitForExit();
+            return template;
+        }
+
+        private static ApiTemplate GetDbContext(string solutionDirectory, ApiTemplate template)
+        {
+            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"");
+            var contextClass = Directory.GetFiles(classPath.FullClassPath, "*.cs").FirstOrDefault();
+
+            template.DbContext.ContextName = Path.GetFileNameWithoutExtension(contextClass);
+            return template;
         }
     }
 }

@@ -2,7 +2,7 @@
   "profiles": {
     "Craftsman": {
       "commandName": "Project",
-      "commandLineArgs": "new:api C:\\Users\\Paul\\Documents\\Model.yaml"
+      "commandLineArgs": "add:entity C:\\Users\\Paul\\Documents\\NewEntity.yaml"
     }
   }
 }

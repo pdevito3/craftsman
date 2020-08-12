@@ -38,6 +38,15 @@
                     ApiCommand.Run(filePath);
             }
 
+            if (args.Length == 2 && (args[0] == "add:entity"))
+            {
+                var filePath = args[1];
+                if (filePath == "-h" || filePath == "--help")
+                    AddEntityCommand.Help();
+                else
+                    AddEntityCommand.Run(filePath);
+            }
+
         }
 
         static void ShowBot(string message)
