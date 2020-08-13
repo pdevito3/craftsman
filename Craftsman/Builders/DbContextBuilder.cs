@@ -49,11 +49,10 @@
             }
         }
 
-        public static string GetContextFileText(string classNamespace, ApiTemplate template)
+        private static string GetContextFileText(string classNamespace, ApiTemplate template)
         {
             return @$"namespace {classNamespace}
 {{
-
     using Application.Interfaces;
     using Domain.Common;
     using Domain.Entities;
@@ -73,7 +72,9 @@
             _dateTimeService = dateTime;
         }}
 
+        #region DbSet Region - Do Not Delete
 {GetDbSetText(template.Entities)}
+        #endregion
 
         //TODO: Abstract this logic out into an custom inheritable dbcontext
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
@@ -127,21 +128,18 @@
             return dbSetText;
         }
 
-        public static void RegisterContext(string solutionDirectory, ApiTemplate template)
+        private static void RegisterContext(string solutionDirectory, ApiTemplate template)
         {
-            //TODO move these to a dictionary to lookup and overwrite if I want
-            var repoTopPath = "Infrastructure.Persistence";
+            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{template.DbContext.ContextName}.cs");
 
-            var entityDir = Path.Combine(solutionDirectory, repoTopPath);
-            if (!Directory.Exists(entityDir))
-                throw new DirectoryNotFoundException($"The `{entityDir}` directory could not be found.");
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-            var pathString = Path.Combine(entityDir, $"ServiceRegistration.cs");
-            if (!File.Exists(pathString))
-                throw new FileNotFoundException($"The `{pathString}` file could not be found.");
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.ClassDirectory}` file could not be found.");
 
-            var tempPath = $"{pathString}temp";
-            using (var input = File.OpenText(pathString))
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
             {
                 using (var output = new StreamWriter(tempPath))
                 {
@@ -172,11 +170,10 @@
             }
 
             // delete the old file and set the name of the new one to the original nape
-            File.Delete(pathString);
-            File.Move(tempPath, pathString);
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
 
-            GlobalSingleton.AddUpdatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
-            //WriteWarning($"TODO Need a message for the update of Service Registration.");
+            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
         }
     }
 }

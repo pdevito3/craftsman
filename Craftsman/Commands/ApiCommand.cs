@@ -2,6 +2,7 @@
 {
     using Craftsman.Builders;
     using Craftsman.Builders.Dtos;
+    using Craftsman.Builders.Seeders;
     using Craftsman.Builders.Tests.Fakes;
     using Craftsman.Builders.Tests.IntegrationTests;
     using Craftsman.Builders.Tests.RepositoryTests;

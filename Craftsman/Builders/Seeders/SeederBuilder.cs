@@ -1,4 +1,4 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Seeders
 {
     using Craftsman.Builders.Dtos;
     using Craftsman.Enums;
@@ -19,7 +19,7 @@
         {
             try
             {
-                foreach(var entity in template.Entities)
+                foreach (var entity in template.Entities)
                 {
                     var classPath = ClassPathHelper.SeederClassPath(solutionDirectory, $"{Utilities.GetSeederName(entity)}.cs");
 
@@ -31,10 +31,10 @@
 
                     using (FileStream fs = File.Create(classPath.FullClassPath))
                     {
-                        var data = GetSeederFileText(classPath.ClassNamespace, entity, template);
+                        var data = SeederFunctions.GetSeederFileText(classPath.ClassNamespace, entity, template);
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
-                    
+
                     GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
                 }
 
@@ -52,34 +52,7 @@
             }
         }
 
-        public static string GetSeederFileText(string classNamespace, Entity entity, ApiTemplate template)
-        {
-            return @$"namespace {classNamespace}
-{{
-
-    using AutoBogus;
-    using Domain.Entities;
-    using Infrastructure.Persistence.Contexts;
-    using System.Linq;
-
-    public static class {Utilities.GetSeederName(entity)}
-    {{
-        public static void SeedSample{entity.Name}Data({template.DbContext.ContextName} context)
-        {{
-            if (!context.{entity.Plural}.Any())
-            {{
-                context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
-                context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
-                context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
-
-                context.SaveChanges();
-            }}
-        }}
-    }}
-}}";
-        }
-
-        public static void RegisterAllSeeders(string solutionDirectory, ApiTemplate template)
+        private static void RegisterAllSeeders(string solutionDirectory, ApiTemplate template)
         {
             //TODO move these to a dictionary to lookup and overwrite if I want
             var repoTopPath = "WebApi";
@@ -119,10 +92,10 @@
             //WriteWarning($"TODO Need a message for the update of Startup.");
         }
 
-        public static string GetSeederContextText(ApiTemplate template)
+        private static string GetSeederContextText(ApiTemplate template)
         {
             var seeders = "";
-            foreach(var entity in template.Entities)
+            foreach (var entity in template.Entities)
             {
                 seeders += @$"
                     {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{template.DbContext.ContextName}>());";
@@ -131,7 +104,10 @@
                 using (var context = app.ApplicationServices.GetService<{template.DbContext.ContextName}>())
                 {{
                     context.Database.EnsureCreated();
+
+                    #region {template.DbContext.ContextName} Seeder Region - Do Not Delete
                     {seeders}
+                    #endregion
                 }}
 ";
         }

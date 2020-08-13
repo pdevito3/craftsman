@@ -2,21 +2,16 @@
 {
     using Craftsman.Builders;
     using Craftsman.Builders.Dtos;
+    using Craftsman.Builders.Seeders;
     using Craftsman.Builders.Tests.Fakes;
     using Craftsman.Builders.Tests.IntegrationTests;
     using Craftsman.Builders.Tests.RepositoryTests;
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using Craftsman.Removers;
-    using Newtonsoft.Json;
     using System;
-    using System.Data;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
 
     public static class AddEntityCommand
@@ -24,7 +19,7 @@
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   While in your project directory, this command can add one or more new entities to your Accelerate Core project based on a formatted yaml or json file. The file input uses a simplified format from the `new:api` command, only requiring a list of entities.{Environment.NewLine}");
+            WriteHelpText(@$"   While in your project directory, this command can add one or more new entities to your Accelerate Core project based on a formatted yaml or json file. The file input uses a simplified format from the `new:api` command, only requiring a list of one or more entities.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
             WriteHelpText(@$"   craftsman add:entity [options] <filepath>{Environment.NewLine}");
@@ -101,8 +96,9 @@
                 DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, template, entity);
             }
 
-            //seeders
-            SeederBuilder.AddSeeders(solutionDirectory, template);
+            //seeders & dbsets
+            SeederModifier.AddSeeders(solutionDirectory, template);
+            DbContextModifier.AddDbSet(solutionDirectory, template);
         }
 
         private static string GetSlnFile(string filePath)
