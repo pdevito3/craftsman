@@ -33,7 +33,7 @@
             WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
         }
 
-        public static void Run(string filePath)
+        public static void Run(string filePath, string solutionDirectory)
         {
             try
             {
@@ -43,7 +43,7 @@
                 var template = FileParsingHelper.GetApiTemplateFromFile(filePath);
 
                 //var solutionDirectory = Directory.GetCurrentDirectory();
-                var solutionDirectory = @"C:\Users\Paul\Documents\testoutput\MyApi.Mine";
+                //var solutionDirectory = @"C:\Users\Paul\Documents\testoutput\MyApi.Mine";
                 template = SolutionGuard(solutionDirectory, template);
                 template = GetDbContext(solutionDirectory, template);
 

@@ -39,7 +39,7 @@
             WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
         }
 
-        public static void Run(string filePath)
+        public static void Run(string filePath, string buildSolutionDirectory)
         {
             try
             {
@@ -53,7 +53,7 @@
                 FileParsingHelper.RunSolutionNameAssignedGuard(template);
 
                 //var rootProjectDirectory = Directory.GetCurrentDirectory().Contains("Debug") ? @"C:\Users\Paul\Documents\testoutput" : Directory.GetCurrentDirectory();
-                var buildSolutionDirectory = @"C:\Users\Paul\Documents\testoutput";
+                //var buildSolutionDirectory = @"C:\Users\Paul\Documents\testoutput";
 
                 // scaffold projects
                 // should i add an accelerate.config.yaml file to the root?

@@ -1,8 +1,17 @@
 {
   "profiles": {
+    "Craftsman Dev": {
+      "commandName": "Project",
+      "commandLineArgs": "add:entity C:\\Users\\Paul\\Documents\\NewEntity.yaml",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Dev"
+      }
+    },
     "Craftsman": {
       "commandName": "Project",
-      "commandLineArgs": "add:entity C:\\Users\\Paul\\Documents\\NewEntity.yaml"
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Prod"
+      }
     }
   }
 }

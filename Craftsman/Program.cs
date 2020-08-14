@@ -17,6 +17,8 @@
     {
         static void Main(string[] args)
         {
+            var myEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
             if (args.Length == 0)
             {
                 ListCommand.Run();
@@ -35,7 +37,10 @@
                 if(filePath == "-h" || filePath == "--help")
                     ApiCommand.Help();
                 else
-                    ApiCommand.Run(filePath);
+                {
+                    var solutionDir = myEnv == "Dev" ? @"C:\Users\Paul\Documents\testoutput" : Directory.GetCurrentDirectory();
+                    ApiCommand.Run(filePath, solutionDir);
+                }
             }
 
             if (args.Length == 2 && (args[0] == "add:entity"))
@@ -44,7 +49,10 @@
                 if (filePath == "-h" || filePath == "--help")
                     AddEntityCommand.Help();
                 else
-                    AddEntityCommand.Run(filePath);
+                {
+                    var solutionDir = myEnv == "Dev" ? @"C:\Users\Paul\Documents\testoutput\MyApi.Mine" : Directory.GetCurrentDirectory();
+                    AddEntityCommand.Run(filePath, solutionDir);
+                }
             }
 
         }
