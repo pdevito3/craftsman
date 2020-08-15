@@ -107,7 +107,7 @@
             if (starRepo.Key == ConsoleKey.Y)
             {
                 WriteHelpText($"{Environment.NewLine}Thanks, it means the world to me!");
-                var url = "https://www.google.com/";
+                var url = "https://github.com/pdevito3/craftsman";
                 try
                 {
                     Process.Start(url);
