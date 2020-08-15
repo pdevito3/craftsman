@@ -269,9 +269,9 @@ An dictionary that describes the basics of your database with the following key.
 
 ```yaml
 DbContext:
-	ContextName: TestDbContext
-	DatabaseName: Test
-	Provider: SqlServer
+ ContextName: TestDbContext
+ DatabaseName: Test
+ Provider: SqlServer
 ```
 
 
