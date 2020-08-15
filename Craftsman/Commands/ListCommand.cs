@@ -16,6 +16,9 @@
             WriteHelpText(@$"   list                List commands");
             WriteHelpText(@$"   help                Displays help for a command");
 
+            WriteHelpHeader(@$"{Environment.NewLine}add");
+            WriteHelpText(@$"   add:entity          Add a new entity to your API Project");
+
             WriteHelpHeader(@$"{Environment.NewLine}new");
             WriteHelpText(@$"   new:api             Create a new API Project");
 
