@@ -26,6 +26,8 @@ Craftsman provides new commands to your CLI that will enable you to quickly scaf
    dotnet tool install -g craftsman
    ```
 
+   You can then run `dotnet tool update -g craftsman` to update the package in the future.
+
 3. Run any of the below for a list of available commands
 
    ```shell
@@ -82,8 +84,6 @@ Entities:
   Properties:
   - Name: PetId
     IsPrimaryKey: true
-    IsRequired: true
-    CanManipulate: false
     Type: int
     CanFilter: false
   - Name: Name
@@ -108,8 +108,6 @@ Entities:
   Properties:
   - Name: PetId
     IsPrimaryKey: true
-    IsRequired: true
-    CanManipulate: false
     Type: int
     CanFilter: false
   - Name: Name
@@ -123,8 +121,6 @@ Entities:
   Plural: Cities
   Properties:
   - Name: CityId
-    IsPrimaryKey: true
-    IsRequired: true
     CanManipulate: false
     Type: int
     CanFilter: true
@@ -191,8 +187,6 @@ Entities:
   Properties:
   - Name: SupplierId
     IsPrimaryKey: true
-    IsRequired: true
-    CanManipulate: false
     Type: int
     CanFilter: true
   - Name: Name
@@ -290,17 +284,17 @@ An list of database entities in your project. These entities are added as dbsets
 
 An list of properties assigned to an entity.
 
-| Name          | Required | Description                                                  | Default |
-| ------------- | -------- | ------------------------------------------------------------ | ------- |
-| Name          | Yes      | The name of the property                                     | *None*  |
-| Type          | Yes      | The data type for the property. These are *not* case sensitive and they can be set to nullable with a trailing `?`. | *None*  |
-| CanFilter     | No       | Will set the property to be filterable in the API endpoint when set to true. | false   |
-| CanSort       | No       | Will set the property to be filterable in the API endpoint when set to true. | false   |
-| CanManipulate | No       | When set to false, you will not be able to update this property when calling the associated endpoint. When set to `false`, the property will be able to be established when using the POST endpoint, but will not be able to be updated after that. This is managed by the DTOs if you want to manually adjust this. | true    |
-| IsPrimaryKey  | No       | When true, the property will be set as the primary key for the entity. For now, only one primary key is supported, with plans to add compound key support down the road. | false   |
-| IsRequired    | No       | When true, the property will be set as required in the database. This option IS required when using the `IsPrimaryKey: true` assignment. | false   |
+| Name          | Required | Description                                                  | Default                          |
+| ------------- | -------- | ------------------------------------------------------------ | -------------------------------- |
+| Name          | Yes      | The name of the property                                     | *None*                           |
+| Type          | Yes      | The data type for the property. These are *not* case sensitive and they can be set to nullable with a trailing `?`. | *None*                           |
+| CanFilter     | No       | Will set the property to be filterable in the API endpoint when set to true. | false                            |
+| CanSort       | No       | Will set the property to be filterable in the API endpoint when set to true. | false                            |
+| IsPrimaryKey  | No       | When true, the property will be set as the primary key for the entity. For now, only one primary key is supported, with plans to add compound key support down the road. | false                            |
+| IsRequired    | No       | When true, the property will be set as required in the database. | false<br/>*true for primary key* |
+| CanManipulate | No       | When set to false, you will not be able to update this property when calling the associated endpoint. When set to `false`, the property will be able to be established when using the POST endpoint, but will not be able to be updated after that. This is managed by the DTOs if you want to manually adjust this. | true<br/>*false for primary key* |
 
-#### 
+
 
 #### Example
 

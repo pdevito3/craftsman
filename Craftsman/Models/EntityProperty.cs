@@ -8,6 +8,9 @@ namespace Craftsman.Models
 {
     public class EntityProperty
     {
+        private bool _isRequired;
+        private bool _canManipulate;
+
         /// <summary>
         /// Name of the property
         /// </summary>
@@ -32,7 +35,17 @@ namespace Craftsman.Models
         /// <summary>
         /// Determines if the property can be manipulated when creating or updating the associated entity
         /// </summary>
-        public bool CanManipulate { get; set; } = true;
+        public bool CanManipulate
+        {
+            get => _canManipulate;
+            set
+            {
+                if (IsPrimaryKey)
+                    _canManipulate = true;
+
+                _canManipulate = value;
+            }
+        }
 
         /// <summary>
         /// Designates the property as the primary key for the entity
@@ -42,6 +55,16 @@ namespace Craftsman.Models
         /// <summary>
         /// Denotes a required field in the database
         /// </summary>
-        public bool IsRequired { get; set; } = false;
+        public bool IsRequired
+        {
+            get => _isRequired;
+            set
+            {
+                if (IsPrimaryKey)
+                    _isRequired = true;
+
+                _isRequired = value;
+            }
+        }
     }
 }
