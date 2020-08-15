@@ -25,7 +25,7 @@
                 return;
             }
             
-            if(args[0] == "list")
+            if(args[0] == "list" || args[0] == "-h" || args[0] == "--help")
             {
                 ListCommand.Run();
                 return;
