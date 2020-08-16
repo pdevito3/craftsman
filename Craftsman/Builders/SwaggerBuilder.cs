@@ -227,7 +227,11 @@
 
         private static string GetSwaggerAppExtensionText(ApiTemplate template)
         {
+<<<<<<< HEAD
 /*            var swaggerText = $@"
+=======
+            var swaggerText = $@"
+>>>>>>> c56e5449dab1b0d962c98f26488e8bb516bc02a8
         public static void UseSwaggerExtension(this IApplicationBuilder app)
         {{
             app.UseSwagger();
@@ -235,7 +239,11 @@
             {{
                 c.SwaggerEndpoint(""{template.SwaggerConfig.SwaggerUi.Url}"", ""{template.SwaggerConfig.SwaggerUi.Title}"");
             }});
+<<<<<<< HEAD
         }}";*/
+=======
+        }}";
+>>>>>>> c56e5449dab1b0d962c98f26488e8bb516bc02a8
 
             var nswagText = @$"            
         public static void UseSwaggerExtension(this IApplicationBuilder app)
