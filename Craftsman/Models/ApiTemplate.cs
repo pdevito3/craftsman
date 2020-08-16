@@ -25,5 +25,10 @@ namespace Craftsman.Models
         /// Complete list of database entities
         /// </summary>
         public List<Entity> Entities { get; set; } = new List<Entity>();
+
+        /// <summary>
+        /// Layout of the swagger configuration for the API
+        /// </summary>
+        public SwaggerConfig SwaggerConfig { get; set; } = new SwaggerConfig();
     }
 }

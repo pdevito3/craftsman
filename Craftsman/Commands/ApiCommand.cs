@@ -115,6 +115,9 @@
 
             //seeders
             SeederBuilder.AddSeeders(solutionDirectory, template);
+
+            //services
+            SwaggerBuilder.AddSwagger(solutionDirectory, template);
         }
 
         private static void CreateNewFoundation(ApiTemplate template, string directory)

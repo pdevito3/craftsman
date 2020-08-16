@@ -66,9 +66,9 @@ Next, let's layout the database context:
 ```yaml
 SolutionName: VetClinic.Api
 DbContext:
- ContextName: VetClinicContext
- DatabaseName: VetClinic
- Provider: SqlServer
+  ContextName: VetClinicContext
+  DatabaseName: VetClinic
+  Provider: SqlServer
 ```
 
 Then, we'll add an entity:
@@ -76,23 +76,23 @@ Then, we'll add an entity:
 ```yaml
 SolutionName: VetClinic.Api
 DbContext:
- ContextName: VetClinicContext
- DatabaseName: VetClinic
- Provider: SqlServer
+  ContextName: VetClinicContext
+  DatabaseName: VetClinic
+  Provider: SqlServer
 Entities:
-- Name: Pet
-  Properties:
-  - Name: PetId
-    IsPrimaryKey: true
-    Type: int
-    CanFilter: false
-  - Name: Name
-    Type: string
-    CanFilter: false
-  - Name: Type
-    Type: string
-    CanFilter: false
-    CanSort: true
+  - Name: Pet
+    Properties:
+    - Name: PetId
+      IsPrimaryKey: true
+      Type: int
+      CanFilter: false
+    - Name: Name
+      Type: string
+      CanFilter: false
+    - Name: Type
+      Type: string
+      CanFilter: false
+      CanSort: true
 ```
 
 Note that this is a list, so we can add more than one entity if we want:
@@ -100,33 +100,33 @@ Note that this is a list, so we can add more than one entity if we want:
 ```yaml
 SolutionName: VetClinic.Api
 DbContext:
- ContextName: VetClinicContext
- DatabaseName: VetClinic
- Provider: SqlServer
+  ContextName: VetClinicContext
+  DatabaseName: VetClinic
+  Provider: SqlServer
 Entities:
-- Name: Pet
-  Properties:
-  - Name: PetId
-    IsPrimaryKey: true
-    Type: int
-    CanFilter: false
-  - Name: Name
-    Type: string
-    CanFilter: false
-  - Name: Type
-    Type: string
-    CanFilter: false
-    CanSort: true
-- Name: City
-  Plural: Cities
-  Properties:
-  - Name: CityId
-    CanManipulate: false
-    Type: int
-    CanFilter: true
-  - Name: Name
-    Type: string
-    CanFilter: false  
+  - Name: Pet
+    Properties:
+    - Name: PetId
+      IsPrimaryKey: true
+      Type: int
+      CanFilter: false
+    - Name: Name
+      Type: string
+      CanFilter: false
+    - Name: Type
+      Type: string
+      CanFilter: false
+      CanSort: true
+  - Name: City
+    Plural: Cities
+    Properties:
+    - Name: CityId
+      CanManipulate: false
+      Type: int
+      CanFilter: true
+    - Name: Name
+      Type: string
+      CanFilter: false  
 ```
 
 Now, let's [make our API](#new-api-command)!
@@ -183,28 +183,29 @@ First, you'll want to create a `yaml` or `json` file that describes the new enti
 
 ```yaml
 Entities:
-- Name: Supplier
-  Properties:
-  - Name: SupplierId
-    IsPrimaryKey: true
-    Type: int
-    CanFilter: true
-  - Name: Name
-    Type: string
-    CanFilter: true
-    CanSort: true
-  - Name: EmployeeCount
-    Type: int?
-    CanFilter: true
-    CanSort: true
-  - Name: CreationDate
-    Type: datetime?
-    CanFilter: true
-    CanSort: true
-  - Name: SupplierType
-    Type: int?
-    CanFilter: true
-    CanSort: true
+  - Name: Suuplier
+    Properties:
+      - Name: SuuplierId
+        IsPrimaryKey: true
+        Type: int
+        CanFilter: true
+        CanSort: true
+      - Name: Name
+        Type: string
+        CanFilter: true
+        CanSort: true
+      - Name: EmployeeCount
+        Type: int?
+        CanFilter: true
+        CanSort: true
+      - Name: CreationDate
+        Type: datetime?
+        CanFilter: true
+        CanSort: true
+      - Name: SupplierType
+        Type: int?
+        CanFilter: true
+        CanSort: true
 ```
 
 #### Using the Command
@@ -263,9 +264,9 @@ An dictionary that describes the basics of your database with the following key.
 
 ```yaml
 DbContext:
- ContextName: TestDbContext
- DatabaseName: Test
- Provider: SqlServer
+  ContextName: TestDbContext
+  DatabaseName: Test
+  Provider: SqlServer
 ```
 
 
@@ -300,30 +301,61 @@ An list of properties assigned to an entity.
 
 ```yaml
 Entities:
-- Name: Supplier
-  Properties:
-  - Name: SupplierId
-    IsPrimaryKey: true
-    IsRequired: true
-    CanManipulate: false
-    Type: int
-    CanFilter: true
-  - Name: Name
-    Type: string
-    CanFilter: true
-    CanSort: true
-  - Name: EmployeeCount
-    Type: int?
-    CanFilter: true
-    CanSort: true
-  - Name: CreationDate
-    Type: datetime?
-    CanFilter: true
-    CanSort: true
-  - Name: SupplierType
-    Type: int?
-    CanFilter: true
-    CanSort: true
+  - Name: Suuplier
+    Properties:
+      - Name: SuuplierId
+        IsPrimaryKey: true
+        Type: int
+        CanFilter: true
+        CanSort: true
+      - Name: Name
+        Type: string
+        CanFilter: true
+        CanSort: true
+      - Name: EmployeeCount
+        Type: int?
+        CanFilter: true
+        CanSort: true
+      - Name: CreationDate
+        Type: datetime?
+        CanFilter: true
+        CanSort: true
+      - Name: SupplierType
+        Type: int?
+        CanFilter: true
+        CanSort: true
+```
+
+### Swagger (Optional)
+
+If desired, you can add a basic swagger configuration using the `SwaggerConfig` option. 
+
+| Name        | Required | Description                          | Default |
+| ----------- | -------- | ------------------------------------ | ------- |
+| Title       | Yes      | The title of the swagger document    | *None*  |
+| Description | No       | The description for your swagger doc | *None*  |
+| ApiContact  | No       | The API contact                      | *None*  |
+
+#### ApiContact
+
+| Name  | Required | Description                 | Default |
+| ----- | -------- | --------------------------- | ------- |
+| Name  | No       | The name of the contact     | *None*  |
+| Email | No       | The email of the contact    | *None*  |
+| Url   | No       | The website for the contact | *None*  |
+
+
+
+#### Example
+
+```yaml
+SwaggerConfig:
+  Title: MySwaggerDoc
+  Description: This is my swagger doc
+  ApiContact: 
+    Name: Paul
+    Email: paul@test.com
+    Url: https://www.mywebsite.com
 ```
 
 
