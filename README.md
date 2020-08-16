@@ -326,9 +326,9 @@ Entities:
         CanSort: true
 ```
 
-### Swagger (Optional)
+### Swagger/OpenAPI (Optional)
 
-If desired, you can add a basic swagger configuration using the `SwaggerConfig` option. 
+If desired, you can add a basic swagger configuration using the `SwaggerConfig` option. This will scaffold out a barebones swagger pager using [NSwag](https://github.com/RicoSuter/NSwag), which you can update to use any additional features you wish. To get to your swagger page, you can go to `/swagger`. To get to your swagger json, you can go to `/swagger/v1/swagger.json`.
 
 | Name        | Required | Description                          | Default |
 | ----------- | -------- | ------------------------------------ | ------- |

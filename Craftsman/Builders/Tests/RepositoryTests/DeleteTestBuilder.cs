@@ -94,7 +94,7 @@ namespace {classPath.ClassNamespace}
             var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
 
             //Act
-            using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
+            using (var context = new {template.DbContext.ContextName}(dbOptions))
             {{
                 context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
 

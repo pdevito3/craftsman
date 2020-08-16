@@ -99,7 +99,7 @@ namespace {classPath.ClassNamespace}
             var fake{entity.Name} = new Fake{entity.Name} {{ }}.Generate();
 
             //Act
-            using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
+            using (var context = new {template.DbContext.ContextName}(dbOptions))
             {{
                 context.{entity.Plural}.AddRange(fake{entity.Name});
                 context.SaveChanges();
@@ -110,7 +110,7 @@ namespace {classPath.ClassNamespace}
             }}
 
             //Assert
-            using (var context = new {template.DbContext.ContextName}(dbOptions, new DateTimeService()))
+            using (var context = new {template.DbContext.ContextName}(dbOptions))
             {{
                 context.{entity.Plural}.Count().Should().Be(1);
 

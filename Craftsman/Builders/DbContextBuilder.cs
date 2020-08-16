@@ -63,54 +63,14 @@
 
     public class {template.DbContext.ContextName} : DbContext
     {{
-        private readonly IDateTimeService _dateTimeService;
-
         public {template.DbContext.ContextName}(
-            DbContextOptions<{template.DbContext.ContextName}> options,
-            IDateTimeService dateTime) : base(options) 
+            DbContextOptions<{template.DbContext.ContextName}> options) : base(options) 
         {{
-            _dateTimeService = dateTime;
         }}
 
         #region DbSet Region - Do Not Delete
 {GetDbSetText(template.Entities)}
         #endregion
-
-        //TODO: Abstract this logic out into an custom inheritable dbcontext
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
-        {{
-            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
-            {{
-                UpdateAuditableFields(entry, _dateTimeService);
-            }}
-
-            return base.SaveChangesAsync(cancellationToken);
-        }}
-
-        public override int SaveChanges()
-        {{
-            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
-            {{
-                UpdateAuditableFields(entry, _dateTimeService);
-            }}
-
-            return base.SaveChanges();
-        }}
-
-        public static void UpdateAuditableFields(EntityEntry<AuditableEntity> entry, IDateTimeService service)
-        {{
-            switch (entry.State)
-            {{
-                case EntityState.Added:
-                    entry.Entity.CreatedBy = ""TBD User""; //_currentUserService.UserId;
-                    entry.Entity.CreatedOn = service.NowUtc;
-                    break;
-                case EntityState.Modified:
-                    entry.Entity.LastModifiedBy = ""TBD User""; //_currentUserService.UserId;
-                    entry.Entity.LastModifiedOn = service.NowUtc;
-                    break;
-            }}            
-        }}
     }}
 }}";
         }

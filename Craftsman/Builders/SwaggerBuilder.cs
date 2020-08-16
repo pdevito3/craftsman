@@ -240,7 +240,7 @@
             var nswagText = @$"            
         public static void UseSwaggerExtension(this IApplicationBuilder app)
         {{
-            app.UseSwagger();
+            app.UseOpenApi();
             app.UseSwaggerUi3();
         }}";
 
