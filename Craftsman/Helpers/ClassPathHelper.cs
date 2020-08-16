@@ -17,6 +17,11 @@
             return new ClassPath(solutionDirectory, $"{solutionName}.Tests\\IntegrationTests\\{entityName}", className);
         }
 
+        public static ClassPath WebApiExtensionsClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, "WebApi\\Extensions", className);
+        }
+
         public static ClassPath TestWebAppFactoryClassPath(string solutionDirectory, string className, string solutionName)
         {
             return new ClassPath(solutionDirectory, $"{solutionName}.Tests", className);
