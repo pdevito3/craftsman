@@ -60,6 +60,8 @@
     public {abstractString} class {Utilities.GetDtoName(entity.Name, dto)} {manipulationString}
     {{
 {propString}
+
+        // add-on property marker - Do Not Delete This Comment
     }}
 }}";
         }

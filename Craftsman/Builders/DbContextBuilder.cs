@@ -96,7 +96,7 @@
                 Directory.CreateDirectory(classPath.ClassDirectory);
 
             if (!File.Exists(classPath.FullClassPath))
-                throw new FileNotFoundException($"The `{classPath.ClassDirectory}` file could not be found.");
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))

@@ -21,6 +21,10 @@
                 return "DateTime";
             else if (prop.ToLower() == "datetime?")
                 return "DateTime?";
+            else if (prop.ToLower() == "datetimeoffset")
+                return "DateTimeOffset";
+            else if (prop.ToLower() == "datetimeoffset?")
+                return "DateTimeOffset?";
             else
                 return prop;
         }
