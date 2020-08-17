@@ -224,13 +224,34 @@ craftsman add:entity C:\Users\Paul\Documents\ApiConfigs\supplier-entity.yaml
 
 
 
-### Add Entity Property Command (**Coming Soon**)
+### Add Entity Property Command
 
 At some point, you're going to need to add a new property to your entities. This command will allow you to easily add that property to not just your entity, but also it's associated DTOs. You can get help for this command by running:
 
 ```shell
 craftsman add:property -h
 ```
+
+To actually create an entity, you will do something like this:
+
+```shell
+craftsman add:property --entity Vet -name VetName -type string -filter false -sort true
+```
+Also the same as:
+
+```shell
+craftsman add:property -e Vet -n VetName -t string -f false -s true
+```
+
+#### Arguments
+
+| Argument     | Required | Type    | Description                                                  |
+| ------------ | -------- | ------- | ------------------------------------------------------------ |
+| e, --entity  | Yes      | Text    | Name of the entity to add the property. Must match the name of the entity file (e.g. `Vet.cs` should be `Vet`) |
+| -n, --name   | Yes      | Text    | Name of the property to add                                  |
+| -t, --type   | Yes      | Text    | Data type of the property to add                             |
+| -f, --filter | No       | Boolean | Determines if the property is filterable                     |
+| -s, --sort   | No       | Boolean | Determines if the property is sortable                       |
 
 
 

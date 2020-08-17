@@ -30,7 +30,7 @@
             WriteHelpText(@$"       craftsman add:property -e Vet -n VetName -t string -f false -s true");
             WriteHelpText(@$"       craftsman add:property -e Vet -n AppointmentDate -t DateTime? -f false -s true{Environment.NewLine}");
 
-            WriteHelpHeader(@$"Arguements:");
+            WriteHelpHeader(@$"Arguments:");
             WriteHelpText(@$"   -e, --entity        Required. Text. Name of the entity to add the property. Must match the name of the entity file (e.g. `Vet.cs` should be `Vet`)");
             WriteHelpText(@$"   -n, --name          Required. Text. Name of the property to add");
             WriteHelpText(@$"   -t, --type          Required. Text. Name of the property to add");
@@ -38,7 +38,7 @@
             WriteHelpText(@$"   -s, --sort          Optional. Boolean. Determines if the property is sortable");
 
             WriteHelpHeader(@$"Options:");
-            WriteHelpText(@$"   -h, --help          Display this help message. No arguements are needed to display the help message.");
+            WriteHelpText(@$"   -h, --help          Display this help message. No Arguments are needed to display the help message.");
         }
 
         public static void Run(string solutionDirectory, string entityName, EntityProperty prop)
