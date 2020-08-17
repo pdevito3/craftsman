@@ -13,14 +13,14 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class DbContextModifier
+    public class EntityModifier
     {
-        public static void AddDbSet(string solutionDirectory, ApiTemplate template)
+        public static void AddEntityProperties(string solutionDirectory, string entityName, List<EntityProperty> props)
         {
-            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{template.DbContext.ContextName}.cs");
+            var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entityName}.cs");
 
             if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
 
             if (!File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
@@ -34,9 +34,9 @@
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
-                        if (line.Contains($"#region DbSet Region"))
+                        if (line.Contains($"add-on property marker"))
                         {
-                            newText += @$"{Environment.NewLine}{DbContextBuilder.GetDbSetText(template.Entities)}";
+                            newText += @$"{Environment.NewLine}{Environment.NewLine}{EntityBuilder.EntityPropBuilder(props)}";
                         }
 
                         output.WriteLine(newText);

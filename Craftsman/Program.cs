@@ -1,6 +1,8 @@
 ﻿namespace Craftsman
 {
+    using CommandLine;
     using Craftsman.Commands;
+    using Craftsman.CraftsmanOptions;
     using Craftsman.Models;
     using Newtonsoft.Json;
     using System;
@@ -12,6 +14,7 @@
     using YamlDotNet.RepresentationModel;
     using YamlDotNet.Serialization;
     using YamlDotNet.Serialization.NamingConventions;
+
 
     class Program
     {
@@ -55,6 +58,31 @@
                 }
             }
 
+            if (args.Length > 1 && (args[0] == "add:property"))
+            {
+                if (args[1] == "-h" || args[1] == "--help")
+                    AddEntityCommand.Help();
+                else
+                {
+                    var entityName = "";
+                    var newProperty = new EntityProperty();
+                    Parser.Default.ParseArguments<AddPropertyOptions>(args)
+                        .WithParsed(options =>
+                        {
+                            entityName = options.Entity.UppercaseFirstLetter();
+                            newProperty = new EntityProperty()
+                            {
+                                Name = options.Name,
+                                Type = options.Type,
+                                CanFilter = options.CanFilter,
+                                CanSort = options.CanSort
+                            };
+                        });
+
+                    var solutionDir = myEnv == "Dev" ? @"C:\Users\Paul\Documents\testoutput\MyApi.Mine" : Directory.GetCurrentDirectory();
+                    AddEntityPropertyCommand.Run(solutionDir,entityName,newProperty);
+                }
+            }
         }
     }
 }

@@ -59,11 +59,13 @@
     public class {entity.Name}
     {{
 {propString}
+
+        // add-on property marker - Do Not Delete This Comment
     }}
 }}";
         }
 
-        private static string EntityPropBuilder(List<EntityProperty> props)
+        public static string EntityPropBuilder(List<EntityProperty> props)
         {
             var propString = "";
             for (var eachProp = 0; eachProp < props.Count; eachProp++)

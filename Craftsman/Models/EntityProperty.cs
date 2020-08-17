@@ -8,8 +8,8 @@ namespace Craftsman.Models
 {
     public class EntityProperty
     {
-        private bool _isRequired;
-        private bool _canManipulate;
+        private bool _isRequired = false;
+        private bool _canManipulate = true;
 
         /// <summary>
         /// Name of the property
@@ -37,14 +37,14 @@ namespace Craftsman.Models
         /// </summary>
         public bool CanManipulate
         {
-            get => _canManipulate;
-            set
+            get 
             {
                 if (IsPrimaryKey)
-                    _canManipulate = true;
-
-                _canManipulate = value;
+                    return false;
+                else
+                    return true;
             }
+            set => _canManipulate = value;
         }
 
         /// <summary>
@@ -57,14 +57,14 @@ namespace Craftsman.Models
         /// </summary>
         public bool IsRequired
         {
-            get => _isRequired;
-            set
+            get
             {
                 if (IsPrimaryKey)
-                    _isRequired = true;
-
-                _isRequired = value;
+                    return true;
+                else
+                    return false;
             }
+            set => _canManipulate = value;
         }
     }
 }
