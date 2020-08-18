@@ -1,4 +1,4 @@
-namespace Craftsman.Tests
+namespace Craftsman.Tests.ModelTests
 {
     using Craftsman.Models;
     using FluentAssertions;

@@ -33,7 +33,7 @@
             WriteHelpHeader(@$"Arguments:");
             WriteHelpText(@$"   -e, --entity        Required. Text. Name of the entity to add the property. Must match the name of the entity file (e.g. `Vet.cs` should be `Vet`)");
             WriteHelpText(@$"   -n, --name          Required. Text. Name of the property to add");
-            WriteHelpText(@$"   -t, --type          Required. Text. Name of the property to add");
+            WriteHelpText(@$"   -t, --type          Required. Text. Data type of the property to add");
             WriteHelpText(@$"   -f, --filter        Optional. Boolean. Determines if the property is filterable");
             WriteHelpText(@$"   -s, --sort          Optional. Boolean. Determines if the property is sortable");
 
