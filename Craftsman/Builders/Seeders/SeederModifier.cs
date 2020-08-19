@@ -84,7 +84,7 @@
                 }
             }
 
-            // delete the old file and set the name of the new one to the original nape
+            // delete the old file and set the name of the new one to the original name
             File.Delete(pathString);
             File.Move(tempPath, pathString);
 
