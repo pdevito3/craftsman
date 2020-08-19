@@ -11,6 +11,7 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using Craftsman.Removers;
+    using FluentAssertions.Common;
     using Newtonsoft.Json;
     using System;
     using System.Data;
@@ -113,6 +114,9 @@
                 WebAppFactoryBuilder.CreateWebAppFactory(solutionDirectory, template, entity);
             }
 
+            // environments
+            AddStartupEnvironmentsWithServices(solutionDirectory, template);
+
             //seeders
             SeederBuilder.AddSeeders(solutionDirectory, template);
 
@@ -142,6 +146,25 @@
 
             process.Start();
             process.WaitForExit();
+        }
+
+        private static void AddStartupEnvironmentsWithServices(string solutionDirectory, ApiTemplate template)
+        {
+            // add a development environment by default for local work if none exists
+            if (template.Environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
+                template.Environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{template.SolutionName} (Development)" });
+
+            foreach (var env in template.Environments)
+            {
+                StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName);
+                AppSettingsBuilder.CreateAppSettings(solutionDirectory, env, template.DbContext.DatabaseName);
+                LaunchSettingsModifier.AddProfile(solutionDirectory, env);
+
+                //services
+
+                if (!template.SwaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
+                    SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, env);
+            }
         }
     }
 }

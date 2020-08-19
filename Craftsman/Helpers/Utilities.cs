@@ -44,6 +44,11 @@
             return $"{entity.Name}Seeder";
         }
 
+        public static string GetAppSettingsName(string env, bool asJson = true)
+        {
+            return asJson ? $"appsettings.{env}.json" : $"appsettings.{env}";
+        }
+
         public static string GetProfileName(string entityName)
         {
             return $"{entityName}Profile";

@@ -32,6 +32,16 @@
             return new ClassPath(solutionDirectory, "WebApi", className);
         }
 
+        public static ClassPath AppSettingsClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, "WebApi", className);
+        }
+
+        public static ClassPath LaunchSettingsClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, "WebApi\\Properties", className);
+        }
+
         public static ClassPath TestRepositoryClassPath(string solutionDirectory, string className, string entityName, string solutionName)
         {
             return new ClassPath(solutionDirectory, $"{solutionName}.Tests\\RepositoryTests\\{entityName}", className);

@@ -61,7 +61,7 @@
             if (!Directory.Exists(entityDir))
                 throw new DirectoryNotFoundException($"The `{entityDir}` directory could not be found.");
 
-            var pathString = Path.Combine(entityDir, $"Startup.cs");
+            var pathString = Path.Combine(entityDir, $"StartupDevelopment.cs");
             if (!File.Exists(pathString))
                 throw new FileNotFoundException($"The `{pathString}` file could not be found.");
 
@@ -84,7 +84,7 @@
                 }
             }
 
-            // delete the old file and set the name of the new one to the original nape
+            // delete the old file and set the name of the new one to the original name
             File.Delete(pathString);
             File.Move(tempPath, pathString);
 

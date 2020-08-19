@@ -183,9 +183,9 @@ First, you'll want to create a `yaml` or `json` file that describes the new enti
 
 ```yaml
 Entities:
-  - Name: Suuplier
+  - Name: Supplier
     Properties:
-      - Name: SuuplierId
+      - Name: SupplierId
         IsPrimaryKey: true
         Type: int
         CanFilter: true
@@ -322,9 +322,9 @@ An list of properties assigned to an entity.
 
 ```yaml
 Entities:
-  - Name: Suuplier
+  - Name: Supplier
     Properties:
-      - Name: SuuplierId
+      - Name: SupplierId
         IsPrimaryKey: true
         Type: int
         CanFilter: true
@@ -377,6 +377,56 @@ SwaggerConfig:
     Name: Paul
     Email: paul@test.com
     Url: https://www.mywebsite.com
+```
+
+
+
+## Database Configuration
+
+The template is configured with one environment, with the ability to add as many additional environments as you'd like. By default, the project will run `Development` . This is configured to run locally and use an in-memory database by default and should not be connected to a live database.  This ensures that all users will be able to run the solution without  needing to go through additional database set up.
+
+The other environments are added depending on what you put into your initial build file. Let's say that you added a  
+
+If you'd like to connect to your live database, you just need to change your run environment.
+
+
+
+## Using Database Migrations
+
+If you'd like to add database migrations, you can follow the steps below.
+
+First, make sure you have `dotnet ef` installed. To install it globally run:
+
+```shell
+dotnet tool install -g dotnet-ef
+```
+
+Next, you'll want to perform your first migration, for example:
+
+```shell
+dotnet ef migrations add "InitialMigration" --project Infrastructure.Persistence --startup-project WebApi --output-dir Migrations
+```
+
+To add a configuration, you'll want to do this, otherwise the migration will look at your in memory db and fail:
+
+```shell
+dotnet ef migrations add "InitialMigration" --project Infrastructure.Persistence --startup-project WebApi --output-dir Migrations --configuration Release
+```
+
+
+
+To make updates to your database, you can run this:
+
+```shell
+dotnet ef database update -p Infrastructure.Persistence -s WebApi
+```
+
+### Common Db Migration Error
+
+If you're getting an error like the below, make sure that your connection string is set in your `appsettings.json` file and `UseInMemoryDatabase` is set to `false`.
+
+```
+Unable to resolve service for type 'Microsoft.EntityFrameworkCore.Migrations.IMigrator'. This is often because no database provider has been configured for this DbContext. A provider can be configured by overriding the DbContext.OnConfiguring method or by using AddDbContext on the application service provider. If AddDbContext is used, then also ensure that your DbContext type accepts a DbContextOptions<TContext> object in its constructor and passes it to the base constructor for DbContext.
 ```
 
 

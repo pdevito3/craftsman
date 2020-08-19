@@ -118,7 +118,7 @@
             {{
                 services.AddDbContext<{template.DbContext.ContextName}>(options =>
                     options.UseSqlServer(
-                        configuration.GetConnectionString(""DefaultConnection""),
+                        configuration.GetConnectionString(""{template.DbContext.DatabaseName}""),
                         builder => builder.MigrationsAssembly(typeof({template.DbContext.ContextName}).Assembly.FullName)));
             }}";
                         }

@@ -18,15 +18,14 @@
             {
                 AddSwaggerServiceExtension(solutionDirectory, template);
                 AddSwaggerAppExtension(solutionDirectory, template);
-                RegisterSwaggerInStartup(solutionDirectory);
             }
         }
 
-        private static void RegisterSwaggerInStartup(string solutionDirectory)
+        public static void RegisterSwaggerInStartup(string solutionDirectory, ApiEnvironment env)
         {
             try
             {
-                var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, "Startup.cs");
+                var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{env.EnvironmentName}.cs");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
