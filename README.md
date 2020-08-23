@@ -17,9 +17,13 @@ Craftsman provides new commands to your CLI that will enable you to quickly scaf
 
 ## Getting Started
 
-1. For now, you'll need to install the [Foundation API Template](https://github.com/pdevito3/foundation.api)  manually using the instructions in the repo. I'll be creating a package for this soon!
+1. For now, you'll need to install the [Foundation API Template](https://github.com/pdevito3/foundation.api):
 
-2. Install the `Craftsman` tool globally
+   ```shell
+   dotnet new -i foundation.api
+   ```
+
+2. Then, install the `Craftsman` tool globally
 
    ```shell
    dotnet tool install -g craftsman
@@ -36,7 +40,7 @@ Craftsman provides new commands to your CLI that will enable you to quickly scaf
    craftsman --help
    ```
 
-3. That's it! Now we can [build our API](#new-api-command).
+4. That's it! Now we can [build our API](#new-api-command).
 
 ## Commands
 
@@ -132,19 +136,25 @@ Now, let's [make our API](#new-api-command)!
 
 #### Using the Command
 
-To actually create our API, you'll want to `cd` into whatever directory you want to add your project to:
+1. To actually create our API, you'll want to `cd` into whatever directory you want to add your project to:
 
 ```shell
 cd C:\MyFull\RepoPath\Here
 ```
 
-Then, we just need to add our `yaml` or `json` path to our `craftsman new:api` command:
+2. Then, let's make sure that our `Foundation.Api` template is up to date:
+
+```shell
+dotnet new foundation.api --update-apply
+```
+
+3. Then we just need to add our `yaml` or `json` path to our `craftsman new:api` command:
 
 ```shell
 craftsman api:new C:\Users\Paul\Documents\ApiConfigs\VetClinic.yaml
 ```
 
-Once you've run this command, your API should be ready to go!
+4. Once you've run this command, your API should be ready to go!
 
 #### API Structure
 
@@ -380,13 +390,41 @@ SwaggerConfig:
 
 
 
-## Database Configuration
+### Database Configuration
 
-The template is configured with one environment, with the ability to add as many additional environments as you'd like. By default, the project will run `Development` . This is configured to run locally and use an in-memory database by default and should not be connected to a live database.  This ensures that all users will be able to run the solution without  needing to go through additional database set up.
+The template is configured with one environment by default, with the ability to add as many additional environments as you'd like. By default, the project will run `Development` . This is configured to run locally and use an in-memory database by default and should not be connected to a live database.  This ensures that all users will be able to run the solution without  needing to go through additional database set up.
 
-The other environments are added depending on what you put into your initial build file. Let's say that you added a  
+Additional environments are added using an `Environments` list in your initial build file. This will use a multiple startup approach as described [here](https://aspnetcore.readthedocs.io/en/stable/fundamentals/environments.html). This means that there will be a `Startup{EnvironmentName}.cs` class, and `appsettings.{environment}.json` file, and a `launchsettings.json` profile added for each environment.
 
-If you'd like to connect to your live database, you just need to change your run environment.
+#### Environment Properties
+
+| Name             | Required | Description                                                  | Default |
+| ---------------- | -------- | ------------------------------------------------------------ | ------- |
+| EnvironmentName  | Yes      | The name of the environment that will set `ASPNETCORE_ENVIRONMENT`, the suffix of your `Startup.cs` etc. | *None*  |
+| ConnectionString | Yes      | The connection string for the database. The connection string will just be added in between quotes and treated like a string, so will need to be valid in that format | *None*  |
+| ProfileName      | Yes      | The name of the profile that is added into your `launchsettings.json` to run this environment | *None*  |
+
+> IMPORTANT
+>
+> Note that the connection strings will currently be added to `appsettings.{environment}.json`, so they will be committed to source control. You should NOT be adding anything with credentials in here. In the future, I'll be adding the option for using secret manager and integration with external secret managers in AWS, Azure, etc.
+
+#### Example
+
+```yaml
+Environments:
+  - EnvironmentName: Production
+    ConnectionString: "Data Source=prodserver;Initial Catalog=MyDbName;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"
+    ProfileName: Prod
+  - EnvironmentName: Qa
+    ConnectionString: "Data Source=qaserver;Initial Catalog=MyDbName;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"
+    ProfileName: Qa
+  - EnvironmentName: Staging
+    ConnectionString: "Data Source=stagingserver;Initial Catalog=MyDbName;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"
+    ProfileName: Staging
+  - EnvironmentName: Local
+    ConnectionString: "Data Source=localhost\\SqlExpress;Initial Catalog=MyDbName;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"
+    ProfileName: Local
+```
 
 
 
@@ -400,7 +438,7 @@ First, make sure you have `dotnet ef` installed. To install it globally run:
 dotnet tool install -g dotnet-ef
 ```
 
-Next, you'll want to perform your first migration, for example:
+Next, you'll want to perform your first migration. for example:
 
 ```shell
 dotnet ef migrations add "InitialMigration" --project Infrastructure.Persistence --startup-project WebApi --output-dir Migrations
@@ -411,8 +449,6 @@ To add a configuration, you'll want to do this, otherwise the migration will loo
 ```shell
 dotnet ef migrations add "InitialMigration" --project Infrastructure.Persistence --startup-project WebApi --output-dir Migrations --configuration Release
 ```
-
-
 
 To make updates to your database, you can run this:
 

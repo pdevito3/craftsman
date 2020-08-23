@@ -130,7 +130,9 @@
             if (Directory.Exists(newDir))
                 throw new DirectoryAlreadyExistsException(newDir);
 
-            InstallFoundation();
+            //UninstallFoundation();
+            //InstallFoundation();
+            //UpdateFoundation();
 
             var process = new Process
             {
@@ -143,6 +145,25 @@
                     UseShellExecute = false,
                     CreateNoWindow = false,
                     WorkingDirectory = directory
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
+        }
+
+        private static void UpdateFoundation()
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "dotnet",
+                    Arguments = @$"new Foundation.Api --update-apply",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
                 }
             };
 
@@ -176,7 +197,7 @@
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = @$"new -i foundation.api",
+                    Arguments = @$"new -i Foundation.Api",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
