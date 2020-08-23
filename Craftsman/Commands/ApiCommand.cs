@@ -130,6 +130,8 @@
             if (Directory.Exists(newDir))
                 throw new DirectoryAlreadyExistsException(newDir);
 
+            InstallFoundation();
+
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -141,6 +143,44 @@
                     UseShellExecute = false,
                     CreateNoWindow = false,
                     WorkingDirectory = directory
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
+        }
+
+        private static void UninstallFoundation()
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "dotnet",
+                    Arguments = @$"new -u Foundation.Api",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
+        }
+
+        private static void InstallFoundation()
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "dotnet",
+                    Arguments = @$"new -i foundation.api",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
                 }
             };
 

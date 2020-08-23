@@ -8,9 +8,8 @@ This is a custom .NET Core tool that is used to accelerate your API development 
 
 - VS2019 .Net Core Feature Set or .Net Core 3.1 SDK https://dotnet.microsoft.com/download/dotnet-core/3.1
 
-> Note that Craftsman uses the [Foundation API Template](https://github.com/pdevito3/foundation.api) as a base for scaffolding out your projects. For now, you'll need to install it manually, using the instructions in the repo. 
+> Note that Craftsman uses the [Foundation API Template](https://github.com/pdevito3/foundation.api) as a base for scaffolding out new projects. Craftsman will automatically install the template for you, but on the off chance that you have another dotnet template on your machine with a `foundation` short name, you will need to uninstall that template before using a `crafstman new:api` command
 >
-> Coming Soon: You don't need to install it, as craftsman will handle that for you, but on the off chance that you have another dotnet template on your machine with a `foundation` short name, it will get overridden with this template.
 
 ## About Craftsman
 
