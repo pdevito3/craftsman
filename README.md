@@ -319,9 +319,9 @@ An list of properties assigned to an entity.
 | ------------- | -------- | ------------------------------------------------------------ | -------------------------------- |
 | Name          | Yes      | The name of the property                                     | *None*                           |
 | Type          | Yes      | The data type for the property. These are *not* case sensitive and they can be set to nullable with a trailing `?`. | *None*                           |
+| IsPrimaryKey  | Yes      | When true, the property will be set as the primary key for the entity. For now, only one primary key is supported, with plans to add compound key support down the road. | false                            |
 | CanFilter     | No       | Will set the property to be filterable in the API endpoint when set to true. | false                            |
 | CanSort       | No       | Will set the property to be filterable in the API endpoint when set to true. | false                            |
-| IsPrimaryKey  | No       | When true, the property will be set as the primary key for the entity. For now, only one primary key is supported, with plans to add compound key support down the road. | false                            |
 | IsRequired    | No       | When true, the property will be set as required in the database. | false<br/>*true for primary key* |
 | CanManipulate | No       | When set to false, you will not be able to update this property when calling the associated endpoint. When set to `false`, the property will be able to be established when using the POST endpoint, but will not be able to be updated after that. This is managed by the DTOs if you want to manually adjust this. | true<br/>*false for primary key* |
 
@@ -390,7 +390,7 @@ SwaggerConfig:
 
 
 
-### Database Configuration
+### Multiple Environments (Optional)
 
 The template is configured with one environment by default, with the ability to add as many additional environments as you'd like. By default, the project will run `Development` . This is configured to run locally and use an in-memory database by default and should not be connected to a live database.  This ensures that all users will be able to run the solution without  needing to go through additional database set up.
 
@@ -430,7 +430,9 @@ Environments:
 
 ## Using Database Migrations
 
-If you'd like to add database migrations, you can follow the steps below.
+Currently, migrations are not very workable as the `migrations add` command is not able to differentiate between the right `appsettings` file. 
+
+If you'd still like to play around with database migrations, you can remove the `appsettings.Development.json` file and follow the steps below and it (should) start to cooperate.
 
 First, make sure you have `dotnet ef` installed. To install it globally run:
 
