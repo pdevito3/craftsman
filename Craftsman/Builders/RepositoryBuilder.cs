@@ -7,6 +7,7 @@
     using Craftsman.Models;
     using System;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
@@ -99,6 +100,12 @@
         public static string GetRepositoryFileText(string classNamespace, Entity entity, TemplateDbContext dbContext)
         {
             var paramBase = entity.Name.LowercaseFirstLetter();
+            var fkIncludes = "";
+            foreach(var fk in entity.Properties.Where(p => p.IsForeignKey))
+            {
+                fkIncludes += $@"{Environment.NewLine}                .Include({fk.Name.ToLower().Substring(0, 1)} => {fk.Name.ToLower().Substring(0, 1)}.{fk.Name})";
+            }
+
             return @$"namespace {classNamespace}
 {{
     using Application.Dtos.{entity.Name};
@@ -134,7 +141,7 @@
                 throw new ArgumentNullException(nameof({paramBase}Parameters));
             }}
 
-            var collection = _context.{entity.Plural} as IQueryable<{entity.Name}>; // TODO: AsNoTracking() should increase performance, but will break the sort tests. need to investigate
+            var collection = _context.{entity.Plural}{fkIncludes} as IQueryable<{entity.Name}>; // TODO: AsNoTracking() should increase performance, but will break the sort tests. need to investigate
 
             var sieveModel = new SieveModel
             {{
@@ -151,12 +158,12 @@
 
         public async Task<{entity.Name}> Get{entity.Name}Async(int {paramBase}Id)
         {{
-            return await _context.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
+            return await _context.{entity.Plural}{fkIncludes}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
         }}
 
         public {entity.Name} Get{entity.Name}(int {paramBase}Id)
         {{
-            return _context.{entity.Plural}.FirstOrDefault({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
+            return _context.{entity.Plural}{fkIncludes}.FirstOrDefault({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
         }}
 
         public void Add{entity.Name}({entity.Name} {paramBase})

@@ -41,14 +41,14 @@
             }
         }
 
-        public static string GetDtoFileText(string classNamespace, Entity entity, Dto dto)
+        public static string GetDtoFileText(ClassPath classPath, Entity entity, Dto dto)
         {
             if (dto == Dto.PaginationParamaters)
-                return DtoFileTextGenerator.GetPaginationDtoText(classNamespace, entity, dto);
+                return DtoFileTextGenerator.GetPaginationDtoText(classPath.ClassNamespace, entity, dto);
             else if (dto == Dto.ReadParamaters)
-                return DtoFileTextGenerator.GetReadParameterDtoText(classNamespace, entity, dto);
+                return DtoFileTextGenerator.GetReadParameterDtoText(classPath.ClassNamespace, entity, dto);
             else
-                return DtoFileTextGenerator.GetDtoText(classNamespace, entity, dto);
+                return DtoFileTextGenerator.GetDtoText(classPath, entity, dto);
         }
 
         public static void CreateDtoFile(string solutionDirectory, Entity entity, Dto dto)
@@ -61,7 +61,7 @@
 
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = GetDtoFileText(classPath.ClassNamespace, entity, dto);
+                var data = GetDtoFileText(classPath, entity, dto);
                 fs.Write(Encoding.UTF8.GetBytes(data));
 
                 GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));

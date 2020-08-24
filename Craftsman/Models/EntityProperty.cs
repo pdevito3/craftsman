@@ -10,6 +10,7 @@ namespace Craftsman.Models
     {
         private bool _isRequired = false;
         private bool _canManipulate = true;
+        private bool _isForeignKey = false;
 
         /// <summary>
         /// Name of the property
@@ -66,5 +67,19 @@ namespace Craftsman.Models
             }
             set => _isRequired = value;
         }
+
+        /// <summary>
+        /// Designates the property as a foreign key for the entity
+        /// </summary>
+        public bool IsForeignKey 
+        {
+            get => ForeignKeyPropName != null;
+            private set => _isForeignKey = value;
+        }
+
+        /// <summary>
+        /// Captures the foreign key property name
+        /// </summary>
+        public string ForeignKeyPropName { get; set; }
     }
 }

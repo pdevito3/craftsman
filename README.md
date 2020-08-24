@@ -316,17 +316,16 @@ An list of database entities in your project. These entities are added as dbsets
 
 An list of properties assigned to an entity.
 
-| Name          | Required | Description                                                  | Default                          |
-| ------------- | -------- | ------------------------------------------------------------ | -------------------------------- |
-| Name          | Yes      | The name of the property                                     | *None*                           |
-| Type          | Yes      | The data type for the property. These are *not* case sensitive and they can be set to nullable with a trailing `?`. | *None*                           |
-| IsPrimaryKey  | Yes      | When true, the property will be set as the primary key for the entity. For now, only one primary key is supported, with plans to add compound key support down the road. | false                            |
-| CanFilter     | No       | Will set the property to be filterable in the API endpoint when set to true. | false                            |
-| CanSort       | No       | Will set the property to be filterable in the API endpoint when set to true. | false                            |
-| IsRequired    | No       | When true, the property will be set as required in the database. | false<br/>*true for primary key* |
-| CanManipulate | No       | When set to false, you will not be able to update this property when calling the associated endpoint. When set to `false`, the property will be able to be established when using the POST endpoint, but will not be able to be updated after that. This is managed by the DTOs if you want to manually adjust this. | true<br/>*false for primary key* |
-
-
+| Name               | Required | Description                                                  | Default                          |
+| ------------------ | -------- | ------------------------------------------------------------ | -------------------------------- |
+| Name               | Yes      | The name of the property                                     | *None*                           |
+| Type               | Yes      | The data type for the property. These are *not* case sensitive and they can be set to nullable with a trailing `?`. | *None*                           |
+| IsPrimaryKey       | Yes      | When true, the property will be set as the primary key for the entity. For now, only one primary key is supported, with plans to add compound key support down the road. | false                            |
+| CanFilter          | No       | Will set the property to be filterable in the API endpoint when set to true. | false                            |
+| CanSort            | No       | Will set the property to be filterable in the API endpoint when set to true. | false                            |
+| IsRequired         | No       | When true, the property will be set as required in the database. | false<br/>*true for primary key* |
+| CanManipulate      | No       | When set to false, you will not be able to update this property when calling the associated endpoint. When set to `false`, the property will be able to be established when using the POST endpoint, but will not be able to be updated after that. This is managed by the DTOs if you want to manually adjust this. | true<br/>*false for primary key* |
+| ForeignKeyPropName | No       | If you want to add an object that is connected  property as a foreign key, enter the name of the property that acts as the fori |                                  |
 
 #### Example
 
@@ -355,6 +354,51 @@ Entities:
         Type: int?
         CanFilter: true
         CanSort: true
+```
+
+#### Example With Foreign Key
+
+So let's say that we had a 'Sale' entity that has a `ProductId` property that acts as a foreign key to another 'Product' entity:
+
+```csharp
+- Name: Sale
+  Properties:
+  - Name: SaleId
+    IsPrimaryKey: true
+    Type: int
+    CanFilter: true
+  - Name: ProductId
+    Type: int
+    CanFilter: true
+  - Name: SaleDate
+    Type: DateTimeOffset?
+    CanFilter: true
+  - Name: SaleAmount
+    Type: int
+    CanFilter: true
+```
+
+If we wanted to return the product in our responses, we could add an additional `Product` property of type `Product` that links to the primary key of `ProductId` in our `Product` entity:
+
+```yaml
+- Name: Sale
+  Properties:
+  - Name: SaleId
+    IsPrimaryKey: true
+    Type: int
+    CanFilter: true
+  - Name: ProductId
+    Type: int
+    CanFilter: true
+  - Name: SaleDate
+    Type: DateTimeOffset?
+    CanFilter: true
+  - Name: SaleAmount
+    Type: int
+    CanFilter: true
+  - Name: Product
+    Type: Product
+    ForeignKeyPropName: ProductId
 ```
 
 ### Swagger/OpenAPI (Optional)

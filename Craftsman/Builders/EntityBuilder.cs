@@ -91,6 +91,8 @@
             }
             if (entityProperty.IsRequired)
                 attributeString += @$"        [Required]{Environment.NewLine}";
+            if (entityProperty.IsForeignKey)
+                attributeString += @$"        [ForeignKey(""{entityProperty.ForeignKeyPropName}"")]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)
                 attributeString += @$"        [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
 
