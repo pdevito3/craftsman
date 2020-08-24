@@ -8,9 +8,6 @@ This is a custom .NET Core tool that is used to accelerate your API development 
 
 - VS2019 .Net Core Feature Set or .Net Core 3.1 SDK https://dotnet.microsoft.com/download/dotnet-core/3.1
 
-> Note that Craftsman uses the [Foundation API Template](https://github.com/pdevito3/foundation.api) as a base for scaffolding out new projects. Craftsman will automatically install the template for you, but on the off chance that you have another dotnet template on your machine with a `foundation` short name, you will need to uninstall that template before using a `crafstman new:api` command
->
-
 ## About Craftsman
 
 Craftsman provides new commands to your CLI that will enable you to quickly scaffold out an API and easily make modifications to it over time. In some instances, this will require you to scaffold out your basic API configuration in a `yaml` or `json` file for the `craftsman` command  to consume. Don't feel pressured to get this exactly correct from the get go. **This file is NOT meant to be a concrete implementation of your API**, just a starting point that you can build on over time. 
@@ -22,6 +19,10 @@ Craftsman provides new commands to your CLI that will enable you to quickly scaf
    ```shell
    dotnet new -i foundation.api
    ```
+
+   > Note that on the off chance that you have another dotnet template on your machine with a `foundation` short name, you will need to uninstall that template before using a `crafstman new:api` command
+
+   
 
 2. Then, install the `Craftsman` tool globally
 
@@ -151,7 +152,7 @@ dotnet new foundation.api --update-apply
 3. Then we just need to add our `yaml` or `json` path to our `craftsman new:api` command:
 
 ```shell
-craftsman api:new C:\Users\Paul\Documents\ApiConfigs\VetClinic.yaml
+craftsman new:api C:\Users\Paul\Documents\ApiConfigs\VetClinic.yaml
 ```
 
 4. Once you've run this command, your API should be ready to go!

@@ -64,7 +64,7 @@ namespace Craftsman.Models
                 else
                     return false;
             }
-            set => _canManipulate = value;
+            set => _isRequired = value;
         }
     }
 }
