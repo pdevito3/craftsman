@@ -47,10 +47,10 @@ Craftsman provides new commands to your CLI that will enable you to quickly scaf
 
 ### New API Command
 
-To create our initial project, we are going to use the `api:new` command. You can get help for this command by running:
+To create our initial project, we are going to use the `new:api` command. You can get help for this command by running:
 
 ```shell
-craftsman api:new -h
+craftsman new:api -h
 ```
 
 #### New API Config File
