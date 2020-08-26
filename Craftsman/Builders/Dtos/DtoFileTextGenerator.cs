@@ -53,14 +53,12 @@
             var abstractString = dto == Dto.Manipulation ? $"abstract" : "";
             var fkUsingStatements = "";
 
-            if(dto == Dto.Read)
+
+            if (dto == Dto.Read)
             {
                 foreach(var prop in entity.Properties.Where(p => p.IsForeignKey))
                 {
-                    var dtoFileName = $"{Utilities.GetDtoName(prop.Type, dto)}.cs";
-                    var fkClasspath = ClassPathHelper.DtoClassPath(dtoClassPath.SolutionDirectory, dtoFileName, prop.Type);
-
-                    fkUsingStatements += $"{Environment.NewLine}    using {fkClasspath.ClassNamespace};";
+                    fkUsingStatements += GetForeignKeyUsingStatements(dtoClassPath, fkUsingStatements, prop, dto);
                 }
             }
 
@@ -79,10 +77,20 @@
 }}";
         }
 
+        public static string GetForeignKeyUsingStatements(ClassPath dtoClassPath, string fkUsingStatements, EntityProperty prop, Dto dto)
+        {
+            var dtoFileName = $"{Utilities.GetDtoName(prop.Type, dto)}.cs";
+            var fkClasspath = ClassPathHelper.DtoClassPath(dtoClassPath.SolutionDirectory, dtoFileName, prop.Type);
+
+            fkUsingStatements += $"{Environment.NewLine}    using {fkClasspath.ClassNamespace};";   
+            
+            return fkUsingStatements;
+        }
+
         public static string DtoPropBuilder(List<EntityProperty> props, Dto dto)
         {
             var propString = "";
-            for (var eachProp = 0; eachProp < props.Count; eachProp++)
+            for(var eachProp = 0; eachProp < props.Count; eachProp++)
             {
                 if (!props[eachProp].CanManipulate && dto == Dto.Manipulation)
                     continue;

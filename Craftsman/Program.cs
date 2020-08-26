@@ -75,7 +75,8 @@
                                 Name = options.Name,
                                 Type = options.Type,
                                 CanFilter = options.CanFilter,
-                                CanSort = options.CanSort
+                                CanSort = options.CanSort,
+                                ForeignKeyPropName = options.ForeignKeyPropName
                             };
                         });
 

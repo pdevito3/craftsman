@@ -141,7 +141,8 @@
                 throw new ArgumentNullException(nameof({paramBase}Parameters));
             }}
 
-            var collection = _context.{entity.Plural}{fkIncludes} as IQueryable<{entity.Name}>; // TODO: AsNoTracking() should increase performance, but will break the sort tests. need to investigate
+            var collection = _context.{entity.Plural}{fkIncludes} 
+                as IQueryable<{entity.Name}>; // TODO: AsNoTracking() should increase performance, but will break the sort tests. need to investigate
 
             var sieveModel = new SieveModel
             {{
@@ -158,12 +159,16 @@
 
         public async Task<{entity.Name}> Get{entity.Name}Async(int {paramBase}Id)
         {{
-            return await _context.{entity.Plural}{fkIncludes}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
+            // include marker -- requires return _context.{entity.Plural} as it's own line with no extra text -- do not delete this comment
+            return await _context.{entity.Plural}{fkIncludes}
+                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
         }}
 
         public {entity.Name} Get{entity.Name}(int {paramBase}Id)
         {{
-            return _context.{entity.Plural}{fkIncludes}.FirstOrDefault({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
+            // include marker -- requires return _context.{entity.Plural} as it's own line with no extra text -- do not delete this comment
+            return _context.{entity.Plural}{fkIncludes}
+                .FirstOrDefault({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
         }}
 
         public void Add{entity.Name}({entity.Name} {paramBase})

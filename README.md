@@ -245,7 +245,7 @@ craftsman add:property -h
 To actually create an entity, you will do something like this:
 
 ```shell
-craftsman add:property --entity Vet -name VetName -type string -filter false -sort true
+craftsman add:property -entity Vet -name VetName -type string -filter false -sort true
 ```
 Also the same as:
 
@@ -253,15 +253,30 @@ Also the same as:
 craftsman add:property -e Vet -n VetName -t string -f false -s true
 ```
 
+Note that  arguments that are not required do not need to have values, so something like this is also comparable to the above:
+
+```shell
+craftsman add:property -e Vet -n VetName -t string
+```
+
 #### Arguments
 
-| Argument     | Required | Type    | Description                                                  |
-| ------------ | -------- | ------- | ------------------------------------------------------------ |
-| e, --entity  | Yes      | Text    | Name of the entity to add the property. Must match the name of the entity file (e.g. `Vet.cs` should be `Vet`) |
-| -n, --name   | Yes      | Text    | Name of the property to add                                  |
-| -t, --type   | Yes      | Text    | Data type of the property to add                             |
-| -f, --filter | No       | Boolean | Determines if the property is filterable                     |
-| -s, --sort   | No       | Boolean | Determines if the property is sortable                       |
+| Argument        | Required | Type    | Description                                                  |
+| --------------- | -------- | ------- | ------------------------------------------------------------ |
+| -e, -entity     | Yes      | Text    | Name of the entity to add the property. Must match the name of the entity file (e.g. `Vet.cs` should be `Vet`) |
+| -n, -name       | Yes      | Text    | Name of the property to add                                  |
+| -t, -type       | Yes      | Text    | Data type of the property to add                             |
+| -f, -filter     | No       | Boolean | Determines if the property is filterable                     |
+| -s, --sort      | No       | Boolean | Determines if the property is sortable                       |
+| -k, -foreignkey | No       | Text    | When adding an object linked by a foreign key, use this field to enter the name of the property that acts as the foreign key |
+
+#### Foreign Keys
+
+Similar to when we're adding an entity with a [foreign key in a file](#example-with-foreign-key), we can add a foreign key property ad hoc using the `add:property` command. Let's say that we had a 'Sale' entity that has a `ProductId` property that acts as a foreign key to another 'Product' entity. If we wanted to return the product in our responses, we could add an additional `Product` property of type `Product` that links to the primary key of `ProductId` in our `Product` entity:
+
+```shell
+crafstman add:property -e Sale -n Product -t Product -k ProductId
+```
 
 
 
@@ -325,7 +340,7 @@ An list of properties assigned to an entity.
 | CanSort            | No       | Will set the property to be filterable in the API endpoint when set to true. | false                            |
 | IsRequired         | No       | When true, the property will be set as required in the database. | false<br/>*true for primary key* |
 | CanManipulate      | No       | When set to false, you will not be able to update this property when calling the associated endpoint. When set to `false`, the property will be able to be established when using the POST endpoint, but will not be able to be updated after that. This is managed by the DTOs if you want to manually adjust this. | true<br/>*false for primary key* |
-| ForeignKeyPropName | No       | If you want to add an object that is connected  property as a foreign key, enter the name of the property that acts as the fori |                                  |
+| ForeignKeyPropName | No       | When adding an object linked by a foreign key, use `ForeignKeyPropName` to enter the name of the property that acts as the foreign key |                                  |
 
 #### Example
 
@@ -475,9 +490,9 @@ Environments:
 
 ## Using Database Migrations
 
-Currently, migrations are not very workable as the `migrations add` command is not able to differentiate between the right `appsettings` file. 
+Currently, migrations are a pain to deal with when you have multiple environment files like this as it is not a smooth process to differentiate between the right `appsettings` file. If you'd like to use them you will need to set `ASPNETCORE_ENVIRONMENT` before running `dotnet ef` to let the host builder locate the appropriate settings file. Here's some examples for [Windows](https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10), [Bash](https://askubuntu.com/questions/58814/how-do-i-add-environment-variables), and [PowerShell](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables?view=powershell-7). If you'd like to track this feature request in EF, the Github issue is [here](https://github.com/dotnet/efcore/issues/8695).
 
-If you'd still like to play around with database migrations, you can remove the `appsettings.Development.json` file and follow the steps below and it (should) start to cooperate.
+When using this, make sure your `UseInMemoryDatabase` setting is set to `false`. This should be the case by default on all environments that are not `Development`.
 
 First, make sure you have `dotnet ef` installed. To install it globally run:
 
