@@ -99,6 +99,15 @@
                 WriteHelpText($"    {file}");
             }
         }
+        
+        public static void WriteGettingStarted(string solutionName)
+        {
+            WriteHelpText(@$"{Environment.NewLine}
+    To get started:");
+            WriteHelpText(@$"
+        cd {solutionName}
+        dotnet run --project webapi{Environment.NewLine}");
+        }
 
         public static void StarGithubRequest()
         {
@@ -137,6 +146,6 @@
             else {
                 WriteHelpText($"{Environment.NewLine}I understand, but am not going to pretend I'm not sad about it...");
             }
-    }
+        }
     }
 }

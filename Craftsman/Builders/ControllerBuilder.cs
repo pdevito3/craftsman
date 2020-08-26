@@ -158,7 +158,7 @@
 
             if(saveSuccessful)
             {{
-                var {lowercaseEntityVariable}Dto = _mapper.Map<{readDto}>({lowercaseEntityVariable});
+                var {lowercaseEntityVariable}Dto = _{lowercaseEntityVariable}Repository.Get{entityName}({lowercaseEntityVariable}.{entity.PrimaryKeyProperties[0].Name}); //get from repo for fk object, if needed
                 return CreatedAtRoute(""Get{entityName}"",
                     new {{ {lowercaseEntityVariable}Dto.{primaryKeyProp.Name} }},
                     {lowercaseEntityVariable}Dto);

@@ -12,6 +12,7 @@
             ClassDirectory = Path.Combine(solutionDirectory, topPath);
             FullClassPath = Path.Combine(ClassDirectory, className);
             ClassNamespace = topPath.Replace("\\", ".");
+            SolutionDirectory = solutionDirectory;
         }
 
         /// <summary>
@@ -28,5 +29,10 @@
         /// This is the converted namespace from the top path
         /// </summary>
         public string ClassNamespace { get; private set; }
+
+        /// <summary>
+        /// This is the solution directory mirrored back
+        /// </summary>
+        public string SolutionDirectory { get; set; }
     }
 }

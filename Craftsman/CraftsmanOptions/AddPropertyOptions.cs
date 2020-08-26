@@ -19,5 +19,8 @@
 
         [Option('s', "sort", Required = false, HelpText = "Determines if the property is sortable")]
         public bool CanSort { get; set; }
+
+        [Option('k', "foreignkey", Required = false, HelpText = "When adding an object linked by a foreign key, use this field to enter the name of the property that acts as the foreign key")]
+        public string ForeignKeyPropName { get; set; }
     }
 }

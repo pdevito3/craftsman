@@ -38,12 +38,26 @@
                 using (var output = new StreamWriter(tempPath))
                 {
                     string line;
+                    var fkUsingStatements = "";
+
+                    if (dto == Dto.Read)
+                    { 
+                        foreach (var prop in props)
+                        {
+                            fkUsingStatements += DtoFileTextGenerator.GetForeignKeyUsingStatements(classPath, fkUsingStatements, prop, dto);
+                        }
+                    }
+
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
                         if (line.Contains($"add-on property marker"))
                         {
                             newText += @$"{Environment.NewLine}{Environment.NewLine}{DtoFileTextGenerator.DtoPropBuilder(props, dto)}";
+                        }
+                        if (line.Contains("using System;"))
+                        {
+                            newText += @$"{Environment.NewLine}    using Application.Dtos.Product;";
                         }
 
                         output.WriteLine(newText);

@@ -38,11 +38,11 @@
             {
                 var filePath = args[1];
                 if(filePath == "-h" || filePath == "--help")
-                    ApiCommand.Help();
+                    NewApiCommand.Help();
                 else
                 {
                     var solutionDir = myEnv == "Dev" ? @"C:\Users\Paul\Documents\testoutput" : Directory.GetCurrentDirectory();
-                    ApiCommand.Run(filePath, solutionDir);
+                    NewApiCommand.Run(filePath, solutionDir);
                 }
             }
 
@@ -75,7 +75,8 @@
                                 Name = options.Name,
                                 Type = options.Type,
                                 CanFilter = options.CanFilter,
-                                CanSort = options.CanSort
+                                CanSort = options.CanSort,
+                                ForeignKeyPropName = options.ForeignKeyPropName
                             };
                         });
 
