@@ -133,7 +133,7 @@ Entities:
       CanFilter: false  
 ```
 
-Now, let's [make our API](#new-api-command)!
+Now, let's [make our API](#using-the-command)!
 
 #### Using the Command
 
