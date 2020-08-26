@@ -21,7 +21,7 @@
     using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
 
-    public static class ApiCommand
+    public static class NewApiCommand
     {
         public static void Help()
         {
@@ -70,6 +70,7 @@
 
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
+                WriteGettingStarted(template.SolutionName);
                 StarGithubRequest();
             }
             catch (Exception e)
