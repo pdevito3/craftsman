@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Have an idea to make Craftsman even better? Suggest an idea for this project
+about: Have an idea to make Craftsman even better? Suggest an idea for this project!
 title: ''
 labels: enhancement
 assignees: ''

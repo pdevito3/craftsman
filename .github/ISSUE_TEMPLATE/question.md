@@ -1,7 +1,7 @@
 ---
 name: Question
-about: 'Have a question about how craftsman works or more calrity on something? This
-  is where you go! '
+about: Have a question about how craftsman works or need more clarity on something?
+  Ask your questions here.
 title: ''
 labels: documentation, question
 assignees: ''
