@@ -23,6 +23,8 @@
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.IO.Abstractions" Version="12.1.1" />
+    <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="12.1.1" />
     <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
   </ItemGroup>
 

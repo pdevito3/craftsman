@@ -1,54 +1,23 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Tests.FileTextTests
 {
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
+    using Craftsman.Builders;
     using Craftsman.Models;
+    using Craftsman.Tests.Fakes;
+    using FluentAssertions;
     using System;
-    using System.IO;
-    using System.Text;
-    using static Helpers.ConsoleWriter;
+    using System.Collections.Generic;
+    using Xunit;
+    using System.Linq;
+    using AutoBogus;
 
-    public class StartupBuilder
+    public class StartupFileTextTests
     {
-        public static void CreateStartup(string solutionDirectory, string envName)
-        {
-            try
-            {
-                var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs");
+        [Fact]
+        public void GetStartupText_Devlopment_env_returns_expected_text()
+        {            
+            var fileText = StartupBuilder.GetStartupText("Development");
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
-
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetStartupText(envName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-
-                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occured when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
-        }
-
-        public static string GetStartupText(string envName)
-        {
-            if(envName == "Development")
-
-                return @$"namespace WebApi
+            var expectedText = @$"namespace WebApi
 {{
     using Application;
     using Microsoft.AspNetCore.Builder;
@@ -61,10 +30,10 @@
     using Infrastructure.Persistence.Contexts;
     using WebApi.Extensions;
 
-    public class Startup{envName}
+    public class StartupDevelopment
     {{
         public IConfiguration _config {{ get; }}
-        public Startup{envName}(IConfiguration configuration)
+        public StartupDevelopment(IConfiguration configuration)
         {{
             _config = configuration;
         }}
@@ -109,9 +78,20 @@
         }}
     }}
 }}";
-        else
 
-            return @$"namespace WebApi
+            fileText.Should().Be(expectedText);
+        }
+
+        [Theory]
+        [InlineData("Production")]
+        [InlineData("Qa")]
+        [InlineData("Staging")]
+        [InlineData("Local")]
+        public void GetStartupText_NonDevlopment_env_returns_expected_text(string env)
+        {
+            var fileText = StartupBuilder.GetStartupText(env);
+
+            var expectedText = @$"namespace WebApi
 {{
     using Application;
     using Microsoft.AspNetCore.Builder;
@@ -122,10 +102,10 @@
     using Infrastructure.Shared;
     using WebApi.Extensions;
 
-    public class Startup{envName}
+    public class Startup{env}
     {{
         public IConfiguration _config {{ get; }}
-        public Startup{envName}(IConfiguration configuration)
+        public Startup{env}(IConfiguration configuration)
         {{
             _config = configuration;
         }}
@@ -165,6 +145,8 @@
         }}
     }}
 }}";
+
+            fileText.Should().Be(expectedText);
         }
     }
 }

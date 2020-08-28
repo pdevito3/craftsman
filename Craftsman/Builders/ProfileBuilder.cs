@@ -44,7 +44,7 @@
             }
         }
 
-        private static string GetProfileFileText(string classNamespace, Entity entity)
+        public static string GetProfileFileText(string classNamespace, Entity entity)
         {
             return @$"namespace {classNamespace}
 {{

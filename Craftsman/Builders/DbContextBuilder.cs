@@ -49,7 +49,7 @@
             }
         }
 
-        private static string GetContextFileText(string classNamespace, ApiTemplate template)
+        public static string GetContextFileText(string classNamespace, ApiTemplate template)
         {
             return @$"namespace {classNamespace}
 {{
