@@ -35,7 +35,7 @@
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
 
-                    GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
+                    GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
                 }
 
                 RegisterAllNewSeeders(solutionDirectory, template);
@@ -88,7 +88,7 @@
             File.Delete(pathString);
             File.Move(tempPath, pathString);
 
-            GlobalSingleton.AddUpdatedFile(pathString.Replace($"{solutionDirectory}\\", ""));
+            GlobalSingleton.AddUpdatedFile(pathString.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
 
         private static string GetSeederContextText(ApiTemplate template)

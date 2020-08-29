@@ -35,7 +35,7 @@
 
                 RegisterContext(solutionDirectory, template);
 
-                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
+                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             }
             catch (FileAlreadyExistsException e)
             {
@@ -132,7 +132,7 @@
             File.Delete(classPath.FullClassPath);
             File.Move(tempPath, classPath.FullClassPath);
 
-            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
+            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
     }
 }

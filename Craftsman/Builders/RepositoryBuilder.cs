@@ -53,7 +53,7 @@
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
 
-            GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
+            GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
 
         public static string GetIRepositoryFileText(string classNamespace, Entity entity)
@@ -94,7 +94,7 @@
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
 
-            GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
+            GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
 
         public static string GetRepositoryFileText(string classNamespace, Entity entity, TemplateDbContext dbContext)
@@ -243,7 +243,7 @@
             File.Delete(classPath.FullClassPath); 
             File.Move(tempPath, classPath.FullClassPath);
 
-            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
+            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
     }
 }

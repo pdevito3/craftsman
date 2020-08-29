@@ -59,7 +59,7 @@
                 // scaffold projects
                 // should i add an accelerate.config.yaml file to the root?
                 CreateNewFoundation(template, buildSolutionDirectory); // todo scaffold this manually instead of using dotnet new foundation
-                var solutionDirectory = $"{buildSolutionDirectory}\\{template.SolutionName}";
+                var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
 
 
                 // remove placeholder valuetoreplace files and directories
@@ -127,7 +127,7 @@
 
         private static void CreateNewFoundation(ApiTemplate template, string directory)
         {
-            var newDir = $"{directory}\\{template.SolutionName}";
+            var newDir = $"{directory}{Path.DirectorySeparatorChar}{template.SolutionName}";
             if (Directory.Exists(newDir))
                 throw new DirectoryAlreadyExistsException(newDir);
 

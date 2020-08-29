@@ -11,7 +11,7 @@
         {
             ClassDirectory = Path.Combine(solutionDirectory, topPath);
             FullClassPath = Path.Combine(ClassDirectory, className);
-            ClassNamespace = topPath.Replace("\\", ".");
+            ClassNamespace = topPath.Replace(Path.DirectorySeparatorChar, '.');
             SolutionDirectory = solutionDirectory;
         }
 

@@ -48,7 +48,7 @@
             File.Delete(classPath.FullClassPath);
             File.Move(tempPath, classPath.FullClassPath);
 
-            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}\\", ""));
+            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
     }
 }
