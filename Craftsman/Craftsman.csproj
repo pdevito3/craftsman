@@ -17,6 +17,7 @@
     <AssemblyVersion>0.1.10</AssemblyVersion>
     <FileVersion>0.1.10</FileVersion>
     <Version>0.1.10</Version>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,13 @@
     <PackageReference Include="System.IO.Abstractions" Version="12.1.1" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="12.1.1" />
     <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Foundation.Api\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
