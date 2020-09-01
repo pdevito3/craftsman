@@ -113,7 +113,7 @@ namespace {classPath.ClassNamespace}
                 var service = new {Utilities.GetRepositoryName(entity.Name,false)}(context, new SieveProcessor(sieveOptions));
 
                 //Assert
-                var {entity.Name.LowercaseFirstLetter()}ById = service.Get{entity.Name}(fake{entity.Name}.{entity.PrimaryKeyProperties[0].Name});
+                var {entity.Name.LowercaseFirstLetter()}ById = service.Get{entity.Name}(fake{entity.Name}.{entity.PrimaryKeyProperty.Name});
                 {assertString}
             }}
         }}";

@@ -115,7 +115,7 @@ namespace {classPath.ClassNamespace}
                 context.{entity.Plural}.Count().Should().Be(1);
 
                 var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
-                var {entity.Name.LowercaseFirstLetter()}ById = service.Get{entity.Name}(fake{entity.Name}.{entity.PrimaryKeyProperties[0].Name});
+                var {entity.Name.LowercaseFirstLetter()}ById = service.Get{entity.Name}(fake{entity.Name}.{entity.PrimaryKeyProperty.Name});
                 {assertString}
             }}
         }}";

@@ -53,7 +53,7 @@
             var readParamDto = Utilities.GetDtoName(entityName, Dto.ReadParamaters);
             var creationDto = Utilities.GetDtoName(entityName, Dto.Creation);
             var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
-            var primaryKeyProp = entity.PrimaryKeyProperties[0];
+            var primaryKeyProp = entity.PrimaryKeyProperty;
 
             return @$"namespace {classNamespace}
 {{
@@ -157,7 +157,7 @@
 
             if(saveSuccessful)
             {{
-                var {lowercaseEntityVariable}Dto = _{lowercaseEntityVariable}Repository.Get{entityName}({lowercaseEntityVariable}.{entity.PrimaryKeyProperties[0].Name}); //get from repo for fk object, if needed
+                var {lowercaseEntityVariable}Dto = _{lowercaseEntityVariable}Repository.Get{entityName}({lowercaseEntityVariable}.{entity.PrimaryKeyProperty.Name}); //get from repo for fk object, if needed
                 return CreatedAtRoute(""Get{entityName}"",
                     new {{ {lowercaseEntityVariable}Dto.{primaryKeyProp.Name} }},
                     {lowercaseEntityVariable}Dto);

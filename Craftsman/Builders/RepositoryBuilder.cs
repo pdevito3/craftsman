@@ -161,14 +161,14 @@
         {{
             // include marker -- requires return _context.{entity.Plural} as it's own line with no extra text -- do not delete this comment
             return await _context.{entity.Plural}{fkIncludes}
-                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
+                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperty.Name} == {paramBase}Id);
         }}
 
         public {entity.Name} Get{entity.Name}(int {paramBase}Id)
         {{
             // include marker -- requires return _context.{entity.Plural} as it's own line with no extra text -- do not delete this comment
             return _context.{entity.Plural}{fkIncludes}
-                .FirstOrDefault({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperties[0].Name} == {paramBase}Id);
+                .FirstOrDefault({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperty.Name} == {paramBase}Id);
         }}
 
         public void Add{entity.Name}({entity.Name} {paramBase})

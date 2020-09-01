@@ -148,7 +148,7 @@ namespace {classPath.ClassNamespace}
             var getResponseContent = await getResult.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
             var getResponse = JsonConvert.DeserializeObject<IEnumerable<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>(getResponseContent);
-            var id = getResponse.FirstOrDefault().{entity.PrimaryKeyProperties[0].Name};
+            var id = getResponse.FirstOrDefault().{entity.PrimaryKeyProperty.Name};
 
             // patch it
             var method = new HttpMethod(""PATCH"");
@@ -234,7 +234,7 @@ namespace {classPath.ClassNamespace}
             var getResponseContent = await getResult.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
             var getResponse = JsonConvert.DeserializeObject<IEnumerable<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>(getResponseContent);
-            var id = getResponse.FirstOrDefault().{entity.PrimaryKeyProperties[0].Name};
+            var id = getResponse.FirstOrDefault().{entity.PrimaryKeyProperty.Name};
 
             // put it
             var patchResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
