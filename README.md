@@ -283,7 +283,8 @@ Similar to when we're adding an entity with a [foreign key in a file](#example-w
 crafstman add:property -e Sale -n Product -t Product -k ProductId
 ```
 
-
+> Note that adding foreign keys will currently break the `Post` and `Update` integration tests as described in [issue #2](https://github.com/pdevito3/craftsman/issues/2).
+>
 
 ## API Configuration File Options
 
@@ -420,6 +421,8 @@ If we wanted to return the product in our responses, we could add an additional 
     Type: Product
     ForeignKeyPropName: ProductId
 ```
+
+> Note that adding foreign keys will currently break the `Post` and `Update` integration tests as described in [issue #2](https://github.com/pdevito3/craftsman/issues/2).
 
 ### Swagger/OpenAPI (Optional)
 
