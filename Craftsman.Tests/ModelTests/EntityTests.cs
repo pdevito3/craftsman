@@ -54,7 +54,7 @@ namespace Craftsman.Tests.ModelTests
             entity.Properties.Clear();
             entity.Properties.Add(prop);
 
-            entity.PrimaryKeyProperties.Should().BeEquivalentTo(prop);
+            entity.PrimaryKeyProperty.Should().BeEquivalentTo(prop);
         }
     }
 }
