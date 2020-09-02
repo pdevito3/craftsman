@@ -2,6 +2,7 @@
 {
     using Craftsman.Exceptions;
     using Craftsman.Models;
+    using FluentAssertions.Common;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
@@ -59,7 +60,7 @@
 
         public static void RunPrimaryKeyGuard(ApiTemplate template)
         {
-            if (template.Entities.Where(e => e.PrimaryKeyProperties.Count <= 0).ToList().Count > 0)
+            if (template.Entities.Where(e => e.PrimaryKeyProperty == null).ToList().Count > 0)
                 throw new MissingPrimaryKeyException("One of your entity properties is missing a primary key designation. " +
                     "Please make sure you have an `IsPrimaryKey: true` option on whichever property you want to be used as your prmary key.");
         }

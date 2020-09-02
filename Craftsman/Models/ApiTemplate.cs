@@ -31,6 +31,6 @@ namespace Craftsman.Models
         /// </summary>
         public SwaggerConfig SwaggerConfig { get; set; } = new SwaggerConfig();
 
-        public List<ApiEnvironment> Environments { get; set; }
+        public List<ApiEnvironment> Environments { get; set; } = new List<ApiEnvironment>();
     }
 }

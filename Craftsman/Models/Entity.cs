@@ -56,6 +56,5 @@ namespace Craftsman.Models
         {
             get => Properties.Where(p => p.IsPrimaryKey).FirstOrDefault();
         }
-        }
     }
 }
