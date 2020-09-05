@@ -2,8 +2,8 @@
 
 <p>
     <a href="https://github.com/pdevito3/craftsman/releases"><img src="https://img.shields.io/nuget/v/craftsman.svg" alt="Latest Release"></a>    
-    <a href="https://github.com/pdevito3/craftsman/blob/master/LICENSE.txt"><img src="https://img.shields.io/nuget/v/craftsman.svg" alt="License"></a>
 </p>
+
 
 ## Description
 
