@@ -73,8 +73,10 @@
                 var attributes = AttributeBuilder(props[eachProp]);
                 propString += attributes;
 
+                var defaultValue = props[eachProp].DefaultValue == null ? "" : $" = {props[eachProp].DefaultValue};";
+
                 string newLine = eachProp == props.Count - 1 ? "" : $"{Environment.NewLine}{Environment.NewLine}";
-                propString += $@"        public {Utilities.PropTypeCleanup(props[eachProp].Type)} {props[eachProp].Name} {{ get; set; }}{newLine}";
+                propString += $@"        public {Utilities.PropTypeCleanup(props[eachProp].Type)} {props[eachProp].Name} {{ get; set; }}{defaultValue}{newLine}";
             }
 
             return propString;

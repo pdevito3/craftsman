@@ -44,5 +44,44 @@
 
             fileText.Should().Be(expectedText);
         }
+
+        [Theory]
+        [InlineData("bool","false", "public bool Test { get; set; } = false;")]
+        [InlineData("string", @"""test""", @"public string Test { get; set; } = ""test"";")]
+        public void GetEntityFileText_passed_entity_with_default_value_creates_expected_text(string type, string defaultVal, string expectedPropertyText)
+        {
+            var classNamespace = "Domain.Entities";
+            var entity = CannedGenerator.FakeBasicProduct();
+            entity.Properties.Add(new EntityProperty { Name = "Test", Type = type, DefaultValue = defaultVal, CanFilter = true, CanSort = true });
+
+            var fileText = EntityBuilder.GetEntityFileText(classNamespace, entity);
+
+            var expectedText = @$"namespace Domain.Entities
+{{
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using Sieve.Attributes;
+
+    public class Product
+    {{
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Required]
+        [Sieve(CanFilter = true, CanSort = false)]
+        public int ProductId {{ get; set; }}
+
+        [Sieve(CanFilter = true, CanSort = false)]
+        public string Name {{ get; set; }}
+
+        [Sieve(CanFilter = true, CanSort = true)]
+        {expectedPropertyText}
+
+        // add-on property marker - Do Not Delete This Comment
+    }}
+}}";
+
+            fileText.Should().Be(expectedText);
+        }
     }
 }

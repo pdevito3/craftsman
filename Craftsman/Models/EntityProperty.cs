@@ -81,5 +81,10 @@ namespace Craftsman.Models
         /// Captures the foreign key property name
         /// </summary>
         public string ForeignKeyPropName { get; set; }
+
+        /// <summary>
+        /// Default value for this property
+        /// </summary>
+        public string DefaultValue { get; set; }
     }
 }

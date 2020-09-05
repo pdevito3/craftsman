@@ -2,6 +2,7 @@
 
 <p>
     <a href="https://github.com/pdevito3/craftsman/releases"><img src="https://img.shields.io/nuget/v/craftsman.svg" alt="Latest Release"></a>    
+    <a href="https://github.com/pdevito3/craftsman/blob/master/LICENSE.txt"><img src="https://img.shields.io/nuget/v/craftsman.svg" alt="License"></a>
 </p>
 
 ## Description
@@ -345,6 +346,7 @@ An list of properties assigned to an entity.
 | CanSort            | No       | Will set the property to be filterable in the API endpoint when set to true. | false                            |
 | IsRequired         | No       | When true, the property will be set as required in the database. | false<br/>*true for primary key* |
 | CanManipulate      | No       | When set to false, you will not be able to update this property when calling the associated endpoint. When set to `false`, the property will be able to be established when using the POST endpoint, but will not be able to be updated after that. This is managed by the DTOs if you want to manually adjust this. | true<br/>*false for primary key* |
+| DefaultValue       | No       | Allows you to add a default value to a property. Note that it should be entered exactly as you'd want it, so a string would be something like `"My Default Value"`, a bool might be `true`, and an int might be `0` | *None*                           |
 | ForeignKeyPropName | No       | When adding an object linked by a foreign key, use `ForeignKeyPropName` to enter the name of the property that acts as the foreign key | *None*                           |
 
 #### Example
@@ -374,6 +376,11 @@ Entities:
         Type: int?
         CanFilter: true
         CanSort: true
+      - Name: IsVip
+        Type: bool?
+        CanFilter: true
+        CanSort: true
+        DefaultValue: false
 ```
 
 #### Example With Foreign Key
