@@ -464,6 +464,25 @@ SwaggerConfig:
 
 
 
+### Add Git (Optional)
+
+By default, Craftsman will do some initial git setup for you (`git init`, `git add -a`, `git commit -m "Initial commit"`, and add a `.gitignore`). If you'd like to skip this and do it yourself, you can set the `AddGit` option to `false`.
+
+```yaml
+AddGit: false
+```
+
+#### Example
+
+```yaml
+SolutionName: VetClinic.Api
+Entities:
+#entity details
+AddGit: false
+```
+
+
+
 ### Multiple Environments (Optional)
 
 The template is configured with one environment by default, with the ability to add as many additional environments as you'd like. By default, the project will run `Development` . This is configured to run locally and use an in-memory database by default and should not be connected to a live database.  This ensures that all users will be able to run the solution without  needing to go through additional database set up.

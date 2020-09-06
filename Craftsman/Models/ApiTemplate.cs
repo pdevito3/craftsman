@@ -31,6 +31,14 @@ namespace Craftsman.Models
         /// </summary>
         public SwaggerConfig SwaggerConfig { get; set; } = new SwaggerConfig();
 
+        /// <summary>
+        /// List of each environment to add into the API
+        /// </summary>
         public List<ApiEnvironment> Environments { get; set; } = new List<ApiEnvironment>();
+
+        /// <summary>
+        /// Boolean that determines whether or not craftsman will do an initial git set up for this project.
+        /// </summary>
+        public bool AddGit { get; set; } = true;
     }
 }

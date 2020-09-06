@@ -12,6 +12,7 @@
     using Craftsman.Models;
     using Craftsman.Removers;
     using FluentAssertions.Common;
+    using LibGit2Sharp;
     using Newtonsoft.Json;
     using System;
     using System.Data;
@@ -123,6 +124,10 @@
 
             //services
             SwaggerBuilder.AddSwagger(solutionDirectory, template);
+
+            //final
+            if(template.AddGit)
+                GitSetup(solutionDirectory);
         }
 
         private static void CreateNewFoundation(ApiTemplate template, string directory)
@@ -151,6 +156,20 @@
 
             process.Start();
             process.WaitForExit();
+        }
+
+        private static void GitSetup(string solutionDirectory)
+        {
+            GitBuilder.CreateGitIgnore(solutionDirectory);
+
+            Repository.Init(solutionDirectory);
+            var repo = new Repository(solutionDirectory);
+
+            string[] allFiles = Directory.GetFiles(solutionDirectory, "*.*", SearchOption.AllDirectories);
+            Commands.Stage(repo, allFiles);
+
+            var author = new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
+            repo.Commit("Initial Commit", author, author);
         }
 
         private static void UpdateFoundation()
