@@ -71,7 +71,7 @@
                     WriteError($"{e.Message}");
                 }
                 else
-                    WriteError($"An unhandled exception occured when running the API command.\nThe error details are: \n{e.Message}");
+                    WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
             }
         }
     }
