@@ -35,7 +35,7 @@
                 else
                 {
                     var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:","Users","Paul","Documents","testoutput") : fileSystem.Directory.GetCurrentDirectory();
-                    NewApiCommand.Run(filePath, solutionDir);
+                    NewApiCommand.Run(filePath, solutionDir, fileSystem);
                 }
             }
 
@@ -47,7 +47,7 @@
                 else
                 {
                     var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:","Users","Paul","Documents","testoutput") : fileSystem.Directory.GetCurrentDirectory();
-                    AddEntityCommand.Run(filePath, solutionDir);
+                    AddEntityCommand.Run(filePath, solutionDir, fileSystem);
                 }
             }
 
