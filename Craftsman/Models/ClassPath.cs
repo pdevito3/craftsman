@@ -16,7 +16,7 @@
         }
 
         /// <summary>
-        /// This is the full path to the class, including the filename (e.g. C:\repo\Pets.cs)
+        /// This is the full path to the class, *without* the filename. For filename, use FullClassPath.
         /// </summary>
         public string ClassDirectory { get; private set; }
 
