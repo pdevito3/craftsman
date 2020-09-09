@@ -49,6 +49,7 @@
             var authServices = "";
             var authApp = "";
             var authSeeder = "";
+            var authUsing = "";
             if (template.AuthSetup.AuthMethod == "JWT")
             {
                 authServices = @"
@@ -62,6 +63,12 @@
             RoleSeeder.SeedDemoRolesAsync(roleManager);
             SuperAdminSeeder.SeedDemoSuperAdminsAsync(userManager);
             BasicUserSeeder.SeedDemoBasicUser(userManager);";
+
+                authUsing = @$"
+    using Infrastructure.Identity;
+    using Infrastructure.Identity.Entities;
+    using Microsoft.AspNetCore.Identity;
+    using Infrastructure.Identity.Seeder;";
             }
 
             if (envName == "Development")
