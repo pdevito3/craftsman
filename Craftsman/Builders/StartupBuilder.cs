@@ -11,7 +11,7 @@
 
     public class StartupBuilder
     {
-        public static void CreateStartup(string solutionDirectory, string envName)
+        public static void CreateStartup(string solutionDirectory, string envName, ApiTemplate template)
         {
             try
             {
@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetStartupText(envName);
+                    data = GetStartupText(envName, template);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,9 +44,27 @@
             }
         }
 
-        public static string GetStartupText(string envName)
+        public static string GetStartupText(string envName, ApiTemplate template)
         {
-            if(envName == "Development")
+            var authServices = "";
+            var authApp = "";
+            var authSeeder = "";
+            if (template.AuthSetup.AuthMethod == "JWT")
+            {
+                authServices = @"
+            services.AddIdentityInfrastructure(_config);";
+                authApp = @"app.UseAuthentication();
+            app.UseAuthorization();";
+                authSeeder = $@"
+
+            var userManager = app.ApplicationServices.GetService<UserManager<ApplicationUser>>();
+            var roleManager = app.ApplicationServices.GetService<RoleManager<IdentityRole>>();
+            RoleSeeder.SeedDemoRolesAsync(roleManager);
+            SuperAdminSeeder.SeedDemoSuperAdminsAsync(userManager);
+            BasicUserSeeder.SeedDemoBasicUser(userManager);";
+            }
+
+            if (envName == "Development")
 
                 return @$"namespace WebApi
 {{
@@ -74,7 +92,7 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             services.AddCorsService(""MyCorsPolicy"");
-            services.AddApplicationLayer();
+            services.AddApplicationLayer();{authServices}
             services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
             services.AddControllers()
@@ -92,12 +110,13 @@
             app.UseDeveloperExceptionPage();
 
             #region Entity Context Region - Do Not Delete
-            #endregion
+            #endregion{authSeeder}
 
             app.UseCors(""MyCorsPolicy"");
 
             app.UseRouting();
-
+            {authApp}
+            app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>
             {{
                 endpoints.MapHealthChecks(""/api/health"");
@@ -135,7 +154,7 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             services.AddCorsService(""MyCorsPolicy"");
-            services.AddApplicationLayer();
+            services.AddApplicationLayer();{authServices}
             services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
             services.AddControllers()
@@ -153,7 +172,8 @@
             app.UseCors(""MyCorsPolicy"");
 
             app.UseRouting();
-
+            {authApp}
+            app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>
             {{
                 endpoints.MapHealthChecks(""/api/health"");

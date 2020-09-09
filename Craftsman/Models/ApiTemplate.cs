@@ -27,12 +27,12 @@ namespace Craftsman.Models
         public List<Entity> Entities { get; set; } = new List<Entity>();
 
         /// <summary>
-        /// Layout of the swagger configuration for the API
+        /// Layout of the swagger configuration for the API. Optional
         /// </summary>
         public SwaggerConfig SwaggerConfig { get; set; } = new SwaggerConfig();
 
         /// <summary>
-        /// List of each environment to add into the API
+        /// List of each environment to add into the API. Optional
         /// </summary>
         public List<ApiEnvironment> Environments { get; set; } = new List<ApiEnvironment>();
 
@@ -40,5 +40,10 @@ namespace Craftsman.Models
         /// Boolean that determines whether or not craftsman will do an initial git set up for this project.
         /// </summary>
         public bool AddGit { get; set; } = true;
+
+        /// <summary>
+        /// The authentication setup information. Optional
+        /// </summary>
+        public AuthSetup AuthSetup { get; set; } = new AuthSetup();
     }
 }

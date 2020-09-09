@@ -60,7 +60,6 @@ namespace {classPath.ClassNamespace}
     using {template.SolutionName}.Tests.Fakes.{entity.Name};
     using Infrastructure.Persistence.Contexts;
     using Infrastructure.Persistence.Repositories;
-    using Infrastructure.Shared.Shared;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Sieve.Models;

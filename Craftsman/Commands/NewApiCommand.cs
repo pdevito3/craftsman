@@ -238,7 +238,7 @@
 
             foreach (var env in template.Environments)
             {
-                StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName);
+                StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName, template);
                 AppSettingsBuilder.CreateAppSettings(solutionDirectory, env, template.DbContext.DatabaseName);
                 LaunchSettingsModifier.AddProfile(solutionDirectory, env);
 
