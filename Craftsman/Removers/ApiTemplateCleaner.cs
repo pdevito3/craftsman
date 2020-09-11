@@ -26,6 +26,17 @@
 
             InfrastructurePersistenceServicesCleaner.CleanServiceRegistration(solutionDirectory);
             StartupCleaner.CleanStartup(solutionDirectory, template);
+
+            if(template.AuthSetup.AuthMethod != "JWT")
+            {
+                IdentityRemover.RemoveProject(solutionDirectory);
+                IdentityRemover.RemoveController(solutionDirectory);
+                IdentityRemover.RemoveDtos(solutionDirectory);
+                IdentityRemover.RemoveIAccountService(solutionDirectory);
+                IdentityRemover.RemoveAuditableEntity(solutionDirectory);
+                IdentityRemover.RemoveJwtSettings(solutionDirectory);
+                IdentityRemover.RemoveRoles(solutionDirectory);
+            }
         }
     }
 }

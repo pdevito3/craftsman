@@ -85,7 +85,7 @@
     using Infrastructure.Shared;
     using Infrastructure.Persistence.Seeders;
     using Infrastructure.Persistence.Contexts;
-    using WebApi.Extensions;
+    using WebApi.Extensions;{authUsing}
 
     public class Startup{envName}
     {{
@@ -147,7 +147,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Infrastructure.Persistence;
     using Infrastructure.Shared;
-    using WebApi.Extensions;
+    using WebApi.Extensions;{authUsing}
 
     public class Startup{envName}
     {{
