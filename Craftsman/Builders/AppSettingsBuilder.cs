@@ -15,7 +15,8 @@
         {
             try
             {
-                var classPath = ClassPathHelper.AppSettingsClassPath(solutionDirectory, $"{Utilities.GetAppSettingsName(env.EnvironmentName)}");
+                var appSettingFilename = env.EnvironmentName == "Startup" ? "" : Utilities.GetAppSettingsName(env.EnvironmentName);
+                var classPath = ClassPathHelper.AppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);

@@ -25,7 +25,7 @@
             TestIntegrationRemover.RemoveDirectory(solutionDirectory, templEntityName, template);
 
             InfrastructurePersistenceServicesCleaner.CleanServiceRegistration(solutionDirectory);
-            StartupCleaner.CleanStartup(solutionDirectory);
+            StartupCleaner.CleanStartup(solutionDirectory, template);
         }
     }
 }

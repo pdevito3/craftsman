@@ -15,7 +15,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs");
+                var classPath = envName == "Startup" ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs") : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -71,6 +71,7 @@
     using Infrastructure.Identity.Seeder;";
             }
 
+            envName = envName == "Startup" ? "" : envName;
             if (envName == "Development")
 
                 return @$"namespace WebApi
