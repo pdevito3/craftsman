@@ -72,6 +72,32 @@
             File.Delete(classPath.FullClassPath);
         }
 
+        public static void RemoveCurrentUserService(string solutionDirectory)
+        {
+            var classPath = ClassPathHelper.WebApiServicesClassPath(solutionDirectory, "CurrentUserService.cs");
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            File.Delete(classPath.FullClassPath);
+        }
+
+        public static void RemoveCurrentUserServiceInterface(string solutionDirectory)
+        {
+            var classPath = ClassPathHelper.ApplicationInterfaceClassPath(solutionDirectory, "ICurrentUserService.cs");
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            File.Delete(classPath.FullClassPath);
+        }
+
         public static void RemoveRoles(string solutionDirectory)
         {
             var classPath = ClassPathHelper.DomainEnumClassPath(solutionDirectory, "Role.cs");

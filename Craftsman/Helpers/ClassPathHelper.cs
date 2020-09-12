@@ -7,7 +7,12 @@
     using System.IO;
 
     public static class ClassPathHelper
-    {        
+    {
+        public static ClassPath WebApiServicesClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine("WebApi", "Services"), className);
+        }
+
         public static ClassPath IdentityProjectPath(string solutionDirectory)
         {
             return new ClassPath(solutionDirectory, "Infrastructure.Identity", "");
