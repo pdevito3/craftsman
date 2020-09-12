@@ -49,14 +49,17 @@
         public static string GetEntityFileText(string classNamespace, Entity entity)
         {
             var propString = EntityPropBuilder(entity.Properties);
-            var usingSieve = entity.Properties.Where(e => e.CanFilter == true || e.CanSort == true).ToList().Count > 0 ? $"    using Sieve.Attributes;{Environment.NewLine}" : "";
+            var usingSieve = entity.Properties.Where(e => e.CanFilter == true || e.CanSort == true).ToList().Count > 0 ? @$"{Environment.NewLine}    using Sieve.Attributes;" : "";
+            var inheritanceString = entity.Auditable ? $" : AuditableEntity" : "";
+            var auditableUsing = entity.Auditable ? @$"{Environment.NewLine}    using Domain.Common;" : "";
+
             return @$"namespace {classNamespace}
 {{
     using System;
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-{usingSieve}
-    public class {entity.Name}
+    using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{auditableUsing}
+    
+    public class {entity.Name}{inheritanceString}
     {{
 {propString}
 

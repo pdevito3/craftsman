@@ -50,6 +50,7 @@
             var authApp = "";
             var authSeeder = "";
             var authUsing = "";
+            var currentUserRegistration = "";
             if (template.AuthSetup.AuthMethod == "JWT")
             {
                 authServices = @"
@@ -68,7 +69,12 @@
     using Infrastructure.Identity;
     using Infrastructure.Identity.Entities;
     using Microsoft.AspNetCore.Identity;
-    using Infrastructure.Identity.Seeder;";
+    using Infrastructure.Identity.Seeder;
+    using WebApi.Services;
+    using Application.Interfaces;";
+
+                currentUserRegistration = $@"
+            services.AddSingleton<ICurrentUserService, CurrentUserService>();";
             }
 
             envName = envName == "Startup" ? "" : envName;
@@ -106,7 +112,7 @@
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
-            services.AddHealthChecks();
+            services.AddHealthChecks();{currentUserRegistration}
 
             #region Dynamic Services
             #endregion
@@ -168,7 +174,7 @@
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
-            services.AddHealthChecks();
+            services.AddHealthChecks();{currentUserRegistration}
 
             #region Dynamic Services
             #endregion

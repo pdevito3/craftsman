@@ -24,6 +24,7 @@
 {
     using Application.Interfaces;
     using Domain.Entities;
+    using Domain.Common;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using System.Threading;

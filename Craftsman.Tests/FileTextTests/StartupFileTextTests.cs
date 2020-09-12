@@ -172,6 +172,12 @@
     using Infrastructure.Persistence.Seeders;
     using Infrastructure.Persistence.Contexts;
     using WebApi.Extensions;
+    using Infrastructure.Identity;
+    using Infrastructure.Identity.Entities;
+    using Microsoft.AspNetCore.Identity;
+    using Infrastructure.Identity.Seeder;
+    using WebApi.Services;
+    using Application.Interfaces;
 
     public class StartupDevelopment
     {{
@@ -194,6 +200,7 @@
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
             services.AddHealthChecks();
+            services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
             #region Dynamic Services
             #endregion

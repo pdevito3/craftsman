@@ -56,5 +56,10 @@ namespace Craftsman.Models
         {
             get => Properties.Where(p => p.IsPrimaryKey).FirstOrDefault();
         }
+
+        /// <summary>
+        /// When set to true, will have the entity inherit from 'AuditableEntity'. Defaults to false.
+        /// </summary>
+        public bool Auditable { get; set; } = false;
     }
 }

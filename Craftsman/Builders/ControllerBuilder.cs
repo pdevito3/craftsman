@@ -54,6 +54,7 @@
             var creationDto = Utilities.GetDtoName(entityName, Dto.Creation);
             var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
             var primaryKeyProp = entity.PrimaryKeyProperty;
+            var auditable = entity.Auditable ? @$"{Environment.NewLine}    [Authorize]" : "";
 
             return @$"namespace {classNamespace}
 {{
@@ -73,7 +74,7 @@
 
     [ApiController]
     [Route(""api/{entityNamePlural}"")]
-    [ApiVersion(""1.0"")]
+    [ApiVersion(""1.0"")]{auditable}
     public class {entityNamePlural}Controller: Controller
     {{
         private readonly {Utilities.GetRepositoryName(entity.Name, true)} _{lowercaseEntityVariable}Repository;
