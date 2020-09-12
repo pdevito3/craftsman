@@ -6,6 +6,7 @@
     using Craftsman.Models;
     using System;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
@@ -57,13 +58,25 @@
             services.AddIdentityInfrastructure(_config);";
                 authApp = @"app.UseAuthentication();
             app.UseAuthorization();";
+                var userSeeders = "";
+                foreach(var user in template.AuthSetup.InMemoryUsers)
+                {
+                    var newLine = user == template.AuthSetup.InMemoryUsers.LastOrDefault() ? "" : $"{Environment.NewLine}           ";
+                    var seederName = Utilities.GetIdentitySeederName(user);
+                    userSeeders += @$"{seederName}.SeedUserAsync(userManager);{newLine}";
+                }
                 authSeeder = $@"
+
+            #region Identity Context Region - Do Not Delete
 
             var userManager = app.ApplicationServices.GetService<UserManager<ApplicationUser>>();
             var roleManager = app.ApplicationServices.GetService<RoleManager<IdentityRole>>();
             RoleSeeder.SeedDemoRolesAsync(roleManager);
-            SuperAdminSeeder.SeedDemoSuperAdminsAsync(userManager);
-            BasicUserSeeder.SeedDemoBasicUser(userManager);";
+
+            // user seeders -- do not delete this comment
+            {userSeeders}
+
+            #endregion";
 
                 authUsing = @$"
     using Infrastructure.Identity;

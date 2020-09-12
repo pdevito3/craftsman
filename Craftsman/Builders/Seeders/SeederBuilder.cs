@@ -31,7 +31,7 @@
 
                     using (FileStream fs = File.Create(classPath.FullClassPath))
                     {
-                        var data = SeederFunctions.GetSeederFileText(classPath.ClassNamespace, entity, template);
+                        var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, template);
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
 

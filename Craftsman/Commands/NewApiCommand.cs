@@ -122,6 +122,7 @@
 
             //seeders
             SeederBuilder.AddSeeders(solutionDirectory, template);
+            IdentitySeederBuilder.AddSeeders(solutionDirectory, template);
 
             //services
             SwaggerBuilder.AddSwagger(solutionDirectory, template);
