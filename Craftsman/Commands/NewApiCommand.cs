@@ -123,6 +123,7 @@
             //seeders
             SeederBuilder.AddSeeders(solutionDirectory, template);
             IdentitySeederBuilder.AddSeeders(solutionDirectory, template);
+            IdentityRoleBuilder.CreateRoles(solutionDirectory, template.AuthSetup.Roles);
 
             //services
             SwaggerBuilder.AddSwagger(solutionDirectory, template);
