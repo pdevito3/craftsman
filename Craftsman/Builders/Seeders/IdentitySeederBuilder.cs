@@ -21,7 +21,7 @@
             {
                 foreach (var user in template.AuthSetup.InMemoryUsers)
                 {
-                    var classPath = ClassPathHelper.SeederClassPath(solutionDirectory, $"{Utilities.GetIdentitySeederName(user)}.cs");
+                    var classPath = ClassPathHelper.IdentitySeederClassPath(solutionDirectory, $"{Utilities.GetIdentitySeederName(user)}.cs");
 
                     if (!Directory.Exists(classPath.ClassDirectory))
                         Directory.CreateDirectory(classPath.ClassDirectory);

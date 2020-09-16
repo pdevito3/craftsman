@@ -22,7 +22,7 @@
                     Directory.CreateDirectory(classPath.ClassDirectory);
 
                 if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+                    File.Delete(classPath.FullClassPath);
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {

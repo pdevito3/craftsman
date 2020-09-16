@@ -78,6 +78,11 @@
             return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Persistence","Seeders"), className);
         }
 
+        public static ClassPath IdentitySeederClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Identity", "Seeders"), className);
+        }
+
         public static ClassPath DbContextClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Persistence","Contexts"), className);

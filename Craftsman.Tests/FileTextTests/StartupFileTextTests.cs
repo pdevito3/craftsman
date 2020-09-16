@@ -175,7 +175,7 @@
     using Infrastructure.Identity;
     using Infrastructure.Identity.Entities;
     using Microsoft.AspNetCore.Identity;
-    using Infrastructure.Identity.Seeder;
+    using Infrastructure.Identity.Seeders;
     using WebApi.Services;
     using Application.Interfaces;
 
