@@ -67,6 +67,9 @@ namespace {classPath.ClassNamespace}
     using System;
     using System.Linq;
     using Xunit;
+    using Application.Interfaces;
+    using Moq;
+    using Infrastructure.Shared.Services;
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
@@ -85,6 +88,9 @@ namespace {classPath.ClassNamespace}
                 assertString += @$"                {entity.Name.LowercaseFirstLetter()}ById.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
 
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
+            var usingString = TestBuildingHelpers.GetUsingString(template);
+
             return $@"
         [Fact]
         public void Add{entity.Name}_NewRecordAddedWithProperValues()
@@ -93,12 +99,12 @@ namespace {classPath.ClassNamespace}
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());
+            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
 
             var fake{entity.Name} = new Fake{entity.Name} {{ }}.Generate();
 
             //Act
-            using (var context = new {template.DbContext.ContextName}(dbOptions))
+            {usingString}
             {{
                 context.{entity.Plural}.AddRange(fake{entity.Name});
                 context.SaveChanges();
