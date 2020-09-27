@@ -538,8 +538,6 @@ Auth is very complex, so there's a lot that goes into this, but here are some of
 * Any roles you'd like to give users as well as any demo users you'd like to add to the API when running locally will be added to the project as well as the startup for seeding.
 * Repository tests will be updated to handle the DbContext parameters
 
-$$$$$$$$$$$$$$$$$$$UPDATE THE ISSUE ON GITHUB TO DETAIL THE ISSUE THIS LINKS TO$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
 > IMPORTANT
 >
 > Note that adding auth will currently break the integration tests as described in [issue #3](https://github.com/pdevito3/craftsman/issues/3).
