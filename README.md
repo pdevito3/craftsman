@@ -390,45 +390,47 @@ Entities:
 
 So let's say that we had a 'Sale' entity that has a `ProductId` property that acts as a foreign key to another 'Product' entity:
 
-```csharp
-- Name: Sale
-  Properties:
-  - Name: SaleId
-    IsPrimaryKey: true
-    Type: int
-    CanFilter: true
-  - Name: ProductId
-    Type: int
-    CanFilter: true
-  - Name: SaleDate
-    Type: DateTimeOffset?
-    CanFilter: true
-  - Name: SaleAmount
-    Type: int
-    CanFilter: true
+```yaml
+Entities:
+  - Name: Sale
+    Properties:
+    - Name: SaleId
+      IsPrimaryKey: true
+      Type: int
+      CanFilter: true
+    - Name: ProductId
+      Type: int
+      CanFilter: true
+    - Name: SaleDate
+      Type: DateTimeOffset?
+      CanFilter: true
+    - Name: SaleAmount
+      Type: int
+      CanFilter: true
 ```
 
 If we wanted to return the product in our responses, we could add an additional `Product` property of type `Product` that links to the primary key of `ProductId` in our `Product` entity:
 
 ```yaml
-- Name: Sale
-  Properties:
-  - Name: SaleId
-    IsPrimaryKey: true
-    Type: int
-    CanFilter: true
-  - Name: ProductId
-    Type: int
-    CanFilter: true
-  - Name: SaleDate
-    Type: DateTimeOffset?
-    CanFilter: true
-  - Name: SaleAmount
-    Type: int
-    CanFilter: true
-  - Name: Product
-    Type: Product
-    ForeignKeyPropName: ProductId
+Entities:
+  - Name: Sale
+    Properties:
+    - Name: SaleId
+      IsPrimaryKey: true
+      Type: int
+      CanFilter: true
+    - Name: ProductId
+      Type: int
+      CanFilter: true
+    - Name: SaleDate
+      Type: DateTimeOffset?
+      CanFilter: true
+    - Name: SaleAmount
+      Type: int
+      CanFilter: true
+    - Name: Product
+      Type: Product
+      ForeignKeyPropName: ProductId
 ```
 
 > Note that adding foreign keys will currently break the `Post` and `Update` integration tests as described in [issue #2](https://github.com/pdevito3/craftsman/issues/2).
@@ -578,7 +580,7 @@ The configuration for setting up authentication and authorization in your API.
 
 #### Auditable Entities
 
-If you'd like, you can set your entities to be auditable by having them inherit from `AuditableEntity`. When in use, any entity that uses this inheritance will gain four new fields :
+If you'd like, you can set your entities to be auditable by setting the `Auditable` option to true. This will have the entity inherit from `AuditableEntity`. When in use, any entity that uses this inheritance will gain four new fields:
 
 * CreatedBy: The username of the user who created the record
 * CreatedOn: The DateTime that the record was created
@@ -586,6 +588,20 @@ If you'd like, you can set your entities to be auditable by having them inherit 
 * LastUpdatedOn: The DateTime of the user who created the record
 
 The way this works is by overriding the `SaveChanges()` and `SaveChangesAsync()` methods in the Persistent DbContext and using the `DateTimeService` and `CurrentUserService` to populate the values appropriately based on the EntityState passed into the method.
+
+##### Example
+
+```yaml
+Entities:
+  - Name: Supplier
+    Auditable: true
+    Properties:
+      - Name: SupplierId
+        IsPrimaryKey: true
+        #more properties here
+```
+
+
 
 #### Wait, I Don't Need Email!
 
