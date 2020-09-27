@@ -13,9 +13,9 @@
             return new ClassPath(solutionDirectory, Path.Combine("WebApi", "Services"), className);
         }
 
-        public static ClassPath IdentityProjectPath(string solutionDirectory)
+        public static ClassPath IdentityProjectPath(string solutionDirectory, string className = "")
         {
-            return new ClassPath(solutionDirectory, "Infrastructure.Identity", "");
+            return new ClassPath(solutionDirectory, "Infrastructure.Identity", className);
         }
 
         public static ClassPath ControllerClassPath(string solutionDirectory, string className, string version = "v1")

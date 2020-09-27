@@ -128,9 +128,12 @@
 
             //services
             SwaggerBuilder.AddSwagger(solutionDirectory, template);
+            
+            if(template.AuthSetup.AuthMethod == "JWT")
+                IdentityServicesModifier.SetIdentityOptions(solutionDirectory, template.AuthSetup);
 
             //final
-            if(template.AddGit)
+            if (template.AddGit)
                 GitSetup(solutionDirectory);
         }
 
