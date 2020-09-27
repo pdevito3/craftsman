@@ -51,10 +51,11 @@
 
         public static string GetContextFileText(string classNamespace, ApiTemplate template)
         {
-            return @$"namespace {classNamespace}
+            var nonAuth = @$"namespace {classNamespace}
 {{
     using Application.Interfaces;
     using Domain.Entities;
+    using Domain.Common;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using System.Threading;
@@ -72,6 +73,8 @@
         #endregion
     }}
 }}";
+
+            return template.AuthSetup.AuthMethod == "JWT" ? GetAuditableSaveOverride(classNamespace, template) : nonAuth;
         }
 
         public static string GetDbSetText(List<Entity> entities)
@@ -133,6 +136,93 @@
             File.Move(tempPath, classPath.FullClassPath);
 
             GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
+        }
+
+        public static string GetAuditableSaveOverride(string classNamespace, ApiTemplate template)
+        {
+            return @$"namespace {classNamespace}
+{{
+    using Application.Interfaces;
+    using Domain.Entities;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Domain.Common;
+    using System.Reflection;
+
+    public class {template.DbContext.ContextName} : DbContext
+    {{
+        private readonly IDateTimeService _dateTimeService;
+        private readonly ICurrentUserService _currentUserService;
+
+        public {template.DbContext.ContextName}(
+            DbContextOptions<{template.DbContext.ContextName}> options,
+            ICurrentUserService currentUserService,
+            IDateTimeService dateTimeService) : base(options) 
+        {{
+            _currentUserService = currentUserService;
+            _dateTimeService = dateTimeService;
+        }}
+
+        #region DbSet Region - Do Not Delete
+{GetDbSetText(template.Entities)}
+        #endregion
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {{
+            foreach (EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())
+            {{
+                switch (entry.State)
+                {{
+                    case EntityState.Added:
+                        entry.Entity.CreatedBy = _currentUserService.UserId;
+                        entry.Entity.CreatedOn = _dateTimeService.NowUtc;
+                        break;
+
+                    case EntityState.Modified:
+                        entry.Entity.LastModifiedBy = _currentUserService.UserId;
+                        entry.Entity.LastModifiedOn = _dateTimeService.NowUtc;
+                        break;
+                }}
+            }}
+
+            int result = await base.SaveChangesAsync(cancellationToken);
+
+            return result;
+        }}
+
+        public override int SaveChanges()
+        {{
+            foreach (EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())
+            {{
+                switch (entry.State)
+                {{
+                    case EntityState.Added:
+                        entry.Entity.CreatedBy = _currentUserService.UserId;
+                        entry.Entity.CreatedOn = _dateTimeService.NowUtc;
+                        break;
+
+                    case EntityState.Modified:
+                        entry.Entity.LastModifiedBy = _currentUserService.UserId;
+                        entry.Entity.LastModifiedOn = _dateTimeService.NowUtc;
+                        break;
+                }}
+            }}
+
+            int result = base.SaveChanges();
+
+            return result;
+        }}
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {{
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            base.OnModelCreating(builder);
+        }}
+    }}
+}}";
         }
     }
 }

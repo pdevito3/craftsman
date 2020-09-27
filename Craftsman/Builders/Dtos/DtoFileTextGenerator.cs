@@ -49,10 +49,15 @@
         public static string GetDtoText(ClassPath dtoClassPath, Entity entity, Dto dto)
         {
             var propString = dto == Dto.Creation || dto == Dto.Update ? "" : DtoPropBuilder(entity.Properties, dto);
-            var manipulationString = dto == Dto.Creation || dto == Dto.Update ? $": {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}" : "";
-            var abstractString = dto == Dto.Manipulation ? $"abstract" : "";
             var fkUsingStatements = "";
+            var abstractString = dto == Dto.Manipulation ? $"abstract" : "";
+            var auditableUsing = entity.Auditable ? @$"{Environment.NewLine}    using Domain.Common;" : "";
 
+            var inheritanceString = "";
+            if(dto == Dto.Creation || dto == Dto.Update)
+                inheritanceString = $": {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}";
+            else if(dto == Dto.Read && entity.Auditable)
+                inheritanceString = $": AuditableEntity";
 
             if (dto == Dto.Read)
             {
@@ -66,9 +71,9 @@
 {{
     using System;
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;{fkUsingStatements}
+    using System.ComponentModel.DataAnnotations.Schema;{fkUsingStatements}{auditableUsing}
 
-    public {abstractString} class {Utilities.GetDtoName(entity.Name, dto)} {manipulationString}
+    public {abstractString} class {Utilities.GetDtoName(entity.Name, dto)} {inheritanceString}
     {{
 {propString}
 

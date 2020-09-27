@@ -1,8 +1,10 @@
 # Craftsman
 
 <p>
-    <a href="https://github.com/pdevito3/craftsman/releases"><img src="https://img.shields.io/nuget/v/craftsman.svg" alt="Latest Release"></a>    
+    <a href="https://github.com/pdevito3/craftsman/releases"><img src="https://img.shields.io/nuget/v/craftsman.svg" alt="Latest Release"></a>   
+    <a href="https://github.com/pdevito3/craftsman/blob/master/LICENSE.txt"><img src ="https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000" alt="License"></a>
 </p>
+
 
 
 ## Description
@@ -348,6 +350,7 @@ An list of properties assigned to an entity.
 | CanManipulate      | No       | When set to false, you will not be able to update this property when calling the associated endpoint. When set to `false`, the property will be able to be established when using the POST endpoint, but will not be able to be updated after that. This is managed by the DTOs if you want to manually adjust this. | true<br/>*false for primary key* |
 | DefaultValue       | No       | Allows you to add a default value to a property. Note that it should be entered exactly as you'd want it, so a string would be something like `"My Default Value"`, a bool might be `true`, and an int might be `0` | *None*                           |
 | ForeignKeyPropName | No       | When adding an object linked by a foreign key, use `ForeignKeyPropName` to enter the name of the property that acts as the foreign key | *None*                           |
+| Auditable          | No       | This will determine if an entity is auditable or not. See [Auditable Entities](#auditable-entities) for more information | false                            |
 
 #### Example
 
@@ -464,7 +467,7 @@ SwaggerConfig:
 
 
 
-### Add Git (Optional)
+### Managing Git (Optional)
 
 By default, Craftsman will do some initial git setup for you (`git init`, `git add -a`, `git commit -m "Initial commit"`, and add a `.gitignore`). If you'd like to skip this and do it yourself, you can set the `AddGit` option to `false`.
 
@@ -517,6 +520,127 @@ Environments:
   - EnvironmentName: Local
     ConnectionString: "Data Source=localhost\\SqlExpress;Initial Catalog=MyDbName;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"
     ProfileName: Local
+```
+
+
+
+### Adding Authentication and Authorization (Optional) - *Prerelease*
+
+Adding Auth to your API to control who is accessing resources and whether or not they're allowed to access them is a very common need. 
+
+If you'd like to add Auth to your API, you can use the `AuthSetup` option to lay out your Auth configuration. For now, this is based on the well put together model by @iammukesh [here](https://github.com/iammukeshm/CleanArchitecture.WebApi) and is focused on managing custom login credentials using ASP.NET Core Identity with plans to configure social logins and other OAuth providers in the future. 
+
+Auth is very complex, so there's a lot that goes into this, but here are some of the major features that this will add to your API:
+
+* In line with the norms of a clean architecture, a new `Infrastructure.Identity` project will be added to the solution. This means that you user information will be stored in a separate database. 
+* New `appsettings.{environment}.json` options will be added with your JWT settings as well as any email settings for sending email notifications. These will likely have more flexibility in the future to point to secret manager or a 3rd party secret manager like AWS or Azure.
+* Db context will be expanded to capture user data whenever a `Save` operation is performed for all entities that inherit from `AuditableEntity`. More details in the [auditable entities section](#auditable-entities).
+* Any roles you'd like to give users as well as any demo users you'd like to add to the API when running locally will be added to the project as well as the startup for seeding.
+* Repository tests will be updated to handle the DbContext parameters
+
+$$$$$$$$$$$$$$$$$$$UPDATE THE ISSUE ON GITHUB TO DETAIL THE ISSUE THIS LINKS TO$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+> IMPORTANT
+>
+> Note that adding auth will currently break the integration tests as described in [issue #3](https://github.com/pdevito3/craftsman/issues/3).
+
+#### AuthSetup Properties
+
+The configuration for setting up authentication and authorization in your API.
+
+| Name                 | Required | Description                                                  | Default |
+| -------------------- | -------- | ------------------------------------------------------------ | ------- |
+| AuthMethod           | Yes      | The method used for authentication in your API. For now, the only valid value is `JWT` | *None*  |
+| Roles                | Yes      | A list of strings will represent each role that a user can be assigned. | *None*  |
+| InMemoryUsers        | Yes      | A list of users that can be used when running your API locally using the `Development` environment | *None*  |
+| IdentityRequirements | No       | The configuration for the identity options that configure the password and user requirements when creating an account. | *None*  |
+
+##### InMemoryUsers Properties
+
+| Name       | Required                  | Description                                                  | Default               |
+| ---------- | ------------------------- | ------------------------------------------------------------ | --------------------- |
+| FirstName  | Yes                       | The first name of the user                                   | *None*                |
+| LastName   | Yes                       | The last name of the user                                    | *None*                |
+| Email      | Yes                       | The email address for the user                               | *None*                |
+| UserName   | Yes                       | The username for the user                                    | *None*                |
+| Password   | Yes                       | The password for the user. This is plain text, but remember, this is just for local use and will have no bearing on anything outside of that. **Make sure that the password meets the minimum required password standards, otherwise it will not work.** | *None*                |
+| Roles      | Yes                       | A list of authorized roles that the use has access to. Note that they need to match the roles laid out in the `Roles` property in `AuthSetup` | *None*                |
+| SeederName | Optional, but recommended | This is the name of the actual class the the user's seeder will be built in. Depending on the context of the user it could be something generic like `StandardUserSeeder` or `AdminUserSeeder` or more specific like `JohnDoeSeeder` | {user.UserName}Seeder |
+
+##### IdentityRequirements Properties
+
+| Name                   | Required | Description                                                  | Default |
+| ---------------------- | -------- | ------------------------------------------------------------ | ------- |
+| RequiredLength         | No       | The minimum required length of the password (integer)        | 12      |
+| RequireDigit           | No       | A boolean designation for whether or not a digit is required in the password | true    |
+| RequireLowercase       | No       | A boolean designation for whether or not a lowercase letter is required in the password | true    |
+| RequireUppercase       | No       | A boolean designation for whether or not an uppercase letter is required in the password | true    |
+| RequireNonAlphanumeric | No       | A boolean designation for whether or not a nonalphanumeric character is required in the password | false   |
+| RequireUniqueEmail     | No       | A boolean designation for whether or not an email must be unique when creating an account | true    |
+
+#### Auditable Entities
+
+If you'd like, you can set your entities to be auditable by having them inherit from `AuditableEntity`. When in use, any entity that uses this inheritance will gain four new fields :
+
+* CreatedBy: The username of the user who created the record
+* CreatedOn: The DateTime that the record was created
+* LastUpdatedBy: The username of the user who last updated the record
+* LastUpdatedOn: The DateTime of the user who created the record
+
+The way this works is by overriding the `SaveChanges()` and `SaveChangesAsync()` methods in the Persistent DbContext and using the `DateTimeService` and `CurrentUserService` to populate the values appropriately based on the EntityState passed into the method.
+
+#### Wait, I Don't Need Email!
+
+For now, the email service has to be removed manually from the Auth setup. If you'd like to remove it, you can delete the following:
+
+* New `appsettings.{environment}.json` options for email
+
+* `Infrastructure.Shared.Services.EmailService`
+
+* `Application.Interfaces.IEmailService`
+
+* The following lines from `Infrastructure.Shared.ServiceRegistration`
+
+  ```csharp
+  services.Configure<MailSettings>(_config.GetSection("MailSettings"));
+  services.AddTransient<IEmailService, EmailService>();
+  ```
+
+* Update `Infrastructure.Identity.Services.AccountService` to no longer use the email service. This would include removing it as a parameter and updating the logic for `ForgotPassword`, `ResetPassword`, and `RegisterAsync`.
+
+* Remove the `MailKit` and `MimeKit` dependencies in `Infrastructure.Shared`
+
+#### Example
+
+```yaml
+SolutionName: VetClinic.Api
+Entities:
+#entity details
+AddGit: false
+AuthSetup:
+  AuthMethod: JWT
+  Roles:
+    - Basic
+    - Admin
+    - SuperAdmin
+  InMemoryUsers:
+    - FirstName: John
+      LastName: Doe
+      Email: jdoe@gmail.com
+      UserName: jdoe
+      Password: This long password 2
+      AuthorizedRoles:
+        - Basic
+        - Admin
+        - SuperAdmin
+      SeederName: AdminSeeder
+  IdentityRequirements:
+    RequiredLength: 6
+    RequireDigit: false
+    RequireLowercase: false
+    RequireUppercase: false
+    RequireNonAlphanumeric: false
+    RequireUniqueEmail: false
 ```
 
 

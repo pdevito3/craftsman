@@ -11,6 +11,7 @@
     using Craftsman.Models;
     using System;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using static Helpers.ConsoleWriter;
 
@@ -33,7 +34,7 @@
             WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
         }
 
-        public static void Run(string filePath, string solutionDirectory)
+        public static void Run(string filePath, string solutionDirectory, IFileSystem fileSystem)
         {
             try
             {
@@ -52,7 +53,7 @@
                 FileParsingHelper.RunPrimaryKeyGuard(template);
 
                 // add all files based on the given template config
-                RunEntityBuilders(solutionDirectory, template);
+                RunEntityBuilders(solutionDirectory, template, fileSystem);
 
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
@@ -74,12 +75,12 @@
             }
         }
 
-        private static void RunEntityBuilders(string solutionDirectory, ApiTemplate template)
+        private static void RunEntityBuilders(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
         {
             //entities
             foreach (var entity in template.Entities)
             {
-                EntityBuilder.CreateEntity(solutionDirectory, entity);
+                EntityBuilder.CreateEntity(solutionDirectory, entity, fileSystem);
                 DtoBuilder.CreateDtos(solutionDirectory, entity);
 
                 RepositoryBuilder.AddRepository(solutionDirectory, entity, template.DbContext);

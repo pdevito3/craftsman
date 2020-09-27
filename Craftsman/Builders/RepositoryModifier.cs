@@ -79,30 +79,6 @@
                 }
             }
         }
-
-        private static string GetProfileText(ApiEnvironment env)
-        {
-            if (env.EnvironmentName == "Development")
-                return $@"
-    ""{env.ProfileName}"": {{
-      ""commandName"": ""Project"",
-      ""launchBrowser"": true,
-      ""launchUrl"": ""swagger"",
-      ""environmentVariables"": {{
-        ""ASPNETCORE_ENVIRONMENT"": ""{env.EnvironmentName}""
-      }},
-      ""applicationUrl"": ""http://localhost:5000""
-    }},";
-            else
-                return $@"
-    ""{env.ProfileName}"": {{
-      ""commandName"": ""Project"",
-      ""launchBrowser"": false,
-      ""environmentVariables"": {{
-        ""ASPNETCORE_ENVIRONMENT"": ""{env.EnvironmentName}""
-      }}
-    }},";
-        }
     }
 }
 

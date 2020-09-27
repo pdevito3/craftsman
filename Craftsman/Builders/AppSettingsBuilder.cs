@@ -11,11 +11,12 @@
 
     public class AppSettingsBuilder
     {
-        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName)
+        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, ApiTemplate template)
         {
             try
             {
-                var classPath = ClassPathHelper.AppSettingsClassPath(solutionDirectory, $"{Utilities.GetAppSettingsName(env.EnvironmentName)}");
+                var appSettingFilename = env.EnvironmentName == "Startup" ? "" : Utilities.GetAppSettingsName(env.EnvironmentName);
+                var classPath = ClassPathHelper.AppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +27,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetAppSettingsText(env, dbName);
+                    data = GetAppSettingsText(env, dbName, template);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,8 +45,32 @@
             }
         }
 
-        private static string GetAppSettingsText(ApiEnvironment env, string dbName)
+        private static string GetAppSettingsText(ApiEnvironment env, string dbName, ApiTemplate template)
         {
+            var jwtSettings = "";
+            var mailSettings = "";
+            
+            if(template.AuthSetup.AuthMethod == "JWT")
+            {
+                jwtSettings = $@"
+  ""JwtSettings"": {{
+    ""Key"": ""{env.JwtSettings.Key}"",
+    ""Issuer"": ""{env.JwtSettings.Issuer}"",
+    ""Audience"": ""{env.JwtSettings.Audience}"",
+    ""DurationInMinutes"": {env.JwtSettings.DurationInMinutes}
+  }},";
+            }
+
+            mailSettings = @$"
+  ""MailSettings"": {{
+    ""EmailFrom"": ""{env.MailSettings.EmailFrom}"",
+    ""SmtpHost"": ""{env.MailSettings.SmtpHost}"",
+    ""SmtpPort"": ""{env.MailSettings.SmtpPort}"",
+    ""SmtpUser"": ""{env.MailSettings.SmtpUser}"",
+    ""SmtpPass"": ""{env.MailSettings.SmtpPass}"",
+    ""DisplayName"": ""{env.MailSettings.DisplayName}""
+  }},";
+
             if(env.EnvironmentName == "Development")
 
                 return @$"{{
@@ -56,7 +81,7 @@
       ""Microsoft"": ""Warning"",
       ""Microsoft.Hosting.Lifetime"": ""Information""
     }}
-  }},
+  }},{jwtSettings}{mailSettings}
   ""AllowedHosts"": ""*""
 }}
 ";

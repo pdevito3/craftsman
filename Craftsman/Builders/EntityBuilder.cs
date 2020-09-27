@@ -7,26 +7,26 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
-    using System.Reflection.Emit;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
     public static class EntityBuilder
     {
-        public static void CreateEntity(string solutionDirectory, Entity entity)
+        public static void CreateEntity(string solutionDirectory, Entity entity, IFileSystem fileSystem)
         {
             try
             {
                 var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs");
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+                if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                    fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
+                if (fileSystem.File.Exists(classPath.FullClassPath))
                     throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
+                using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = GetEntityFileText(classPath.ClassNamespace, entity);
                     fs.Write(Encoding.UTF8.GetBytes(data));
@@ -49,14 +49,17 @@
         public static string GetEntityFileText(string classNamespace, Entity entity)
         {
             var propString = EntityPropBuilder(entity.Properties);
-            var usingSieve = entity.Properties.Where(e => e.CanFilter == true || e.CanSort == true).ToList().Count > 0 ? $"    using Sieve.Attributes;{Environment.NewLine}" : "";
+            var usingSieve = entity.Properties.Where(e => e.CanFilter == true || e.CanSort == true).ToList().Count > 0 ? @$"{Environment.NewLine}    using Sieve.Attributes;" : "";
+            var inheritanceString = entity.Auditable ? $" : AuditableEntity" : "";
+            var auditableUsing = entity.Auditable ? @$"{Environment.NewLine}    using Domain.Common;" : "";
+
             return @$"namespace {classNamespace}
 {{
     using System;
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-{usingSieve}
-    public class {entity.Name}
+    using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{auditableUsing}
+    
+    public class {entity.Name}{inheritanceString}
     {{
 {propString}
 

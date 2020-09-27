@@ -18,6 +18,7 @@
     using System.Data;
     using System.Diagnostics;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
@@ -41,7 +42,7 @@
             WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
         }
 
-        public static void Run(string filePath, string buildSolutionDirectory)
+        public static void Run(string filePath, string buildSolutionDirectory, IFileSystem fileSystem)
         {
             try
             {
@@ -67,7 +68,7 @@
                 ApiTemplateCleaner.CleanTemplateFilesAndDirectories(solutionDirectory, template);
 
                 // add all files based on the given template config
-                RunTemplateBuilders(solutionDirectory, template);
+                RunTemplateBuilders(solutionDirectory, template, fileSystem);
 
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
@@ -90,7 +91,7 @@
             }
         }
 
-        private static void RunTemplateBuilders(string solutionDirectory, ApiTemplate template)
+        private static void RunTemplateBuilders(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
         {
             // dbcontext
             DbContextBuilder.CreateDbContext(solutionDirectory, template);
@@ -98,7 +99,7 @@
             //entities
             foreach (var entity in template.Entities)
             {
-                EntityBuilder.CreateEntity(solutionDirectory, entity);
+                EntityBuilder.CreateEntity(solutionDirectory, entity, fileSystem);
                 DtoBuilder.CreateDtos(solutionDirectory, entity);
 
                 RepositoryBuilder.AddRepository(solutionDirectory, entity, template.DbContext);
@@ -121,12 +122,18 @@
 
             //seeders
             SeederBuilder.AddSeeders(solutionDirectory, template);
+            IdentitySeederBuilder.AddSeeders(solutionDirectory, template);
+            IdentityRoleBuilder.CreateRoles(solutionDirectory, template.AuthSetup.Roles);
+            RoleSeedBuilder.SeedRoles(solutionDirectory, template);
 
             //services
             SwaggerBuilder.AddSwagger(solutionDirectory, template);
+            
+            if(template.AuthSetup.AuthMethod == "JWT")
+                IdentityServicesModifier.SetIdentityOptions(solutionDirectory, template.AuthSetup);
 
             //final
-            if(template.AddGit)
+            if (template.AddGit)
                 GitSetup(solutionDirectory);
         }
 
@@ -237,8 +244,8 @@
 
             foreach (var env in template.Environments)
             {
-                StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName);
-                AppSettingsBuilder.CreateAppSettings(solutionDirectory, env, template.DbContext.DatabaseName);
+                StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName, template);
+                AppSettingsBuilder.CreateAppSettings(solutionDirectory, env, template.DbContext.DatabaseName, template);
                 LaunchSettingsModifier.AddProfile(solutionDirectory, env);
 
                 //services

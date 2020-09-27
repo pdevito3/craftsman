@@ -20,12 +20,26 @@
             SeederRemover.RemoveDirectory(solutionDirectory);
             ControllerRemover.RemoveDirectory(solutionDirectory);
 
+
             TestFakesRemover.RemoveDirectory(solutionDirectory, templEntityName, template);
             TestRepositoryRemover.RemoveDirectory(solutionDirectory, templEntityName, template);
             TestIntegrationRemover.RemoveDirectory(solutionDirectory, templEntityName, template);
 
             InfrastructurePersistenceServicesCleaner.CleanServiceRegistration(solutionDirectory);
-            StartupCleaner.CleanStartup(solutionDirectory);
+            StartupCleaner.CleanStartup(solutionDirectory, template);
+
+            if(template.AuthSetup.AuthMethod != "JWT")
+            {
+                IdentityRemover.RemoveProject(solutionDirectory);
+                IdentityRemover.RemoveController(solutionDirectory);
+                IdentityRemover.RemoveDtos(solutionDirectory);
+                IdentityRemover.RemoveIAccountService(solutionDirectory);
+                IdentityRemover.RemoveAuditableEntity(solutionDirectory);
+                IdentityRemover.RemoveJwtSettings(solutionDirectory);
+                IdentityRemover.RemoveRoles(solutionDirectory);
+                IdentityRemover.RemoveCurrentUserService(solutionDirectory);
+                IdentityRemover.RemoveCurrentUserServiceInterface(solutionDirectory);
+            }
         }
     }
 }

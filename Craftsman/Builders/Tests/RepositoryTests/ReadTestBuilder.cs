@@ -61,7 +61,6 @@ namespace {classPath.ClassNamespace}
     using {template.SolutionName}.Tests.Fakes.{entity.Name};
     using Infrastructure.Persistence.Contexts;
     using Infrastructure.Persistence.Repositories;
-    using Infrastructure.Shared.Shared;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Sieve.Models;
@@ -69,6 +68,9 @@ namespace {classPath.ClassNamespace}
     using System;
     using System.Linq;
     using Xunit;
+    using Application.Interfaces;
+    using Moq;
+    using Infrastructure.Shared.Services;
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
@@ -86,11 +88,15 @@ namespace {classPath.ClassNamespace}
         private static string GetEntityTest(ApiTemplate template, Entity entity)
         {
             var assertString = "";
+
             foreach(var prop in entity.Properties)
             {
                 var newLine = prop == entity.Properties.LastOrDefault() ? "" : $"{Environment.NewLine}";
                 assertString += @$"                {entity.Name.LowercaseFirstLetter()}ById.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
+
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
+            var usingString = TestBuildingHelpers.GetUsingString(template);
 
             return $@"
         [Fact]
@@ -100,12 +106,12 @@ namespace {classPath.ClassNamespace}
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());
+            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
 
             var fake{entity.Name} = new Fake{entity.Name} {{ }}.Generate();
 
             //Act
-            using (var context = new {template.DbContext.ContextName}(dbOptions))
+            {usingString}
             {{
                 context.{entity.Plural}.AddRange(fake{entity.Name});
                 context.SaveChanges();
@@ -121,6 +127,9 @@ namespace {classPath.ClassNamespace}
 
         private static string GetEntitiesTest(ApiTemplate template, Entity entity)
         {
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
+            var usingString = TestBuildingHelpers.GetUsingString(template);
+
             return $@"
         [Fact]
         public void Get{entity.Plural}_CountMatchesAndContainsEquivalentObjects()
@@ -129,14 +138,14 @@ namespace {classPath.ClassNamespace}
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());
+            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
 
             var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
 
             //Act
-            using (var context = new {template.DbContext.ContextName}(dbOptions))
+            {usingString}
             {{
                 context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
                 context.SaveChanges();
@@ -161,6 +170,9 @@ namespace {classPath.ClassNamespace}
 
         private static string GetEntitiesWithPageSizeTest(ApiTemplate template, Entity entity)
         {
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
+            var usingString = TestBuildingHelpers.GetUsingString(template);
+
             return $@"
         [Fact]
         public void Get{entity.Plural}_ReturnExpectedPageSize()
@@ -169,14 +181,14 @@ namespace {classPath.ClassNamespace}
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());
+            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
 
             var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
 
             //Act
-            using (var context = new {template.DbContext.ContextName}(dbOptions))
+            {usingString}
             {{
                 context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
                 context.SaveChanges();
@@ -200,6 +212,9 @@ namespace {classPath.ClassNamespace}
 
         private static string GetEntitiesWithPageSizeandNumberTest(ApiTemplate template, Entity entity)
         {
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
+            var usingString = TestBuildingHelpers.GetUsingString(template);
+
             return $@"
         [Fact]
         public void Get{entity.Plural}_ReturnExpectedPageNumberAndSize()
@@ -208,14 +223,14 @@ namespace {classPath.ClassNamespace}
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());
+            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
 
             var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
 
             //Act
-            using (var context = new {template.DbContext.ContextName}(dbOptions))
+            {usingString}
             {{
                 context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
                 context.SaveChanges();
@@ -265,7 +280,10 @@ namespace {classPath.ClassNamespace}
             {
                 //no tests generated for other types at this time
                 return "";
-            }            
+            }
+
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
+            var usingString = TestBuildingHelpers.GetUsingString(template);
 
             return $@"
         [Fact]
@@ -275,7 +293,7 @@ namespace {classPath.ClassNamespace}
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());
+            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
 
             var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
             fake{entity.Name}One.{prop.Name} = {bravo};
@@ -287,7 +305,7 @@ namespace {classPath.ClassNamespace}
             fake{entity.Name}Three.{prop.Name} = {charlie};
 
             //Act
-            using (var context = new {template.DbContext.ContextName}(dbOptions))
+            {usingString}
             {{
                 context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
                 context.SaveChanges();
@@ -336,6 +354,9 @@ namespace {classPath.ClassNamespace}
                 return "";
             }
 
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
+            var usingString = TestBuildingHelpers.GetUsingString(template);
+
             return $@"
         [Fact]
         public void Get{entity.Plural}_List{prop.Name}SortedInDescOrder()
@@ -344,7 +365,7 @@ namespace {classPath.ClassNamespace}
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());
+            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
 
             var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
             fake{entity.Name}One.{prop.Name} = {bravo};
@@ -356,7 +377,7 @@ namespace {classPath.ClassNamespace}
             fake{entity.Name}Three.{prop.Name} = {charlie};
 
             //Act
-            using (var context = new {template.DbContext.ContextName}(dbOptions))
+            {usingString}
             {{
                 context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
                 context.SaveChanges();
@@ -427,6 +448,9 @@ namespace {classPath.ClassNamespace}
                     return "";
                 }
 
+                var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
+                var usingString = TestBuildingHelpers.GetUsingString(template);
+
                 filterTests += $@"
         [Fact]
         public void Get{entity.Plural}_Filter{prop.Name}ListWithExact()
@@ -435,7 +459,7 @@ namespace {classPath.ClassNamespace}
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());
+            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
 
             var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
             fake{entity.Name}One.{prop.Name} = {alpha};
@@ -447,7 +471,7 @@ namespace {classPath.ClassNamespace}
             fake{entity.Name}Three.{prop.Name} = {charlie};
 
             //Act
-            using (var context = new {template.DbContext.ContextName}(dbOptions))
+            {usingString}
             {{
                 context.{entity.Plural}.AddRange(fake{entity.Name}One, fake{entity.Name}Two, fake{entity.Name}Three);
                 context.SaveChanges();

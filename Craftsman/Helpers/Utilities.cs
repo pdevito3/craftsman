@@ -34,6 +34,11 @@
             return isInterface ? $"I{entityName}Repository" : $"{entityName}Repository";
         }
 
+        public static string GetIdentitySeederName(ApplicationUser user)
+        {
+            return user.SeederName ?? $"{user.UserName}Seeder" ?? $"{user.FirstName.Substring(0, 1)}{user.LastName}Seeder";
+        }
+
         public static string GetControllerName(string entityName)
         {
             return $"{entityName}Controller";

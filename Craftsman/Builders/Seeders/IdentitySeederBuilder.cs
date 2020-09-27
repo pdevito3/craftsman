@@ -13,15 +13,15 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class SeederModifier
+    public class IdentitySeederBuilder
     {
         public static void AddSeeders(string solutionDirectory, ApiTemplate template)
         {
             try
             {
-                foreach (var entity in template.Entities)
+                foreach (var user in template.AuthSetup.InMemoryUsers)
                 {
-                    var classPath = ClassPathHelper.SeederClassPath(solutionDirectory, $"{Utilities.GetSeederName(entity)}.cs");
+                    var classPath = ClassPathHelper.IdentitySeederClassPath(solutionDirectory, $"{Utilities.GetIdentitySeederName(user)}.cs");
 
                     if (!Directory.Exists(classPath.ClassDirectory))
                         Directory.CreateDirectory(classPath.ClassDirectory);
@@ -31,14 +31,14 @@
 
                     using (FileStream fs = File.Create(classPath.FullClassPath))
                     {
-                        var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, template);
+                        var data = SeederFunctions.GetIdentitySeederFileText(classPath.ClassNamespace, user);
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
 
                     GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
                 }
 
-                RegisterAllNewSeeders(solutionDirectory, template);
+                //Confirm all seeder registrations done in startup, if not, do here?
             }
             catch (FileAlreadyExistsException e)
             {
@@ -47,12 +47,12 @@
             }
             catch (Exception e)
             {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
+                WriteError($"An unhandled exception occured when running the API command.\nThe error details are: \n{e.Message}");
                 throw;
             }
         }
 
-        private static void RegisterAllNewSeeders(string solutionDirectory, ApiTemplate template)
+        private static void RegisterAllSeeders(string solutionDirectory, ApiTemplate template)
         {
             //TODO move these to a dictionary to lookup and overwrite if I want
             var repoTopPath = "WebApi";
@@ -61,7 +61,7 @@
             if (!Directory.Exists(entityDir))
                 throw new DirectoryNotFoundException($"The `{entityDir}` directory could not be found.");
 
-            var pathString = Path.Combine(entityDir, $"Startup.cs");
+            var pathString = Path.Combine(entityDir, $"StartupDevelopment.cs");
             if (!File.Exists(pathString))
                 throw new FileNotFoundException($"The `{pathString}` file could not be found.");
 
@@ -74,7 +74,7 @@
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
-                        if (line.Contains($"#region {template.DbContext.ContextName} Seeder Region"))
+                        if (line.Contains("#region Entity Context Region"))
                         {
                             newText += @$"{Environment.NewLine}{GetSeederContextText(template)}";
                         }
@@ -89,6 +89,7 @@
             File.Move(tempPath, pathString);
 
             GlobalSingleton.AddUpdatedFile(pathString.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
+            //WriteWarning($"TODO Need a message for the update of Startup.");
         }
 
         private static string GetSeederContextText(ApiTemplate template)
@@ -99,8 +100,16 @@
                 seeders += @$"
                     {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{template.DbContext.ContextName}>());";
             }
+            return $@"
+                using (var context = app.ApplicationServices.GetService<{template.DbContext.ContextName}>())
+                {{
+                    context.Database.EnsureCreated();
 
-            return seeders;
+                    #region {template.DbContext.ContextName} Seeder Region - Do Not Delete
+                    {seeders}
+                    #endregion
+                }}
+";
         }
     }
 }

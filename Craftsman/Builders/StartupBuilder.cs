@@ -6,16 +6,17 @@
     using Craftsman.Models;
     using System;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
     public class StartupBuilder
     {
-        public static void CreateStartup(string solutionDirectory, string envName)
+        public static void CreateStartup(string solutionDirectory, string envName, ApiTemplate template)
         {
             try
             {
-                var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs");
+                var classPath = envName == "Startup" ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs") : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +27,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetStartupText(envName);
+                    data = GetStartupText(envName, template);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,9 +45,53 @@
             }
         }
 
-        public static string GetStartupText(string envName)
+        public static string GetStartupText(string envName, ApiTemplate template)
         {
-            if(envName == "Development")
+            var authServices = "";
+            var authApp = "";
+            var authSeeder = "";
+            var authUsing = "";
+            var currentUserRegistration = "";
+            if (template.AuthSetup.AuthMethod == "JWT")
+            {
+                authServices = @"
+            services.AddIdentityInfrastructure(_config);";
+                authApp = @"app.UseAuthentication();
+            app.UseAuthorization();";
+                var userSeeders = "";
+                foreach(var user in template.AuthSetup.InMemoryUsers)
+                {
+                    var newLine = user == template.AuthSetup.InMemoryUsers.LastOrDefault() ? "" : $"{Environment.NewLine}           ";
+                    var seederName = Utilities.GetIdentitySeederName(user);
+                    userSeeders += @$"{seederName}.SeedUserAsync(userManager);{newLine}";
+                }
+                authSeeder = $@"
+
+            #region Identity Context Region - Do Not Delete
+
+            var userManager = app.ApplicationServices.GetService<UserManager<ApplicationUser>>();
+            var roleManager = app.ApplicationServices.GetService<RoleManager<IdentityRole>>();
+            RoleSeeder.SeedDemoRolesAsync(roleManager);
+
+            // user seeders -- do not delete this comment
+            {userSeeders}
+
+            #endregion";
+
+                authUsing = @$"
+    using Infrastructure.Identity;
+    using Infrastructure.Identity.Entities;
+    using Microsoft.AspNetCore.Identity;
+    using Infrastructure.Identity.Seeders;
+    using WebApi.Services;
+    using Application.Interfaces;";
+
+                currentUserRegistration = $@"
+            services.AddSingleton<ICurrentUserService, CurrentUserService>();";
+            }
+
+            envName = envName == "Startup" ? "" : envName;
+            if (envName == "Development")
 
                 return @$"namespace WebApi
 {{
@@ -59,7 +104,7 @@
     using Infrastructure.Shared;
     using Infrastructure.Persistence.Seeders;
     using Infrastructure.Persistence.Contexts;
-    using WebApi.Extensions;
+    using WebApi.Extensions;{authUsing}
 
     public class Startup{envName}
     {{
@@ -74,13 +119,13 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             services.AddCorsService(""MyCorsPolicy"");
-            services.AddApplicationLayer();
+            services.AddApplicationLayer();{authServices}
             services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
-            services.AddHealthChecks();
+            services.AddHealthChecks();{currentUserRegistration}
 
             #region Dynamic Services
             #endregion
@@ -92,12 +137,13 @@
             app.UseDeveloperExceptionPage();
 
             #region Entity Context Region - Do Not Delete
-            #endregion
+            #endregion{authSeeder}
 
             app.UseCors(""MyCorsPolicy"");
 
             app.UseRouting();
-
+            {authApp}
+            app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>
             {{
                 endpoints.MapHealthChecks(""/api/health"");
@@ -120,7 +166,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Infrastructure.Persistence;
     using Infrastructure.Shared;
-    using WebApi.Extensions;
+    using WebApi.Extensions;{authUsing}
 
     public class Startup{envName}
     {{
@@ -135,13 +181,13 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             services.AddCorsService(""MyCorsPolicy"");
-            services.AddApplicationLayer();
+            services.AddApplicationLayer();{authServices}
             services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
-            services.AddHealthChecks();
+            services.AddHealthChecks();{currentUserRegistration}
 
             #region Dynamic Services
             #endregion
@@ -153,7 +199,8 @@
             app.UseCors(""MyCorsPolicy"");
 
             app.UseRouting();
-
+            {authApp}
+            app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>
             {{
                 endpoints.MapHealthChecks(""/api/health"");

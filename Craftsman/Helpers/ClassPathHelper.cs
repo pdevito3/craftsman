@@ -8,9 +8,19 @@
 
     public static class ClassPathHelper
     {
-        public static ClassPath ControllerClassPath(string solutionDirectory, string className)
+        public static ClassPath WebApiServicesClassPath(string solutionDirectory, string className)
         {
-            return new ClassPath(solutionDirectory, Path.Combine("WebApi","Controllers","v1"), className);
+            return new ClassPath(solutionDirectory, Path.Combine("WebApi", "Services"), className);
+        }
+
+        public static ClassPath IdentityProjectPath(string solutionDirectory, string className = "")
+        {
+            return new ClassPath(solutionDirectory, "Infrastructure.Identity", className);
+        }
+
+        public static ClassPath ControllerClassPath(string solutionDirectory, string className, string version = "v1")
+        {
+            return new ClassPath(solutionDirectory, Path.Combine("WebApi","Controllers", version), className);
         }
 
         public static ClassPath TestEntityIntegrationClassPath(string solutionDirectory, string className, string entityName, string solutionName)
@@ -68,6 +78,11 @@
             return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Persistence","Seeders"), className);
         }
 
+        public static ClassPath IdentitySeederClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Identity", "Seeders"), className);
+        }
+
         public static ClassPath DbContextClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Persistence","Contexts"), className);
@@ -86,6 +101,26 @@
         public static ClassPath ProfileClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Application","Mappings"), className);
+        }
+
+        public static ClassPath ApplicationInterfaceClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Application", "Interfaces"), className);
+        }
+
+        public static ClassPath CommonDomainClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Common"), className);
+        }
+
+        public static ClassPath DomainEnumClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Enums"), className);
+        }
+
+        public static ClassPath DomainSettingsClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Settings"), className);
         }
 
         public static ClassPath RepositoryClassPath(string solutionDirectory, string className)
