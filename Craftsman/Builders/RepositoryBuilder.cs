@@ -76,6 +76,7 @@
         void Delete{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
         void Update{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
         bool Save();
+        Task<bool> SaveAsync();
     }}
 }}";
         }
@@ -202,6 +203,11 @@
         public bool Save()
         {{
             return _context.SaveChanges() > 0;
+        }}
+
+        public async Task<bool> SaveAsync()
+        {{
+            return await _context.SaveChangesAsync() > 0;
         }}
     }}
 }}";

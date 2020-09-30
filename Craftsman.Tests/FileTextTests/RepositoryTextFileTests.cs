@@ -38,6 +38,7 @@
         void DeleteProduct(Product product);
         void UpdateProduct(Product product);
         bool Save();
+        Task<bool> SaveAsync();
     }
 }";
 
@@ -169,6 +170,11 @@
         public bool Save()
         {
             return _context.SaveChanges() > 0;
+        }
+
+        public async Task<bool> SaveAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }";
@@ -318,6 +324,11 @@
         public bool Save()
         {{
             return _context.SaveChanges() > 0;
+        }}
+
+        public async Task<bool> SaveAsync()
+        {{
+            return await _context.SaveChangesAsync() > 0;
         }}
     }}
 }}";

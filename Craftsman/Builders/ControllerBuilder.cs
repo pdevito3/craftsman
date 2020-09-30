@@ -144,7 +144,7 @@
 
             var {lowercaseEntityVariable} = _mapper.Map<{entityName}>({lowercaseEntityVariable}ForCreation);
             _{lowercaseEntityVariable}Repository.Add{entityName}({lowercaseEntityVariable});
-            var saveSuccessful = _{lowercaseEntityVariable}Repository.Save();
+            var saveSuccessful = await _{lowercaseEntityVariable}Repository.SaveAsync();
 
             if(saveSuccessful)
             {{
@@ -168,7 +168,7 @@
             }}
 
             _{lowercaseEntityVariable}Repository.Delete{entityName}({lowercaseEntityVariable}FromRepo);
-            _{lowercaseEntityVariable}Repository.Save();
+            await _{lowercaseEntityVariable}Repository.SaveAsync();
 
             return NoContent();
         }}
@@ -195,7 +195,7 @@
             _mapper.Map({lowercaseEntityVariable}, {lowercaseEntityVariable}FromRepo);
             _{lowercaseEntityVariable}Repository.Update{entityName}({lowercaseEntityVariable}FromRepo);
 
-            _{lowercaseEntityVariable}Repository.Save();
+            await _{lowercaseEntityVariable}Repository.SaveAsync();
 
             return NoContent();
         }}
@@ -226,7 +226,7 @@
             _mapper.Map({lowercaseEntityVariable}ToPatch, existing{entityName}); // apply updates from the updatable {lowercaseEntityVariable} to the db entity so we can apply the updates to the database
             _{lowercaseEntityVariable}Repository.Update{entityName}(existing{entityName}); // apply business updates to data if needed
 
-            _{lowercaseEntityVariable}Repository.Save(); // save changes in the database
+            await _{lowercaseEntityVariable}Repository.SaveAsync(); // save changes in the database
 
             return NoContent();
         }}

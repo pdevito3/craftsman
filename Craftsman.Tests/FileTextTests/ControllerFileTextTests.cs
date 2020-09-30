@@ -107,7 +107,7 @@
 
             var product = _mapper.Map<Product>(productForCreation);
             _productRepository.AddProduct(product);
-            var saveSuccessful = _productRepository.Save();
+            var saveSuccessful = await _productRepository.SaveAsync();
 
             if(saveSuccessful)
             {{
@@ -131,7 +131,7 @@
             }}
 
             _productRepository.DeleteProduct(productFromRepo);
-            _productRepository.Save();
+            await _productRepository.SaveAsync();
 
             return NoContent();
         }}
@@ -158,7 +158,7 @@
             _mapper.Map(product, productFromRepo);
             _productRepository.UpdateProduct(productFromRepo);
 
-            _productRepository.Save();
+            await _productRepository.SaveAsync();
 
             return NoContent();
         }}
@@ -189,7 +189,7 @@
             _mapper.Map(productToPatch, existingProduct); // apply updates from the updatable product to the db entity so we can apply the updates to the database
             _productRepository.UpdateProduct(existingProduct); // apply business updates to data if needed
 
-            _productRepository.Save(); // save changes in the database
+            await _productRepository.SaveAsync(); // save changes in the database
 
             return NoContent();
         }}
