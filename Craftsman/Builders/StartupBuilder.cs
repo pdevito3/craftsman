@@ -59,11 +59,14 @@
                 authApp = @"app.UseAuthentication();
             app.UseAuthorization();";
                 var userSeeders = "";
-                foreach(var user in template.AuthSetup.InMemoryUsers)
+                if(template.AuthSetup.InMemoryUsers != null)
                 {
-                    var newLine = user == template.AuthSetup.InMemoryUsers.LastOrDefault() ? "" : $"{Environment.NewLine}           ";
-                    var seederName = Utilities.GetIdentitySeederName(user);
-                    userSeeders += @$"{seederName}.SeedUserAsync(userManager);{newLine}";
+                    foreach(var user in template.AuthSetup.InMemoryUsers)
+                    {
+                        var newLine = user == template.AuthSetup.InMemoryUsers.LastOrDefault() ? "" : $"{Environment.NewLine}           ";
+                        var seederName = Utilities.GetIdentitySeederName(user);
+                        userSeeders += @$"{seederName}.SeedUserAsync(userManager);{newLine}";
+                    }
                 }
                 authSeeder = $@"
 
