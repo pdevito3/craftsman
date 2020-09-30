@@ -214,11 +214,16 @@
             #region Entity Context Region - Do Not Delete
             #endregion
 
+            #region Identity Context Region - Do Not Delete
+
             var userManager = app.ApplicationServices.GetService<UserManager<ApplicationUser>>();
             var roleManager = app.ApplicationServices.GetService<RoleManager<IdentityRole>>();
             RoleSeeder.SeedDemoRolesAsync(roleManager);
-            SuperAdminSeeder.SeedDemoSuperAdminsAsync(userManager);
-            BasicUserSeeder.SeedDemoBasicUser(userManager);
+
+            // user seeders -- do not delete this comment
+            
+
+            #endregion
 
             app.UseCors(""MyCorsPolicy"");
 

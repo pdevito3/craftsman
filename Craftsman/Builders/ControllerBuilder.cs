@@ -55,6 +55,7 @@
             var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
             var primaryKeyProp = entity.PrimaryKeyProperty;
             var auditable = entity.Auditable ? @$"{Environment.NewLine}    [Authorize]" : "";
+            var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
 
             return @$"namespace {classNamespace}
 {{
@@ -71,6 +72,7 @@
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
+    using System.Threading.Tasks;
 
     [ApiController]
     [Route(""api/{entityNamePlural}"")]
@@ -91,19 +93,9 @@
 
 
         [HttpGet(Name = ""Get{entityNamePlural}"")]
-        public ActionResult<IEnumerable<{readDto}>> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
+        public async Task<ActionResult<IEnumerable<{readDto}>>> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
         {{
-            var {lowercaseEntityVariable}sFromRepo = _{lowercaseEntityVariable}Repository.Get{entityNamePlural}({lowercaseEntityVariable}ParametersDto);
-            
-            var previousPageLink = {lowercaseEntityVariable}sFromRepo.HasPrevious
-                    ? Create{entityNamePlural}ResourceUri({lowercaseEntityVariable}ParametersDto,
-                        ResourceUriType.PreviousPage)
-                    : null;
-
-            var nextPageLink = {lowercaseEntityVariable}sFromRepo.HasNext
-                ? Create{entityNamePlural}ResourceUri({lowercaseEntityVariable}ParametersDto,
-                    ResourceUriType.NextPage)
-                : null;
+            var {lowercaseEntityVariable}sFromRepo = await _{lowercaseEntityVariable}Repository.{getListMethodName}({lowercaseEntityVariable}ParametersDto);
 
             var paginationMetadata = new
             {{
@@ -112,9 +104,7 @@
                 pageNumber = {lowercaseEntityVariable}sFromRepo.PageNumber,
                 totalPages = {lowercaseEntityVariable}sFromRepo.TotalPages,
                 hasPrevious = {lowercaseEntityVariable}sFromRepo.HasPrevious,
-                hasNext = {lowercaseEntityVariable}sFromRepo.HasNext,
-                previousPageLink,
-                nextPageLink
+                hasNext = {lowercaseEntityVariable}sFromRepo.HasNext
             }};
 
             Response.Headers.Add(""X-Pagination"",
@@ -126,9 +116,9 @@
 
 
         [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""Get{entityName}"")]
-        public ActionResult<{readDto}> Get{entityName}(int {lowercaseEntityVariable}Id)
+        public async Task<ActionResult<{readDto}>> Get{entityName}(int {lowercaseEntityVariable}Id)
         {{
-            var {lowercaseEntityVariable}FromRepo = _{lowercaseEntityVariable}Repository.Get{entityName}({lowercaseEntityVariable}Id);
+            var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
 
             if ({lowercaseEntityVariable}FromRepo == null)
             {{
@@ -141,7 +131,7 @@
         }}
 
         [HttpPost]
-        public ActionResult<{readDto}> Add{entityName}({creationDto} {lowercaseEntityVariable}ForCreation)
+        public async Task<ActionResult<{readDto}>> Add{entityName}({creationDto} {lowercaseEntityVariable}ForCreation)
         {{
             var validationResults = new {entityName}ForCreationDtoValidator().Validate({lowercaseEntityVariable}ForCreation);
             validationResults.AddToModelState(ModelState, null);
@@ -158,7 +148,7 @@
 
             if(saveSuccessful)
             {{
-                var {lowercaseEntityVariable}Dto = _{lowercaseEntityVariable}Repository.Get{entityName}({lowercaseEntityVariable}.{entity.PrimaryKeyProperty.Name}); //get from repo for fk object, if needed
+                var {lowercaseEntityVariable}Dto = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}.{entity.PrimaryKeyProperty.Name}); //get from repo for fk object, if needed
                 return CreatedAtRoute(""Get{entityName}"",
                     new {{ {lowercaseEntityVariable}Dto.{primaryKeyProp.Name} }},
                     {lowercaseEntityVariable}Dto);
@@ -168,9 +158,9 @@
         }}
 
         [HttpDelete(""{{{lowercaseEntityVariable}Id}}"")]
-        public ActionResult Delete{entityName}(int {lowercaseEntityVariable}Id)
+        public async Task<ActionResult> Delete{entityName}(int {lowercaseEntityVariable}Id)
         {{
-            var {lowercaseEntityVariable}FromRepo = _{lowercaseEntityVariable}Repository.Get{entityName}({lowercaseEntityVariable}Id);
+            var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
 
             if ({lowercaseEntityVariable}FromRepo == null)
             {{
@@ -184,9 +174,9 @@
         }}
 
         [HttpPut(""{{{lowercaseEntityVariable}Id}}"")]
-        public IActionResult Update{entityName}(int {lowercaseEntityVariable}Id, {updateDto} {lowercaseEntityVariable})
+        public async Task<IActionResult> Update{entityName}(int {lowercaseEntityVariable}Id, {updateDto} {lowercaseEntityVariable})
         {{
-            var {lowercaseEntityVariable}FromRepo = _{lowercaseEntityVariable}Repository.Get{entityName}({lowercaseEntityVariable}Id);
+            var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
 
             if ({lowercaseEntityVariable}FromRepo == null)
             {{
@@ -211,14 +201,14 @@
         }}
 
         [HttpPatch(""{{{lowercaseEntityVariable}Id}}"")]
-        public IActionResult PartiallyUpdate{entityName}(int {lowercaseEntityVariable}Id, JsonPatchDocument<{updateDto}> patchDoc)
+        public async Task<IActionResult> PartiallyUpdate{entityName}(int {lowercaseEntityVariable}Id, JsonPatchDocument<{updateDto}> patchDoc)
         {{
             if (patchDoc == null)
             {{
                 return BadRequest();
             }}
 
-            var existing{entityName} = _{lowercaseEntityVariable}Repository.Get{entityName}({lowercaseEntityVariable}Id);
+            var existing{entityName} = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
 
             if (existing{entityName} == null)
             {{
@@ -239,43 +229,6 @@
             _{lowercaseEntityVariable}Repository.Save(); // save changes in the database
 
             return NoContent();
-        }}
-
-        private string Create{entityNamePlural}ResourceUri(
-            {entityName}ParametersDto {lowercaseEntityVariable}ParametersDto,
-            ResourceUriType type)
-        {{
-            switch (type)
-            {{
-                case ResourceUriType.PreviousPage:
-                    return Url.Link(""Get{entityNamePlural}"",
-                        new
-                        {{
-                            filters = {lowercaseEntityVariable}ParametersDto.Filters,
-                            orderBy = {lowercaseEntityVariable}ParametersDto.SortOrder,
-                            pageNumber = {lowercaseEntityVariable}ParametersDto.PageNumber - 1,
-                            pageSize = {lowercaseEntityVariable}ParametersDto.PageSize
-                        }});
-                case ResourceUriType.NextPage:
-                    return Url.Link(""Get{entityNamePlural}"",
-                        new
-                        {{
-                            filters = {lowercaseEntityVariable}ParametersDto.Filters,
-                            orderBy = {lowercaseEntityVariable}ParametersDto.SortOrder,
-                            pageNumber = {lowercaseEntityVariable}ParametersDto.PageNumber + 1,
-                            pageSize = {lowercaseEntityVariable}ParametersDto.PageSize
-                        }});
-
-                default:
-                    return Url.Link(""Get{entityNamePlural}"",
-                        new
-                        {{
-                            filters = {lowercaseEntityVariable}ParametersDto.Filters,
-                            orderBy = {lowercaseEntityVariable}ParametersDto.SortOrder,
-                            pageNumber = {lowercaseEntityVariable}ParametersDto.PageNumber,
-                            pageSize = {lowercaseEntityVariable}ParametersDto.PageSize
-                        }});
-            }}
         }}
     }}
 }}";

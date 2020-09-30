@@ -129,10 +129,11 @@ namespace {classPath.ClassNamespace}
         {
             var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
             var usingString = TestBuildingHelpers.GetUsingString(template);
+            var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
 
             return $@"
         [Fact]
-        public void Get{entity.Plural}_CountMatchesAndContainsEquivalentObjects()
+        public async void {getListMethodName}_CountMatchesAndContainsEquivalentObjects()
         {{
             //Arrange
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
@@ -152,7 +153,7 @@ namespace {classPath.ClassNamespace}
 
                 var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
 
-                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name,Enums.Dto.ReadParamaters)}());
+                var {entity.Name.LowercaseFirstLetter()}Repo = await service.{getListMethodName}(new {Utilities.GetDtoName(entity.Name,Enums.Dto.ReadParamaters)}());
 
                 //Assert
                 {entity.Name.LowercaseFirstLetter()}Repo.Should()
@@ -172,10 +173,11 @@ namespace {classPath.ClassNamespace}
         {
             var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
             var usingString = TestBuildingHelpers.GetUsingString(template);
+            var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
 
             return $@"
         [Fact]
-        public void Get{entity.Plural}_ReturnExpectedPageSize()
+        public async void {getListMethodName}_ReturnExpectedPageSize()
         {{
             //Arrange
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
@@ -195,7 +197,7 @@ namespace {classPath.ClassNamespace}
 
                 var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
 
-                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ PageSize = 2 }});
+                var {entity.Name.LowercaseFirstLetter()}Repo = await service.{getListMethodName}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ PageSize = 2 }});
 
                 //Assert
                 {entity.Name.LowercaseFirstLetter()}Repo.Should()
@@ -214,10 +216,11 @@ namespace {classPath.ClassNamespace}
         {
             var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
             var usingString = TestBuildingHelpers.GetUsingString(template);
+            var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
 
             return $@"
         [Fact]
-        public void Get{entity.Plural}_ReturnExpectedPageNumberAndSize()
+        public async void {getListMethodName}_ReturnExpectedPageNumberAndSize()
         {{
             //Arrange
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
@@ -237,7 +240,7 @@ namespace {classPath.ClassNamespace}
 
                 var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
 
-                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ PageSize = 1, PageNumber = 2 }});
+                var {entity.Name.LowercaseFirstLetter()}Repo = await service.{getListMethodName}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ PageSize = 1, PageNumber = 2 }});
 
                 //Assert
                 {entity.Name.LowercaseFirstLetter()}Repo.Should()
@@ -284,10 +287,11 @@ namespace {classPath.ClassNamespace}
 
             var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
             var usingString = TestBuildingHelpers.GetUsingString(template);
+            var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
 
             return $@"
         [Fact]
-        public void Get{entity.Plural}_List{prop.Name}SortedInAscOrder()
+        public async void {getListMethodName}_List{prop.Name}SortedInAscOrder()
         {{
             //Arrange
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
@@ -312,7 +316,7 @@ namespace {classPath.ClassNamespace}
 
                 var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
 
-                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ SortOrder = ""{prop.Name}"" }});
+                var {entity.Name.LowercaseFirstLetter()}Repo = await service.{getListMethodName}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ SortOrder = ""{prop.Name}"" }});
 
                 //Assert
                 {entity.Name.LowercaseFirstLetter()}Repo.Should()
@@ -356,10 +360,11 @@ namespace {classPath.ClassNamespace}
 
             var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
             var usingString = TestBuildingHelpers.GetUsingString(template);
+            var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
 
             return $@"
         [Fact]
-        public void Get{entity.Plural}_List{prop.Name}SortedInDescOrder()
+        public async void {getListMethodName}_List{prop.Name}SortedInDescOrder()
         {{
             //Arrange
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
@@ -384,7 +389,7 @@ namespace {classPath.ClassNamespace}
 
                 var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
 
-                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ SortOrder = ""-{prop.Name}"" }});
+                var {entity.Name.LowercaseFirstLetter()}Repo = await service.{getListMethodName}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ SortOrder = ""-{prop.Name}"" }});
 
                 //Assert
                 {entity.Name.LowercaseFirstLetter()}Repo.Should()
@@ -450,10 +455,11 @@ namespace {classPath.ClassNamespace}
 
                 var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
                 var usingString = TestBuildingHelpers.GetUsingString(template);
+                var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
 
                 filterTests += $@"
         [Fact]
-        public void Get{entity.Plural}_Filter{prop.Name}ListWithExact()
+        public async void {getListMethodName}_Filter{prop.Name}ListWithExact()
         {{
             //Arrange
             var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
@@ -478,7 +484,7 @@ namespace {classPath.ClassNamespace}
 
                 var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
 
-                var {entity.Name.LowercaseFirstLetter()}Repo = service.Get{entity.Plural}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ Filters = $""{prop.Name} == {bravoFilterVal}"" }});
+                var {entity.Name.LowercaseFirstLetter()}Repo = await service.{getListMethodName}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ Filters = $""{prop.Name} == {bravoFilterVal}"" }});
 
                 //Assert
                 {entity.Name.LowercaseFirstLetter()}Repo.Should()
