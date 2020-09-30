@@ -35,6 +35,7 @@
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
+    using System.Threading.Tasks;
 
     [ApiController]
     [Route(""api/Products"")]
@@ -55,19 +56,9 @@
 
 
         [HttpGet(Name = ""GetProducts"")]
-        public ActionResult<IEnumerable<ProductDto>> GetProducts([FromQuery] ProductParametersDto productParametersDto)
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts([FromQuery] ProductParametersDto productParametersDto)
         {{
-            var productsFromRepo = _productRepository.GetProducts(productParametersDto);
-            
-            var previousPageLink = productsFromRepo.HasPrevious
-                    ? CreateProductsResourceUri(productParametersDto,
-                        ResourceUriType.PreviousPage)
-                    : null;
-
-            var nextPageLink = productsFromRepo.HasNext
-                ? CreateProductsResourceUri(productParametersDto,
-                    ResourceUriType.NextPage)
-                : null;
+            var productsFromRepo = await _productRepository.GetProductsAsync(productParametersDto);
 
             var paginationMetadata = new
             {{
@@ -76,9 +67,7 @@
                 pageNumber = productsFromRepo.PageNumber,
                 totalPages = productsFromRepo.TotalPages,
                 hasPrevious = productsFromRepo.HasPrevious,
-                hasNext = productsFromRepo.HasNext,
-                previousPageLink,
-                nextPageLink
+                hasNext = productsFromRepo.HasNext
             }};
 
             Response.Headers.Add(""X-Pagination"",
@@ -90,9 +79,9 @@
 
 
         [HttpGet(""{{productId}}"", Name = ""GetProduct"")]
-        public ActionResult<ProductDto> GetProduct(int productId)
+        public async Task<ActionResult<ProductDto>> GetProduct(int productId)
         {{
-            var productFromRepo = _productRepository.GetProduct(productId);
+            var productFromRepo = await _productRepository.GetProductAsync(productId);
 
             if (productFromRepo == null)
             {{
@@ -105,7 +94,7 @@
         }}
 
         [HttpPost]
-        public ActionResult<ProductDto> AddProduct(ProductForCreationDto productForCreation)
+        public async Task<ActionResult<ProductDto>> AddProduct(ProductForCreationDto productForCreation)
         {{
             var validationResults = new ProductForCreationDtoValidator().Validate(productForCreation);
             validationResults.AddToModelState(ModelState, null);
@@ -122,7 +111,7 @@
 
             if(saveSuccessful)
             {{
-                var productDto = _productRepository.GetProduct(product.ProductId); //get from repo for fk object, if needed
+                var productDto = await _productRepository.GetProductAsync(product.ProductId); //get from repo for fk object, if needed
                 return CreatedAtRoute(""GetProduct"",
                     new {{ productDto.ProductId }},
                     productDto);
@@ -132,9 +121,9 @@
         }}
 
         [HttpDelete(""{{productId}}"")]
-        public ActionResult DeleteProduct(int productId)
+        public async Task<ActionResult> DeleteProduct(int productId)
         {{
-            var productFromRepo = _productRepository.GetProduct(productId);
+            var productFromRepo = await _productRepository.GetProductAsync(productId);
 
             if (productFromRepo == null)
             {{
@@ -148,9 +137,9 @@
         }}
 
         [HttpPut(""{{productId}}"")]
-        public IActionResult UpdateProduct(int productId, ProductForUpdateDto product)
+        public async Task<IActionResult> UpdateProduct(int productId, ProductForUpdateDto product)
         {{
-            var productFromRepo = _productRepository.GetProduct(productId);
+            var productFromRepo = await _productRepository.GetProductAsync(productId);
 
             if (productFromRepo == null)
             {{
@@ -175,14 +164,14 @@
         }}
 
         [HttpPatch(""{{productId}}"")]
-        public IActionResult PartiallyUpdateProduct(int productId, JsonPatchDocument<ProductForUpdateDto> patchDoc)
+        public async Task<IActionResult> PartiallyUpdateProduct(int productId, JsonPatchDocument<ProductForUpdateDto> patchDoc)
         {{
             if (patchDoc == null)
             {{
                 return BadRequest();
             }}
 
-            var existingProduct = _productRepository.GetProduct(productId);
+            var existingProduct = await _productRepository.GetProductAsync(productId);
 
             if (existingProduct == null)
             {{
@@ -203,43 +192,6 @@
             _productRepository.Save(); // save changes in the database
 
             return NoContent();
-        }}
-
-        private string CreateProductsResourceUri(
-            ProductParametersDto productParametersDto,
-            ResourceUriType type)
-        {{
-            switch (type)
-            {{
-                case ResourceUriType.PreviousPage:
-                    return Url.Link(""GetProducts"",
-                        new
-                        {{
-                            filters = productParametersDto.Filters,
-                            orderBy = productParametersDto.SortOrder,
-                            pageNumber = productParametersDto.PageNumber - 1,
-                            pageSize = productParametersDto.PageSize
-                        }});
-                case ResourceUriType.NextPage:
-                    return Url.Link(""GetProducts"",
-                        new
-                        {{
-                            filters = productParametersDto.Filters,
-                            orderBy = productParametersDto.SortOrder,
-                            pageNumber = productParametersDto.PageNumber + 1,
-                            pageSize = productParametersDto.PageSize
-                        }});
-
-                default:
-                    return Url.Link(""GetProducts"",
-                        new
-                        {{
-                            filters = productParametersDto.Filters,
-                            orderBy = productParametersDto.SortOrder,
-                            pageNumber = productParametersDto.PageNumber,
-                            pageSize = productParametersDto.PageSize
-                        }});
-            }}
         }}
     }}
 }}";

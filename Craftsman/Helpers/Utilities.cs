@@ -49,6 +49,11 @@
             return $"{entity.Name}Seeder";
         }
 
+        public static string GetRepositoryListMethodName(string pluralEntity)
+        {
+            return $"Get{pluralEntity}Async";
+        }
+
         public static string GetAppSettingsName(string env, bool asJson = true)
         {
             return asJson ? $"appsettings.{env}.json" : $"appsettings.{env}";

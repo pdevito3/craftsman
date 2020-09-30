@@ -58,6 +58,8 @@
 
         public static string GetIRepositoryFileText(string classNamespace, Entity entity)
         {
+            var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
+
             return @$"namespace {classNamespace}
 {{
     using Application.Dtos.{entity.Name};
@@ -67,10 +69,10 @@
 
     public interface {Utilities.GetRepositoryName(entity.Name, true)}
     {{
-        PagedList <{entity.Name}> Get{entity.Plural}({Utilities.GetDtoName(entity.Name, Dto.ReadParamaters)} {entity.Name}Parameters);
+        Task<PagedList<{entity.Name}>> {getListMethodName}({Utilities.GetDtoName(entity.Name, Dto.ReadParamaters)} {entity.Name}Parameters);
         Task<{entity.Name}> Get{entity.Name}Async(int {entity.Name}Id);
         {entity.Name} Get{entity.Name}(int {entity.Name}Id);
-        void Add{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
+        Task Add{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
         void Delete{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
         void Update{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
         bool Save();
@@ -99,6 +101,7 @@
 
         public static string GetRepositoryFileText(string classNamespace, Entity entity, TemplateDbContext dbContext)
         {
+            var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
             var paramBase = entity.Name.LowercaseFirstLetter();
             var fkIncludes = "";
             foreach(var fk in entity.Properties.Where(p => p.IsForeignKey))
@@ -134,7 +137,7 @@
                 throw new ArgumentNullException(nameof(sieveProcessor));
         }}
 
-        public PagedList<{entity.Name}> Get{entity.Plural}({entity.Name}ParametersDto {paramBase}Parameters)
+        public async Task<PagedList<{entity.Name}>> {getListMethodName}({entity.Name}ParametersDto {paramBase}Parameters)
         {{
             if ({paramBase}Parameters == null)
             {{
@@ -152,7 +155,7 @@
 
             collection = _sieveProcessor.Apply(sieveModel, collection);
 
-            return PagedList<{entity.Name}>.Create(collection,
+            return await PagedList<{entity.Name}>.CreateAsync(collection,
                 {paramBase}Parameters.PageNumber,
                 {paramBase}Parameters.PageSize);
         }}
@@ -171,14 +174,14 @@
                 .FirstOrDefault({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperty.Name} == {paramBase}Id);
         }}
 
-        public void Add{entity.Name}({entity.Name} {paramBase})
+        public Task Add{entity.Name}({entity.Name} {paramBase})
         {{
             if ({paramBase} == null)
             {{
                 throw new ArgumentNullException(nameof({entity.Name}));
             }}
 
-            _context.{entity.Plural}.Add({paramBase});
+            return await _context.{entity.Plural}.AddAsync({paramBase});
         }}
 
         public void Delete{entity.Name}({entity.Name} {paramBase})

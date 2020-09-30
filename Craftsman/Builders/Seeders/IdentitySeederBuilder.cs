@@ -19,23 +19,26 @@
         {
             try
             {
-                foreach (var user in template.AuthSetup.InMemoryUsers)
+                if(template.AuthSetup.InMemoryUsers != null)
                 {
-                    var classPath = ClassPathHelper.IdentitySeederClassPath(solutionDirectory, $"{Utilities.GetIdentitySeederName(user)}.cs");
-
-                    if (!Directory.Exists(classPath.ClassDirectory))
-                        Directory.CreateDirectory(classPath.ClassDirectory);
-
-                    if (File.Exists(classPath.FullClassPath))
-                        throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-                    using (FileStream fs = File.Create(classPath.FullClassPath))
+                    foreach (var user in template.AuthSetup.InMemoryUsers)
                     {
-                        var data = SeederFunctions.GetIdentitySeederFileText(classPath.ClassNamespace, user);
-                        fs.Write(Encoding.UTF8.GetBytes(data));
-                    }
+                        var classPath = ClassPathHelper.IdentitySeederClassPath(solutionDirectory, $"{Utilities.GetIdentitySeederName(user)}.cs");
 
-                    GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
+                        if (!Directory.Exists(classPath.ClassDirectory))
+                            Directory.CreateDirectory(classPath.ClassDirectory);
+
+                        if (File.Exists(classPath.FullClassPath))
+                            throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+                        using (FileStream fs = File.Create(classPath.FullClassPath))
+                        {
+                            var data = SeederFunctions.GetIdentitySeederFileText(classPath.ClassNamespace, user);
+                            fs.Write(Encoding.UTF8.GetBytes(data));
+                        }
+
+                        GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
+                    }
                 }
 
                 //Confirm all seeder registrations done in startup, if not, do here?

@@ -122,15 +122,17 @@
 
             //seeders
             SeederBuilder.AddSeeders(solutionDirectory, template);
-            IdentitySeederBuilder.AddSeeders(solutionDirectory, template);
-            IdentityRoleBuilder.CreateRoles(solutionDirectory, template.AuthSetup.Roles);
-            RoleSeedBuilder.SeedRoles(solutionDirectory, template);
 
             //services
             SwaggerBuilder.AddSwagger(solutionDirectory, template);
             
             if(template.AuthSetup.AuthMethod == "JWT")
+            {
                 IdentityServicesModifier.SetIdentityOptions(solutionDirectory, template.AuthSetup);
+                IdentitySeederBuilder.AddSeeders(solutionDirectory, template);
+                IdentityRoleBuilder.CreateRoles(solutionDirectory, template.AuthSetup.Roles);
+                RoleSeedBuilder.SeedRoles(solutionDirectory, template);
+            }
 
             //final
             if (template.AddGit)

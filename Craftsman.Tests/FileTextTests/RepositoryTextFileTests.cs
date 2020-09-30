@@ -2,6 +2,7 @@
 {
     using AutoBogus;
     using Craftsman.Builders;
+    using Craftsman.Helpers;
     using Craftsman.Models;
     using Craftsman.Tests.Fakes;
     using FluentAssertions;
@@ -30,10 +31,10 @@
 
     public interface IProductRepository
     {
-        PagedList <Product> GetProducts(ProductParametersDto ProductParameters);
+        Task<PagedList<Product>> GetProductsAsync(ProductParametersDto ProductParameters);
         Task<Product> GetProductAsync(int ProductId);
         Product GetProduct(int ProductId);
-        void AddProduct(Product product);
+        Task AddProduct(Product product);
         void DeleteProduct(Product product);
         void UpdateProduct(Product product);
         bool Save();
@@ -103,7 +104,7 @@
                 throw new ArgumentNullException(nameof(sieveProcessor));
         }
 
-        public PagedList<Product> GetProducts(ProductParametersDto productParameters)
+        public async Task<PagedList<Product>> GetProductsAsync(ProductParametersDto productParameters)
         {
             if (productParameters == null)
             {
@@ -121,7 +122,7 @@
 
             collection = _sieveProcessor.Apply(sieveModel, collection);
 
-            return PagedList<Product>.Create(collection,
+            return await PagedList<Product>.CreateAsync(collection,
                 productParameters.PageNumber,
                 productParameters.PageSize);
         }
@@ -140,14 +141,14 @@
                 .FirstOrDefault(p => p.ProductId == productId);
         }
 
-        public void AddProduct(Product product)
+        public Task AddProduct(Product product)
         {
             if (product == null)
             {
                 throw new ArgumentNullException(nameof(Product));
             }
 
-            _context.Products.Add(product);
+            return await _context.Products.AddAsync(product);
         }
 
         public void DeleteProduct(Product product)
@@ -249,7 +250,7 @@
                 throw new ArgumentNullException(nameof(sieveProcessor));
         }}
 
-        public PagedList<Product> GetProducts(ProductParametersDto productParameters)
+        public async Task<PagedList<Product>> GetProductsAsync(ProductParametersDto productParameters)
         {{
             if (productParameters == null)
             {{
@@ -268,7 +269,7 @@
 
             collection = _sieveProcessor.Apply(sieveModel, collection);
 
-            return PagedList<Product>.Create(collection,
+            return await PagedList<Product>.CreateAsync(collection,
                 productParameters.PageNumber,
                 productParameters.PageSize);
         }}
@@ -289,14 +290,14 @@
                 .FirstOrDefault(p => p.ProductId == productId);
         }}
 
-        public void AddProduct(Product product)
+        public Task AddProduct(Product product)
         {{
             if (product == null)
             {{
                 throw new ArgumentNullException(nameof(Product));
             }}
 
-            _context.Products.Add(product);
+            return await _context.Products.AddAsync(product);
         }}
 
         public void DeleteProduct(Product product)

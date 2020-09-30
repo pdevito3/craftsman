@@ -34,7 +34,7 @@
                 IdentityRemover.RemoveController(solutionDirectory);
                 IdentityRemover.RemoveDtos(solutionDirectory);
                 IdentityRemover.RemoveIAccountService(solutionDirectory);
-                IdentityRemover.RemoveAuditableEntity(solutionDirectory);
+                //IdentityRemover.RemoveAuditableEntity(solutionDirectory);
                 IdentityRemover.RemoveJwtSettings(solutionDirectory);
                 IdentityRemover.RemoveRoles(solutionDirectory);
                 IdentityRemover.RemoveCurrentUserService(solutionDirectory);
