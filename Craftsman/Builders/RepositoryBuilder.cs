@@ -175,14 +175,14 @@
                 .FirstOrDefault({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperty.Name} == {paramBase}Id);
         }}
 
-        public Task Add{entity.Name}({entity.Name} {paramBase})
+        public async Task Add{entity.Name}({entity.Name} {paramBase})
         {{
             if ({paramBase} == null)
             {{
                 throw new ArgumentNullException(nameof({entity.Name}));
             }}
 
-            return await _context.{entity.Plural}.AddAsync({paramBase});
+            await _context.{entity.Plural}.AddAsync({paramBase});
         }}
 
         public void Delete{entity.Name}({entity.Name} {paramBase})

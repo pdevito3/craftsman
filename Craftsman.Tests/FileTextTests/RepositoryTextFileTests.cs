@@ -142,14 +142,14 @@
                 .FirstOrDefault(p => p.ProductId == productId);
         }
 
-        public Task AddProduct(Product product)
+        public async Task AddProduct(Product product)
         {
             if (product == null)
             {
                 throw new ArgumentNullException(nameof(Product));
             }
 
-            return await _context.Products.AddAsync(product);
+            await _context.Products.AddAsync(product);
         }
 
         public void DeleteProduct(Product product)
@@ -296,14 +296,14 @@
                 .FirstOrDefault(p => p.ProductId == productId);
         }}
 
-        public Task AddProduct(Product product)
+        public async Task AddProduct(Product product)
         {{
             if (product == null)
             {{
                 throw new ArgumentNullException(nameof(Product));
             }}
 
-            return await _context.Products.AddAsync(product);
+            await _context.Products.AddAsync(product);
         }}
 
         public void DeleteProduct(Product product)
