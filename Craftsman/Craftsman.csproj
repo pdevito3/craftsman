@@ -14,9 +14,9 @@
     <PackageTags>webapi c-sharp dotnet-core clean-architecture asp-net-core</PackageTags>
     <RepositoryUrl>https://github.com/pdevito3/craftsman</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>0.2.3000</AssemblyVersion>
-    <FileVersion>0.2.0-pre.1.0.0</FileVersion>
-    <Version>0.2.0-pre.1.0.0</Version>
+    <AssemblyVersion>0.2.3001</AssemblyVersion>
+    <FileVersion>0.2.0-pre.2.0.0</FileVersion>
+    <Version>0.2.0-pre.2.0.0</Version>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
 
