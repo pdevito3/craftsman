@@ -8,6 +8,11 @@
 
     public static class ClassPathHelper
     {
+        public static ClassPath SolutionClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, "", className);
+        }
+
         public static ClassPath WebApiServicesClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine("WebApi", "Services"), className);

@@ -135,6 +135,8 @@
             }
 
             //final
+            ReadmeBuilder.CreateReadme(solutionDirectory, template, fileSystem);
+
             if (template.AddGit)
                 GitSetup(solutionDirectory);
         }
