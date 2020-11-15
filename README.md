@@ -13,7 +13,7 @@ This is a custom .NET Core tool that is used to accelerate your API development 
 
 ## Prerequisites
 
-- VS2019 .Net Core Feature Set or .Net Core 3.1 SDK https://dotnet.microsoft.com/download/dotnet-core/3.1
+- VS2019 16.8.0+ or .Net 5.0 SDK https://dotnet.microsoft.com/download/dotnet-core/5.0
 
 ## About Craftsman
 
@@ -526,7 +526,11 @@ Environments:
 
 
 
-### Adding Authentication and Authorization (Optional) - *Prerelease*
+### Adding Authentication and Authorization (Optional) -  ** Alpha **
+
+> I am currently experimenting with different auth builds, but am leaving this current configuration in here as an alpha in case anyone wants to try it out. 
+>
+> Please note that this has not been thoroughly tested and may change drastically in the future.
 
 Adding Auth to your API to control who is accessing resources and whether or not they're allowed to access them is a very common need. 
 
