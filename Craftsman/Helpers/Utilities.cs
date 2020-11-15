@@ -76,8 +76,6 @@
                     return $"{entityName}ForUpdateDto";
                 case Dto.Read:
                     return $"{entityName}Dto";
-                case Dto.PaginationParamaters:
-                    return $"{entityName}PaginationParameters";
                 case Dto.ReadParamaters:
                     return $"{entityName}ParametersDto";
                 default:

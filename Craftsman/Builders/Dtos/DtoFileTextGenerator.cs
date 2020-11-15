@@ -9,36 +9,13 @@
 
     public static class DtoFileTextGenerator
     {
-        public static string GetPaginationDtoText(string classNamespace, Entity entity, Dto dto)
-        {
-            return @$"namespace {classNamespace}
-{{
-    public abstract class {Utilities.GetDtoName(entity.Name, dto)}
-    {{
-        const int maxPageSize = 20;
-        public int PageNumber {{ get; set; }} = 1;
-
-        private int _pageSize = 10;
-        public int PageSize
-        {{
-            get
-            {{
-                return _pageSize;
-            }}
-            set
-            {{
-                _pageSize = value > maxPageSize ? maxPageSize : value;
-            }}
-        }}
-    }}
-}}";
-        }
-
         public static string GetReadParameterDtoText(string classNamespace, Entity entity, Dto dto)
         {
             return @$"namespace {classNamespace}
 {{
-    public class {Utilities.GetDtoName(entity.Name, dto)} : {Utilities.GetDtoName(entity.Name, Dto.PaginationParamaters)}
+    using Application.Dtos.Shared;
+
+    public class {Utilities.GetDtoName(entity.Name, dto)} : BasePaginationParameters
     {{
         public string Filters {{ get; set; }}
         public string SortOrder {{ get; set; }}

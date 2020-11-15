@@ -26,7 +26,6 @@
                 CreateDtoFile(solutionDirectory, entity, Dto.Manipulation);
                 CreateDtoFile(solutionDirectory, entity, Dto.Creation);
                 CreateDtoFile(solutionDirectory, entity, Dto.Update);
-                CreateDtoFile(solutionDirectory, entity, Dto.PaginationParamaters);
                 CreateDtoFile(solutionDirectory, entity, Dto.ReadParamaters);
             }
             catch (FileAlreadyExistsException e)
@@ -43,9 +42,7 @@
 
         public static string GetDtoFileText(ClassPath classPath, Entity entity, Dto dto)
         {
-            if (dto == Dto.PaginationParamaters)
-                return DtoFileTextGenerator.GetPaginationDtoText(classPath.ClassNamespace, entity, dto);
-            else if (dto == Dto.ReadParamaters)
+            if (dto == Dto.ReadParamaters)
                 return DtoFileTextGenerator.GetReadParameterDtoText(classPath.ClassNamespace, entity, dto);
             else
                 return DtoFileTextGenerator.GetDtoText(classPath, entity, dto);

@@ -6,7 +6,6 @@
         Creation,
         Manipulation,
         Update,
-        ReadParamaters,
-        PaginationParamaters
+        ReadParamaters
     }
 }

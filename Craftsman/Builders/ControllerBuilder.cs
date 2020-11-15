@@ -101,6 +101,9 @@
             {{
                 totalCount = {lowercaseEntityVariable}sFromRepo.TotalCount,
                 pageSize = {lowercaseEntityVariable}sFromRepo.PageSize,
+                currentPageSize = {lowercaseEntityVariable}sFromRepo.CurrentPageSize,
+                currentStartIndex = {lowercaseEntityVariable}sFromRepo.CurrentStartIndex,
+                currentEndIndex = {lowercaseEntityVariable}sFromRepo.CurrentEndIndex,
                 pageNumber = {lowercaseEntityVariable}sFromRepo.PageNumber,
                 totalPages = {lowercaseEntityVariable}sFromRepo.TotalPages,
                 hasPrevious = {lowercaseEntityVariable}sFromRepo.HasPrevious,
