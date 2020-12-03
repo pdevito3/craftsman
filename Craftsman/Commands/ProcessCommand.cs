@@ -54,7 +54,7 @@
             if (args.Length > 1 && (args[0] == "add:property"))
             {
                 if (args[1] == "-h" || args[1] == "--help")
-                    AddEntityCommand.Help();
+                    AddEntityPropertyCommand.Help();
                 else
                 {
                     var entityName = "";

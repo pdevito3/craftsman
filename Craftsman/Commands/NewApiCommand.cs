@@ -33,13 +33,19 @@
             WriteHelpHeader(@$"Usage:");
             WriteHelpText(@$"   craftsman new:api [options] <filepath>{Environment.NewLine}");
 
-            WriteHelpText(@$"   For example:");
+            WriteHelpHeader(@$"Arguments:");
+            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that describes your web API using a proper Wrapt format.");
+
+            WriteHelpText(Environment.NewLine);
+            WriteHelpHeader(@$"Options:");
+            WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
+
+            WriteHelpText(Environment.NewLine);
+            WriteHelpHeader(@$"Example:");
             WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yaml");
             WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yml");
             WriteHelpText(@$"       craftsman new:api C:\fullpath\api.json{Environment.NewLine}");
 
-            WriteHelpHeader(@$"Options:");
-            WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
         }
 
         public static void Run(string filePath, string buildSolutionDirectory, IFileSystem fileSystem)

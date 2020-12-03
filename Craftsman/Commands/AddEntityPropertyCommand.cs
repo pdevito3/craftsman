@@ -20,28 +20,38 @@
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   While in your project directory, this command will add a new property to an entity.{Environment.NewLine}");
+            WriteHelpText(@$"   While in your project directory, this command will add a new property to an entity.");
 
+            WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman add:entity [options] [arguments]{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman add:property [options] [arguments]");
 
-            WriteHelpText(@$"   For example:");
-            WriteHelpText(@$"       craftsman add:property --entity Vet -name VetName -type string -filter false -sort true");
-            WriteHelpText(@$"       craftsman add:property -e Vet -n VetName -t string -f false -s true");
-            WriteHelpText(@$"       craftsman add:property -e Vet -n VetName -t string");
-            WriteHelpText(@$"       craftsman add:property -e Sale -n Product -t Product -k ProductId");
-            WriteHelpText(@$"       craftsman add:property -e Vet -n AppointmentDate -t DateTime? -f false -s true{Environment.NewLine}");
-
+            WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Arguments:");
-            WriteHelpText(@$"   -e, -entity        Required. Text. Name of the entity to add the property. Must match the name of the entity file (e.g. `Vet.cs` should be `Vet`)");
+            WriteHelpText(@$"   -e, -entity        Required. Text. Name of the entity to add the property. 
+                      Must match the name of the entity file (e.g. `Vet.cs` should 
+                      be `Vet`)");
             WriteHelpText(@$"   -n, -name          Required. Text. Name of the property to add");
             WriteHelpText(@$"   -t, -type          Required. Text. Data type of the property to add");
             WriteHelpText(@$"   -f, -filter        Optional. Boolean. Determines if the property is filterable");
             WriteHelpText(@$"   -s, -sort          Optional. Boolean. Determines if the property is sortable");
-            WriteHelpText(@$"   -k, -foreignkey    Optional. Text. When adding an object linked by a foreign key, use this field to enter the name of the property that acts as the foreign key");
+            WriteHelpText(@$"   -k, -foreignkey    Optional. Text. When adding an object linked by a foreign 
+                      key, use this field to enter the name of the property that 
+                      acts as the foreign key");
 
+            // add new line back in if adding something with only one line of text after foreign key above
+            //WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Options:");
             WriteHelpText(@$"   -h, --help          Display this help message. No Arguments are needed to display the help message.");
+
+            WriteHelpText(Environment.NewLine);
+            WriteHelpHeader(@$"Example:");
+            WriteHelpText(@$"       craftsman add:property --entity Vet -name VetName -type string -filter false -sort true");
+            WriteHelpText(@$"       craftsman add:property -e Vet -n VetName -t string -f false -s true");
+            WriteHelpText(@$"       craftsman add:property -e Vet -n VetName -t string");
+            WriteHelpText(@$"       craftsman add:property -e Sale -n Product -t Product -k ProductId");
+            WriteHelpText(@$"       craftsman add:property -e Vet -n AppointmentDate -t DateTime? -f false -s true");
+            WriteHelpText(Environment.NewLine);
         }
 
         public static void Run(string solutionDirectory, string entityName, EntityProperty prop)

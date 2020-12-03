@@ -20,18 +20,27 @@
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   While in your project directory, this command can add one or more new entities to your Accelerate Core project based on a formatted yaml or json file. The file input uses a simplified format from the `new:api` command, only requiring a list of one or more entities.{Environment.NewLine}");
+            WriteHelpText(@$"   This command can add one or more new entities to your Wrapt project using a formatted 
+   yaml or json file. The input file uses a simplified format from the `new:api` command that only 
+   requires a list of one or more entities.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman add:entity [options] <filepath>{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman add:entity [options] <filepath>");
 
-            WriteHelpText(@$"   For example:");
-            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.yaml");
-            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.yml");
-            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.json{Environment.NewLine}");
+            WriteHelpText(Environment.NewLine);
+            WriteHelpHeader(@$"Arguments:");
+            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that lists the new entities that you want to add to your API.");
 
+            WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Options:");
             WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
+
+            WriteHelpText(Environment.NewLine);
+            WriteHelpHeader(@$"Example:");
+            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.yaml");
+            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.yml");
+            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.json");
+            WriteHelpText(Environment.NewLine);
         }
 
         public static void Run(string filePath, string solutionDirectory, IFileSystem fileSystem)
