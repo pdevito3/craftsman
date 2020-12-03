@@ -27,7 +27,7 @@
                 return;
             }
 
-            if (args.Length == 2 && (args[0] == "new:api"))
+            if (args.Length == 2 && (args[0] == "new:api" || args[0] == "new:webapi"))
             {
                 var filePath = args[1];
                 if (filePath == "-h" || filePath == "--help")
