@@ -54,9 +54,17 @@
             return $"Get{pluralEntity}Async";
         }
 
-        public static string GetAppSettingsName(string env, bool asJson = true)
+        public static string GetAppSettingsName(string envName, bool asJson = true)
         {
-            return asJson ? $"appsettings.{env}.json" : $"appsettings.{env}";
+            if(envName == "Startup")
+                return asJson ? $"appsettings.json" : $"appsettings";
+
+            return asJson ? $"appsettings.{envName}.json" : $"appsettings.{envName}";
+        }
+
+        public static string GetStartupName(string envName)
+        {
+            return envName == "Startup" ? "Startup" : $"Startup{envName}";
         }
 
         public static string GetProfileName(string entityName)

@@ -254,12 +254,14 @@
 
             foreach (var env in template.Environments)
             {
-                StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName, template);
+                // default startup is already built in cleanup phase
+                if(env.EnvironmentName != "Startup")
+                    StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName, template);
+
                 AppSettingsBuilder.CreateAppSettings(solutionDirectory, env, template.DbContext.DatabaseName, template);
                 LaunchSettingsModifier.AddProfile(solutionDirectory, env);
 
                 //services
-
                 if (!template.SwaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
                     SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, env);
             }

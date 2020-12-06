@@ -25,7 +25,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{env.EnvironmentName}.cs");
+                var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"{Utilities.GetStartupName(env.EnvironmentName)}.cs");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");

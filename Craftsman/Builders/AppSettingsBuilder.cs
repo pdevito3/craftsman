@@ -15,14 +15,14 @@
         {
             try
             {
-                var appSettingFilename = env.EnvironmentName == "Startup" ? "" : Utilities.GetAppSettingsName(env.EnvironmentName);
+                var appSettingFilename = Utilities.GetAppSettingsName(env.EnvironmentName);
                 var classPath = ClassPathHelper.AppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
 
                 if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+                    File.Delete(classPath.FullClassPath);
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
@@ -59,7 +59,6 @@
     ""Audience"": ""{env.JwtSettings.Audience}"",
     ""DurationInMinutes"": {env.JwtSettings.DurationInMinutes}
   }},";
-            }
 
             mailSettings = @$"
   ""MailSettings"": {{
@@ -70,6 +69,7 @@
     ""SmtpPass"": ""{env.MailSettings.SmtpPass}"",
     ""DisplayName"": ""{env.MailSettings.DisplayName}""
   }},";
+            }
 
             if(env.EnvironmentName == "Development")
 

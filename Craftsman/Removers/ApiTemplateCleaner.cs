@@ -28,7 +28,7 @@
             InfrastructurePersistenceServicesCleaner.CleanServiceRegistration(solutionDirectory);
             StartupCleaner.CleanStartup(solutionDirectory, template);
 
-            if(template.AuthSetup.AuthMethod != "JWT")
+            if (template.AuthSetup.AuthMethod != "JWT")
             {
                 IdentityRemover.RemoveProject(solutionDirectory);
                 IdentityRemover.RemoveController(solutionDirectory);
