@@ -46,7 +46,7 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman add:property --entity Vet -name VetName -type string -filter false -sort true");
+            WriteHelpText(@$"       craftsman add:property --entity Vet --name VetName --type string --filter false --sort true");
             WriteHelpText(@$"       craftsman add:property -e Vet -n VetName -t string -f false -s true");
             WriteHelpText(@$"       craftsman add:property -e Vet -n VetName -t string");
             WriteHelpText(@$"       craftsman add:property -e Sale -n Product -t Product -k ProductId");
