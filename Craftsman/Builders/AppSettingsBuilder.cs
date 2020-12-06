@@ -90,7 +90,7 @@
             return @$"{{
   ""UseInMemoryDatabase"": false,
   ""ConnectionStrings"": {{
-    ""{dbName}"": ""{env.ConnectionString}""
+    ""{dbName}"": ""{env.ConnectionString.Replace(@"\",@"\\")}""
   }},
   ""Logging"": {{
     ""LogLevel"": {{
