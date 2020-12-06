@@ -44,7 +44,8 @@
                     { 
                         foreach (var prop in props)
                         {
-                            fkUsingStatements += DtoFileTextGenerator.GetForeignKeyUsingStatements(classPath, fkUsingStatements, prop, dto);
+                            if(prop.IsForeignKey)
+                                fkUsingStatements += DtoFileTextGenerator.GetForeignKeyUsingStatements(classPath, fkUsingStatements, prop, dto);
                         }
                     }
 
@@ -57,7 +58,7 @@
                         }
                         if (line.Contains("using System;"))
                         {
-                            newText += @$"{Environment.NewLine}    using Application.Dtos.Product;";
+                            newText += fkUsingStatements;
                         }
 
                         output.WriteLine(newText);
