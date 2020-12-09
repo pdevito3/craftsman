@@ -7,6 +7,7 @@
     using Craftsman.Models;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Reflection.Emit;
@@ -100,6 +101,9 @@
             if (!File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
+            var usingDbStatement = GetDbUsingStatement(template.DbContext.Provider);
+            InstallDbProviderNugetPackages(template.DbContext.Provider, solutionDirectory);
+
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
             {
@@ -120,7 +124,7 @@
             else
             {{
                 services.AddDbContext<{template.DbContext.ContextName}>(options =>
-                    options.UseSqlServer(
+                    options.{usingDbStatement}(
                         configuration.GetConnectionString(""{template.DbContext.DatabaseName}""),
                         builder => builder.MigrationsAssembly(typeof({template.DbContext.ContextName}).Assembly.FullName)));
             }}";
@@ -136,6 +140,43 @@
             File.Move(tempPath, classPath.FullClassPath);
 
             GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
+        }
+
+        private static void InstallDbProviderNugetPackages(string provider, string solutionDirectory)
+        {
+            var installCommand = $"add Infrastructure.Persistence{Path.DirectorySeparatorChar}Infrastructure.Persistence.csproj package npgsql.entityframeworkcore.postgresql";
+
+            if (Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider)
+                installCommand = $"add Infrastructure.Persistence{Path.DirectorySeparatorChar}Infrastructure.Persistence.csproj package npgsql.entityframeworkcore.postgresql";
+            //else if (Enum.GetName(typeof(DbProvider), DbProvider.MySql) == provider)
+            //    installCommand = $"add Infrastructure.Persistence{Path.DirectorySeparatorChar}Infrastructure.Persistence.csproj package Pomelo.EntityFrameworkCore.MySql";
+
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "dotnet",
+                    Arguments = installCommand,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    WorkingDirectory = solutionDirectory
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
+        }
+
+        private static object GetDbUsingStatement(string provider)
+        {
+            if (Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider)
+                return "UseNpgsql";
+            //else if (Enum.GetName(typeof(DbProvider), DbProvider.MySql) == provider)
+            //    return "UseMySql";
+            
+            return "UseSqlServer";
         }
 
         public static string GetAuditableSaveOverride(string classNamespace, ApiTemplate template)
