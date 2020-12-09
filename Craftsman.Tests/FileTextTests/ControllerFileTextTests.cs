@@ -64,6 +64,9 @@
             {{
                 totalCount = productsFromRepo.TotalCount,
                 pageSize = productsFromRepo.PageSize,
+                currentPageSize = productsFromRepo.CurrentPageSize,
+                currentStartIndex = productsFromRepo.CurrentStartIndex,
+                currentEndIndex = productsFromRepo.CurrentEndIndex,
                 pageNumber = productsFromRepo.PageNumber,
                 totalPages = productsFromRepo.TotalPages,
                 hasPrevious = productsFromRepo.HasPrevious,
