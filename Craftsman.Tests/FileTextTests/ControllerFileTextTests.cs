@@ -109,7 +109,7 @@
             }}
 
             var product = _mapper.Map<Product>(productForCreation);
-            _productRepository.AddProduct(product);
+            await _productRepository.AddProduct(product);
             var saveSuccessful = await _productRepository.SaveAsync();
 
             if(saveSuccessful)

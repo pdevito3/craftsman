@@ -146,7 +146,7 @@
             }}
 
             var {lowercaseEntityVariable} = _mapper.Map<{entityName}>({lowercaseEntityVariable}ForCreation);
-            _{lowercaseEntityVariable}Repository.Add{entityName}({lowercaseEntityVariable});
+            await _{lowercaseEntityVariable}Repository.Add{entityName}({lowercaseEntityVariable});
             var saveSuccessful = await _{lowercaseEntityVariable}Repository.SaveAsync();
 
             if(saveSuccessful)
