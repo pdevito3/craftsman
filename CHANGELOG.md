@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet!
 
+## [0.4.2] - 2020-12-10
+
+### Fixed
+
+- Seeder was not getting added to `StartupDevelopment` when using `add:entity` command
+
 ## [0.4.1] - 2020-12-10
 
 ### Fixed
