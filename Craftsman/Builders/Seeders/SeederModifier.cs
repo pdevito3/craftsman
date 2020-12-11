@@ -61,7 +61,7 @@
             if (!Directory.Exists(entityDir))
                 throw new DirectoryNotFoundException($"The `{entityDir}` directory could not be found.");
 
-            var pathString = Path.Combine(entityDir, $"Startup.cs");
+            var pathString = Path.Combine(entityDir, $"StartupDevelopment.cs");
             if (!File.Exists(pathString))
                 throw new FileNotFoundException($"The `{pathString}` file could not be found.");
 
@@ -96,8 +96,7 @@
             var seeders = "";
             foreach (var entity in template.Entities)
             {
-                seeders += @$"
-                    {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{template.DbContext.ContextName}>());";
+                seeders += @$"                    {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{template.DbContext.ContextName}>());";
             }
 
             return seeders;
