@@ -39,7 +39,7 @@
                 }
             }
 
-            if (args.Length == 2 && (args[0] == "add:entity"))
+            if (args.Length == 2 && (args[0] == "add:entity" || args[0] == "add:entities"))
             {
                 var filePath = args[1];
                 if (filePath == "-h" || filePath == "--help")

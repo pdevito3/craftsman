@@ -26,6 +26,8 @@
 
             WriteHelpHeader(@$"Usage:");
             WriteHelpText(@$"   craftsman add:entity [options] <filepath>");
+            WriteHelpText(@$"   or");
+            WriteHelpText(@$"   craftsman add:entities [options] <filepath>");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Arguments:");
@@ -37,9 +39,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.yaml");
-            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.yml");
-            WriteHelpText(@$"       craftsman add:entity C:\fullpath\newentity.json");
+            WriteHelpText(@$"       craftsman add:entities C:\fullpath\newentity.yaml");
+            WriteHelpText(@$"       craftsman add:entities C:\fullpath\newentity.yml");
+            WriteHelpText(@$"       craftsman add:entities C:\fullpath\newentity.json");
             WriteHelpText(Environment.NewLine);
         }
 
