@@ -9,6 +9,7 @@
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Paul DeVito</Authors>
+    <Description>This CLI workhorse behind the Wrapt framework. Go to https://wrapt.dev for the full documentation.</Description>
     <Company>Dotnet Accelerate</Company>
     <Product>Craftsman</Product>
     <PackageTags>webapi c-sharp dotnet-core clean-architecture asp-net-core</PackageTags>
