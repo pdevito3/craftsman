@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Craftsman.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace Craftsman.Models
         private bool _isRequired = false;
         private bool _canManipulate = true;
         private bool _isForeignKey = false;
+        private string _type = "string";
 
         /// <summary>
         /// Name of the property
@@ -20,7 +22,11 @@ namespace Craftsman.Models
         /// <summary>
         /// Type of property (e.g. string, int, DateTime?, etc.)
         /// </summary>
-        public string Type { get; set; }
+        public string Type 
+        {
+            get => _type;
+            set => _type = Utilities.PropTypeCleanup(value);
+        }
 
         /// <summary>
         /// Determines if the property will be filterable by the API

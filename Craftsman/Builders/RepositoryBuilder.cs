@@ -59,9 +59,11 @@
         public static string GetIRepositoryFileText(string classNamespace, Entity entity)
         {
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
+            var pkPropertyType = entity.PrimaryKeyProperty.Type;
 
             return @$"namespace {classNamespace}
 {{
+    using System;
     using Application.Dtos.{entity.Name};
     using Application.Wrappers;
     using System.Threading.Tasks;
@@ -70,8 +72,8 @@
     public interface {Utilities.GetRepositoryName(entity.Name, true)}
     {{
         Task<PagedList<{entity.Name}>> {getListMethodName}({Utilities.GetDtoName(entity.Name, Dto.ReadParamaters)} {entity.Name}Parameters);
-        Task<{entity.Name}> Get{entity.Name}Async(int {entity.Name}Id);
-        {entity.Name} Get{entity.Name}(int {entity.Name}Id);
+        Task<{entity.Name}> Get{entity.Name}Async({pkPropertyType} {entity.Name}Id);
+        {entity.Name} Get{entity.Name}({pkPropertyType} {entity.Name}Id);
         Task Add{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
         void Delete{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
         void Update{entity.Name}({entity.Name} {entity.Name.LowercaseFirstLetter()});
@@ -104,6 +106,7 @@
         {
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
             var paramBase = entity.Name.LowercaseFirstLetter();
+            var pkPropertyType = entity.PrimaryKeyProperty.Type;
             var fkIncludes = "";
             foreach(var fk in entity.Properties.Where(p => p.IsForeignKey))
             {
@@ -112,6 +115,9 @@
 
             return @$"namespace {classNamespace}
 {{
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Application.Dtos.{entity.Name};
     using Application.Interfaces.{entity.Name};
     using Application.Wrappers;
@@ -120,9 +126,6 @@
     using Microsoft.EntityFrameworkCore;
     using Sieve.Models;
     using Sieve.Services;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     public class {Utilities.GetRepositoryName(entity.Name, false)} : {Utilities.GetRepositoryName(entity.Name, true)}
     {{
@@ -161,14 +164,14 @@
                 {paramBase}Parameters.PageSize);
         }}
 
-        public async Task<{entity.Name}> Get{entity.Name}Async(int {paramBase}Id)
+        public async Task<{entity.Name}> Get{entity.Name}Async({pkPropertyType} {paramBase}Id)
         {{
             // include marker -- requires return _context.{entity.Plural} as it's own line with no extra text -- do not delete this comment
             return await _context.{entity.Plural}{fkIncludes}
                 .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{entity.PrimaryKeyProperty.Name} == {paramBase}Id);
         }}
 
-        public {entity.Name} Get{entity.Name}(int {paramBase}Id)
+        public {entity.Name} Get{entity.Name}({pkPropertyType} {paramBase}Id)
         {{
             // include marker -- requires return _context.{entity.Plural} as it's own line with no extra text -- do not delete this comment
             return _context.{entity.Plural}{fkIncludes}

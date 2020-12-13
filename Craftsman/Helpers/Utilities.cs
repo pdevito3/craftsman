@@ -25,6 +25,8 @@
                 return "DateTimeOffset";
             else if (prop.ToLower() == "datetimeoffset?")
                 return "DateTimeOffset?";
+            else if (prop.ToLower() == "guid")
+                return "Guid";
             else
                 return prop;
         }

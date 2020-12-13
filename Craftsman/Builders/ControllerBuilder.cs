@@ -56,6 +56,7 @@
             var primaryKeyProp = entity.PrimaryKeyProperty;
             var auditable = entity.Auditable ? @$"{Environment.NewLine}    [Authorize]" : "";
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
+            var pkPropertyType = primaryKeyProp.Type;
 
             return @$"namespace {classNamespace}
 {{
@@ -119,7 +120,7 @@
 
 
         [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""Get{entityName}"")]
-        public async Task<ActionResult<{readDto}>> Get{entityName}(int {lowercaseEntityVariable}Id)
+        public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercaseEntityVariable}Id)
         {{
             var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
 
@@ -161,7 +162,7 @@
         }}
 
         [HttpDelete(""{{{lowercaseEntityVariable}Id}}"")]
-        public async Task<ActionResult> Delete{entityName}(int {lowercaseEntityVariable}Id)
+        public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercaseEntityVariable}Id)
         {{
             var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
 
@@ -177,7 +178,7 @@
         }}
 
         [HttpPut(""{{{lowercaseEntityVariable}Id}}"")]
-        public async Task<IActionResult> Update{entityName}(int {lowercaseEntityVariable}Id, {updateDto} {lowercaseEntityVariable})
+        public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercaseEntityVariable}Id, {updateDto} {lowercaseEntityVariable})
         {{
             var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
 
@@ -204,7 +205,7 @@
         }}
 
         [HttpPatch(""{{{lowercaseEntityVariable}Id}}"")]
-        public async Task<IActionResult> PartiallyUpdate{entityName}(int {lowercaseEntityVariable}Id, JsonPatchDocument<{updateDto}> patchDoc)
+        public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {lowercaseEntityVariable}Id, JsonPatchDocument<{updateDto}> patchDoc)
         {{
             if (patchDoc == null)
             {{

@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `add:entities` alias for the `add:entity` command
 
+### Fixed
+
+- Fixed bug where postgres library was getting added every time
+
 ## [0.4.2] - 2020-12-10
 
 ### Fixed

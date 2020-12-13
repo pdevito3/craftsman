@@ -17,6 +17,7 @@
         {
             var classNamespace = "Application.Interfaces.Product";
             var entity = new FakeEntity().Generate();
+            entity.PrimaryKeyProperty.Type = "int";
             entity.Name = "Product";
             entity.Plural = "Products";
 
@@ -24,6 +25,7 @@
 
             var expectedText = @"namespace Application.Interfaces.Product
 {
+    using System;
     using Application.Dtos.Product;
     using Application.Wrappers;
     using System.Threading.Tasks;
@@ -79,6 +81,9 @@
 
             var expectedText = @"namespace Infrastructure.Persistence.Repositories
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Application.Dtos.Product;
     using Application.Interfaces.Product;
     using Application.Wrappers;
@@ -87,9 +92,6 @@
     using Microsoft.EntityFrameworkCore;
     using Sieve.Models;
     using Sieve.Services;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     public class ProductRepository : IProductRepository
     {
@@ -230,6 +232,9 @@
 
             var expectedText = @$"namespace Infrastructure.Persistence.Repositories
 {{
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Application.Dtos.Product;
     using Application.Interfaces.Product;
     using Application.Wrappers;
@@ -238,9 +243,6 @@
     using Microsoft.EntityFrameworkCore;
     using Sieve.Models;
     using Sieve.Services;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     public class ProductRepository : IProductRepository
     {{

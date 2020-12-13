@@ -47,7 +47,7 @@
         {
             var sortTests = "";
 
-            foreach(var prop in entity.Properties.Where(e => e.CanSort).ToList())
+            foreach(var prop in entity.Properties.Where(e => e.CanSort && e.Type != "Guid").ToList())
             {
                 sortTests += GetEntitiesListSortedInAscOrder(template, entity, prop);
                 sortTests += GetEntitiesListSortedInDescOrder(template, entity, prop);
@@ -256,24 +256,29 @@ namespace {classPath.ClassNamespace}
        
         private static string GetEntitiesListSortedInAscOrder(ApiTemplate template, Entity entity, EntityProperty prop)
         {
-            var cleanProp = Utilities.PropTypeCleanup(prop.Type);
             var alpha = "";
             var bravo = "";
             var charlie = "";
 
-            if (cleanProp == "string")
+            if (prop.Type == "string")
             {
                 alpha = @$"""alpha""";
                 bravo = @$"""bravo""";
                 charlie = @$"""charlie""";
             }
-            else if (cleanProp.Contains("int"))
+            else if (prop.Type == "Guid")
+            {
+                alpha = "Guid.NewGuid()";
+                bravo = "Guid.NewGuid()";
+                charlie = "Guid.NewGuid()";
+            }
+            else if (prop.Type.Contains("int"))
             {
                 alpha = "1";
                 bravo = "2";
                 charlie = "3";
             }
-            else if (cleanProp.Contains("DateTime"))
+            else if (prop.Type.Contains("DateTime"))
             {
                 alpha = "DateTime.Now.AddDays(1)";
                 bravo = "DateTime.Now.AddDays(2)";
@@ -329,24 +334,29 @@ namespace {classPath.ClassNamespace}
 
         private static string GetEntitiesListSortedInDescOrder(ApiTemplate template, Entity entity, EntityProperty prop)
         {
-            var cleanProp = Utilities.PropTypeCleanup(prop.Type);
             var alpha = "";
             var bravo = "";
             var charlie = "";
 
-            if (cleanProp == "string")
+            if (prop.Type == "string")
             {
                 alpha = @$"""alpha""";
                 bravo = @$"""bravo""";
                 charlie = @$"""charlie""";
             }
-            else if (cleanProp.Contains("int"))
+            else if (prop.Type == "Guid")
+            {
+                alpha = "Guid.NewGuid()";
+                bravo = "Guid.NewGuid()";
+                charlie = "Guid.NewGuid()";
+            }
+            else if (prop.Type.Contains("int"))
             {
                 alpha = "1";
                 bravo = "2";
                 charlie = "3";
             }
-            else if (cleanProp.Contains("DateTime"))
+            else if (prop.Type.Contains("DateTime"))
             {
                 alpha = "DateTime.Now.AddDays(1)";
                 bravo = "DateTime.Now.AddDays(2)";
@@ -405,7 +415,6 @@ namespace {classPath.ClassNamespace}
             var filterTests = "";
             foreach (var prop in entity.Properties.Where(e => e.CanFilter).ToList())
             {
-                var cleanProp = Utilities.PropTypeCleanup(prop.Type);
                 var alpha = "";
                 var bravo = "";
                 var charlie = "";
@@ -413,7 +422,7 @@ namespace {classPath.ClassNamespace}
                 var bravoFilterVal = "";
                 var charlieFilterVal = "";
 
-                if (cleanProp == "string")
+                if (prop.Type == "string")
                 {
                     alpha = @$"""alpha""";
                     bravo = @$"""bravo""";
@@ -422,7 +431,16 @@ namespace {classPath.ClassNamespace}
                     bravoFilterVal = "bravo";
                     charlieFilterVal = "charlie";
                 }
-                else if (cleanProp.Contains("int"))
+                else if (prop.Type == "Guid")
+                {
+                    alpha = "Guid.NewGuid()";
+                    alphaFilterVal = "alpha";
+                    bravo = "Guid.NewGuid()";
+                    bravoFilterVal = "bravo";
+                    charlie = "Guid.NewGuid()";
+                    charlieFilterVal = "charlie";
+                }
+                else if (prop.Type.Contains("int"))
                 {
                     alpha = "1";
                     alphaFilterVal = alpha;
@@ -431,14 +449,14 @@ namespace {classPath.ClassNamespace}
                     charlie = "3";
                     charlieFilterVal = charlie;
                 }
-                else if (cleanProp.Contains("DateTime"))
+                else if (prop.Type.Contains("DateTime"))
                 {
                     alpha = @$"DateTime.Now.AddDays(1)";
                     bravo = @$"DateTime.Parse(DateTime.Now.AddDays(2).ToString(""MM/dd/yyyy""))"; // fitler by date like this because it needs to be an exact match (in this case)
                     bravoFilterVal = @$"{{DateTime.Now.AddDays(2).ToString(""MM/dd/yyyy"")}}";
                     charlie = @$"DateTime.Now.AddDays(3)";
                 }
-                else if (cleanProp.Contains("bool"))
+                else if (prop.Type.Contains("bool"))
                 {
                     alpha = "false";
                     alphaFilterVal = alpha;
@@ -456,6 +474,7 @@ namespace {classPath.ClassNamespace}
                 var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
                 var usingString = TestBuildingHelpers.GetUsingString(template);
                 var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
+                var expectedFilterableProperty = @$"fake{entity.Name}Two.{prop.Name}";
 
                 filterTests += $@"
         [Fact]
@@ -471,7 +490,7 @@ namespace {classPath.ClassNamespace}
             fake{entity.Name}One.{prop.Name} = {alpha};
 
             var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
-            fake{entity.Name}Two.{prop.Name} = {bravo};
+            {expectedFilterableProperty} = {bravo};
 
             var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
             fake{entity.Name}Three.{prop.Name} = {charlie};
@@ -484,7 +503,7 @@ namespace {classPath.ClassNamespace}
 
                 var service = new {Utilities.GetRepositoryName(entity.Name, false)}(context, new SieveProcessor(sieveOptions));
 
-                var {entity.Name.LowercaseFirstLetter()}Repo = await service.{getListMethodName}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ Filters = $""{prop.Name} == {bravoFilterVal}"" }});
+                var {entity.Name.LowercaseFirstLetter()}Repo = await service.{getListMethodName}(new {Utilities.GetDtoName(entity.Name, Enums.Dto.ReadParamaters)} {{ Filters = $""{prop.Name} == {{{expectedFilterableProperty}}}"" }});
 
                 //Assert
                 {entity.Name.LowercaseFirstLetter()}Repo.Should()
