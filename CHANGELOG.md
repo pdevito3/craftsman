@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `add:entities` alias for the `add:entity` command
+- Can now add Guid or other non-integer primary key
 
 ### Fixed
 
