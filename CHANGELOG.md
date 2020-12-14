@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- None yet!
+
+## [0.5.0] - 2020-12-14
+
 ### Added
 
 - Added `add:entities` alias for the `add:entity` command
