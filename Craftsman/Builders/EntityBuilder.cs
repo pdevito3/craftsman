@@ -52,6 +52,7 @@
             var usingSieve = entity.Properties.Where(e => e.CanFilter == true || e.CanSort == true).ToList().Count > 0 ? @$"{Environment.NewLine}    using Sieve.Attributes;" : "";
             var inheritanceString = entity.Auditable ? $" : AuditableEntity" : "";
             var auditableUsing = entity.Auditable ? @$"{Environment.NewLine}    using Domain.Common;" : "";
+            var tableAnnotation = TableAnnotationBuilder(entity);
 
             return @$"namespace {classNamespace}
 {{
@@ -59,6 +60,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{auditableUsing}
 
+    {tableAnnotation}
     public class {entity.Name}{inheritanceString}
     {{
 {propString}
@@ -66,6 +68,16 @@
         // add-on property marker - Do Not Delete This Comment
     }}
 }}";
+        }
+
+        public static string TableAnnotationBuilder(Entity entity)
+        {
+            var tableName = entity.TableName ?? entity.Name;
+
+            if (entity.Schema != null)
+                return @$"[Table(""{tableName}"", Schema=""{entity.Schema}"")]";
+
+            return @$"[Table(""{tableName}"")]";
         }
 
         public static string EntityPropBuilder(List<EntityProperty> props)

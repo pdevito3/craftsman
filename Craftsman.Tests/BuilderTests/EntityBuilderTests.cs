@@ -46,5 +46,38 @@
 
             Assert.Throws<FileAlreadyExistsException>(() => EntityBuilder.CreateEntity(solutionDirectory, entity, fileSystem));
         }
+
+        [Fact]
+        public void EntityBuilder_TableAnnotationBuilder_creates_plural_name_when_no_schema_or_table_given()
+        {
+            var entity = new Entity();
+            entity.Name = "SingularName";
+
+            var annotation = EntityBuilder.TableAnnotationBuilder(entity);
+            annotation.Should().Be(@"[Table(""SingularName"")]");            
+        }
+
+        [Fact]
+        public void EntityBuilder_TableAnnotationBuilder_creates_table_name_table_given()
+        {
+            var entity = new Entity();
+            entity.Name = "SinglularName";
+            entity.TableName = "TableName";
+
+            var annotation = EntityBuilder.TableAnnotationBuilder(entity);
+            annotation.Should().Be(@"[Table(""TableName"")]");
+        }
+
+        [Fact]
+        public void EntityBuilder_TableAnnotationBuilder_creates_table_name_with_schema()
+        {
+            var entity = new Entity();
+            entity.Name = "SinglularName";
+            entity.TableName = "TableName";
+            entity.Schema = "Schema";
+
+            var annotation = EntityBuilder.TableAnnotationBuilder(entity);
+            annotation.Should().Be(@"[Table(""TableName"", Schema=""Schema"")]");
+        }
     }
 }

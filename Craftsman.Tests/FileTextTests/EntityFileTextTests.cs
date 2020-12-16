@@ -17,30 +17,31 @@
         {
             var classNamespace = "Domain.Entities";
             var entity = CannedGenerator.FakeBasicProduct();
-
+            var tableAnnotation = EntityBuilder.TableAnnotationBuilder(entity);
             var fileText = EntityBuilder.GetEntityFileText(classNamespace, entity);
 
-            var expectedText = @"namespace Domain.Entities
-{
+            var expectedText = @$"namespace Domain.Entities
+{{
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using Sieve.Attributes;
 
+    {tableAnnotation}
     public class Product
-    {
+    {{
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Required]
         [Sieve(CanFilter = true, CanSort = false)]
-        public int ProductId { get; set; }
+        public int ProductId {{ get; set; }}
 
         [Sieve(CanFilter = true, CanSort = false)]
-        public string Name { get; set; }
+        public string Name {{ get; set; }}
 
         // add-on property marker - Do Not Delete This Comment
-    }
-}";
+    }}
+}}";
 
             fileText.Should().Be(expectedText);
         }
@@ -54,6 +55,7 @@
             var entity = CannedGenerator.FakeBasicProduct();
             entity.Properties.Add(new EntityProperty { Name = "Test", Type = type, DefaultValue = defaultVal, CanFilter = true, CanSort = true });
 
+            var tableAnnotation = EntityBuilder.TableAnnotationBuilder(entity);
             var fileText = EntityBuilder.GetEntityFileText(classNamespace, entity);
 
             var expectedText = @$"namespace Domain.Entities
@@ -63,6 +65,7 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using Sieve.Attributes;
 
+    {tableAnnotation}
     public class Product
     {{
         [Key]
