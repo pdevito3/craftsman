@@ -52,6 +52,7 @@
             var usingSieve = entity.Properties.Where(e => e.CanFilter == true || e.CanSort == true).ToList().Count > 0 ? @$"{Environment.NewLine}    using Sieve.Attributes;" : "";
             var inheritanceString = entity.Auditable ? $" : AuditableEntity" : "";
             var auditableUsing = entity.Auditable ? @$"{Environment.NewLine}    using Domain.Common;" : "";
+            var tableName = !string.IsNullOrEmpty(entity.TableName) ? @$"[Table(""{entity.TableName}"")]{Environment.NewLine}    " : "";
 
             return @$"namespace {classNamespace}
 {{
@@ -59,7 +60,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{auditableUsing}
 
-    public class {entity.Name}{inheritanceString}
+    {tableName}public class {entity.Name}{inheritanceString}
     {{
 {propString}
 
@@ -100,6 +101,8 @@
                 attributeString += @$"        [ForeignKey(""{entityProperty.ForeignKeyPropName}"")]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)
                 attributeString += @$"        [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
+            if (!string.IsNullOrEmpty(entityProperty.ColumnName))
+                attributeString += @$"        [Column(""{entityProperty.ColumnName}"")]{Environment.NewLine}";
 
             return attributeString;
         }
