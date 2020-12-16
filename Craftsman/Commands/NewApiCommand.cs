@@ -60,6 +60,7 @@
 
                 FileParsingHelper.RunPrimaryKeyGuard(template);
                 FileParsingHelper.RunSolutionNameAssignedGuard(template);
+                FileParsingHelper.RunPluralNameGuard(template);
 
                 //var rootProjectDirectory = Directory.GetCurrentDirectory().Contains("Debug") ? @"C:\Users\Paul\Documents\testoutput" : Directory.GetCurrentDirectory();
                 //var buildSolutionDirectory = @"C:\Users\Paul\Documents\testoutput";
