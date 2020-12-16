@@ -74,8 +74,7 @@
         public static void RunPluralNameGuard(ApiTemplate template)
         {
             if (template.Entities.Where(e => e.Name == e.Plural).ToList().Count > 0)
-                throw new MissingPrimaryKeyException("One of your entity plural names are the same as their name. " +
-                    "Please make sure they are unique values.");
+                throw new InvalidPluralNameException();
         }
     }
 }

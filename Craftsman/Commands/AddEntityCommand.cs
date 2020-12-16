@@ -77,7 +77,8 @@
                     || e is FileNotFoundException
                     || e is InvalidDbProviderException
                     || e is InvalidFileTypeException
-                    || e is SolutionNotFoundException)
+                    || e is SolutionNotFoundException
+                    || e is InvalidPluralNameException)
                 {
                     WriteError($"{e.Message}");
                 }
