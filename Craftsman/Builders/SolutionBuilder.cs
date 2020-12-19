@@ -29,6 +29,7 @@
                 // must be using the .net 5 sdk
             }
 
+            // add webapi first so it is default project?
             BuildDomainProject(solutionDirectory, domainDirectory);
             var stopper = true;
         }
@@ -39,6 +40,7 @@
 
             // domain and app need to be added to a virtual `Common` folder, something like this: dotnet add path/to/project.csproj --solution-folder VirtualFolder
             Utilities.ExecuteProcess("dotnet", $@"new classlib -n Domain -f netstandard2.1", solutionDirectory);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""Domain/Domain.csproj""", solutionDirectory);
 
             // this dir is not getting added to the projec though like you would if you created a new folder in vs...
             Directory.CreateDirectory($"{domainDirectory}{separator}Entities");
