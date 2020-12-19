@@ -61,13 +61,10 @@
                 FileParsingHelper.RunPrimaryKeyGuard(template);
                 FileParsingHelper.RunSolutionNameAssignedGuard(template);
 
-                //var rootProjectDirectory = Directory.GetCurrentDirectory().Contains("Debug") ? @"C:\Users\Paul\Documents\testoutput" : Directory.GetCurrentDirectory();
-                //var buildSolutionDirectory = @"C:\Users\Paul\Documents\testoutput";
-
                 // scaffold projects
                 // should i add an accelerate.config.yaml file to the root?
-                CreateNewFoundation(template, buildSolutionDirectory); // todo scaffold this manually instead of using dotnet new foundation
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
+                SolutionBuilder.BuildSolution(solutionDirectory, template);
 
 
                 // remove placeholder valuetoreplace files and directories

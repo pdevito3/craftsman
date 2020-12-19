@@ -5,6 +5,7 @@
     using Craftsman.Models;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -106,6 +107,26 @@
                 default:
                     throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Validator), validator)}");
             }
+        }
+
+        public static void ExecuteProcess(string command, string args, string directory)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = command,
+                    Arguments = args,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    WorkingDirectory = directory
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
         }
     }
 }
