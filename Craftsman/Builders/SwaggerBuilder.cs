@@ -125,54 +125,51 @@
 
         private static string GetSwaggerServiceExtensionText(ApiTemplate template)
         {
-            var urlLine = "";
-            if (Uri.TryCreate(template.SwaggerConfig.ApiContact.Url, UriKind.Absolute, out var outUri) && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps))
-                urlLine = $@"Url = new Uri(""{ template.SwaggerConfig.ApiContact.Url }""),";
+            var contactUrlLine = IsCleanUri(template.SwaggerConfig.ApiContact.Url) 
+                ? $@"Url = new Uri(""{ template.SwaggerConfig.ApiContact.Url }""),"
+                : "";
+
+            var LicenseUrlLine = IsCleanUri(template.SwaggerConfig.LicenseUrl)
+                ? $@"Url = new Uri(""{ template.SwaggerConfig.LicenseUrl }""),"
+                : "";
+
+            var licenseText = GetLicenseText(template.SwaggerConfig.LicenseName, LicenseUrlLine);
 
             var swaggerText = $@"
             public static void AddSwaggerExtension(this IServiceCollection services)
             {{
                 services.AddSwaggerGen(config =>
                 {{
-                    config.SwaggerDoc(""v1"", new OpenApiInfo
-                    {{
-                        Version = ""v1"",
-                        Title = ""{template.SwaggerConfig.Title}"",
-                        Description = ""{template.SwaggerConfig.Description}"",
-                        Contact = new OpenApiContact
+                    config.SwaggerDoc(
+                        ""v1"", 
+                        new OpenApiInfo
                         {{
-                            Name = ""{template.SwaggerConfig.ApiContact.Name}"",
-                            Email = ""{template.SwaggerConfig.ApiContact.Email}"",
-                            {urlLine}
-                        }}
-                    }});
+                            Version = ""v1"",
+                            Title = ""{template.SwaggerConfig.Title}"",
+                            Description = ""{template.SwaggerConfig.Description}"",
+                            Contact = new OpenApiContact
+                            {{
+                                Name = ""{template.SwaggerConfig.ApiContact.Name}"",
+                                Email = ""{template.SwaggerConfig.ApiContact.Email}"",
+                                {contactUrlLine}
+                            }},{licenseText}
+                        }});
                 }});
             }}";
 
-            var nswagText = @$"
-            public static void AddSwaggerExtension(this IServiceCollection services)
-            {{
-                services.AddSwaggerDocument(config => {{
-                    config.PostProcess = document =>
-                    {{
-                        document.Info.Version = ""v1"";
-                        document.Info.Title = ""{template.SwaggerConfig.Title}"";
-                        document.Info.Description = ""{template.SwaggerConfig.Description}"";
-                        document.Info.Contact = new OpenApiContact
-                        {{
-                            Name = ""{template.SwaggerConfig.ApiContact.Name}"",
-                            Email = ""{template.SwaggerConfig.ApiContact.Email}"",
-                            Url = ""{template.SwaggerConfig.ApiContact.Url}"",
-                        }};
-                        document.Info.License = new OpenApiLicense()
-                        {{
-                            Name = $""Copyright {{DateTime.Now.Year}}"",
-                        }};
-                    }};
-                }});
-            }}";
+            return swaggerText;
+        }
 
-            return nswagText;
+        private static string GetLicenseText(string licenseName, string licenseUrlLine)
+        {
+            if (licenseName?.Length > 0 || licenseUrlLine?.Length > 0)
+                return $@"
+                            License = new OpenApiLicense()
+                            {{
+                                Name = ""{licenseName}"",
+                                Url = ""{licenseUrlLine}"",
+                            }}";
+            return "";
         }
 
         private static void AddSwaggerAppExtension(string solutionDirectory, ApiTemplate template)
@@ -223,27 +220,24 @@
                 throw;
             }
         }
+        private static bool IsCleanUri(string uri)
+        {
+            return Uri.TryCreate(uri, UriKind.Absolute, out var outUri) && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps);
+        }
 
         private static string GetSwaggerAppExtensionText(ApiTemplate template)
         {
-/*            var swaggerText = $@"
+           var swaggerText = $@"
         public static void UseSwaggerExtension(this IApplicationBuilder app)
         {{
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {{
-                c.SwaggerEndpoint(""{template.SwaggerConfig.SwaggerUi.Url}"", ""{template.SwaggerConfig.SwaggerUi.Title}"");
+                c.SwaggerEndpoint(""{template.SwaggerConfig.SwaggerEndpointUrl}"", ""{template.SwaggerConfig.SwaggerEndpointName}"");
             }});
-        }}";*/
-
-            var nswagText = @$"            
-        public static void UseSwaggerExtension(this IApplicationBuilder app)
-        {{
-            app.UseOpenApi();
-            app.UseSwaggerUi3();
         }}";
 
-            return nswagText;
+            return swaggerText;
         }
     }
 }
