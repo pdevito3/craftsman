@@ -61,6 +61,8 @@
             var pkPropertyType = primaryKeyProp.Type;
             var listResponse = $@"Response<IEnumerable<{readDto}>>";
             var singleResponse = $@"Response<{readDto}>";
+            var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
+            var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";
 
             return @$"namespace {classNamespace}
 {{
@@ -99,7 +101,7 @@
         {GetSwaggerComments_GetList(entity, AddSwaggerComments, listResponse)}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
-        [HttpGet(Name = ""Get{entityNamePlural}"")]
+        [HttpGet(Name = ""{getListEndpointName}"")]
         public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
         {{
             var {lowercaseEntityVariable}sFromRepo = await _{lowercaseEntityVariable}Repository.{getListMethodName}({lowercaseEntityVariable}ParametersDto);
@@ -127,7 +129,7 @@
         }}
         {GetSwaggerComments_GetRecord(entity, AddSwaggerComments, singleResponse)}
         [Produces(""application/json"")]
-        [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""Get{entityName}"")]
+        [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""{getRecordEndpointName}"")]
         public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercaseEntityVariable}Id)
         {{
             var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
