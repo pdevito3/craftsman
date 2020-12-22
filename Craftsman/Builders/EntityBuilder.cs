@@ -112,6 +112,8 @@
                 attributeString += @$"        [ForeignKey(""{entityProperty.ForeignKeyPropName}"")]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)
                 attributeString += @$"        [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
+            if (!string.IsNullOrEmpty(entityProperty.ColumnName))
+                attributeString += @$"        [Column(""{entityProperty.ColumnName}"")]{Environment.NewLine}";
 
             return attributeString;
         }
