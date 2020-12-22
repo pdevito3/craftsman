@@ -103,6 +103,7 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using Sieve.Attributes;
 
+    [Table(""Product"")]
     public class Product
     {{
         [Key]
