@@ -47,6 +47,8 @@
         public static string GetControllerFileText(string classNamespace, Entity entity, bool AddSwaggerComments)
         {
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
+            var lowercaseEntityVariableSingularDto = $@"{entity.Name.LowercaseFirstLetter()}Dto";
+            var lowercaseEntityVariablePluralDto = $@"{entity.Plural.LowercaseFirstLetter()}Dto";
             var entityName = entity.Name;
             var entityNamePlural = entity.Plural;
             var readDto = Utilities.GetDtoName(entityName, Dto.Read);
@@ -54,9 +56,11 @@
             var creationDto = Utilities.GetDtoName(entityName, Dto.Creation);
             var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
             var primaryKeyProp = entity.PrimaryKeyProperty;
-            var auditable = entity.Auditable ? @$"{Environment.NewLine}    [Authorize]" : "";
+            var auditable = entity.Auditable ? @$"{ Environment.NewLine}    [Authorize]" : "";
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
             var pkPropertyType = primaryKeyProp.Type;
+            var listResponse = $@"Response<IEnumerable<{readDto}>>";
+            var singleResponse = $@"Response<{readDto}>";
 
             return @$"namespace {classNamespace}
 {{
@@ -74,6 +78,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
     using System.Threading.Tasks;
+    using Application.Wrappers;
 
     [ApiController]
     [Route(""api/{entityNamePlural}"")]
@@ -91,11 +96,11 @@
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
         }}
-        {GetSwaggerComments_GetList(entity, AddSwaggerComments)}
+        {GetSwaggerComments_GetList(entity, AddSwaggerComments, listResponse)}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpGet(Name = ""Get{entityNamePlural}"")]
-        public async Task<ActionResult<IEnumerable<{readDto}>>> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
+        public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
         {{
             var {lowercaseEntityVariable}sFromRepo = await _{lowercaseEntityVariable}Repository.{getListMethodName}({lowercaseEntityVariable}ParametersDto);
 
@@ -115,10 +120,12 @@
             Response.Headers.Add(""X-Pagination"",
                 JsonSerializer.Serialize(paginationMetadata));
 
-            var {lowercaseEntityVariable}sDto = _mapper.Map<IEnumerable<{entityName}Dto>>({lowercaseEntityVariable}sFromRepo);
-            return Ok({lowercaseEntityVariable}sDto);
+            var {lowercaseEntityVariablePluralDto} = _mapper.Map<IEnumerable<{entityName}Dto>>({lowercaseEntityVariable}sFromRepo);
+            var response = new {listResponse}({lowercaseEntityVariablePluralDto});
+
+            return Ok(response);
         }}
-        {GetSwaggerComments_GetRecord(entity, AddSwaggerComments)}
+        {GetSwaggerComments_GetRecord(entity, AddSwaggerComments, singleResponse)}
         [Produces(""application/json"")]
         [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""Get{entityName}"")]
         public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercaseEntityVariable}Id)
@@ -130,11 +137,12 @@
                 return NotFound();
             }}
 
-            var {lowercaseEntityVariable}Dto = _mapper.Map<{readDto}>({lowercaseEntityVariable}FromRepo);
+            var {lowercaseEntityVariableSingularDto} = _mapper.Map<{readDto}>({lowercaseEntityVariable}FromRepo);
+            var response = new {singleResponse}({lowercaseEntityVariableSingularDto});
 
-            return Ok({lowercaseEntityVariable}Dto);
+            return Ok(response);
         }}
-        {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments)}
+        {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments, singleResponse)}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpPost]
@@ -155,10 +163,13 @@
 
             if(saveSuccessful)
             {{
-                var {lowercaseEntityVariable}Dto = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}.{entity.PrimaryKeyProperty.Name}); //get from repo for fk object, if needed
+                var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}.{entity.PrimaryKeyProperty.Name});
+                var {lowercaseEntityVariableSingularDto} = _mapper.Map<{readDto}>({lowercaseEntityVariable}FromRepo);
+                var response = new {singleResponse}({lowercaseEntityVariableSingularDto});
+                
                 return CreatedAtRoute(""Get{entityName}"",
                     new {{ {lowercaseEntityVariable}Dto.{primaryKeyProp.Name} }},
-                    {lowercaseEntityVariable}Dto);
+                    response);
             }}
 
             return StatusCode(500);
@@ -245,7 +256,7 @@
 }}";
         }
 
-        private static string GetSwaggerComments_GetList(Entity entity, bool buildComments)
+        private static string GetSwaggerComments_GetList(Entity entity, bool buildComments, string listResponse)
         {
             if (buildComments)
                 return $@"
@@ -277,14 +288,14 @@
         ///    | `@=`     | Contains                      |  `!@=*`   | Case-insensitive string does not Contains    |
         ///    | `_=`     | Starts with                   |  `!_=*`   | Case-insensitive string does not Starts with |
         /// </remarks>
-        [ProducesResponseType(typeof({Utilities.GetDtoName(entity.Name, Dto.ReadParamaters)}), 200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(typeof({listResponse}), 200)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         [ProducesResponseType(500)]";
 
             return "";
         }
 
-        private static string GetSwaggerComments_GetRecord(Entity entity, bool buildComments)
+        private static string GetSwaggerComments_GetRecord(Entity entity, bool buildComments, string singleResponse)
         {
             if (buildComments)
                 return $@"
@@ -294,14 +305,14 @@
         /// <response code=""200"">{entity.Name} record returned successfully.</response>
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
-        [ProducesResponseType(typeof({Utilities.GetDtoName(entity.Name, Dto.Read)}), 200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(typeof({singleResponse}), 200)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         [ProducesResponseType(500)]";
 
             return "";
         }
 
-        private static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments)
+        private static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse)
         {
             if (buildComments)
                 return $@"
@@ -311,8 +322,8 @@
         /// <response code=""201"">{entity.Name} created.</response>
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
-        [ProducesResponseType(typeof({Utilities.GetDtoName(entity.Name, Dto.Read)}), 201)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(typeof({singleResponse}), 201)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         [ProducesResponseType(500)]";
 
             return "";
@@ -329,7 +340,7 @@
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         [ProducesResponseType(500)]";
 
             return "";
@@ -346,7 +357,7 @@
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         [ProducesResponseType(500)]";
 
             return "";
@@ -363,7 +374,7 @@
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         [ProducesResponseType(500)]";
 
             return "";
