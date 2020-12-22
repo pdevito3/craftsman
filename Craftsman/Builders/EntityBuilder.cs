@@ -52,7 +52,6 @@
             var usingSieve = entity.Properties.Where(e => e.CanFilter == true || e.CanSort == true).ToList().Count > 0 ? @$"{Environment.NewLine}    using Sieve.Attributes;" : "";
             var inheritanceString = entity.Auditable ? $" : AuditableEntity" : "";
             var auditableUsing = entity.Auditable ? @$"{Environment.NewLine}    using Domain.Common;" : "";
-            var tableName = !string.IsNullOrEmpty(entity.TableName) ? @$"[Table(""{entity.TableName}"")]{Environment.NewLine}    " : "";
 
             return @$"namespace {classNamespace}
 {{
@@ -60,7 +59,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{auditableUsing}
 
-    {tableName}public class {entity.Name}{inheritanceString}
+    public class {entity.Name}{inheritanceString}
     {{
 {propString}
 
