@@ -135,6 +135,13 @@
 
             var licenseText = GetLicenseText(template.SwaggerConfig.LicenseName, LicenseUrlLine);
 
+            var SwaggerXmlComments = "";
+            if (template.SwaggerConfig.AddSwaggerComments)
+                SwaggerXmlComments = $@"
+
+                    var filePath = $""{{Assembly.GetExecutingAssembly().GetName().Name}}.xml"";
+                    config.IncludeXmlComments(filePath);";
+
             var swaggerText = $@"
             public static void AddSwaggerExtension(this IServiceCollection services)
             {{
@@ -153,7 +160,7 @@
                                 Email = ""{template.SwaggerConfig.ApiContact.Email}"",
                                 {contactUrlLine}
                             }},{licenseText}
-                        }});
+                        }});{SwaggerXmlComments}
                 }});
             }}";
 

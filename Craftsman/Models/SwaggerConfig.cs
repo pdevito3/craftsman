@@ -13,5 +13,6 @@
         public SwaggerApiContact ApiContact { get; set; } = new SwaggerApiContact();
         public string LicenseName { get; set; }
         public string LicenseUrl { get; set; }
+        public bool AddSwaggerComments { get; set; } = false;
     }
 }
