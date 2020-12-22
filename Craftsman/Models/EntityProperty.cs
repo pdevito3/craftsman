@@ -92,5 +92,11 @@ namespace Craftsman.Models
         /// Default value for this property
         /// </summary>
         public string DefaultValue { get; set; }
+
+        /// <summary>
+        /// Database field name to use when it doesn't match the property name
+        /// </summary>
+        public string ColumnName { get; set; }
+
     }
 }
