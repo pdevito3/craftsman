@@ -9,7 +9,7 @@
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Paul DeVito</Authors>
-    <Description>This CLI workhorse behind the Wrapt framework. Go to https://wrapt.dev for the full documentation.</Description>
+    <Description>Craftsman is the CLI scaffolding workhorse behind the Wrapt framework. Go to https://wrapt.dev for the full documentation.</Description>
     <Company>Dotnet Accelerate</Company>
     <Product>Craftsman</Product>
     <PackageTags>webapi c-sharp dotnet-core clean-architecture asp-net-core</PackageTags>
@@ -30,13 +30,6 @@
     <PackageReference Include="System.IO.Abstractions" Version="13.2.5" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="13.2.5" />
     <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\Foundation.Api\LICENSE.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>
