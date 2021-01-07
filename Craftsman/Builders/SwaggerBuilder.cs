@@ -18,6 +18,7 @@
             {
                 AddSwaggerServiceExtension(solutionDirectory, template);
                 AddSwaggerAppExtension(solutionDirectory, template);
+                UpdateWebApiCsProjSwaggerSettings(solutionDirectory, template.SolutionName);
             }
         }
 
@@ -139,8 +140,7 @@
             if (template.SwaggerConfig.AddSwaggerComments)
                 SwaggerXmlComments = $@"
 
-                    var filePath = $""{{Assembly.GetExecutingAssembly().GetName().Name}}.xml"";
-                    config.IncludeXmlComments(filePath);";
+                    config.IncludeXmlComments(string.Format(@""{{0}}\{template.SolutionName}.WebApi.xml"", AppDomain.CurrentDomain.BaseDirectory));";
 
             var swaggerText = $@"
             public static void AddSwaggerExtension(this IServiceCollection services)
@@ -245,6 +245,46 @@
         }}";
 
             return swaggerText;
+        }
+
+        public static void UpdateWebApiCsProjSwaggerSettings(string solutionDirectory, string solutionName)
+        {
+            var classPath = ClassPathHelper.WebApiCsProjClassPath(solutionDirectory);
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
+            {
+                using (var output = new StreamWriter(tempPath))
+                {
+                    string line;
+                    while (null != (line = input.ReadLine()))
+                    {
+                        var newText = $"{line}";
+                        if (line.Contains($"DocumentationFile"))
+                        {
+                            newText = @$"    <DocumentationFile>{solutionName}.WebApi.xml</DocumentationFile>";
+                        }
+                        else if (line.Contains($"NoWarn"))
+                        {
+                            newText = newText.Replace("</NoWarn>", "1591;</NoWarn>");
+                        }
+
+                        output.WriteLine(newText);
+                    }
+                }
+            }
+
+            // delete the old file and set the name of the new one to the original name
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
+
+            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
     }
 }
