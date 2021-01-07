@@ -127,7 +127,8 @@
         private static string GetSwaggerServiceExtensionText(ApiTemplate template)
         {
             var contactUrlLine = IsCleanUri(template.SwaggerConfig.ApiContact.Url) 
-                ? $@"Url = new Uri(""{ template.SwaggerConfig.ApiContact.Url }""),"
+                ? $@"
+                                Url = new Uri(""{ template.SwaggerConfig.ApiContact.Url }""),"
                 : "";
 
             var LicenseUrlLine = IsCleanUri(template.SwaggerConfig.LicenseUrl)
@@ -157,8 +158,7 @@
                             Contact = new OpenApiContact
                             {{
                                 Name = ""{template.SwaggerConfig.ApiContact.Name}"",
-                                Email = ""{template.SwaggerConfig.ApiContact.Email}"",
-                                {contactUrlLine}
+                                Email = ""{template.SwaggerConfig.ApiContact.Email}"",{contactUrlLine}
                             }},{licenseText}
                         }});{SwaggerXmlComments}
                 }});
