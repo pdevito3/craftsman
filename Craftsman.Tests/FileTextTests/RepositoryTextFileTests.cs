@@ -114,12 +114,12 @@
                 throw new ArgumentNullException(nameof(productParameters));
             }
 
-            var collection = _context.Products 
+            var collection = _context.Products
                 as IQueryable<Product>; // TODO: AsNoTracking() should increase performance, but will break the sort tests. need to investigate
 
             var sieveModel = new SieveModel
             {
-                Sorts = productParameters.SortOrder,
+                Sorts = productParameters.SortOrder ?? ""ProductId"",
                 Filters = productParameters.Filters
             };
 
@@ -266,12 +266,12 @@
             }}
 
             var collection = _context.Products
-                .Include({fkObjectName.ToLower().Substring(0, 1)} => {fkObjectName.ToLower().Substring(0, 1)}.{fkObjectName}) 
+                .Include({fkObjectName.ToLower().Substring(0, 1)} => {fkObjectName.ToLower().Substring(0, 1)}.{fkObjectName})
                 as IQueryable<Product>; // TODO: AsNoTracking() should increase performance, but will break the sort tests. need to investigate
 
             var sieveModel = new SieveModel
             {{
-                Sorts = productParameters.SortOrder,
+                Sorts = productParameters.SortOrder ?? ""ProductId"",
                 Filters = productParameters.Filters
             }};
 
