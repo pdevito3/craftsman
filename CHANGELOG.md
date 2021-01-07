@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - None yet!
 
+## [0.6.1] - 2021-01-06
+
+### Fixed
+
+- XML comment info is now properly added to `WebApi.csproj` and the Swagger config
+- Extra line will no longer be added when no swagger contact url is provided
+
 ## [0.6.0] - 2020-12-22
 
 ### Added
