@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - XML comment info is now properly added to `WebApi.csproj` and the Swagger config
 - Extra line will no longer be added when no swagger contact url is provided
+- Repository now sets default sort order for proper sql compatibility in lists (issue #9)
 
 ## [0.6.0] - 2020-12-22
 
