@@ -11,6 +11,9 @@
 
     public class AppSettingsBuilder
     {
+        /// <summary>
+        /// this build will create environment based app settings files.
+        /// </summary>
         public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, ApiTemplate template)
         {
             try
@@ -45,12 +48,51 @@
             }
         }
 
+        /// <summary>
+        /// this build will only do a skeleton app settings for the initial project build.
+        /// </summary>
+        /// <param name="solutionDirectory"></param>
+        public static void CreateAppSettings(string solutionDirectory)
+        {
+            try
+            {
+                var appSettingFilename = "appsettings.json";
+                var classPath = ClassPathHelper.AppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
+
+                if (!Directory.Exists(classPath.ClassDirectory))
+                    Directory.CreateDirectory(classPath.ClassDirectory);
+
+                if (File.Exists(classPath.FullClassPath))
+                    File.Delete(classPath.FullClassPath);
+
+                using (FileStream fs = File.Create(classPath.FullClassPath))
+                {
+                    var data = "";
+                    data = GetAppSettingsText();
+                    fs.Write(Encoding.UTF8.GetBytes(data));
+                }
+
+                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
+            }
+            catch (FileAlreadyExistsException e)
+            {
+                WriteError(e.Message);
+                throw;
+            }
+            catch (Exception e)
+            {
+                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
+                throw;
+            }
+        }
+
         private static string GetAppSettingsText(ApiEnvironment env, string dbName, ApiTemplate template)
         {
             var jwtSettings = "";
             var mailSettings = "";
-            
-            if(template.AuthSetup.AuthMethod == "JWT")
+            var serilogSettings = GetSerilogSettings(env.EnvironmentName);
+
+            if (template.AuthSetup.AuthMethod == "JWT")
             {
                 jwtSettings = $@"
   ""JwtSettings"": {{
@@ -74,6 +116,53 @@
             if(env.EnvironmentName == "Development")
 
                 return @$"{{
+  ""AllowedHosts"": ""*"",
+  ""UseInMemoryDatabase"": true,
+{serilogSettings}{jwtSettings}{mailSettings}
+}}
+";
+        else
+
+            return @$"{{
+  ""AllowedHosts"": ""*"",
+  ""UseInMemoryDatabase"": false,
+  ""ConnectionStrings"": {{
+    ""{dbName}"": ""{env.ConnectionString.Replace(@"\",@"\\")}""
+  }},
+}}
+";
+        }
+
+        private static string GetSerilogSettings(string env)
+        {
+            var writeTo = env == "Development" ? $@"
+      {{ ""Name"": ""Console"" }},
+      {{
+        ""Name"": ""Seq"",
+        ""Args"": {{
+          ""serverUrl"": ""http://localhost:5341""
+        }}
+      }}
+    " : "";
+
+            return $@"  ""Serilog"": {{
+    ""Using"": [],
+    ""MinimumLevel"": {{
+      ""Default"": ""Information"",
+      ""Override"": {{
+        ""Microsoft"": ""Warning"",
+        ""System"": ""Warning""
+      }}
+    }},
+    ""Enrich"": [ ""FromLogContext"", ""WithMachineName"", ""WithProcessId"", ""WithThreadId"" ],
+    ""WriteTo"": [{writeTo}]
+  }},";
+        }
+
+
+        private static string GetAppSettingsText()
+        {
+            return @$"{{
   ""UseInMemoryDatabase"": true,
   ""Logging"": {{
     ""LogLevel"": {{
@@ -81,27 +170,9 @@
       ""Microsoft"": ""Warning"",
       ""Microsoft.Hosting.Lifetime"": ""Information""
     }}
-  }},{jwtSettings}{mailSettings}
-  ""AllowedHosts"": ""*""
-}}
-";
-        else
-
-            return @$"{{
-  ""UseInMemoryDatabase"": false,
-  ""ConnectionStrings"": {{
-    ""{dbName}"": ""{env.ConnectionString.Replace(@"\",@"\\")}""
-  }},
-  ""Logging"": {{
-    ""LogLevel"": {{
-      ""Default"": ""Information"",
-      ""Microsoft"": ""Warning"",
-      ""Microsoft.Hosting.Lifetime"": ""Information""
-    }}
   }},
   ""AllowedHosts"": ""*""
-}}
-";
+}}";
         }
     }
 }

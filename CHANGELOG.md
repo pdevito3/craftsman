@@ -7,9 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- None yet!
+
+## [0.6.1] - 2021-01-06
+
+### Fixed
+
+- XML comment info is now properly added to `WebApi.csproj` and the Swagger config
+- Extra line will no longer be added when no swagger contact url is provided
+- Repository now sets default sort order for proper sql compatibility in lists (issue #9)
+
+## [0.6.0] - 2020-12-22
+
 ### Added
 
 - Added table name and schema properties to entity
+- Added column name attribute to entity properties
+- Added Serilog by default in all new projects. This includes Console and Seq logging by default in `Development`. For non-Development environments, you'll need to add whatever logging you're interested in to their respective app-settings projects. There are just too many options to create a whole API on top of Serilog.
+- Updated swagger implementation from nswag
+- Added Consumes and Produces headers to the controller endpoints
+
+- Added an option to manage additional swagger settings to your API endpoints. This will be turned off by default for now as dealing the with xml docs path is potentially burdensome, but will add a lot of valuable details for users consuming your API. If you are looking to add additional XML details, this is highly recommended. 
+- Added a custom Response Wrapper to the GET and POST endpoints
+
+### Fixed
+
+- Fixed launch settings to have null environment  variable for Startup (Production). If you'd like to change this, be sure to update the appsetting lookup in `Program.cs`
+- Fixed POST endpoint that was lacking a `[FromBody]` marker
+- `BasePaginationParameters` will now have `MaxPageSizee` and `DefaultPageSize` set as `internal` properties so they don't show up in swagger. These can be overridden in the distinct entity classes like so: `internal override int MaxPageSize { get; } = 30;`
+- Fixed controllers to be able to handle a name and plural with the same value (e.g. Buffalo)
 
 ## [0.5.0] - 2020-12-14
 

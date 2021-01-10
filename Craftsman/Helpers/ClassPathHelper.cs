@@ -38,14 +38,24 @@
             return new ClassPath(solutionDirectory, Path.Combine("WebApi","Extensions"), className);
         }
 
-        public static ClassPath TestWebAppFactoryClassPath(string solutionDirectory, string className, string solutionName)
+        public static ClassPath WebApiMiddlewareClassPath(string solutionDirectory, string className)
         {
-            return new ClassPath(solutionDirectory, $"{solutionName}.Tests", className);
+            return new ClassPath(solutionDirectory, Path.Combine("WebApi", "Middleware"), className);
         }
 
         public static ClassPath StartupClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "WebApi", className);
+        }
+
+        public static ClassPath TestProjectClassPath(string solutionDirectory, string solutionName)
+        {
+            return new ClassPath(solutionDirectory, $"{solutionName}.Tests", $"{solutionName}.Tests.csproj");
+        }
+
+        public static ClassPath WebApiProjectClassPath(string solutionDirectory)
+        {
+            return new ClassPath(solutionDirectory, "WebApi", "WebApi.csproj");
         }
 
         public static ClassPath AppSettingsClassPath(string solutionDirectory, string className)
@@ -113,6 +123,41 @@
             return new ClassPath(solutionDirectory, Path.Combine($"Application", "Interfaces"), className);
         }
 
+        public static ClassPath ApplicationExceptionClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Application", "Exceptions"), className);
+        }
+
+        public static ClassPath WrappersClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Application", "Wrappers"), className);
+        }
+
+        public static ClassPath WebApiProjectRootClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"WebApi"), className);
+        }
+
+        public static ClassPath ApplicationProjectRootClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Application"), className);
+        }
+
+        public static ClassPath InfrastructurePersistenceProjectRootClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Persistence"), className);
+        }
+
+        public static ClassPath TestProjectRootClassPath(string solutionDirectory, string className, string solutionName)
+        {
+            return new ClassPath(solutionDirectory, $"{solutionName}.Tests", className);
+        }
+
+        public static ClassPath InfrastructureSharedProjectRootClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Shared"), className);
+        }
+
         public static ClassPath CommonDomainClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Common"), className);
@@ -121,6 +166,10 @@
         public static ClassPath DomainEnumClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Enums"), className);
+        }
+        public static ClassPath DomainCommonClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Common"), className);
         }
 
         public static ClassPath DomainSettingsClassPath(string solutionDirectory, string className)
@@ -136,6 +185,31 @@
         public static ClassPath DtoClassPath(string solutionDirectory, string className, string entityName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Application","Dtos",entityName), className);
+        }
+
+        public static ClassPath SharedDtoClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Application", "Dtos", "Shared"), className);
+        }
+
+        public static ClassPath ApplicationProjectClassPath(string solutionDirectory)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Application"), "Application.csproj");
+        }
+
+        public static ClassPath DomainProjectClassPath(string solutionDirectory)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Domain"), "Domain.csproj");
+        }
+
+        public static ClassPath InfrastructurePersistenceProjectClassPath(string solutionDirectory)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Persistence"), "Infrastructure.Persistence.csproj");
+        }
+
+        public static ClassPath InfrastructureSharedProjectClassPath(string solutionDirectory)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Shared"), "Infrastructure.Shared.csproj");
         }
     }
 }

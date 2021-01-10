@@ -69,7 +69,6 @@ namespace {classPath.ClassNamespace}
     using Xunit;
     using Application.Interfaces;
     using Moq;
-    using Infrastructure.Shared.Services;
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}

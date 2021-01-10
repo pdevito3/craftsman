@@ -52,7 +52,7 @@
             var authSeeder = "";
             var authUsing = "";
             var currentUserRegistration = "";
-            if (template.AuthSetup.AuthMethod == "JWT")
+            if (template?.AuthSetup.AuthMethod == "JWT")
             {
                 authServices = @"
             services.AddIdentityInfrastructure(_config);";
@@ -107,7 +107,8 @@
     using Infrastructure.Shared;
     using Infrastructure.Persistence.Seeders;
     using Infrastructure.Persistence.Contexts;
-    using WebApi.Extensions;{authUsing}
+    using WebApi.Extensions;
+    using Serilog;{authUsing}
 
     public class Startup{envName}
     {{
@@ -144,6 +145,7 @@
 
             app.UseCors(""MyCorsPolicy"");
 
+            app.UseSerilogRequestLogging();
             app.UseRouting();
             {authApp}
             app.UseErrorHandlingMiddleware();
@@ -169,7 +171,8 @@
     using Microsoft.Extensions.DependencyInjection;
     using Infrastructure.Persistence;
     using Infrastructure.Shared;
-    using WebApi.Extensions;{authUsing}
+    using WebApi.Extensions;
+    using Serilog;{authUsing}
 
     public class Startup{envName}
     {{
@@ -201,6 +204,7 @@
         {{
             app.UseCors(""MyCorsPolicy"");
 
+            app.UseSerilogRequestLogging();
             app.UseRouting();
             {authApp}
             app.UseErrorHandlingMiddleware();

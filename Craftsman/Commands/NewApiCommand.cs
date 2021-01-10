@@ -62,13 +62,9 @@
                 FileParsingHelper.RunSolutionNameAssignedGuard(template);
 
                 // scaffold projects
-                // should i add an accelerate.config.yaml file to the root?
+                // add an accelerate.config.yaml file to the root?
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
-                SolutionBuilder.BuildSolution(solutionDirectory, template);
-
-
-                // remove placeholder valuetoreplace files and directories
-                ApiTemplateCleaner.CleanTemplateFilesAndDirectories(solutionDirectory, template);
+                SolutionBuilder.BuildSolution(solutionDirectory, template, fileSystem);
 
                 // add all files based on the given template config
                 RunTemplateBuilders(solutionDirectory, template, fileSystem);
@@ -109,7 +105,7 @@
                 ValidatorBuilder.CreateValidators(solutionDirectory, entity);
                 ProfileBuilder.CreateProfile(solutionDirectory, entity);
 
-                ControllerBuilder.CreateController(solutionDirectory, entity);
+                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments);
 
                 FakesBuilder.CreateFakes(solutionDirectory, template, entity);
                 ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template, entity);
