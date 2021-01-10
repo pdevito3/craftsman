@@ -49,8 +49,9 @@
         {
             var jwtSettings = "";
             var mailSettings = "";
-            
-            if(template.AuthSetup.AuthMethod == "JWT")
+            var serilogSettings = GetSerilogSettings(env.EnvironmentName);
+
+            if (template.AuthSetup.AuthMethod == "JWT")
             {
                 jwtSettings = $@"
   ""JwtSettings"": {{
@@ -74,34 +75,47 @@
             if(env.EnvironmentName == "Development")
 
                 return @$"{{
+  ""AllowedHosts"": ""*"",
   ""UseInMemoryDatabase"": true,
-  ""Logging"": {{
-    ""LogLevel"": {{
-      ""Default"": ""Information"",
-      ""Microsoft"": ""Warning"",
-      ""Microsoft.Hosting.Lifetime"": ""Information""
-    }}
-  }},{jwtSettings}{mailSettings}
-  ""AllowedHosts"": ""*""
+{serilogSettings}{jwtSettings}{mailSettings}
 }}
 ";
         else
 
             return @$"{{
+  ""AllowedHosts"": ""*"",
   ""UseInMemoryDatabase"": false,
   ""ConnectionStrings"": {{
     ""{dbName}"": ""{env.ConnectionString.Replace(@"\",@"\\")}""
   }},
-  ""Logging"": {{
-    ""LogLevel"": {{
-      ""Default"": ""Information"",
-      ""Microsoft"": ""Warning"",
-      ""Microsoft.Hosting.Lifetime"": ""Information""
-    }}
-  }},
-  ""AllowedHosts"": ""*""
 }}
 ";
+        }
+
+        private static string GetSerilogSettings(string env)
+        {
+            var writeTo = env == "Development" ? $@"
+      {{ ""Name"": ""Console"" }},
+      {{
+        ""Name"": ""Seq"",
+        ""Args"": {{
+          ""serverUrl"": ""http://localhost:5341""
+        }}
+      }}
+    " : "";
+
+            return $@"  ""Serilog"": {{
+    ""Using"": [],
+    ""MinimumLevel"": {{
+      ""Default"": ""Information"",
+      ""Override"": {{
+        ""Microsoft"": ""Warning"",
+        ""System"": ""Warning""
+      }}
+    }},
+    ""Enrich"": [ ""FromLogContext"", ""WithMachineName"", ""WithProcessId"", ""WithThreadId"" ],
+    ""WriteTo"": [{writeTo}]
+  }},";
         }
     }
 }

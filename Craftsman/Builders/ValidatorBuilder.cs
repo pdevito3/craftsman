@@ -67,6 +67,7 @@
             return @$"namespace {classNamespace}
 {{
     using Application.Dtos.{entity.Name};
+    using FluentValidation;
 
     public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.GetDtoName(entity.Name, Dto.Creation)}>
     {{
@@ -84,6 +85,7 @@
             return @$"namespace {classNamespace}
 {{
     using Application.Dtos.{entity.Name};
+    using FluentValidation;
 
     public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.GetDtoName(entity.Name, Dto.Update)}>
     {{

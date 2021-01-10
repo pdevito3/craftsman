@@ -50,5 +50,17 @@
                 }
             };
         }
+
+        public static EntityProperty FakeBasicIntKeyProperty()
+        {
+            return new EntityProperty()
+            {
+                Name = "ProductId",
+                Type = "int",
+                IsPrimaryKey = true,
+                CanFilter = true,
+                CanSort = false,
+            };
     }
+}
 }
