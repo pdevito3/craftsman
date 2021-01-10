@@ -30,7 +30,6 @@
     using Infrastructure.Persistence.Seeders;
     using Infrastructure.Persistence.Contexts;
     using WebApi.Extensions;
-    using Serilog;
 
     public class StartupDevelopment
     {{
@@ -67,7 +66,6 @@
 
             app.UseCors(""MyCorsPolicy"");
 
-            app.UseSerilogRequestLogging();
             app.UseRouting();
             
             app.UseErrorHandlingMiddleware();
@@ -106,7 +104,6 @@
     using Infrastructure.Persistence;
     using Infrastructure.Shared;
     using WebApi.Extensions;
-    using Serilog;
 
     public class Startup{env}
     {{
@@ -138,7 +135,6 @@
         {{
             app.UseCors(""MyCorsPolicy"");
 
-            app.UseSerilogRequestLogging();
             app.UseRouting();
             
             app.UseErrorHandlingMiddleware();
@@ -176,7 +172,6 @@
     using Infrastructure.Persistence.Seeders;
     using Infrastructure.Persistence.Contexts;
     using WebApi.Extensions;
-    using Serilog;
     using Infrastructure.Identity;
     using Infrastructure.Identity.Entities;
     using Microsoft.AspNetCore.Identity;
@@ -232,7 +227,6 @@
 
             app.UseCors(""MyCorsPolicy"");
 
-            app.UseSerilogRequestLogging();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

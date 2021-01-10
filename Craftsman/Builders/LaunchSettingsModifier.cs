@@ -63,12 +63,6 @@
       }},
       ""applicationUrl"": ""http://localhost:5000""
     }},";
-            else if (env.EnvironmentName == "Startup")
-                return $@"
-    ""{env.ProfileName}"": {{
-      ""commandName"": ""Project"",
-      ""launchBrowser"": false
-    }},";
             else
                 return $@"
     ""{env.ProfileName}"": {{

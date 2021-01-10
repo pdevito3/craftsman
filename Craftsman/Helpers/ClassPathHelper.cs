@@ -48,11 +48,6 @@
             return new ClassPath(solutionDirectory, "WebApi", className);
         }
 
-        public static ClassPath WebApiCsProjClassPath(string solutionDirectory)
-        {
-            return new ClassPath(solutionDirectory, "WebApi", "WebApi.csproj");
-        }
-
         public static ClassPath AppSettingsClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "WebApi", className);

@@ -109,7 +109,7 @@
                 ValidatorBuilder.CreateValidators(solutionDirectory, entity);
                 ProfileBuilder.CreateProfile(solutionDirectory, entity);
 
-                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments);
+                ControllerBuilder.CreateController(solutionDirectory, entity);
 
                 FakesBuilder.CreateFakes(solutionDirectory, template, entity);
                 ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template, entity);

@@ -107,8 +107,7 @@
     using Infrastructure.Shared;
     using Infrastructure.Persistence.Seeders;
     using Infrastructure.Persistence.Contexts;
-    using WebApi.Extensions;
-    using Serilog;{authUsing}
+    using WebApi.Extensions;{authUsing}
 
     public class Startup{envName}
     {{
@@ -145,7 +144,6 @@
 
             app.UseCors(""MyCorsPolicy"");
 
-            app.UseSerilogRequestLogging();
             app.UseRouting();
             {authApp}
             app.UseErrorHandlingMiddleware();
@@ -171,8 +169,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Infrastructure.Persistence;
     using Infrastructure.Shared;
-    using WebApi.Extensions;
-    using Serilog;{authUsing}
+    using WebApi.Extensions;{authUsing}
 
     public class Startup{envName}
     {{
@@ -204,7 +201,6 @@
         {{
             app.UseCors(""MyCorsPolicy"");
 
-            app.UseSerilogRequestLogging();
             app.UseRouting();
             {authApp}
             app.UseErrorHandlingMiddleware();
