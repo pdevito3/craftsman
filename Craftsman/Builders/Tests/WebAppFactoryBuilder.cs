@@ -16,7 +16,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.TestWebAppFactoryClassPath(solutionDirectory, $"CustomWebApplicationFactory.cs", template.SolutionName);
+                var classPath = ClassPathHelper.TestProjectRootClassPath(solutionDirectory, $"CustomWebApplicationFactory.cs", template.SolutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -73,7 +73,7 @@ namespace {classPath.ClassNamespace}
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {{
-            builder.UseEnvironment(""Testing"");
+            builder.UseEnvironment(""Development"");
 
             builder.ConfigureServices(async services =>
             {{
