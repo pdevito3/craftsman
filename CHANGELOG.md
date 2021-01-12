@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- None yet!
+
+## [0.7.0] - 2021-01-12
+
+### Added
+
+- Removed the dependency on the foundation api template!
+
+### Fixed
+
 - Fixed `UseEnvironment` in WebAppFactory to use `Development`
 - Fixed integration tests to use the new `Response` wrapper
 - Updated pagination tests to have proper keys due to default sort order possibly breaking these tests
