@@ -31,4 +31,3 @@ Got Exceptions? Include both the message and the stack trace
 ### Further technical details
 
 Craftsman version (`dotnet tool list -g`):
-Foundation version (`dotnet new -u`):
