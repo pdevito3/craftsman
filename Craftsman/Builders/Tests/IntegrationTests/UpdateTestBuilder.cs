@@ -67,6 +67,7 @@ namespace {classPath.ClassNamespace}
     using Bogus;
     using Application.Mappings;
     using System.Text;
+    using Application.Wrappers;
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>
@@ -147,8 +148,8 @@ namespace {classPath.ClassNamespace}
                 .ConfigureAwait(false);
             var getResponseContent = await getResult.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
-            var getResponse = JsonConvert.DeserializeObject<IEnumerable<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>(getResponseContent);
-            var id = getResponse.FirstOrDefault().{entity.PrimaryKeyProperty.Name};
+            var getResponse = JsonConvert.DeserializeObject<Response<IEnumerable<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>>(getResponseContent);
+            var id = getResponse.Data.FirstOrDefault().{entity.PrimaryKeyProperty.Name};
 
             // patch it
             var method = new HttpMethod(""PATCH"");
@@ -165,7 +166,7 @@ namespace {classPath.ClassNamespace}
                 .ConfigureAwait(false);
             var checkResponseContent = await checkResult.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
-            var checkResponse = JsonConvert.DeserializeObject<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(checkResponseContent);
+            var checkResponse = JsonConvert.DeserializeObject<Response<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>(checkResponseContent);
 
             // Assert
             patchResult.StatusCode.Should().Be(204);
@@ -233,8 +234,8 @@ namespace {classPath.ClassNamespace}
                 .ConfigureAwait(false);
             var getResponseContent = await getResult.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
-            var getResponse = JsonConvert.DeserializeObject<IEnumerable<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>(getResponseContent);
-            var id = getResponse.FirstOrDefault().{entity.PrimaryKeyProperty.Name};
+            var getResponse = JsonConvert.DeserializeObject<Response<IEnumerable<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>>(getResponseContent);
+            var id = getResponse.Data.FirstOrDefault().{entity.PrimaryKeyProperty.Name};
 
             // put it
             var patchResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
@@ -245,7 +246,7 @@ namespace {classPath.ClassNamespace}
                 .ConfigureAwait(false);
             var checkResponseContent = await checkResult.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
-            var checkResponse = JsonConvert.DeserializeObject<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(checkResponseContent);
+            var checkResponse = JsonConvert.DeserializeObject<Response<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>(checkResponseContent);
 
             // Assert
             patchResult.StatusCode.Should().Be(204);

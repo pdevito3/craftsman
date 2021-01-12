@@ -64,6 +64,11 @@
                 // scaffold projects
                 // add an accelerate.config.yaml file to the root?
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
+
+                // adding this for my test auth scaffolding so i don't have to do stuff that might not last manaully. **not officially supported**
+                if(template.AuthSetup.AuthMethod == "JWT")
+                    CreateNewFoundation(template, buildSolutionDirectory); // todo scaffold this manually instead of using dotnet new foundation
+                
                 SolutionBuilder.BuildSolution(solutionDirectory, template, fileSystem);
 
                 // add all files based on the given template config

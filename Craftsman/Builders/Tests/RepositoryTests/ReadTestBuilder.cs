@@ -70,7 +70,6 @@ namespace {classPath.ClassNamespace}
     using Xunit;
     using Application.Interfaces;
     using Moq;
-    using Infrastructure.Shared.Services;
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
@@ -174,6 +173,39 @@ namespace {classPath.ClassNamespace}
             var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
             var usingString = TestBuildingHelpers.GetUsingString(template);
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
+            var alpha = "";
+            var bravo = "";
+            var charlie = "";
+
+            if (entity.PrimaryKeyProperty.Type == "string")
+            {
+                alpha = @$"""alpha""";
+                bravo = @$"""bravo""";
+                charlie = @$"""charlie""";
+            }
+            else if (entity.PrimaryKeyProperty.Type == "Guid")
+            {
+                alpha = @$"Guid.Parse(""547ee3d9-5241-4ce3-93f6-a65700bd36ca"")";
+                bravo = @$"Guid.Parse(""621fab6d-2487-43f4-aec2-354fa54089da"")";
+                charlie = @$"Guid.Parse(""f9335b96-63dd-412e-935b-102463b9f245"")";
+            }
+            else if (entity.PrimaryKeyProperty.Type.Contains("int"))
+            {
+                alpha = "1";
+                bravo = "2";
+                charlie = "3";
+            }
+            else if (entity.PrimaryKeyProperty.Type.Contains("DateTime"))
+            {
+                alpha = "DateTime.Now.AddDays(1)";
+                bravo = "DateTime.Now.AddDays(2)";
+                charlie = "DateTime.Now.AddDays(3)";
+            }
+            else
+            {
+                //no tests generated for other types at this time
+                return "";
+            }
 
             return $@"
         [Fact]
@@ -188,6 +220,11 @@ namespace {classPath.ClassNamespace}
             var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
+            
+            // need id's due to default sorting
+            fake{entity.Name}One.{entity.PrimaryKeyProperty.Name} = {alpha};
+            fake{entity.Name}Two.{entity.PrimaryKeyProperty.Name} = {bravo};
+            fake{entity.Name}Three.{entity.PrimaryKeyProperty.Name} = {charlie};
 
             //Act
             {usingString}
@@ -217,6 +254,39 @@ namespace {classPath.ClassNamespace}
             var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
             var usingString = TestBuildingHelpers.GetUsingString(template);
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
+            var alpha = "";
+            var bravo = "";
+            var charlie = "";
+
+            if (entity.PrimaryKeyProperty.Type == "string")
+            {
+                alpha = @$"""alpha""";
+                bravo = @$"""bravo""";
+                charlie = @$"""charlie""";
+            }
+            else if (entity.PrimaryKeyProperty.Type == "Guid")
+            {
+                alpha = @$"Guid.Parse(""547ee3d9-5241-4ce3-93f6-a65700bd36ca"")";
+                bravo = @$"Guid.Parse(""621fab6d-2487-43f4-aec2-354fa54089da"")";
+                charlie = @$"Guid.Parse(""f9335b96-63dd-412e-935b-102463b9f245"")";
+            }
+            else if (entity.PrimaryKeyProperty.Type.Contains("int"))
+            {
+                alpha = "1";
+                bravo = "2";
+                charlie = "3";
+            }
+            else if (entity.PrimaryKeyProperty.Type.Contains("DateTime"))
+            {
+                alpha = "DateTime.Now.AddDays(1)";
+                bravo = "DateTime.Now.AddDays(2)";
+                charlie = "DateTime.Now.AddDays(3)";
+            }
+            else
+            {
+                //no tests generated for other types at this time
+                return "";
+            }
 
             return $@"
         [Fact]
@@ -231,6 +301,11 @@ namespace {classPath.ClassNamespace}
             var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Three = new Fake{entity.Name} {{ }}.Generate();
+            
+            // need id's due to default sorting
+            fake{entity.Name}One.{entity.PrimaryKeyProperty.Name} = {alpha};
+            fake{entity.Name}Two.{entity.PrimaryKeyProperty.Name} = {bravo};
+            fake{entity.Name}Three.{entity.PrimaryKeyProperty.Name} = {charlie};
 
             //Act
             {usingString}

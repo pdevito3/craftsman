@@ -66,6 +66,7 @@ namespace {classPath.ClassNamespace}
     using System.Net.Http;
     using WebApi;
     using System.Collections.Generic;
+    using Application.Wrappers;
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>
@@ -88,7 +89,7 @@ namespace {classPath.ClassNamespace}
             foreach (var prop in entity.Properties.Where(p => p.IsPrimaryKey == false))
             {
                 var newLine = prop == entity.Properties.LastOrDefault() ? "" : $"{Environment.NewLine}";
-                assertString += @$"            resultDto.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
+                assertString += @$"            resultDto.Data.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
 
             return $@"
@@ -109,7 +110,7 @@ namespace {classPath.ClassNamespace}
             // Assert
             httpResponse.EnsureSuccessStatusCode();
 
-            var resultDto = JsonConvert.DeserializeObject<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(await httpResponse.Content.ReadAsStringAsync()
+            var resultDto = JsonConvert.DeserializeObject<Response<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>(await httpResponse.Content.ReadAsStringAsync()
                 .ConfigureAwait(false));
 
             httpResponse.StatusCode.Should().Be(201);

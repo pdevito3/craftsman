@@ -61,6 +61,7 @@ namespace {classPath.ClassNamespace}
     using System.Collections.Generic;
     using Infrastructure.Persistence.Contexts;
     using Microsoft.Extensions.DependencyInjection;
+    using Application.Wrappers;
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>
@@ -106,7 +107,7 @@ namespace {classPath.ClassNamespace}
                 .ConfigureAwait(false);
             var responseContent = await result.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
-            var response = JsonConvert.DeserializeObject<IEnumerable<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>(responseContent);
+            var response = JsonConvert.DeserializeObject<Response<IEnumerable<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>>(responseContent).Data;
 
             // Assert
             result.StatusCode.Should().Be(200);
