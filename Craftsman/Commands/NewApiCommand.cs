@@ -71,7 +71,7 @@
                     CreateNewFoundation(buildSolutionDirectory, template.SolutionName); // todo scaffold this manually instead of using dotnet new foundation
                 
                 SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
-                SolutionBuilder.AddProjects(solutionDirectory, template.DbContext.Provider, template.SolutionName, fileSystem, template.AuthSetup.InMemoryUsers);
+                SolutionBuilder.AddProjects(solutionDirectory, solutionDirectory, template.DbContext.Provider, template.SolutionName, fileSystem, template.AuthSetup.InMemoryUsers);
 
                 // add all files based on the given template config
                 RunTemplateBuilders(solutionDirectory, template, fileSystem);

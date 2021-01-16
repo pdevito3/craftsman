@@ -111,7 +111,7 @@
                 var microPath = Path.Combine(newPath, micro.ProjectFolderName);
 
                 // add projects
-                SolutionBuilder.AddProjects(microPath, micro.DbContext.Provider, micro.ProjectFolderName, fileSystem, micro.AuthSetup.InMemoryUsers);
+                SolutionBuilder.AddMicroProjects(solutionDirectory, microPath, micro.DbContext.Provider, micro.ProjectFolderName, fileSystem, micro.AuthSetup.InMemoryUsers);
 
                 // dbcontext
                 DbContextBuilder.CreateDbContext(microPath, micro.Entities, micro.DbContext.ContextName, micro.AuthSetup.AuthMethod, micro.DbContext.Provider, micro.DbContext.DatabaseName);
