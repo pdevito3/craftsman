@@ -2,7 +2,6 @@
   "profiles": {
     "Craftsman Dev": {
       "commandName": "Project",
-      "commandLineArgs": "new:api C:\\Users\\Paul\\Documents\\CarbonKitchen.yaml",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Dev"
       }
