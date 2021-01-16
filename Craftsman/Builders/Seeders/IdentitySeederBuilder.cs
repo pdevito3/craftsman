@@ -15,13 +15,13 @@
 
     public class IdentitySeederBuilder
     {
-        public static void AddSeeders(string solutionDirectory, ApiTemplate template)
+        public static void AddSeeders(string solutionDirectory, List<ApplicationUser> inMemoryUsers)
         {
             try
             {
-                if(template.AuthSetup.InMemoryUsers != null)
+                if(inMemoryUsers != null)
                 {
-                    foreach (var user in template.AuthSetup.InMemoryUsers)
+                    foreach (var user in inMemoryUsers)
                     {
                         var classPath = ClassPathHelper.IdentitySeederClassPath(solutionDirectory, $"{Utilities.GetIdentitySeederName(user)}.cs");
 

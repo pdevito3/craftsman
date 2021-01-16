@@ -16,11 +16,11 @@
 
     public class RoleSeedBuilder
     {
-        public static void SeedRoles(string solutionDirectory, ApiTemplate template)
+        public static void SeedRoles(string solutionDirectory, List<ApplicationUser> inMemoryUsers)
         {
             try
             {
-                foreach (var user in template.AuthSetup.InMemoryUsers)
+                foreach (var user in inMemoryUsers)
                 {
                     var classPath = ClassPathHelper.IdentitySeederClassPath(solutionDirectory, $"RoleSeeder.cs");
 
@@ -32,7 +32,7 @@
 
                     using (FileStream fs = File.Create(classPath.FullClassPath))
                     {
-                        var data = SeedRoles(classPath, template.AuthSetup.Roles);
+                        var data = SeedRoles(classPath, user.AuthorizedRoles);
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
 

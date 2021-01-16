@@ -52,7 +52,7 @@
                 GlobalSingleton instance = GlobalSingleton.GetInstance();
 
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetApiTemplateFromFile(filePath);
+                var template = FileParsingHelper.GetTemplateFromFile<ApiTemplate>(filePath);
 
                 //var solutionDirectory = Directory.GetCurrentDirectory();
                 //var solutionDirectory = @"C:\Users\Paul\Documents\testoutput\MyApi.Mine";
@@ -61,7 +61,7 @@
 
                 WriteHelpText($"Your template file was parsed successfully.");
 
-                FileParsingHelper.RunPrimaryKeyGuard(template);
+                FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
 
                 // add all files based on the given template config
                 RunEntityBuilders(solutionDirectory, template, fileSystem);

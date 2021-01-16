@@ -56,11 +56,11 @@
                 GlobalSingleton instance = GlobalSingleton.GetInstance();
 
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetApiTemplateFromFile(filePath);
+                var template = FileParsingHelper.GetTemplateFromFile<ApiTemplate>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 
-                FileParsingHelper.RunPrimaryKeyGuard(template);
-                FileParsingHelper.RunSolutionNameAssignedGuard(template);
+                FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
+                FileParsingHelper.RunSolutionNameAssignedGuard(template.SolutionName);
 
                 // scaffold projects
                 // add an accelerate.config.yaml file to the root?
@@ -70,7 +70,7 @@
                 if(template.AuthSetup.AuthMethod == "JWT")
                     CreateNewFoundation(buildSolutionDirectory, template.SolutionName); // todo scaffold this manually instead of using dotnet new foundation
                 
-                SolutionBuilder.BuildSolution(solutionDirectory, template, fileSystem);
+                SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
                 SolutionBuilder.AddProjects(solutionDirectory, template.DbContext.Provider, template.SolutionName, fileSystem, template.AuthSetup.InMemoryUsers);
 
                 // add all files based on the given template config
@@ -143,13 +143,13 @@
             if (template.AuthSetup.AuthMethod == "JWT")
             {
                 IdentityServicesModifier.SetIdentityOptions(solutionDirectory, template.AuthSetup);
-                IdentitySeederBuilder.AddSeeders(solutionDirectory, template);
+                IdentitySeederBuilder.AddSeeders(solutionDirectory, template.AuthSetup.InMemoryUsers);
                 IdentityRoleBuilder.CreateRoles(solutionDirectory, template.AuthSetup.Roles);
-                RoleSeedBuilder.SeedRoles(solutionDirectory, template);
+                RoleSeedBuilder.SeedRoles(solutionDirectory, template.AuthSetup.InMemoryUsers);
             }
 
             //final
-            ReadmeBuilder.CreateReadme(solutionDirectory, template, fileSystem);
+            ReadmeBuilder.CreateReadme(solutionDirectory, template.SolutionName, fileSystem);
 
             if (template.AddGit)
                 GitSetup(solutionDirectory);

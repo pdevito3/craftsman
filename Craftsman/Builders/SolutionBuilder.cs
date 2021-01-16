@@ -13,12 +13,12 @@
 
     public class SolutionBuilder
     {
-        public static void BuildSolution(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
+        public static void BuildSolution(string solutionDirectory, string solutionName, IFileSystem fileSystem)
         {
             try
             {
                 fileSystem.Directory.CreateDirectory(solutionDirectory);
-                Utilities.ExecuteProcess("dotnet", @$"new sln -n {template.SolutionName}", solutionDirectory);
+                Utilities.ExecuteProcess("dotnet", @$"new sln -n {solutionName}", solutionDirectory);
             }
             catch(Exception e)
             {

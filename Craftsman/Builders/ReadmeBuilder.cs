@@ -12,7 +12,7 @@
 
     public class ReadmeBuilder
     {
-        public static void CreateReadme(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
+        public static void CreateReadme(string solutionDirectory, string solutionName, IFileSystem fileSystem)
         {
             try
             {
@@ -27,7 +27,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetReadmeFileText(template);
+                    data = GetReadmeFileText(solutionName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -45,9 +45,9 @@
             }
         }
 
-        public static string GetReadmeFileText(ApiTemplate template)
+        public static string GetReadmeFileText(string solutionName)
         {
-            return @$"# {template.SolutionName}
+            return @$"# {solutionName}
 
 This project was created with [Craftsman](https://github.com/pdevito3/craftsman).
 
@@ -56,7 +56,7 @@ This project was created with [Craftsman](https://github.com/pdevito3/craftsman)
 Go to your solution directory:
 
 ```shell
-cd {template.SolutionName}
+cd {solutionName}
 ```
 
 Run your solution:

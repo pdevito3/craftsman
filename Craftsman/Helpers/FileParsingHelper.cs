@@ -14,26 +14,26 @@
 
     public class FileParsingHelper
     {
-        public static ApiTemplate GetApiTemplateFromFile(string filePath)
+        public static T GetTemplateFromFile<T>(string filePath)
         {
             var ext = Path.GetExtension(filePath);
             if (ext == ".yml" || ext == ".yaml")
-                return ReadYaml(filePath);
+                return ReadYaml<T>(filePath);
             else
-                return ReadJson(filePath);
+                return ReadJson<T>(filePath);
         }
 
-        public static ApiTemplate ReadYaml(string yamlFile)
+        public static T ReadYaml<T>(string yamlFile)
         {
             var deserializer = new Deserializer();
-            ApiTemplate templatefromYaml = deserializer.Deserialize<ApiTemplate>(File.ReadAllText(yamlFile));
+            T templatefromYaml = deserializer.Deserialize<T>(File.ReadAllText(yamlFile));
 
             return templatefromYaml;
         }
 
-        public static ApiTemplate ReadJson(string jsonFile)
+        public static T ReadJson<T>(string jsonFile)
         {
-            return JsonConvert.DeserializeObject<ApiTemplate>(File.ReadAllText(jsonFile));
+            return JsonConvert.DeserializeObject<T>(File.ReadAllText(jsonFile));
         }
 
         public static bool IsJsonOrYaml(string filePath)
@@ -58,16 +58,16 @@
             return true;
         }
 
-        public static void RunPrimaryKeyGuard(ApiTemplate template)
+        public static void RunPrimaryKeyGuard(List<Entity> entities)
         {
-            if (template.Entities.Where(e => e.PrimaryKeyProperty == null).ToList().Count > 0)
+            if (entities.Where(e => e.PrimaryKeyProperty == null).ToList().Count > 0)
                 throw new MissingPrimaryKeyException("One of your entity properties is missing a primary key designation. " +
                     "Please make sure you have an `IsPrimaryKey: true` option on whichever property you want to be used as your prmary key.");
         }
 
-        public static void RunSolutionNameAssignedGuard(ApiTemplate template)
+        public static void RunSolutionNameAssignedGuard(string solutionName)
         {
-            if (template.SolutionName == null || template.SolutionName.Length <= 0)
+            if (solutionName == null || solutionName.Length <= 0)
                 throw new InvalidSolutionNameException();
         }
     }
