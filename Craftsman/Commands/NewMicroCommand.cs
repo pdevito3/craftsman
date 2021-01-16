@@ -58,28 +58,24 @@
                 GlobalSingleton instance = GlobalSingleton.GetInstance();
 
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetApiTemplateFromFile(filePath);
+                var template = FileParsingHelper.GetTemplateFromFile<MicroTemplate>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 
-                FileParsingHelper.RunPrimaryKeyGuard(template);
-                FileParsingHelper.RunSolutionNameAssignedGuard(template);
+                foreach(var micro in template.Microservices)
+                {
+                    FileParsingHelper.RunPrimaryKeyGuard(micro.Entities);
+                }
+                FileParsingHelper.RunSolutionNameAssignedGuard(template.SolutionName);
 
                 // solution level stuff
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
-                SolutionBuilder.BuildSolution(solutionDirectory, template, fileSystem);
-                ReadmeBuilder.CreateReadme(solutionDirectory, template, fileSystem);
+                SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
+                ReadmeBuilder.CreateReadme(solutionDirectory, template.SolutionName, fileSystem);
                 if (template.AddGit)
                     GitSetup(solutionDirectory);
 
-                // new microservice path
-                fileSystem.Directory.CreateDirectory(Path.Combine(solutionDirectory, "src"));
-                var newPath = Path.Combine(solutionDirectory, "src", "services");
-                fileSystem.Directory.CreateDirectory(newPath);
-
-                SolutionBuilder.AddProjects(solutionDirectory, template.DbContext.Provider, template.SolutionName, fileSystem, template.AuthSetup.InMemoryUsers);
-
                 // add all files based on the given template config
-                RunMicroTemplateBuilders(solutionDirectory, template, fileSystem);
+                RunMicroTemplateBuilders(solutionDirectory, template.Microservices, fileSystem);
 
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
@@ -102,55 +98,70 @@
             }
         }
 
-        private static void RunMicroTemplateBuilders(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
+        private static void RunMicroTemplateBuilders(string solutionDirectory, List<Microservice> microservices, IFileSystem fileSystem)
         {
-            // dbcontext
-            DbContextBuilder.CreateDbContext(solutionDirectory, template.Entities, template.DbContext.ContextName, template.AuthSetup.AuthMethod, template.DbContext.Provider, template.DbContext.DatabaseName);
+            // new microservice path
+            fileSystem.Directory.CreateDirectory(Path.Combine(solutionDirectory, "src"));
+            var newPath = Path.Combine(solutionDirectory, "src", "services");
+            fileSystem.Directory.CreateDirectory(newPath);
 
-            //entities
-            foreach (var entity in template.Entities)
+            foreach (var micro in microservices)
             {
-                EntityBuilder.CreateEntity(solutionDirectory, entity, fileSystem);
-                DtoBuilder.CreateDtos(solutionDirectory, entity);
+                // set micro path
+                var microPath = Path.Combine(newPath, micro.ProjectFolderName);
 
-                RepositoryBuilder.AddRepository(solutionDirectory, entity, template.DbContext);
-                ValidatorBuilder.CreateValidators(solutionDirectory, entity);
-                ProfileBuilder.CreateProfile(solutionDirectory, entity);
+                // add projects
+                SolutionBuilder.AddProjects(microPath, micro.DbContext.Provider, micro.ProjectFolderName, fileSystem, micro.AuthSetup.InMemoryUsers);
 
-                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments);
+                // dbcontext
+                DbContextBuilder.CreateDbContext(microPath, micro.Entities, micro.DbContext.ContextName, micro.AuthSetup.AuthMethod, micro.DbContext.Provider, micro.DbContext.DatabaseName);
 
-                FakesBuilder.CreateFakes(solutionDirectory, template.SolutionName, entity);
-                ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthSetup.AuthMethod);
-                GetTestBuilder.CreateEntityGetTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName);
-                PostTestBuilder.CreateEntityWriteTests(solutionDirectory, entity, template.SolutionName);
-                UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName);
-                DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthSetup.AuthMethod);
-                WebAppFactoryBuilder.CreateWebAppFactory(solutionDirectory, template.SolutionName, template.DbContext.ContextName);
-            }
+                //entities
+                foreach (var entity in micro.Entities)
+                {
+                    EntityBuilder.CreateEntity(microPath, entity, fileSystem);
+                    DtoBuilder.CreateDtos(microPath, entity);
 
-            // environments
-            AddStartupEnvironmentsWithServices(
-                solutionDirectory,
-                template.SolutionName,
-                template.AuthSetup.AuthMethod,
-                template.DbContext.DatabaseName,
-                template.Environments,
-                template.SwaggerConfig,
-                template.AuthSetup.InMemoryUsers
-            );
+                    RepositoryBuilder.AddRepository(microPath, entity, micro.DbContext);
+                    ValidatorBuilder.CreateValidators(microPath, entity);
+                    ProfileBuilder.CreateProfile(microPath, entity);
 
-            //seeders
-            SeederBuilder.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName);
+                    ControllerBuilder.CreateController(microPath, entity, micro.SwaggerConfig.AddSwaggerComments);
 
-            //services
-            SwaggerBuilder.AddSwagger(solutionDirectory, template.SwaggerConfig, template.SolutionName);
-            
-            if(template.AuthSetup.AuthMethod == "JWT")
-            {
-                IdentityServicesModifier.SetIdentityOptions(solutionDirectory, template.AuthSetup);
-                IdentitySeederBuilder.AddSeeders(solutionDirectory, template);
-                IdentityRoleBuilder.CreateRoles(solutionDirectory, template.AuthSetup.Roles);
-                RoleSeedBuilder.SeedRoles(solutionDirectory, template);
+                    FakesBuilder.CreateFakes(microPath, micro.ProjectFolderName, entity);
+                    ReadTestBuilder.CreateEntityReadTests(microPath, micro.ProjectFolderName, entity, micro.DbContext.ContextName, micro.AuthSetup.AuthMethod);
+                    GetTestBuilder.CreateEntityGetTests(microPath, micro.ProjectFolderName, entity, micro.DbContext.ContextName);
+                    PostTestBuilder.CreateEntityWriteTests(microPath, entity, micro.ProjectFolderName);
+                    UpdateTestBuilder.CreateEntityUpdateTests(microPath, entity, micro.ProjectFolderName, micro.DbContext.ContextName);
+                    DeleteTestBuilder.DeleteEntityWriteTests(microPath, entity, micro.ProjectFolderName, micro.DbContext.ContextName, micro.AuthSetup.AuthMethod);
+                    WebAppFactoryBuilder.CreateWebAppFactory(microPath, micro.ProjectFolderName, micro.DbContext.ContextName);
+                }
+
+
+                // environments
+                AddStartupEnvironmentsWithServices(
+                    microPath,
+                    micro.ProjectFolderName,
+                    micro.AuthSetup.AuthMethod,
+                    micro.DbContext.DatabaseName,
+                    micro.Environments,
+                    micro.SwaggerConfig,
+                    micro.AuthSetup.InMemoryUsers
+                );
+
+                //seeders
+                SeederBuilder.AddSeeders(microPath, micro.Entities, micro.DbContext.ContextName);
+
+                //services
+                SwaggerBuilder.AddSwagger(microPath, micro.SwaggerConfig, micro.ProjectFolderName);
+
+                if (micro.AuthSetup.AuthMethod == "JWT")
+                {
+                    IdentityServicesModifier.SetIdentityOptions(microPath, micro.AuthSetup);
+                    IdentitySeederBuilder.AddSeeders(microPath, micro.AuthSetup.InMemoryUsers);
+                    IdentityRoleBuilder.CreateRoles(microPath, micro.AuthSetup.Roles);
+                    RoleSeedBuilder.SeedRoles(microPath, micro.AuthSetup.InMemoryUsers);
+                }
             }
         }
 
