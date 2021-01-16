@@ -16,7 +16,7 @@
         public void GetStartupText_Devlopment_env_returns_expected_text()
         {
             var template = new ApiTemplate() { };
-            var fileText = StartupBuilder.GetStartupText("Development", template);
+            var fileText = StartupBuilder.GetStartupText("Development", template.AuthSetup.AuthMethod, template.AuthSetup.InMemoryUsers);
 
             var expectedText = @$"namespace WebApi
 {{
@@ -94,7 +94,7 @@
         public void GetStartupText_NonDevlopment_env_returns_expected_text(string env)
         {
             var template = new ApiTemplate() { };
-            var fileText = StartupBuilder.GetStartupText(env, template);
+            var fileText = StartupBuilder.GetStartupText(env, template.AuthSetup.AuthMethod, template.AuthSetup.InMemoryUsers);
 
             var expectedText = @$"namespace WebApi
 {{
@@ -162,7 +162,7 @@
         {
             var template = new ApiTemplate() { };
             template.AuthSetup.AuthMethod = "JWT";
-            var fileText = StartupBuilder.GetStartupText("Development", template);
+            var fileText = StartupBuilder.GetStartupText("Development", template.AuthSetup.AuthMethod, template.AuthSetup.InMemoryUsers);
 
             var expectedText = @$"namespace WebApi
 {{

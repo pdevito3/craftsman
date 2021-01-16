@@ -28,7 +28,6 @@
     using AutoMapper;
     using FluentValidation.AspNetCore;
     using Application.Dtos.Product;
-    using Application.Enums;
     using Application.Interfaces.Product;
     using Application.Validation.Product;
     using Domain.Entities;
@@ -235,7 +234,6 @@
     using AutoMapper;
     using FluentValidation.AspNetCore;
     using Application.Dtos.Buffalo;
-    using Application.Enums;
     using Application.Interfaces.Buffalo;
     using Application.Validation.Buffalo;
     using Domain.Entities;
@@ -439,7 +437,6 @@
     using AutoMapper;
     using FluentValidation.AspNetCore;
     using Application.Dtos.Product;
-    using Application.Enums;
     using Application.Interfaces.Product;
     using Application.Validation.Product;
     using Domain.Entities;
