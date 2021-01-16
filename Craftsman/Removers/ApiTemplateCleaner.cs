@@ -7,7 +7,7 @@
 
     public static class ApiTemplateCleaner
     {
-        public static void CleanTemplateFilesAndDirectories(string solutionDirectory, ApiTemplate template)
+        public static void CleanTemplateFilesAndDirectories(string solutionDirectory, string solutionName, string authMethod, List<ApplicationUser> applicationUsers)
         {
             var templEntityName = "ValueToReplace";
             EntityRemover.RemoveDirectory(solutionDirectory);
@@ -21,14 +21,14 @@
             ControllerRemover.RemoveDirectory(solutionDirectory);
 
 
-            TestFakesRemover.RemoveDirectory(solutionDirectory, templEntityName, template);
-            TestRepositoryRemover.RemoveDirectory(solutionDirectory, templEntityName, template);
-            TestIntegrationRemover.RemoveDirectory(solutionDirectory, templEntityName, template);
+            TestFakesRemover.RemoveDirectory(solutionDirectory, templEntityName, solutionName);
+            TestRepositoryRemover.RemoveDirectory(solutionDirectory, templEntityName, solutionName);
+            TestIntegrationRemover.RemoveDirectory(solutionDirectory, templEntityName, solutionName);
 
             InfrastructurePersistenceServicesCleaner.CleanServiceRegistration(solutionDirectory);
-            StartupCleaner.CleanStartup(solutionDirectory, template);
+            StartupCleaner.CleanStartup(solutionDirectory, authMethod, applicationUsers);
 
-            if (template.AuthSetup.AuthMethod != "JWT")
+            if (authMethod != "JWT")
             {
                 IdentityRemover.RemoveProject(solutionDirectory);
                 IdentityRemover.RemoveController(solutionDirectory);

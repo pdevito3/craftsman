@@ -39,6 +39,18 @@
                 }
             }
 
+            if (args.Length == 2 && (args[0] == "new:micro" || args[0] == "new:microservice"))
+            {
+                var filePath = args[1];
+                if (filePath == "-h" || filePath == "--help")
+                    NewMicroCommand.Help();
+                else
+                {
+                    var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:", "Users", "Paul", "Documents", "testoutput") : fileSystem.Directory.GetCurrentDirectory();
+                    NewMicroCommand.Run(filePath, solutionDir, fileSystem);
+                }
+            }
+
             if (args.Length == 2 && (args[0] == "add:entity" || args[0] == "add:entities"))
             {
                 var filePath = args[1];

@@ -7,9 +7,9 @@
 
     public class TestFakesRemover
     {
-        public static void RemoveDirectory(string solutionDirectory, string entityName, ApiTemplate template)
+        public static void RemoveDirectory(string solutionDirectory, string entityName, string solutionName)
         {
-            var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, $"", entityName, template.SolutionName); // deleting directory, so I don't need to give a meaningful filename
+            var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, $"", entityName, solutionName); // deleting directory, so I don't need to give a meaningful filename
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");

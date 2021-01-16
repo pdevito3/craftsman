@@ -11,7 +11,7 @@
     public class StartupCleaner
     {
         // will probably want to refactor this in the future when there is > 1 startup based on env
-        public static void CleanStartup(string solutionDirectory, ApiTemplate template)
+        public static void CleanStartup(string solutionDirectory, string authMethod, List<ApplicationUser> applicationUsers)
         {
             var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, "Startup.cs");
 
@@ -23,7 +23,7 @@
 
             File.Delete(classPath.FullClassPath);
 
-            StartupBuilder.CreateStartup(solutionDirectory, "Startup", template);
+            StartupBuilder.CreateStartup(solutionDirectory, "Startup", authMethod, applicationUsers);
         }
     }
 }

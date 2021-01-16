@@ -12,11 +12,11 @@
 
     public class WebAppFactoryBuilder
     {
-        public static void CreateWebAppFactory(string solutionDirectory, ApiTemplate template, Entity entity)
+        public static void CreateWebAppFactory(string solutionDirectory, string solutionName, string dbContextName)
         {
             try
             {
-                var classPath = ClassPathHelper.TestProjectRootClassPath(solutionDirectory, $"CustomWebApplicationFactory.cs", template.SolutionName);
+                var classPath = ClassPathHelper.TestProjectRootClassPath(solutionDirectory, $"CustomWebApplicationFactory.cs", solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetWebAppFactoryFileText(classPath, template, entity);
+                    var data = GetWebAppFactoryFileText(classPath, dbContextName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,7 +44,7 @@
             }
         }
 
-        private static string GetWebAppFactoryFileText(ClassPath classPath, ApiTemplate template, Entity entity)
+        private static string GetWebAppFactoryFileText(ClassPath classPath, string dbContextName)
         {
             return @$"
 namespace {classPath.ClassNamespace}
@@ -84,9 +84,9 @@ namespace {classPath.ClassNamespace}
                     .AddEntityFrameworkInMemoryDatabase()
                     .BuildServiceProvider();
 
-                // Add a database context ({template.DbContext.ContextName}) using an in-memory 
+                // Add a database context ({dbContextName}) using an in-memory 
                 // database for testing.
-                services.AddDbContext<{template.DbContext.ContextName}>(options =>
+                services.AddDbContext<{dbContextName}>(options =>
                 {{
                     options.UseInMemoryDatabase(""InMemoryDbForTesting"");
                     options.UseInternalServiceProvider(provider);
@@ -100,7 +100,7 @@ namespace {classPath.ClassNamespace}
                 using (var scope = sp.CreateScope())
                 {{
                     var scopedServices = scope.ServiceProvider;
-                    var db = scopedServices.GetRequiredService<{template.DbContext.ContextName}>();
+                    var db = scopedServices.GetRequiredService<{dbContextName}>();
 
                     // Ensure the database is created.
                     db.Database.EnsureCreated();

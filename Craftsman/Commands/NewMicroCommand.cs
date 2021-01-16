@@ -24,15 +24,17 @@
     using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
 
-    public static class NewApiCommand
+    public static class NewMicroCommand
     {
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   Scaffolds out API files and projects based on a given template file in a json or yaml format.{Environment.NewLine}");
+            WriteHelpText(@$"   Scaffolds out one or more microservices in a new project based on a given template file in a json or yaml format.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman new:api [options] <filepath>{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman new:micro [options] <filepath>");
+            WriteHelpText(@$"   OR");
+            WriteHelpText(@$"   craftsman new:microservice [options] <filepath>{Environment.NewLine}");
 
             WriteHelpHeader(@$"Arguments:");
             WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that describes your web API using a proper Wrapt format.");
@@ -43,9 +45,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yaml");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yml");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.json{Environment.NewLine}");
+            WriteHelpText(@$"       craftsman new:micro C:\fullpath\micro.yaml");
+            WriteHelpText(@$"       craftsman new:micro C:\fullpath\micro.yml");
+            WriteHelpText(@$"       craftsman new:micro C:\fullpath\micro.json{Environment.NewLine}");
 
         }
 
@@ -62,19 +64,22 @@
                 FileParsingHelper.RunPrimaryKeyGuard(template);
                 FileParsingHelper.RunSolutionNameAssignedGuard(template);
 
-                // scaffold projects
-                // add an accelerate.config.yaml file to the root?
+                // solution level stuff
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
-
-                // adding this for my test auth scaffolding so i don't have to do stuff that might not last manaully. **not officially supported**
-                if(template.AuthSetup.AuthMethod == "JWT")
-                    CreateNewFoundation(buildSolutionDirectory, template.SolutionName); // todo scaffold this manually instead of using dotnet new foundation
-                
                 SolutionBuilder.BuildSolution(solutionDirectory, template, fileSystem);
+                ReadmeBuilder.CreateReadme(solutionDirectory, template, fileSystem);
+                if (template.AddGit)
+                    GitSetup(solutionDirectory);
+
+                // new microservice path
+                fileSystem.Directory.CreateDirectory(Path.Combine(solutionDirectory, "src"));
+                var newPath = Path.Combine(solutionDirectory, "src", "services");
+                fileSystem.Directory.CreateDirectory(newPath);
+
                 SolutionBuilder.AddProjects(solutionDirectory, template.DbContext.Provider, template.SolutionName, fileSystem, template.AuthSetup.InMemoryUsers);
 
                 // add all files based on the given template config
-                RunTemplateBuilders(solutionDirectory, template, fileSystem);
+                RunMicroTemplateBuilders(solutionDirectory, template, fileSystem);
 
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
@@ -97,7 +102,7 @@
             }
         }
 
-        private static void RunTemplateBuilders(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
+        private static void RunMicroTemplateBuilders(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
         {
             // dbcontext
             DbContextBuilder.CreateDbContext(solutionDirectory, template.Entities, template.DbContext.ContextName, template.AuthSetup.AuthMethod, template.DbContext.Provider, template.DbContext.DatabaseName);
@@ -139,25 +144,19 @@
 
             //services
             SwaggerBuilder.AddSwagger(solutionDirectory, template.SwaggerConfig, template.SolutionName);
-
-            if (template.AuthSetup.AuthMethod == "JWT")
+            
+            if(template.AuthSetup.AuthMethod == "JWT")
             {
                 IdentityServicesModifier.SetIdentityOptions(solutionDirectory, template.AuthSetup);
                 IdentitySeederBuilder.AddSeeders(solutionDirectory, template);
                 IdentityRoleBuilder.CreateRoles(solutionDirectory, template.AuthSetup.Roles);
                 RoleSeedBuilder.SeedRoles(solutionDirectory, template);
             }
-
-            //final
-            ReadmeBuilder.CreateReadme(solutionDirectory, template, fileSystem);
-
-            if (template.AddGit)
-                GitSetup(solutionDirectory);
         }
 
-        private static void CreateNewFoundation(string directory, string solutionName)
+        private static void CreateNewFoundation(ApiTemplate template, string directory)
         {
-            var newDir = $"{directory}{Path.DirectorySeparatorChar}{solutionName}";
+            var newDir = $"{directory}{Path.DirectorySeparatorChar}{template.SolutionName}";
             if (Directory.Exists(newDir))
                 throw new DirectoryAlreadyExistsException(newDir);
 
@@ -170,7 +169,7 @@
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = @$"new foundation -n {solutionName}",
+                    Arguments = @$"new foundation -n {template.SolutionName}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -270,7 +269,7 @@
             foreach (var env in environments)
             {
                 // default startup is already built in cleanup phase
-                if (env.EnvironmentName != "Startup")
+                if(env.EnvironmentName != "Startup")
                     StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName, authMethod, inMemoryUsers);
 
                 AppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, authMethod);

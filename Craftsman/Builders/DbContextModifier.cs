@@ -15,9 +15,9 @@
 
     public class DbContextModifier
     {
-        public static void AddDbSet(string solutionDirectory, ApiTemplate template)
+        public static void AddDbSet(string solutionDirectory, List<Entity> entities, string dbContextName)
         {
-            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{template.DbContext.ContextName}.cs");
+            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs");
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -36,7 +36,7 @@
                         var newText = $"{line}";
                         if (line.Contains($"#region DbSet Region"))
                         {
-                            newText += @$"{Environment.NewLine}{DbContextBuilder.GetDbSetText(template.Entities)}";
+                            newText += @$"{Environment.NewLine}{DbContextBuilder.GetDbSetText(entities)}";
                         }
 
                         output.WriteLine(newText);

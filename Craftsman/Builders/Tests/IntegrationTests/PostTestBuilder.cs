@@ -12,11 +12,11 @@
 
     public class PostTestBuilder
     {
-        public static void CreateEntityWriteTests(string solutionDirectory, ApiTemplate template, Entity entity)
+        public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName)
         {
             try
             {
-                var classPath = ClassPathHelper.TestEntityIntegrationClassPath(solutionDirectory, $"Create{entity.Name}IntegrationTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestEntityIntegrationClassPath(solutionDirectory, $"Create{entity.Name}IntegrationTests.cs", entity.Name, solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = CreateIntegrationTestFileText(classPath, template, entity);
+                    var data = CreateIntegrationTestFileText(classPath, entity, solutionName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,7 +44,7 @@
             }
         }
 
-        private static string CreateIntegrationTestFileText(ClassPath classPath, ApiTemplate template, Entity entity)
+        private static string CreateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionName)
         {
             var assertString = "";
             foreach (var prop in entity.Properties)
@@ -58,7 +58,7 @@ namespace {classPath.ClassNamespace}
 {{
     using Application.Dtos.{entity.Name};
     using FluentAssertions;
-    using {template.SolutionName}.Tests.Fakes.{entity.Name};
+    using {solutionName}.Tests.Fakes.{entity.Name};
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
@@ -78,12 +78,12 @@ namespace {classPath.ClassNamespace}
             _factory = factory;
         }}
 
-        {CreateEntityTest(template, entity)}
+        {CreateEntityTest(entity)}
     }} 
 }}";
         }
 
-        private static string CreateEntityTest(ApiTemplate template, Entity entity)
+        private static string CreateEntityTest(Entity entity)
         {
             var assertString = "";
             foreach (var prop in entity.Properties.Where(p => p.IsPrimaryKey == false))

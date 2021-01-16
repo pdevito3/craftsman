@@ -12,11 +12,11 @@
 
     public class GetTestBuilder
     {
-        public static void CreateEntityGetTests(string solutionDirectory, ApiTemplate template, Entity entity)
+        public static void CreateEntityGetTests(string solutionDirectory, string solutionName, Entity entity, string dbContextName)
         {
             try
             {
-                var classPath = ClassPathHelper.TestEntityIntegrationClassPath(solutionDirectory, $"Get{entity.Name}IntegrationTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestEntityIntegrationClassPath(solutionDirectory, $"Get{entity.Name}IntegrationTests.cs", entity.Name, solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetIntegrationTestFileText(classPath, template, entity);
+                    var data = GetIntegrationTestFileText(classPath, solutionName, entity, dbContextName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,14 +44,14 @@
             }
         }
 
-        private static string GetIntegrationTestFileText(ClassPath classPath, ApiTemplate template, Entity entity)
+        private static string GetIntegrationTestFileText(ClassPath classPath, string solutionName, Entity entity, string dbContextName)
         {
             return @$"
 namespace {classPath.ClassNamespace}
 {{
     using Application.Dtos.{entity.Name};
     using FluentAssertions;
-    using {template.SolutionName}.Tests.Fakes.{entity.Name};
+    using {solutionName}.Tests.Fakes.{entity.Name};
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
@@ -73,12 +73,12 @@ namespace {classPath.ClassNamespace}
             _factory = factory;
         }}
 
-        {GetEntityTest(template, entity)}
+        {GetEntityTest(entity, dbContextName)}
     }} 
 }}";
         }
 
-        private static string GetEntityTest(ApiTemplate template, Entity entity)
+        private static string GetEntityTest(Entity entity, string dbContextName)
         {
             return $@"
         [Fact]
@@ -90,7 +90,7 @@ namespace {classPath.ClassNamespace}
             var appFactory = _factory;
             using (var scope = appFactory.Services.CreateScope())
             {{
-                var context = scope.ServiceProvider.GetRequiredService<{template.DbContext.ContextName}>();
+                var context = scope.ServiceProvider.GetRequiredService<{dbContextName}>();
                 context.Database.EnsureCreated();
 
                 //context.{entity.Plural}.RemoveRange(context.{entity.Plural});

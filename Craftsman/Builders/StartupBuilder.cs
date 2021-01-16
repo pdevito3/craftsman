@@ -5,6 +5,7 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -12,7 +13,7 @@
 
     public class StartupBuilder
     {
-        public static void CreateStartup(string solutionDirectory, string envName, ApiTemplate template)
+        public static void CreateStartup(string solutionDirectory, string envName, string authMethod, List<ApplicationUser> inMemoryUsers)
         {
             try
             {
@@ -27,7 +28,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetStartupText(envName, template);
+                    data = GetStartupText(envName, authMethod, inMemoryUsers);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -45,25 +46,25 @@
             }
         }
 
-        public static string GetStartupText(string envName, ApiTemplate template)
+        public static string GetStartupText(string envName, string authMethod, List<ApplicationUser> inMemoryUsers)
         {
             var authServices = "";
             var authApp = "";
             var authSeeder = "";
             var authUsing = "";
             var currentUserRegistration = "";
-            if (template?.AuthSetup.AuthMethod == "JWT")
+            if (authMethod == "JWT")
             {
                 authServices = @"
             services.AddIdentityInfrastructure(_config);";
                 authApp = @"app.UseAuthentication();
             app.UseAuthorization();";
                 var userSeeders = "";
-                if(template.AuthSetup.InMemoryUsers != null)
+                if(inMemoryUsers != null)
                 {
-                    foreach(var user in template.AuthSetup.InMemoryUsers)
+                    foreach(var user in inMemoryUsers)
                     {
-                        var newLine = user == template.AuthSetup.InMemoryUsers.LastOrDefault() ? "" : $"{Environment.NewLine}           ";
+                        var newLine = user == inMemoryUsers.LastOrDefault() ? "" : $"{Environment.NewLine}           ";
                         var seederName = Utilities.GetIdentitySeederName(user);
                         userSeeders += @$"{seederName}.SeedUserAsync(userManager);{newLine}";
                     }

@@ -12,11 +12,11 @@
 
     public class UpdateTestBuilder
     {
-        public static void CreateEntityUpdateTests(string solutionDirectory, ApiTemplate template, Entity entity)
+        public static void CreateEntityUpdateTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName)
         {
             try
             {
-                var classPath = ClassPathHelper.TestEntityIntegrationClassPath(solutionDirectory, $"Update{entity.Name}IntegrationTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestEntityIntegrationClassPath(solutionDirectory, $"Update{entity.Name}IntegrationTests.cs", entity.Name, solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = UpdateIntegrationTestFileText(classPath, template, entity);
+                    var data = UpdateIntegrationTestFileText(classPath, entity, solutionName, dbContextName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,14 +44,14 @@
             }
         }
 
-        private static string UpdateIntegrationTestFileText(ClassPath classPath, ApiTemplate template, Entity entity)
+        private static string UpdateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionName, string dbContextName)
         {
             return @$"
 namespace {classPath.ClassNamespace}
 {{
     using Application.Dtos.{entity.Name};
     using FluentAssertions;
-    using {template.SolutionName}.Tests.Fakes.{entity.Name};
+    using {solutionName}.Tests.Fakes.{entity.Name};
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
@@ -79,13 +79,13 @@ namespace {classPath.ClassNamespace}
             _factory = factory;
         }}
 
-        {UpdateEntityTest(template, entity)}
-        {PutEntityTest(template,entity)}
+        {UpdateEntityTest(entity, dbContextName)}
+        {PutEntityTest(entity, dbContextName)}
     }} 
 }}";
         }
 
-        private static string UpdateEntityTest(ApiTemplate template, Entity entity)
+        private static string UpdateEntityTest(Entity entity, string dbContextName)
         {
             var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string" 
                 && e.CanFilter 
@@ -125,7 +125,7 @@ namespace {classPath.ClassNamespace}
             var appFactory = _factory;
             using (var scope = appFactory.Services.CreateScope())
             {{
-                var context = scope.ServiceProvider.GetRequiredService<{template.DbContext.ContextName}> ();
+                var context = scope.ServiceProvider.GetRequiredService<{dbContextName}> ();
                 context.Database.EnsureCreated();
 
                 context.{entity.Plural}.RemoveRange(context.{entity.Plural});
@@ -175,7 +175,7 @@ namespace {classPath.ClassNamespace}
         }}";
         }
 
-        private static string PutEntityTest(ApiTemplate template, Entity entity)
+        private static string PutEntityTest(Entity entity, string dbContextName)
         {
             var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string"
                 && e.CanFilter
@@ -213,7 +213,7 @@ namespace {classPath.ClassNamespace}
             var appFactory = _factory;
             using (var scope = appFactory.Services.CreateScope())
             {{
-                var context = scope.ServiceProvider.GetRequiredService<{template.DbContext.ContextName}> ();
+                var context = scope.ServiceProvider.GetRequiredService<{dbContextName}> ();
                 context.Database.EnsureCreated();
 
                 context.{entity.Plural}.RemoveRange(context.{entity.Plural});

@@ -6,6 +6,7 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
     using static Helpers.ConsoleWriter;
@@ -26,14 +27,17 @@
 
                 // custom error that you must be using the .net 5 sdk?
             }
+        }
 
+        public static void AddProjects(string solutionDirectory, string dbProvider, string soutionName, IFileSystem fileSystem, List<ApplicationUser> inMemoryUsers)
+        {
             // add webapi first so it is default project
-            BuildWebApiProject(solutionDirectory, fileSystem);
+            BuildWebApiProject(solutionDirectory, fileSystem, inMemoryUsers);
             BuildDomainProject(solutionDirectory);
             BuildApplicationProject(solutionDirectory, fileSystem);
-            BuildInfrastructurePersistenceProject(solutionDirectory, template.DbContext.Provider, fileSystem);
+            BuildInfrastructurePersistenceProject(solutionDirectory, dbProvider, fileSystem);
             BuildInfrastructureSharedProject(solutionDirectory, fileSystem);
-            BuildTestProject(solutionDirectory, template.SolutionName);
+            BuildTestProject(solutionDirectory, soutionName);
         }
 
         private static void BuildDomainProject(string solutionDirectory)
@@ -96,7 +100,7 @@
             InfrastructureSharedServiceRegistrationBuilder.CreateInfrastructureSharedServiceExtension(solutionDirectory, fileSystem);
         }
 
-        private static void BuildWebApiProject(string solutionDirectory, IFileSystem fileSystem)
+        private static void BuildWebApiProject(string solutionDirectory, IFileSystem fileSystem, List<ApplicationUser> inMemoryUsers)
         {
             var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory);
 
@@ -114,7 +118,7 @@
             AppSettingsBuilder.CreateAppSettings(solutionDirectory);
             LaunchSettingsBuilder.CreateLaunchSettings(solutionDirectory, fileSystem);
             WebApiProgramBuilder.CreateWebApiProgram(solutionDirectory, fileSystem);
-            StartupBuilder.CreateStartup(solutionDirectory, "Startup", null);
+            StartupBuilder.CreateStartup(solutionDirectory, "Startup", null, inMemoryUsers);
         }
 
         private static void BuildTestProject(string solutionDirectory, string solutionName)

@@ -6,18 +6,18 @@
 
     public class TestBuildingHelpers
     {
-        public static string GetUsingString(ApiTemplate template)
+        public static string GetUsingString(string authMethod, string dbContextName)
         {
-            var usingString = $@"using (var context = new {template.DbContext.ContextName}(dbOptions))";
-            if (template.AuthSetup.AuthMethod == "JWT")
-                usingString = $@"using (var context = new {template.DbContext.ContextName}(dbOptions, currentUserService, new DateTimeService()))";
+            var usingString = $@"using (var context = new {dbContextName}(dbOptions))";
+            if (authMethod == "JWT")
+                usingString = $@"using (var context = new {dbContextName}(dbOptions, currentUserService, new DateTimeService()))";
             
             return usingString;
         }
-        public static string GetUserServiceString(ApiTemplate template)
+        public static string GetUserServiceString(string authMethod)
         {
             var mockedUserString = "";
-            if (template.AuthSetup.AuthMethod == "JWT")
+            if (authMethod == "JWT")
             {
                 mockedUserString = $@"
 

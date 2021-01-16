@@ -16,11 +16,11 @@
 
     public class DbContextBuilder
     {
-        public static void CreateDbContext(string solutionDirectory, ApiTemplate template)
+        public static void CreateDbContext(string solutionDirectory, List<Entity> entities, string dbContextName, string authMethod, string dbProvider, string dbName)
         {
             try
             {
-                var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{template.DbContext.ContextName}.cs");
+                var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -30,11 +30,11 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetContextFileText(classPath.ClassNamespace, template);
+                    var data = GetContextFileText(classPath.ClassNamespace, entities,dbContextName, authMethod);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
-                RegisterContext(solutionDirectory, template);
+                RegisterContext(solutionDirectory, dbProvider, dbContextName, dbName);
 
                 GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             }
@@ -50,7 +50,7 @@
             }
         }
 
-        public static string GetContextFileText(string classNamespace, ApiTemplate template)
+        public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string authMethod)
         {
             var nonAuth = @$"namespace {classNamespace}
 {{
@@ -61,20 +61,20 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class {template.DbContext.ContextName} : DbContext
+    public class {dbContextName} : DbContext
     {{
-        public {template.DbContext.ContextName}(
-            DbContextOptions<{template.DbContext.ContextName}> options) : base(options) 
+        public {dbContextName}(
+            DbContextOptions<{dbContextName}> options) : base(options) 
         {{
         }}
 
         #region DbSet Region - Do Not Delete
-{GetDbSetText(template.Entities)}
+{GetDbSetText(entities)}
         #endregion
     }}
 }}";
 
-            return template.AuthSetup.AuthMethod == "JWT" ? GetAuditableSaveOverride(classNamespace, template) : nonAuth;
+            return authMethod == "JWT" ? GetAuditableSaveOverride(classNamespace, entities, dbContextName) : nonAuth;
         }
 
         public static string GetDbSetText(List<Entity> entities)
@@ -90,7 +90,7 @@
             return dbSetText;
         }
 
-        private static void RegisterContext(string solutionDirectory, ApiTemplate template)
+        private static void RegisterContext(string solutionDirectory, string dbProvider, string dbContextName, string dbName)
         {
             var classPath = ClassPathHelper.InfraPersistenceServiceProviderClassPath(solutionDirectory, "ServiceRegistration.cs");
 
@@ -100,8 +100,8 @@
             if (!File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
-            var usingDbStatement = GetDbUsingStatement(template.DbContext.Provider);
-            InstallDbProviderNugetPackages(template.DbContext.Provider, solutionDirectory);
+            var usingDbStatement = GetDbUsingStatement(dbProvider);
+            InstallDbProviderNugetPackages(dbProvider, solutionDirectory);
 
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
@@ -117,15 +117,15 @@
                             newText += @$"          
             if (configuration.GetValue<bool>(""UseInMemoryDatabase""))
             {{
-                services.AddDbContext<{template.DbContext.ContextName}>(options =>
-                    options.UseInMemoryDatabase($""{template.DbContext.DatabaseName ?? template.DbContext.ContextName}""));
+                services.AddDbContext<{dbContextName}>(options =>
+                    options.UseInMemoryDatabase($""{dbName?? dbContextName}""));
             }}
             else
             {{
-                services.AddDbContext<{template.DbContext.ContextName}>(options =>
+                services.AddDbContext<{dbContextName}>(options =>
                     options.{usingDbStatement}(
-                        configuration.GetConnectionString(""{template.DbContext.DatabaseName}""),
-                        builder => builder.MigrationsAssembly(typeof({template.DbContext.ContextName}).Assembly.FullName)));
+                        configuration.GetConnectionString(""{dbName}""),
+                        builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)));
             }}";
                         }
 
@@ -178,7 +178,7 @@
             return "UseSqlServer";
         }
 
-        public static string GetAuditableSaveOverride(string classNamespace, ApiTemplate template)
+        public static string GetAuditableSaveOverride(string classNamespace, List<Entity> entities, string dbContextName)
         {
             return @$"namespace {classNamespace}
 {{
@@ -191,13 +191,13 @@
     using Domain.Common;
     using System.Reflection;
 
-    public class {template.DbContext.ContextName} : DbContext
+    public class {dbContextName} : DbContext
     {{
         private readonly IDateTimeService _dateTimeService;
         private readonly ICurrentUserService _currentUserService;
 
-        public {template.DbContext.ContextName}(
-            DbContextOptions<{template.DbContext.ContextName}> options,
+        public {dbContextName}(
+            DbContextOptions<{dbContextName}> options,
             ICurrentUserService currentUserService,
             IDateTimeService dateTimeService) : base(options) 
         {{
@@ -206,7 +206,7 @@
         }}
 
         #region DbSet Region - Do Not Delete
-{GetDbSetText(template.Entities)}
+{GetDbSetText(entities)}
         #endregion
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())

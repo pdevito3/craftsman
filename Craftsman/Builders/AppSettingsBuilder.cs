@@ -14,7 +14,7 @@
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, ApiTemplate template)
+        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string authMethod)
         {
             try
             {
@@ -30,7 +30,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetAppSettingsText(env, dbName, template);
+                    data = GetAppSettingsText(env, dbName, authMethod);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -86,13 +86,13 @@
             }
         }
 
-        private static string GetAppSettingsText(ApiEnvironment env, string dbName, ApiTemplate template)
+        private static string GetAppSettingsText(ApiEnvironment env, string dbName, string authMethod)
         {
             var jwtSettings = "";
             var mailSettings = "";
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
 
-            if (template.AuthSetup.AuthMethod == "JWT")
+            if (authMethod == "JWT")
             {
                 jwtSettings = $@"
   ""JwtSettings"": {{

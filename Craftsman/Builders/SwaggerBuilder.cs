@@ -12,13 +12,13 @@
 
     public class SwaggerBuilder
     {
-        public static void AddSwagger(string solutionDirectory, ApiTemplate template)
+        public static void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName)
         {
-            if(!template.SwaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
+            if(!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
             {
-                AddSwaggerServiceExtension(solutionDirectory, template);
-                AddSwaggerAppExtension(solutionDirectory, template);
-                UpdateWebApiCsProjSwaggerSettings(solutionDirectory, template.SolutionName);
+                AddSwaggerServiceExtension(solutionDirectory, swaggerConfig, solutionName);
+                AddSwaggerAppExtension(solutionDirectory, swaggerConfig);
+                UpdateWebApiCsProjSwaggerSettings(solutionDirectory, solutionName);
             }
         }
 
@@ -75,7 +75,7 @@
             }
         }
 
-        private static void AddSwaggerServiceExtension(string solutionDirectory, ApiTemplate template)
+        private static void AddSwaggerServiceExtension(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName)
         {
             try
             {
@@ -98,7 +98,7 @@
                             var newText = $"{line}";
                             if (line.Contains("#region Swagger Region"))
                             {
-                                newText += GetSwaggerServiceExtensionText(template);
+                                newText += GetSwaggerServiceExtensionText(swaggerConfig, solutionName);
                             }
 
                             output.WriteLine(newText);
@@ -124,24 +124,24 @@
             }
         }
 
-        private static string GetSwaggerServiceExtensionText(ApiTemplate template)
+        private static string GetSwaggerServiceExtensionText(SwaggerConfig swaggerConfig, string solutionName)
         {
-            var contactUrlLine = IsCleanUri(template.SwaggerConfig.ApiContact.Url) 
+            var contactUrlLine = IsCleanUri(swaggerConfig.ApiContact.Url) 
                 ? $@"
-                                Url = new Uri(""{ template.SwaggerConfig.ApiContact.Url }""),"
+                                Url = new Uri(""{ swaggerConfig.ApiContact.Url }""),"
                 : "";
 
-            var LicenseUrlLine = IsCleanUri(template.SwaggerConfig.LicenseUrl)
-                ? $@"Url = new Uri(""{ template.SwaggerConfig.LicenseUrl }""),"
+            var LicenseUrlLine = IsCleanUri(swaggerConfig.LicenseUrl)
+                ? $@"Url = new Uri(""{ swaggerConfig.LicenseUrl }""),"
                 : "";
 
-            var licenseText = GetLicenseText(template.SwaggerConfig.LicenseName, LicenseUrlLine);
+            var licenseText = GetLicenseText(swaggerConfig.LicenseName, LicenseUrlLine);
 
             var SwaggerXmlComments = "";
-            if (template.SwaggerConfig.AddSwaggerComments)
+            if (swaggerConfig.AddSwaggerComments)
                 SwaggerXmlComments = $@"
 
-                    config.IncludeXmlComments(string.Format(@""{{0}}\{template.SolutionName}.WebApi.xml"", AppDomain.CurrentDomain.BaseDirectory));";
+                    config.IncludeXmlComments(string.Format(@""{{0}}\{solutionName}.WebApi.xml"", AppDomain.CurrentDomain.BaseDirectory));";
 
             var swaggerText = $@"
             public static void AddSwaggerExtension(this IServiceCollection services)
@@ -153,12 +153,12 @@
                         new OpenApiInfo
                         {{
                             Version = ""v1"",
-                            Title = ""{template.SwaggerConfig.Title}"",
-                            Description = ""{template.SwaggerConfig.Description}"",
+                            Title = ""{swaggerConfig.Title}"",
+                            Description = ""{swaggerConfig.Description}"",
                             Contact = new OpenApiContact
                             {{
-                                Name = ""{template.SwaggerConfig.ApiContact.Name}"",
-                                Email = ""{template.SwaggerConfig.ApiContact.Email}"",{contactUrlLine}
+                                Name = ""{swaggerConfig.ApiContact.Name}"",
+                                Email = ""{swaggerConfig.ApiContact.Email}"",{contactUrlLine}
                             }},{licenseText}
                         }});{SwaggerXmlComments}
                 }});
@@ -179,7 +179,7 @@
             return "";
         }
 
-        private static void AddSwaggerAppExtension(string solutionDirectory, ApiTemplate template)
+        private static void AddSwaggerAppExtension(string solutionDirectory, SwaggerConfig swaggerConfig)
         {
             try
             {
@@ -202,7 +202,7 @@
                             var newText = $"{line}";
                             if (line.Contains("#region Swagger Region"))
                             {
-                                newText += GetSwaggerAppExtensionText(template);
+                                newText += GetSwaggerAppExtensionText(swaggerConfig);
                             }
 
                             output.WriteLine(newText);
@@ -232,7 +232,7 @@
             return Uri.TryCreate(uri, UriKind.Absolute, out var outUri) && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps);
         }
 
-        private static string GetSwaggerAppExtensionText(ApiTemplate template)
+        private static string GetSwaggerAppExtensionText(SwaggerConfig swaggerConfig)
         {
            var swaggerText = $@"
         public static void UseSwaggerExtension(this IApplicationBuilder app)
@@ -240,7 +240,7 @@
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {{
-                c.SwaggerEndpoint(""{template.SwaggerConfig.SwaggerEndpointUrl}"", ""{template.SwaggerConfig.SwaggerEndpointName}"");
+                c.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");
             }});
         }}";
 

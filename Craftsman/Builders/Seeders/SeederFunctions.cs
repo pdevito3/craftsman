@@ -8,11 +8,11 @@
 
     public static class SeederFunctions
     {
-        public static string GetEntitySeederFileText(string classNamespace, Entity entity, ApiTemplate template)
+        public static string GetEntitySeederFileText(string classNamespace, Entity entity, string dbContextName)
         {
-            if (template is null)
+            if (dbContextName is null)
             {
-                throw new ArgumentNullException(nameof(template));
+                throw new ArgumentNullException(nameof(dbContextName));
             }
 
             return @$"namespace {classNamespace}
@@ -25,7 +25,7 @@
 
     public static class {Utilities.GetSeederName(entity)}
     {{
-        public static void SeedSample{entity.Name}Data({template.DbContext.ContextName} context)
+        public static void SeedSample{entity.Name}Data({dbContextName} context)
         {{
             if (!context.{entity.Plural}.Any())
             {{

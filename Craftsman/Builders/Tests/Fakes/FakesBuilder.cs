@@ -12,20 +12,20 @@
 
     public static class FakesBuilder
     {
-        public static void CreateFakes(string solutionDirectory, ApiTemplate template, Entity entity)
+        public static void CreateFakes(string solutionDirectory, string solutionName, Entity entity)
         {
             try
             {
                 // ****this class path will have an invalid FullClassPath. just need the directory
-                var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, $"", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, $"", entity.Name, solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
 
-                CreateFakerFile(solutionDirectory, entity.Name, entity, template);
-                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name,Dto.Creation), entity, template);
-                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Read), entity, template);
-                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Update), entity, template);
+                CreateFakerFile(solutionDirectory, entity.Name, entity, solutionName);
+                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name,Dto.Creation), entity, solutionName);
+                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Read), entity, solutionName);
+                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Update), entity, solutionName);
             }
             catch (FileAlreadyExistsException e)
             {
@@ -39,10 +39,10 @@
             }
         }
 
-        private static void CreateFakerFile(string solutionDirectory, string objectToFakeClassName, Entity entity, ApiTemplate template)
+        private static void CreateFakerFile(string solutionDirectory, string objectToFakeClassName, Entity entity, string solutionName)
         {
             var fakeFilename = $"Fake{objectToFakeClassName}.cs";
-            var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, fakeFilename, entity.Name, template.SolutionName);
+            var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, fakeFilename, entity.Name, solutionName);
 
             if (File.Exists(classPath.FullClassPath))
                 throw new FileAlreadyExistsException(classPath.FullClassPath);

@@ -11,11 +11,11 @@
 
     public class ReadTestBuilder
     {
-        public static void CreateEntityReadTests(string solutionDirectory, ApiTemplate template, Entity entity)
+        public static void CreateEntityReadTests(string solutionDirectory, string solutionName, Entity entity, string dbContextName, string authMethod)
         {
             try
             {
-                var classPath = ClassPathHelper.TestRepositoryClassPath(solutionDirectory, $"Get{entity.Name}RepositoryTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestRepositoryClassPath(solutionDirectory, $"Get{entity.Name}RepositoryTests.cs", entity.Name, solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -25,7 +25,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = ReadRepositoryTestFileText(classPath, template, entity);
+                    var data = ReadRepositoryTestFileText(classPath, entity, solutionName, dbContextName, authMethod);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -43,14 +43,14 @@
             }
         }
 
-        private static string ReadRepositoryTestFileText(ClassPath classPath, ApiTemplate template, Entity entity)
+        private static string ReadRepositoryTestFileText(ClassPath classPath, Entity entity, string solutionName, string dbContextName, string authMethod)
         {
             var sortTests = "";
 
             foreach(var prop in entity.Properties.Where(e => e.CanSort && e.Type != "Guid").ToList())
             {
-                sortTests += GetEntitiesListSortedInAscOrder(template, entity, prop);
-                sortTests += GetEntitiesListSortedInDescOrder(template, entity, prop);
+                sortTests += GetEntitiesListSortedInAscOrder(entity, prop, dbContextName, authMethod);
+                sortTests += GetEntitiesListSortedInDescOrder(entity, prop, dbContextName, authMethod);
             }
 
             return @$"
@@ -58,7 +58,7 @@ namespace {classPath.ClassNamespace}
 {{
     using Application.Dtos.{entity.Name};
     using FluentAssertions;
-    using {template.SolutionName}.Tests.Fakes.{entity.Name};
+    using {solutionName}.Tests.Fakes.{entity.Name};
     using Infrastructure.Persistence.Contexts;
     using Infrastructure.Persistence.Repositories;
     using Microsoft.EntityFrameworkCore;
@@ -74,17 +74,17 @@ namespace {classPath.ClassNamespace}
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{ 
-        {GetEntityTest(template, entity)}
-        {GetEntitiesTest(template, entity)}
-        {GetEntitiesWithPageSizeTest(template,entity)}
-        {GetEntitiesWithPageSizeandNumberTest(template, entity)}
+        {GetEntityTest(entity, dbContextName, authMethod)}
+        {GetEntitiesTest(entity, dbContextName, authMethod)}
+        {GetEntitiesWithPageSizeTest(entity, dbContextName, authMethod)}
+        {GetEntitiesWithPageSizeandNumberTest(entity, dbContextName, authMethod)}
         {sortTests}
-        {GetEntitiesListCanFilterTests(template,entity)}
+        {GetEntitiesListCanFilterTests(entity, dbContextName, authMethod)}
     }} 
 }}";
         }
 
-        private static string GetEntityTest(ApiTemplate template, Entity entity)
+        private static string GetEntityTest(Entity entity, string dbContextName, string authMethod)
         {
             var assertString = "";
 
@@ -94,15 +94,15 @@ namespace {classPath.ClassNamespace}
                 assertString += @$"                {entity.Name.LowercaseFirstLetter()}ById.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
 
-            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
-            var usingString = TestBuildingHelpers.GetUsingString(template);
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(dbContextName);
+            var usingString = TestBuildingHelpers.GetUsingString(authMethod, dbContextName);
 
             return $@"
         [Fact]
         public void Get{entity.Name}_ParametersMatchExpectedValues()
         {{
             //Arrange
-            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+            var dbOptions = new DbContextOptionsBuilder<{dbContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
             var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
@@ -124,10 +124,10 @@ namespace {classPath.ClassNamespace}
         }}";
         }
 
-        private static string GetEntitiesTest(ApiTemplate template, Entity entity)
+        private static string GetEntitiesTest(Entity entity, string dbContextName, string authMethod)
         {
-            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
-            var usingString = TestBuildingHelpers.GetUsingString(template);
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(dbContextName);
+            var usingString = TestBuildingHelpers.GetUsingString(authMethod, dbContextName);
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
 
             return $@"
@@ -135,7 +135,7 @@ namespace {classPath.ClassNamespace}
         public async void {getListMethodName}_CountMatchesAndContainsEquivalentObjects()
         {{
             //Arrange
-            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+            var dbOptions = new DbContextOptionsBuilder<{dbContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
             var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
@@ -168,10 +168,10 @@ namespace {classPath.ClassNamespace}
         }}";
         }
 
-        private static string GetEntitiesWithPageSizeTest(ApiTemplate template, Entity entity)
+        private static string GetEntitiesWithPageSizeTest(Entity entity, string dbContextName, string authMethod)
         {
-            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
-            var usingString = TestBuildingHelpers.GetUsingString(template);
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(authMethod);
+            var usingString = TestBuildingHelpers.GetUsingString(authMethod, dbContextName);
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
             var alpha = "";
             var bravo = "";
@@ -212,7 +212,7 @@ namespace {classPath.ClassNamespace}
         public async void {getListMethodName}_ReturnExpectedPageSize()
         {{
             //Arrange
-            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+            var dbOptions = new DbContextOptionsBuilder<{dbContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
             var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
@@ -249,10 +249,10 @@ namespace {classPath.ClassNamespace}
         }}";
         }
 
-        private static string GetEntitiesWithPageSizeandNumberTest(ApiTemplate template, Entity entity)
+        private static string GetEntitiesWithPageSizeandNumberTest(Entity entity, string dbContextName, string authMethod)
         {
-            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
-            var usingString = TestBuildingHelpers.GetUsingString(template);
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(authMethod);
+            var usingString = TestBuildingHelpers.GetUsingString(authMethod, dbContextName);
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
             var alpha = "";
             var bravo = "";
@@ -293,7 +293,7 @@ namespace {classPath.ClassNamespace}
         public async void {getListMethodName}_ReturnExpectedPageNumberAndSize()
         {{
             //Arrange
-            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+            var dbOptions = new DbContextOptionsBuilder<{dbContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
             var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
@@ -329,7 +329,7 @@ namespace {classPath.ClassNamespace}
         }}";
         }
        
-        private static string GetEntitiesListSortedInAscOrder(ApiTemplate template, Entity entity, EntityProperty prop)
+        private static string GetEntitiesListSortedInAscOrder(Entity entity, EntityProperty prop, string dbContextName, string authMethod)
         {
             var alpha = "";
             var bravo = "";
@@ -365,8 +365,8 @@ namespace {classPath.ClassNamespace}
                 return "";
             }
 
-            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
-            var usingString = TestBuildingHelpers.GetUsingString(template);
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(authMethod);
+            var usingString = TestBuildingHelpers.GetUsingString(authMethod, dbContextName);
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
 
             return $@"
@@ -374,7 +374,7 @@ namespace {classPath.ClassNamespace}
         public async void {getListMethodName}_List{prop.Name}SortedInAscOrder()
         {{
             //Arrange
-            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+            var dbOptions = new DbContextOptionsBuilder<{dbContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
             var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
@@ -407,7 +407,7 @@ namespace {classPath.ClassNamespace}
         }}{Environment.NewLine}";
         }
 
-        private static string GetEntitiesListSortedInDescOrder(ApiTemplate template, Entity entity, EntityProperty prop)
+        private static string GetEntitiesListSortedInDescOrder(Entity entity, EntityProperty prop, string dbContextName, string authMethod)
         {
             var alpha = "";
             var bravo = "";
@@ -443,8 +443,8 @@ namespace {classPath.ClassNamespace}
                 return "";
             }
 
-            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
-            var usingString = TestBuildingHelpers.GetUsingString(template);
+            var mockedUserString = TestBuildingHelpers.GetUserServiceString(authMethod);
+            var usingString = TestBuildingHelpers.GetUsingString(authMethod, dbContextName);
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
 
             return $@"
@@ -452,7 +452,7 @@ namespace {classPath.ClassNamespace}
         public async void {getListMethodName}_List{prop.Name}SortedInDescOrder()
         {{
             //Arrange
-            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+            var dbOptions = new DbContextOptionsBuilder<{dbContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
             var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
@@ -485,7 +485,7 @@ namespace {classPath.ClassNamespace}
         }}{Environment.NewLine}";
         }
 
-        private static string GetEntitiesListCanFilterTests(ApiTemplate template, Entity entity)
+        private static string GetEntitiesListCanFilterTests(Entity entity, string dbContextName, string authMethod)
         {
             var filterTests = "";
             foreach (var prop in entity.Properties.Where(e => e.CanFilter).ToList())
@@ -546,8 +546,8 @@ namespace {classPath.ClassNamespace}
                     return "";
                 }
 
-                var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
-                var usingString = TestBuildingHelpers.GetUsingString(template);
+                var mockedUserString = TestBuildingHelpers.GetUserServiceString(authMethod);
+                var usingString = TestBuildingHelpers.GetUsingString(authMethod, dbContextName);
                 var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
                 var expectedFilterableProperty = @$"fake{entity.Name}Two.{prop.Name}";
 
@@ -556,7 +556,7 @@ namespace {classPath.ClassNamespace}
         public async void {getListMethodName}_Filter{prop.Name}ListWithExact()
         {{
             //Arrange
-            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+            var dbOptions = new DbContextOptionsBuilder<{dbContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
             var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}

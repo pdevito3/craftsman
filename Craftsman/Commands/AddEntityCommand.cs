@@ -100,17 +100,17 @@
 
                 ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments);
 
-                FakesBuilder.CreateFakes(solutionDirectory, template, entity);
-                ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template, entity);
-                GetTestBuilder.CreateEntityGetTests(solutionDirectory, template, entity);
-                PostTestBuilder.CreateEntityWriteTests(solutionDirectory, template, entity);
-                UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, template, entity);
-                DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, template, entity);
+                FakesBuilder.CreateFakes(solutionDirectory, template.SolutionName, entity);
+                ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthSetup.AuthMethod);
+                GetTestBuilder.CreateEntityGetTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName);
+                PostTestBuilder.CreateEntityWriteTests(solutionDirectory, entity, template.SolutionName);
+                UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName);
+                DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthSetup.AuthMethod);
             }
 
             //seeders & dbsets
-            SeederModifier.AddSeeders(solutionDirectory, template);
-            DbContextModifier.AddDbSet(solutionDirectory, template);
+            SeederModifier.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName);
+            DbContextModifier.AddDbSet(solutionDirectory, template.Entities, template.DbContext.ContextName);
         }
 
         private static string GetSlnFile(string filePath)
