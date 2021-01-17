@@ -69,10 +69,14 @@
 
                 // solution level stuff
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
-                SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
                 ReadmeBuilder.CreateReadme(solutionDirectory, template.SolutionName, fileSystem);
                 if (template.AddGit)
                     GitSetup(solutionDirectory);
+
+                // add src folder
+                fileSystem.Directory.CreateDirectory(Path.Combine(solutionDirectory, "src"));
+                solutionDirectory = Path.Combine(solutionDirectory, "src");
+                SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
 
                 // add all files based on the given template config
                 RunMicroTemplateBuilders(solutionDirectory, template.Microservices, fileSystem);
@@ -101,8 +105,7 @@
         private static void RunMicroTemplateBuilders(string solutionDirectory, List<Microservice> microservices, IFileSystem fileSystem)
         {
             // new microservice path
-            fileSystem.Directory.CreateDirectory(Path.Combine(solutionDirectory, "src"));
-            var newPath = Path.Combine(solutionDirectory, "src", "services");
+            var newPath = Path.Combine(solutionDirectory, "services");
             fileSystem.Directory.CreateDirectory(newPath);
 
             foreach (var micro in microservices)

@@ -39,7 +39,7 @@
                 }
             }
 
-            if (args.Length == 2 && (args[0] == "new:micro" || args[0] == "new:microservice"))
+            if (args.Length == 2 && (args[0] == "new:micro"))
             {
                 var filePath = args[1];
                 if (filePath == "-h" || filePath == "--help")
