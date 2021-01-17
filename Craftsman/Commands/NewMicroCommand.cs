@@ -83,7 +83,6 @@
 
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
-                WriteGettingStarted(template.SolutionName);
                 StarGithubRequest();
             }
             catch (Exception e)

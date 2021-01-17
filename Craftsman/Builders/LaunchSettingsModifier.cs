@@ -53,7 +53,7 @@
       ""environmentVariables"": {{
         ""ASPNETCORE_ENVIRONMENT"": ""{env.EnvironmentName}""
       }},
-      ""applicationUrl"": ""http://localhost:{port}""
+      ""applicationUrl"": ""https://localhost:{port}""
     }},";
             else if (env.EnvironmentName == "Startup")
                 return $@"
