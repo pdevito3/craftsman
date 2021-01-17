@@ -22,7 +22,7 @@
                 }
             };
 
-            Action act = () => FileParsingHelper.RunPrimaryKeyGuard(template);
+            Action act = () => FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
             act.Should().Throw<MissingPrimaryKeyException>();            
         }
     }
