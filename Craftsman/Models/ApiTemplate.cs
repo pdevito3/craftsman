@@ -45,5 +45,10 @@ namespace Craftsman.Models
         /// Boolean that determines whether or not craftsman will do an initial git set up for this project.
         /// </summary>
         public bool AddGit { get; set; } = true;
+
+        /// <summary>
+        /// The port that will be used when running locally in the project.
+        /// </summary>
+        public int Port { get; set; } = 5000;
     }
 }

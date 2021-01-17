@@ -149,7 +149,8 @@
                     micro.DbContext.DatabaseName,
                     micro.Environments,
                     micro.SwaggerConfig,
-                    micro.AuthSetup.InMemoryUsers
+                    micro.AuthSetup.InMemoryUsers,
+                    micro.Port
                 );
 
                 //seeders
@@ -274,7 +275,8 @@
             string databaseName,
             List<ApiEnvironment> environments,
             SwaggerConfig swaggerConfig,
-            List<ApplicationUser> inMemoryUsers)
+            List<ApplicationUser> inMemoryUsers,
+            int port)
         {
             // add a development environment by default for local work if none exists
             if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
@@ -287,7 +289,7 @@
                     StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName, authMethod, inMemoryUsers);
 
                 AppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, authMethod);
-                LaunchSettingsModifier.AddProfile(solutionDirectory, env);
+                LaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
 
                 //services
                 if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
