@@ -40,7 +40,7 @@
             BuildTestProject(solutionDirectory, projectDirectory, "Tests", soutionName);
         }
 
-        public static void AddMicroProjects(string solutionDirectory, string projectDirectory, string dbProvider, string solutionName, IFileSystem fileSystem, List<ApplicationUser> inMemoryUsers)
+        public static void AddMicroServicesProjects(string solutionDirectory, string projectDirectory, string dbProvider, string solutionName, IFileSystem fileSystem, List<ApplicationUser> inMemoryUsers)
         {
             var microSolutionFolder = Path.Combine("src", "services", solutionName);
             BuildWebApiProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem, inMemoryUsers);
@@ -49,6 +49,25 @@
             BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, microSolutionFolder, dbProvider, fileSystem);
             BuildInfrastructureSharedProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
             BuildTestProject(solutionDirectory, projectDirectory, microSolutionFolder, solutionName);
+        }
+
+        public static void AddGatewayProject(string solutionDirectory, string projectDirectory, string gatewayProjectName, IFileSystem fileSystem)
+        {
+            var microSolutionFolder = Path.Combine("src", "gateways");
+            BuildGatewayProject(solutionDirectory, projectDirectory, microSolutionFolder, gatewayProjectName, fileSystem);
+        }
+
+        private static void BuildGatewayProject(string solutionDirectory, string projectDirectory, string solutionFolder, string gatewayProjectName, IFileSystem fileSystem)
+        {
+            var gatewayProjectClassPath = ClassPathHelper.GatewayProjectClassPath(projectDirectory, gatewayProjectName);
+
+            GatewayCsProjBuilder.CreateGatewayCsProj(projectDirectory, gatewayProjectName);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""{gatewayProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
+
+            GatewayAppSettingsBuilder.CreateAppSettings(projectDirectory, gatewayProjectName);
+            GatewayLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, gatewayProjectName, fileSystem);
+            ProgramBuilder.CreateGatewayProgram(projectDirectory, gatewayProjectName, fileSystem);
+            StartupBuilder.CreateGatewayStartup(projectDirectory, gatewayProjectClassPath.ClassNamespace, "Startup", gatewayProjectName);
         }
 
         private static void BuildDomainProject(string solutionDirectory, string projectDirectory, string solutionFolder)
@@ -126,10 +145,10 @@
             WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(projectDirectory, fileSystem);
             WebApiAppExtensionsBuilder.CreateWebApiAppExtension(projectDirectory, fileSystem);
             ErrorHandlerMiddlewareBuilder.CreateErrorHandlerMiddleware(projectDirectory, fileSystem);
-            AppSettingsBuilder.CreateAppSettings(projectDirectory);
-            LaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, fileSystem);
-            WebApiProgramBuilder.CreateWebApiProgram(projectDirectory, fileSystem);
-            StartupBuilder.CreateStartup(projectDirectory, "Startup", null, inMemoryUsers);
+            WebApiAppSettingsBuilder.CreateAppSettings(projectDirectory);
+            WebApiLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, fileSystem);
+            ProgramBuilder.CreateWebApiProgram(projectDirectory, fileSystem);
+            StartupBuilder.CreateWebApiStartup(projectDirectory, "Startup", null, inMemoryUsers);
         }
 
         private static void BuildTestProject(string solutionDirectory, string projectDirectory, string solutionFolder, string solutionName)

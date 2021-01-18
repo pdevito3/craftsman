@@ -13,7 +13,7 @@
 
     public class StartupBuilder
     {
-        public static void CreateStartup(string solutionDirectory, string envName, string authMethod, List<ApplicationUser> inMemoryUsers)
+        public static void CreateWebApiStartup(string solutionDirectory, string envName, string authMethod, List<ApplicationUser> inMemoryUsers)
         {
             try
             {
@@ -29,6 +29,39 @@
                 {
                     var data = "";
                     data = GetStartupText(envName, authMethod, inMemoryUsers);
+                    fs.Write(Encoding.UTF8.GetBytes(data));
+                }
+
+                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
+            }
+            catch (FileAlreadyExistsException e)
+            {
+                WriteError(e.Message);
+                throw;
+            }
+            catch (Exception e)
+            {
+                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
+                throw;
+            }
+        }
+
+        public static void CreateGatewayStartup(string solutionDirectory, string classNamespace, string envName, string gatewayProjectName)
+        {
+            try
+            {
+                var classPath = envName == "Startup" ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", gatewayProjectName) : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs", gatewayProjectName);
+
+                if (!Directory.Exists(classPath.ClassDirectory))
+                    Directory.CreateDirectory(classPath.ClassDirectory);
+
+                if (File.Exists(classPath.FullClassPath))
+                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+                using (FileStream fs = File.Create(classPath.FullClassPath))
+                {
+                    var data = "";
+                    data = GetStartupText(classNamespace, envName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -227,6 +260,89 @@
 
             #region Dynamic App
             #endregion
+        }}
+    }}
+}}";
+        }
+
+
+        public static string GetStartupText(string classNamespace, string envName)
+        {
+            envName = envName == "Startup" ? "" : envName;
+            if (envName == "Development")
+
+                return @$"namespace {classNamespace}
+{{
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Infrastructure.Persistence.Seeders;
+    using Infrastructure.Persistence.Contexts;
+    using Serilog;
+    using Ocelot.DependencyInjection;
+    using Ocelot.Middleware;
+
+    public class Startup{envName}
+    {{
+        public IConfiguration _config {{ get; }}
+        public Startup{envName}(IConfiguration configuration)
+        {{
+            _config = configuration;
+        }}
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
+        {{
+            services.AddHttpClient();
+
+            services.AddOcelot();
+        }}
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {{
+            app.UseDeveloperExceptionPage();
+            app.UseSerilogRequestLogging();
+
+            await app.UseOcelot();   
+        }}
+    }}
+}}";
+            else
+                return @$"namespace {classNamespace}
+{{
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Serilog;
+    using Ocelot.DependencyInjection;
+    using Ocelot.Middleware;
+
+    public class Startup{envName}
+    {{
+        public IConfiguration _config {{ get; }}
+        public Startup{envName}(IConfiguration configuration)
+        {{
+            _config = configuration;
+        }}
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
+        {{
+            services.AddHttpClient();
+
+            services.AddOcelot();
+        }}
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {{
+            app.UseSerilogRequestLogging();
+            await app.UseOcelot(); 
         }}
     }}
 }}";

@@ -21,5 +21,10 @@
         /// Boolean that determines whether or not craftsman will do an initial git set up for this project.
         /// </summary>
         public bool AddGit { get; set; } = true;
+
+        /// <summary>
+        /// List of gateways for accessing microservices.
+        /// </summary>
+        public List<Gateway> Gateways { get; set; }
     }
 }

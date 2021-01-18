@@ -1,6 +1,5 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
@@ -9,17 +8,17 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class AppSettingsBuilder
+    public class GatewayAppSettingsBuilder
     {
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string authMethod)
+        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string gatewayProjectName)
         {
             try
             {
                 var appSettingFilename = Utilities.GetAppSettingsName(env.EnvironmentName);
-                var classPath = ClassPathHelper.AppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
+                var classPath = ClassPathHelper.GatewayAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", gatewayProjectName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -30,7 +29,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetAppSettingsText(env, dbName, authMethod);
+                    data = GetAppSettingsText(env);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -52,12 +51,12 @@
         /// this build will only do a skeleton app settings for the initial project build.
         /// </summary>
         /// <param name="solutionDirectory"></param>
-        public static void CreateAppSettings(string solutionDirectory)
+        public static void CreateAppSettings(string solutionDirectory, string gatewayProjectName)
         {
             try
             {
                 var appSettingFilename = "appsettings.json";
-                var classPath = ClassPathHelper.AppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
+                var classPath = ClassPathHelper.GatewayAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", gatewayProjectName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -86,51 +85,14 @@
             }
         }
 
-        private static string GetAppSettingsText(ApiEnvironment env, string dbName, string authMethod)
+        private static string GetAppSettingsText(ApiEnvironment env)
         {
-            var jwtSettings = "";
-            var mailSettings = "";
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
 
-            if (authMethod == "JWT")
-            {
-                jwtSettings = $@"
-  ""JwtSettings"": {{
-    ""Key"": ""{env.JwtSettings.Key}"",
-    ""Issuer"": ""{env.JwtSettings.Issuer}"",
-    ""Audience"": ""{env.JwtSettings.Audience}"",
-    ""DurationInMinutes"": {env.JwtSettings.DurationInMinutes}
-  }},";
-
-            mailSettings = @$"
-  ""MailSettings"": {{
-    ""EmailFrom"": ""{env.MailSettings.EmailFrom}"",
-    ""SmtpHost"": ""{env.MailSettings.SmtpHost}"",
-    ""SmtpPort"": ""{env.MailSettings.SmtpPort}"",
-    ""SmtpUser"": ""{env.MailSettings.SmtpUser}"",
-    ""SmtpPass"": ""{env.MailSettings.SmtpPass}"",
-    ""DisplayName"": ""{env.MailSettings.DisplayName}""
-  }},";
-            }
-
-            if(env.EnvironmentName == "Development")
-
-                return @$"{{
-  ""AllowedHosts"": ""*"",
-  ""UseInMemoryDatabase"": true,
-{serilogSettings}{jwtSettings}{mailSettings}
-}}
-";
-        else
-
-            return @$"{{
-  ""AllowedHosts"": ""*"",
-  ""UseInMemoryDatabase"": false,
-  ""ConnectionStrings"": {{
-    ""{dbName}"": ""{env.ConnectionString.Replace(@"\",@"\\")}""
-  }},
-}}
-";
+            if (env.EnvironmentName == "Development")
+                return @$"dev settings";
+            else
+                return $@"non dev settings";
         }
 
         private static string GetSerilogSettings(string env)
@@ -159,20 +121,9 @@
   }},";
         }
 
-
         private static string GetAppSettingsText()
         {
-            return @$"{{
-  ""UseInMemoryDatabase"": true,
-  ""Logging"": {{
-    ""LogLevel"": {{
-      ""Default"": ""Information"",
-      ""Microsoft"": ""Warning"",
-      ""Microsoft.Hosting.Lifetime"": ""Information""
-    }}
-  }},
-  ""AllowedHosts"": ""*""
-}}";
+            return @$"initial settings";
         }
     }
 }

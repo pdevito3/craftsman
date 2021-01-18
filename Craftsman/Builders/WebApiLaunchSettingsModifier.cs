@@ -4,11 +4,11 @@
     using Craftsman.Models;
     using System.IO;
 
-    public class LaunchSettingsModifier
+    public class WebApiLaunchSettingsModifier
     {
         public static void AddProfile(string solutionDirectory, ApiEnvironment env, int port)
         {
-            var classPath = ClassPathHelper.LaunchSettingsClassPath(solutionDirectory, $"launchsettings.json");
+            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(solutionDirectory, $"launchsettings.json"); // hard coding webapi here not great
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);

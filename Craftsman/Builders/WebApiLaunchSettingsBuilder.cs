@@ -9,13 +9,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class LaunchSettingsBuilder
+    public class WebApiLaunchSettingsBuilder
     {
         public static void CreateLaunchSettings(string solutionDirectory, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.LaunchSettingsClassPath(solutionDirectory, $"launchSettings.json");
+                var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(solutionDirectory, $"launchSettings.json");
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

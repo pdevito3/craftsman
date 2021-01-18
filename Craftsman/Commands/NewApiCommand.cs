@@ -273,10 +273,10 @@
             {
                 // default startup is already built in cleanup phase
                 if (env.EnvironmentName != "Startup")
-                    StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName, authMethod, inMemoryUsers);
+                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, authMethod, inMemoryUsers);
 
-                AppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, authMethod);
-                LaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
+                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, authMethod);
+                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
 
                 //services
                 if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))

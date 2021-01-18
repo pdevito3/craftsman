@@ -37,7 +37,7 @@
             WriteHelpText(@$"   craftsman new:microservice [options] <filepath>{Environment.NewLine}");
 
             WriteHelpHeader(@$"Arguments:");
-            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that describes your web API using a proper Wrapt format.");
+            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that describes your microservice using a proper Wrapt format.");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Options:");
@@ -78,8 +78,9 @@
                 solutionDirectory = Path.Combine(solutionDirectory, "src");
                 SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
 
+
                 // add all files based on the given template config
-                RunMicroTemplateBuilders(solutionDirectory, template.Microservices, fileSystem);
+                RunMicroTemplateBuilders(solutionDirectory, template.Microservices, template.Gateways, fileSystem);
 
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
@@ -101,19 +102,19 @@
             }
         }
 
-        private static void RunMicroTemplateBuilders(string solutionDirectory, List<Microservice> microservices, IFileSystem fileSystem)
+        private static void RunMicroTemplateBuilders(string solutionDirectory, List<Microservice> microservices, List<Gateway> gateways, IFileSystem fileSystem)
         {
-            // new microservice path
-            var newPath = Path.Combine(solutionDirectory, "services");
-            fileSystem.Directory.CreateDirectory(newPath);
+            // services path
+            var servicesPath = Path.Combine(solutionDirectory, "services");
+            fileSystem.Directory.CreateDirectory(servicesPath);
 
             foreach (var micro in microservices)
             {
                 // set micro path
-                var microPath = Path.Combine(newPath, micro.ProjectFolderName);
+                var microPath = Path.Combine(servicesPath, micro.ProjectFolderName);
 
                 // add projects
-                SolutionBuilder.AddMicroProjects(solutionDirectory, microPath, micro.DbContext.Provider, micro.ProjectFolderName, fileSystem, micro.AuthSetup.InMemoryUsers);
+                SolutionBuilder.AddMicroServicesProjects(solutionDirectory, microPath, micro.DbContext.Provider, micro.ProjectFolderName, fileSystem, micro.AuthSetup.InMemoryUsers);
 
                 // dbcontext
                 DbContextBuilder.CreateDbContext(microPath, micro.Entities, micro.DbContext.ContextName, micro.AuthSetup.AuthMethod, micro.DbContext.Provider, micro.DbContext.DatabaseName);
@@ -165,6 +166,15 @@
                     IdentityRoleBuilder.CreateRoles(microPath, micro.AuthSetup.Roles);
                     RoleSeedBuilder.SeedRoles(microPath, micro.AuthSetup.InMemoryUsers);
                 }
+            }
+
+            // gateway path
+            var gatewayPath = Path.Combine(solutionDirectory, "gateways");
+            fileSystem.Directory.CreateDirectory(gatewayPath);
+
+            foreach (var gateway in gateways)
+            {
+                SolutionBuilder.AddGatewayProject(solutionDirectory, gatewayPath, gateway.GatewayProjectName, fileSystem);
             }
         }
 
@@ -285,10 +295,10 @@
             {
                 // default startup is already built in cleanup phase
                 if(env.EnvironmentName != "Startup")
-                    StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName, authMethod, inMemoryUsers);
+                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, authMethod, inMemoryUsers);
 
-                AppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, authMethod);
-                LaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
+                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, authMethod);
+                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
 
                 //services
                 if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))

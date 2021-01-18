@@ -23,7 +23,7 @@
 
             File.Delete(classPath.FullClassPath);
 
-            StartupBuilder.CreateStartup(solutionDirectory, "Startup", authMethod, applicationUsers);
+            StartupBuilder.CreateWebApiStartup(solutionDirectory, "Startup", authMethod, applicationUsers);
         }
     }
 }
