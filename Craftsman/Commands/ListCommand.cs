@@ -24,12 +24,14 @@
 
             WriteHelpHeader(@$"{Environment.NewLine}    new");
             WriteHelpText(@$"      new:api             Create a new API Project");
+            WriteHelpText(@$"      new:micro           Create a new microservice Project");
 
             WriteHelpHeader(@$"{Environment.NewLine}Options:");
             WriteHelpText(@$"   -h, --help          Display this help message");
 
-            WriteHelpHeader(@$"{Environment.NewLine}Example Help Option Usage:");
+            WriteHelpHeader(@$"{Environment.NewLine}Example Help Options:");
             WriteHelpText(@$"   craftsman new:api -h");
+            WriteHelpText(@$"   craftsman new:micro -h");
             WriteHelpText(@$"   craftsman add:entity -h");
             WriteHelpText(@$"   craftsman add:property -h");
 

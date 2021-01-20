@@ -4,8 +4,10 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using System.Linq;
     using static Helpers.ConsoleWriter;
 
     public class GatewayAppSettingsBuilder
@@ -13,7 +15,7 @@
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string gatewayProjectName)
+        public static void CreateAppSettings(string solutionDirectory, EnvironmentGateway env, string gatewayProjectName, List<Microservice> microservices)
         {
             try
             {
@@ -29,7 +31,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetAppSettingsText(env);
+                    data = GetAppSettingsText(env, microservices);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -51,7 +53,7 @@
         /// this build will only do a skeleton app settings for the initial project build.
         /// </summary>
         /// <param name="solutionDirectory"></param>
-        public static void CreateAppSettings(string solutionDirectory, string gatewayProjectName)
+        public static void CreateBaseAppSettings(string solutionDirectory, string gatewayProjectName)
         {
             try
             {
@@ -85,14 +87,28 @@
             }
         }
 
-        private static string GetAppSettingsText(ApiEnvironment env)
+        private static string GetAppSettingsText(EnvironmentGateway env, List<Microservice> microservices)
         {
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
+            var gatewayRoute = "";
+            env.GatewayTemplates.ForEach(template => gatewayRoute += GetGatewayRoutes(template, microservices));
 
             if (env.EnvironmentName == "Development")
-                return @$"dev settings";
+                return @$"{{
+  ""AllowedHosts"": ""*"",
+  ""GlobalConfiguration"": {{
+    ""BaseUrl"": ""https://localhost:5050""
+  }},
+  ""Routes"": [{gatewayRoute}]
+}}";
             else
-                return $@"non dev settings";
+                return @$"{{
+  ""AllowedHosts"": ""*"",
+  ""GlobalConfiguration"": {{
+    ""BaseUrl"": ""https://localhost:5050""
+  }},
+  ""Routes"": [{gatewayRoute}]
+}}";
         }
 
         private static string GetSerilogSettings(string env)
@@ -123,7 +139,60 @@
 
         private static string GetAppSettingsText()
         {
-            return @$"initial settings";
+            return @$"{{
+  ""AllowedHosts"": ""*"",
+  ""GlobalConfiguration"": {{
+    ""BaseUrl"": ""https://localhost:5050""
+  }},
+  ""Routes"": [
+    {{
+      ""DownstreamPathTemplate"": ""/api/recipes"",
+      ""DownstreamScheme"": ""https"",
+      ""DownstreamHostAndPorts"": [
+        {{
+          ""Host"": ""localhost"",
+          ""Port"": 5467
+        }}
+      ],
+      ""UpstreamPathTemplate"": ""/recipes"",
+      ""UpstreamHttpMethod"": [ ""GET"" ]
+      //""AuthenticationOptions"": {{
+      //""AuthenticationProviderKey"": ""GloboTicketGatewayAuthenticationScheme"" //,
+      //  ""AllowedScopes"": [ ""eventcatalog.fullaccess"" ]
+      //}},
+      //""DelegatingHandlers"": [
+      //  ""TokenExchangeDelegatingHandler""
+      //]
+    }}
+  ]
+}}";
+        }
+
+        private static string GetGatewayRoutes(GatewayTemplate template, List<Microservice> microservices)
+        {
+            var upstreamPathTemplate = template.UpstreamPathTemplate.StartsWith("/") ? template.UpstreamPathTemplate : @$"/{template.UpstreamPathTemplate}";
+
+            // man this is ugly 🙈
+            var microservice = microservices.Where(m => m.Entities.Any(e => String.Equals(e.Name, template.DownstreamEntityName, StringComparison.InvariantCultureIgnoreCase))).FirstOrDefault();
+            var entity = microservice.Entities.FirstOrDefault();
+
+            //TODO: Add a warning if there is no entity?
+
+            var endpointBase = Utilities.EndpointBaseGenerator(entity.Plural);
+            endpointBase = endpointBase.StartsWith("/") ? endpointBase : @$"/{endpointBase}";
+
+            return $@"    {{
+      ""UpstreamPathTemplate"": ""{upstreamPathTemplate}"",
+      ""UpstreamHttpMethod"": [],
+      ""DownstreamPathTemplate"": ""{endpointBase}"",
+      ""DownstreamScheme"": ""https"",
+      ""DownstreamHostAndPorts"": [
+        {{
+            ""Host"": ""localhost"",
+            ""Port"": {microservice.Port}
+         }}
+      ]
+    }}";
         }
     }
 }

@@ -128,5 +128,10 @@
             process.Start();
             process.WaitForExit();
         }
+
+        public static string EndpointBaseGenerator(string entityNamePlural)
+        {
+            return $@"api/{entityNamePlural}";
+        }
     }
 }

@@ -14,7 +14,12 @@
         public string EnvironmentName { get; set; }
 
         /// <summary>
-        /// The base path for your gateway. (e.g. https://localhost:5050/api)
+        /// The name of the profile in launch settings for this env.
+        /// </summary>
+        public string ProfileName { get; set; }
+
+        /// <summary>
+        /// The base path for your gateway. (e.g. https://localhost:5050/) used in launchsettings and teh gateway appsettings. 
         /// </summary>
         public string GatewayUrl { get; set; }
 

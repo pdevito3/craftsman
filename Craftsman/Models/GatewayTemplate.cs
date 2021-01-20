@@ -14,9 +14,19 @@
         public string UpstreamPathTemplate { get; set; }
 
         /// <summary>
-        /// This is the path template for the SOURCE (non gateway) url (e.g. api/recipes)
+        /// The name of the entity that will be called downstream
         /// </summary>
-        public string DownstreamPathTemplate { get; set; }
+        public string DownstreamEntityName { get; set; }
+
+        ///// <summary>
+        ///// This is the path template for the SOURCE (non gateway) url (e.g. api/recipes)
+        ///// </summary>
+        //public string DownstreamPathTemplate { get; set; }
+
+        ///// <summary>
+        ///// This is the port for the SOURCE (non gateway) url.
+        ///// </summary>
+        //public string DownstreamPort { get; set; }
 
         // below two props so they can chose to build an envoy gateway or an ocelot gateway. 
         // gateways can be segregated for bff (backend for frontend) or business boundaries for a domain driven approach also work.

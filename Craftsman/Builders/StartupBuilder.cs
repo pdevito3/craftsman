@@ -46,7 +46,7 @@
             }
         }
 
-        public static void CreateGatewayStartup(string solutionDirectory, string classNamespace, string envName, string gatewayProjectName)
+        public static void CreateGatewayStartup(string solutionDirectory, string envName, string gatewayProjectName)
         {
             try
             {
@@ -61,7 +61,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetStartupText(classNamespace, envName);
+                    data = GetStartupText(classPath.ClassNamespace, envName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -277,8 +277,6 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Infrastructure.Persistence.Seeders;
-    using Infrastructure.Persistence.Contexts;
     using Serilog;
     using Ocelot.DependencyInjection;
     using Ocelot.Middleware;

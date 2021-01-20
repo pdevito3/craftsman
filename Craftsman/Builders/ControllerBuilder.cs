@@ -63,6 +63,7 @@
             var singleResponse = $@"Response<{readDto}>";
             var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
             var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";
+            var endpointBase = Utilities.EndpointBaseGenerator(entityNamePlural);
 
             return @$"namespace {classNamespace}
 {{
@@ -82,7 +83,7 @@
     using Application.Wrappers;
 
     [ApiController]
-    [Route(""api/{entityNamePlural}"")]
+    [Route(""{endpointBase}"")]
     [ApiVersion(""1.0"")]{auditable}
     public class {entityNamePlural}Controller: Controller
     {{

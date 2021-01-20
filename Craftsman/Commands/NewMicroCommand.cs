@@ -175,35 +175,19 @@
             foreach (var gateway in gateways)
             {
                 SolutionBuilder.AddGatewayProject(solutionDirectory, gatewayPath, gateway.GatewayProjectName, fileSystem);
-            }
-        }
-
-        private static void CreateNewFoundation(ApiTemplate template, string directory)
-        {
-            var newDir = $"{directory}{Path.DirectorySeparatorChar}{template.SolutionName}";
-            if (Directory.Exists(newDir))
-                throw new DirectoryAlreadyExistsException(newDir);
-
-            //UninstallFoundation();
-            //InstallFoundation();
-            //UpdateFoundation();
-
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
+                
+                foreach(var env in gateway.EnvironmentGateways)
                 {
-                    FileName = "dotnet",
-                    Arguments = @$"new foundation -n {template.SolutionName}",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    WorkingDirectory = directory
-                }
-            };
+                    //TODO: run quality checks that profile name exists, gateway url is a valid path and https, Env Name
 
-            process.Start();
-            process.WaitForExit();
+                    if (env.EnvironmentName != "Startup")
+                        StartupBuilder.CreateGatewayStartup(gatewayPath, env.EnvironmentName, gateway.GatewayProjectName);
+
+                    GatewayAppSettingsBuilder.CreateAppSettings(gatewayPath, env, gateway.GatewayProjectName, microservices);
+                    GatewayLaunchSettingsModifier.AddProfile(gatewayPath, env, gateway.GatewayProjectName);
+                }
+
+            }
         }
 
         private static void GitSetup(string solutionDirectory)

@@ -46,10 +46,10 @@
 
         public static string GetGatewayCsProjFileText()
         {
-            return @$"<Project Sdk=""Microsoft.NET.Sdk"">
+            return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

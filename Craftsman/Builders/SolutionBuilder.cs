@@ -64,10 +64,10 @@
             GatewayCsProjBuilder.CreateGatewayCsProj(projectDirectory, gatewayProjectName);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{gatewayProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
 
-            GatewayAppSettingsBuilder.CreateAppSettings(projectDirectory, gatewayProjectName);
+            GatewayAppSettingsBuilder.CreateBaseAppSettings(projectDirectory, gatewayProjectName);
             GatewayLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, gatewayProjectName, fileSystem);
             ProgramBuilder.CreateGatewayProgram(projectDirectory, gatewayProjectName, fileSystem);
-            StartupBuilder.CreateGatewayStartup(projectDirectory, gatewayProjectClassPath.ClassNamespace, "Startup", gatewayProjectName);
+            StartupBuilder.CreateGatewayStartup(projectDirectory, "Startup", gatewayProjectName);
         }
 
         private static void BuildDomainProject(string solutionDirectory, string projectDirectory, string solutionFolder)
