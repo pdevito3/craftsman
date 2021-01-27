@@ -69,18 +69,17 @@
 
                 // solution level stuff
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
-                ReadmeBuilder.CreateReadme(solutionDirectory, template.SolutionName, fileSystem);
-                if (template.AddGit)
-                    GitSetup(solutionDirectory);
-
-                // add src folder
-                fileSystem.Directory.CreateDirectory(Path.Combine(solutionDirectory, "src"));
-                solutionDirectory = Path.Combine(solutionDirectory, "src");
-                SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
+                var srcDirectory = Path.Combine(solutionDirectory, "src");
+                fileSystem.Directory.CreateDirectory(srcDirectory);
+                SolutionBuilder.BuildSolution(srcDirectory, template.SolutionName, fileSystem);
 
 
                 // add all files based on the given template config
-                RunMicroTemplateBuilders(solutionDirectory, template.Microservices, template.Gateways, fileSystem);
+                RunMicroTemplateBuilders(srcDirectory, template.Microservices, template.Gateways, fileSystem);
+
+                ReadmeBuilder.CreateReadme(solutionDirectory, template.SolutionName, fileSystem);
+                if (template.AddGit)
+                    GitSetup(solutionDirectory);
 
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
@@ -93,7 +92,8 @@
                     || e is InvalidSolutionNameException
                     || e is FileNotFoundException
                     || e is InvalidDbProviderException
-                    || e is InvalidFileTypeException)
+                    || e is InvalidFileTypeException
+                    || e is EntityNotFoundException)
                 {
                     WriteError($"{e.Message}");
                 }

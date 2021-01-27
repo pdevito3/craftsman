@@ -174,9 +174,10 @@
 
             // man this is ugly 🙈
             var microservice = microservices.Where(m => m.Entities.Any(e => String.Equals(e.Name, template.DownstreamEntityName, StringComparison.InvariantCultureIgnoreCase))).FirstOrDefault();
+            if (microservice == null)
+                throw new EntityNotFoundException(template.DownstreamEntityName);
+            
             var entity = microservice.Entities.FirstOrDefault();
-
-            //TODO: Add a warning if there is no entity?
 
             var endpointBase = Utilities.EndpointBaseGenerator(entity.Plural);
             endpointBase = endpointBase.StartsWith("/") ? endpointBase : @$"/{endpointBase}";
