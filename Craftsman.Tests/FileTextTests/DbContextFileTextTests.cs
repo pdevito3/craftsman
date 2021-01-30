@@ -18,7 +18,7 @@
             var classNamespace = "Infrastructure.Persistence.Contexts";
             var template = CannedGenerator.FakeBasicApiTemplate();
 
-            var fileText = DbContextBuilder.GetContextFileText(classNamespace, template.Entities, template.DbContext.ContextName, template.AuthSetup.AuthMethod);
+            var fileText = DbContextBuilder.GetContextFileText(classNamespace, template.Entities, template.DbContext.ContextName);
 
             var expectedText = @"namespace Infrastructure.Persistence.Contexts
 {

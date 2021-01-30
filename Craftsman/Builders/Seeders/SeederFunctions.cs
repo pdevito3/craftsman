@@ -39,53 +39,5 @@
     }}
 }}";
         }
-
-        public static string GetIdentitySeederFileText(string classNamespace, ApplicationUser user)
-        {
-            var seederName = Utilities.GetIdentitySeederName(user);
-            var roleString = "";
-
-            foreach (var role in user.AuthorizedRoles)
-            {
-                var newLine = role == user.AuthorizedRoles.LastOrDefault() ? "" : $"{Environment.NewLine}                    ";
-                roleString += @$"await userManager.AddToRoleAsync(defaultUser, Role.{role}.ToString());{newLine}";
-            }
-
-            return @$"namespace {classNamespace}
-{{
-    using Bogus;
-    using Domain.Enums;
-    using Infrastructure.Identity.Entities;
-    using Microsoft.AspNetCore.Identity;
-    using System.Linq;
-    using System.Threading.Tasks;
-
-    public static class {seederName}
-    {{
-        public static async Task SeedUserAsync(UserManager<ApplicationUser> userManager)
-        {{
-            var defaultUser = new ApplicationUser
-            {{
-                UserName = $""{user.UserName}"",
-                Email = ""{user.Email}"",
-                FirstName = ""{user.FirstName}"",
-                LastName = ""{user.LastName}"",
-                EmailConfirmed = true,
-                PhoneNumberConfirmed = true
-            }};
-
-            if (userManager.Users.All(u => u.Id != defaultUser.Id))
-            {{
-                var user = await userManager.FindByEmailAsync(defaultUser.Email);
-                if (user == null)
-                {{
-                    await userManager.CreateAsync(defaultUser, ""{user.Password}"");
-                    {roleString}
-                }}
-            }}
-        }}
-    }}
-}}";
-        }
     }
 }

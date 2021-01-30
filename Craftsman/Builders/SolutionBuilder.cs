@@ -29,10 +29,10 @@
             }
         }
 
-        public static void AddProjects(string solutionDirectory, string projectDirectory, string dbProvider, string soutionName, IFileSystem fileSystem, List<ApplicationUser> inMemoryUsers)
+        public static void AddProjects(string solutionDirectory, string projectDirectory, string dbProvider, string soutionName, IFileSystem fileSystem)
         {
             // add webapi first so it is default project
-            BuildWebApiProject(solutionDirectory, projectDirectory, "Api", fileSystem, inMemoryUsers);
+            BuildWebApiProject(solutionDirectory, projectDirectory, "Api", fileSystem);
             BuildDomainProject(solutionDirectory, projectDirectory, "Core");
             BuildApplicationProject(solutionDirectory, projectDirectory, "Core", fileSystem);
             BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, "Infrastructure", dbProvider, fileSystem);
@@ -40,10 +40,10 @@
             BuildTestProject(solutionDirectory, projectDirectory, "Tests", soutionName);
         }
 
-        public static void AddMicroServicesProjects(string solutionDirectory, string projectDirectory, string dbProvider, string solutionName, IFileSystem fileSystem, List<ApplicationUser> inMemoryUsers)
+        public static void AddMicroServicesProjects(string solutionDirectory, string projectDirectory, string dbProvider, string solutionName, IFileSystem fileSystem)
         {
             var microSolutionFolder = Path.Combine("src", "services", solutionName);
-            BuildWebApiProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem, inMemoryUsers);
+            BuildWebApiProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
             BuildDomainProject(solutionDirectory, projectDirectory, microSolutionFolder);
             BuildApplicationProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
             BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, microSolutionFolder, dbProvider, fileSystem);
@@ -130,7 +130,7 @@
             InfrastructureSharedServiceRegistrationBuilder.CreateInfrastructureSharedServiceExtension(projectDirectory, fileSystem);
         }
 
-        private static void BuildWebApiProject(string solutionDirectory, string projectDirectory, string solutionFolder, IFileSystem fileSystem, List<ApplicationUser> inMemoryUsers)
+        private static void BuildWebApiProject(string solutionDirectory, string projectDirectory, string solutionFolder, IFileSystem fileSystem)
         {
             var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(projectDirectory);
 
@@ -148,7 +148,7 @@
             WebApiAppSettingsBuilder.CreateAppSettings(projectDirectory);
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, fileSystem);
             ProgramBuilder.CreateWebApiProgram(projectDirectory, fileSystem);
-            StartupBuilder.CreateWebApiStartup(projectDirectory, "Startup", null, inMemoryUsers);
+            StartupBuilder.CreateWebApiStartup(projectDirectory, "Startup");
         }
 
         private static void BuildTestProject(string solutionDirectory, string projectDirectory, string solutionFolder, string solutionName)

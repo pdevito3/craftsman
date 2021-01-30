@@ -16,7 +16,7 @@
 
     public class DbContextBuilder
     {
-        public static void CreateDbContext(string solutionDirectory, List<Entity> entities, string dbContextName, string authMethod, string dbProvider, string dbName)
+        public static void CreateDbContext(string solutionDirectory, List<Entity> entities, string dbContextName, string dbProvider, string dbName)
         {
             try
             {
@@ -30,7 +30,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetContextFileText(classPath.ClassNamespace, entities,dbContextName, authMethod);
+                    var data = GetContextFileText(classPath.ClassNamespace, entities,dbContextName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -50,9 +50,9 @@
             }
         }
 
-        public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string authMethod)
+        public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName)
         {
-            var nonAuth = @$"namespace {classNamespace}
+            return @$"namespace {classNamespace}
 {{
     using Application.Interfaces;
     using Domain.Entities;
@@ -73,8 +73,6 @@
         #endregion
     }}
 }}";
-
-            return authMethod == "JWT" ? GetAuditableSaveOverride(classNamespace, entities, dbContextName) : nonAuth;
         }
 
         public static string GetDbSetText(List<Entity> entities)

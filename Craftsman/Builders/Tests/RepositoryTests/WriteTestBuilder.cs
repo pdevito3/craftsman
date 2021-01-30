@@ -11,7 +11,7 @@
 
     public class WriteTestBuilder
     {
-        public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName, string authMethod)
+        public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName)
         {
             try
             {
@@ -25,7 +25,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = WriteRepositoryTestFileText(classPath, entity, solutionName, dbContextName, authMethod);
+                    var data = WriteRepositoryTestFileText(classPath, entity, solutionName, dbContextName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -43,7 +43,7 @@
             }
         }
 
-        private static string WriteRepositoryTestFileText(ClassPath classPath, Entity entity, string solutionName, string dbContextName, string authMethod)
+        private static string WriteRepositoryTestFileText(ClassPath classPath, Entity entity, string solutionName, string dbContextName)
         {
             var assertString = "";
             foreach (var prop in entity.Properties)
@@ -73,12 +73,12 @@ namespace {classPath.ClassNamespace}
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{ 
-        {CreateEntityTest(entity, authMethod, dbContextName)}
+        {CreateEntityTest(entity, dbContextName)}
     }} 
 }}";
         }
 
-        private static string CreateEntityTest(Entity entity, string authMethod, string dbContextName)
+        private static string CreateEntityTest(Entity entity, string dbContextName)
         {
             var assertString = "";
             foreach (var prop in entity.Properties)
@@ -87,8 +87,7 @@ namespace {classPath.ClassNamespace}
                 assertString += @$"                {entity.Name.LowercaseFirstLetter()}ById.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
 
-            var mockedUserString = TestBuildingHelpers.GetUserServiceString(authMethod);
-            var usingString = TestBuildingHelpers.GetUsingString(authMethod, dbContextName);
+            var usingString = TestBuildingHelpers.GetUsingString(dbContextName);
 
             return $@"
         [Fact]
@@ -98,7 +97,7 @@ namespace {classPath.ClassNamespace}
             var dbOptions = new DbContextOptionsBuilder<{dbContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
+            var sieveOptions = Options.Create(new SieveOptions());
 
             var fake{entity.Name} = new Fake{entity.Name} {{ }}.Generate();
 

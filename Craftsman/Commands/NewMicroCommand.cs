@@ -10,7 +10,6 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using Craftsman.Removers;
     using FluentAssertions.Common;
     using LibGit2Sharp;
     using Newtonsoft.Json;
@@ -114,10 +113,10 @@
                 var microPath = Path.Combine(servicesPath, micro.ProjectFolderName);
 
                 // add projects
-                SolutionBuilder.AddMicroServicesProjects(solutionDirectory, microPath, micro.DbContext.Provider, micro.ProjectFolderName, fileSystem, micro.AuthSetup.InMemoryUsers);
+                SolutionBuilder.AddMicroServicesProjects(solutionDirectory, microPath, micro.DbContext.Provider, micro.ProjectFolderName, fileSystem);
 
                 // dbcontext
-                DbContextBuilder.CreateDbContext(microPath, micro.Entities, micro.DbContext.ContextName, micro.AuthSetup.AuthMethod, micro.DbContext.Provider, micro.DbContext.DatabaseName);
+                DbContextBuilder.CreateDbContext(microPath, micro.Entities, micro.DbContext.ContextName, micro.DbContext.Provider, micro.DbContext.DatabaseName);
 
                 //entities
                 foreach (var entity in micro.Entities)
@@ -132,11 +131,11 @@
                     ControllerBuilder.CreateController(microPath, entity, micro.SwaggerConfig.AddSwaggerComments);
 
                     FakesBuilder.CreateFakes(microPath, micro.ProjectFolderName, entity);
-                    ReadTestBuilder.CreateEntityReadTests(microPath, micro.ProjectFolderName, entity, micro.DbContext.ContextName, micro.AuthSetup.AuthMethod);
+                    ReadTestBuilder.CreateEntityReadTests(microPath, micro.ProjectFolderName, entity, micro.DbContext.ContextName);
                     GetTestBuilder.CreateEntityGetTests(microPath, micro.ProjectFolderName, entity, micro.DbContext.ContextName);
                     PostTestBuilder.CreateEntityWriteTests(microPath, entity, micro.ProjectFolderName);
                     UpdateTestBuilder.CreateEntityUpdateTests(microPath, entity, micro.ProjectFolderName, micro.DbContext.ContextName);
-                    DeleteTestBuilder.DeleteEntityWriteTests(microPath, entity, micro.ProjectFolderName, micro.DbContext.ContextName, micro.AuthSetup.AuthMethod);
+                    DeleteTestBuilder.DeleteEntityWriteTests(microPath, entity, micro.ProjectFolderName, micro.DbContext.ContextName);
                     WebAppFactoryBuilder.CreateWebAppFactory(microPath, micro.ProjectFolderName, micro.DbContext.ContextName);
                 }
 
@@ -145,11 +144,9 @@
                 AddStartupEnvironmentsWithServices(
                     microPath,
                     micro.ProjectFolderName,
-                    micro.AuthSetup.AuthMethod,
                     micro.DbContext.DatabaseName,
                     micro.Environments,
                     micro.SwaggerConfig,
-                    micro.AuthSetup.InMemoryUsers,
                     micro.Port
                 );
 
@@ -158,14 +155,6 @@
 
                 //services
                 SwaggerBuilder.AddSwagger(microPath, micro.SwaggerConfig, micro.ProjectFolderName);
-
-                if (micro.AuthSetup.AuthMethod == "JWT")
-                {
-                    IdentityServicesModifier.SetIdentityOptions(microPath, micro.AuthSetup);
-                    IdentitySeederBuilder.AddSeeders(microPath, micro.AuthSetup.InMemoryUsers);
-                    IdentityRoleBuilder.CreateRoles(microPath, micro.AuthSetup.Roles);
-                    RoleSeedBuilder.SeedRoles(microPath, micro.AuthSetup.InMemoryUsers);
-                }
             }
 
             // gateway path
@@ -264,11 +253,9 @@
         private static void AddStartupEnvironmentsWithServices(
             string solutionDirectory,
             string solutionName,
-            string authMethod,
             string databaseName,
             List<ApiEnvironment> environments,
             SwaggerConfig swaggerConfig,
-            List<ApplicationUser> inMemoryUsers,
             int port)
         {
             // add a development environment by default for local work if none exists
@@ -279,9 +266,9 @@
             {
                 // default startup is already built in cleanup phase
                 if(env.EnvironmentName != "Startup")
-                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, authMethod, inMemoryUsers);
+                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName);
 
-                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, authMethod);
+                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName);
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
 
                 //services

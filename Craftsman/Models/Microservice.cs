@@ -30,11 +30,6 @@
         public List<ApiEnvironment> Environments { get; set; } = new List<ApiEnvironment>();
 
         /// <summary>
-        /// The authentication setup information. Optional
-        /// </summary>
-        public AuthSetup AuthSetup { get; set; } = new AuthSetup();
-
-        /// <summary>
         /// The port that will be used when running locally in the project (and referenced by the gateway).
         /// </summary>
         public int Port { get; set; } = 5000;

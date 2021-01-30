@@ -37,11 +37,6 @@ namespace Craftsman.Models
         public List<ApiEnvironment> Environments { get; set; } = new List<ApiEnvironment>();
 
         /// <summary>
-        /// The authentication setup information. Optional
-        /// </summary>
-        public AuthSetup AuthSetup { get; set; } = new AuthSetup();
-
-        /// <summary>
         /// Boolean that determines whether or not craftsman will do an initial git set up for this project.
         /// </summary>
         public bool AddGit { get; set; } = true;

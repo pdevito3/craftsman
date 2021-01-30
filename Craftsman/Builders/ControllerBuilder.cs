@@ -56,7 +56,6 @@
             var creationDto = Utilities.GetDtoName(entityName, Dto.Creation);
             var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
             var primaryKeyProp = entity.PrimaryKeyProperty;
-            var auditable = entity.Auditable ? @$"{ Environment.NewLine}    [Authorize]" : "";
             var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
             var pkPropertyType = primaryKeyProp.Type;
             var listResponse = $@"Response<IEnumerable<{readDto}>>";
@@ -84,7 +83,7 @@
 
     [ApiController]
     [Route(""{endpointBase}"")]
-    [ApiVersion(""1.0"")]{auditable}
+    [ApiVersion(""1.0"")]
     public class {entityNamePlural}Controller: Controller
     {{
         private readonly {Utilities.GetRepositoryName(entity.Name, true)} _{lowercaseEntityVariable}Repository;

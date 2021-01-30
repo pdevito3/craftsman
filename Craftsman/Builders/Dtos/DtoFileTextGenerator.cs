@@ -28,13 +28,10 @@
             var propString = dto == Dto.Creation || dto == Dto.Update ? "" : DtoPropBuilder(entity.Properties, dto);
             var fkUsingStatements = "";
             var abstractString = dto == Dto.Manipulation ? $"abstract" : "";
-            var auditableUsing = entity.Auditable ? @$"{Environment.NewLine}    using Domain.Common;" : "";
 
             var inheritanceString = "";
             if(dto == Dto.Creation || dto == Dto.Update)
                 inheritanceString = $": {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}";
-            else if(dto == Dto.Read && entity.Auditable)
-                inheritanceString = $": AuditableEntity";
 
             if (dto == Dto.Read)
             {
@@ -48,7 +45,7 @@
 {{
     using System;
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;{fkUsingStatements}{auditableUsing}
+    using System.ComponentModel.DataAnnotations.Schema;{fkUsingStatements}
 
     public {abstractString} class {Utilities.GetDtoName(entity.Name, dto)} {inheritanceString}
     {{

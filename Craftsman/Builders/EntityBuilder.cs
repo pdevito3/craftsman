@@ -50,18 +50,16 @@
         {
             var propString = EntityPropBuilder(entity.Properties);
             var usingSieve = entity.Properties.Where(e => e.CanFilter == true || e.CanSort == true).ToList().Count > 0 ? @$"{Environment.NewLine}    using Sieve.Attributes;" : "";
-            var inheritanceString = entity.Auditable ? $" : AuditableEntity" : "";
-            var auditableUsing = entity.Auditable ? @$"{Environment.NewLine}    using Domain.Common;" : "";
             var tableAnnotation = TableAnnotationBuilder(entity);
 
             return @$"namespace {classNamespace}
 {{
     using System;
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{auditableUsing}
+    using System.ComponentModel.DataAnnotations.Schema;{usingSieve}
 
     {tableAnnotation}
-    public class {entity.Name}{inheritanceString}
+    public class {entity.Name}
     {{
 {propString}
 

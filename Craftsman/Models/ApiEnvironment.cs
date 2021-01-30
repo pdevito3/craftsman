@@ -19,7 +19,5 @@
         }
         public string ConnectionString { get; set; }
         public string ProfileName { get; set; }
-        public JwtSettings JwtSettings { get; set; } = new JwtSettings();
-        public MailSettings MailSettings { get; set; } = new MailSettings();
     }
 }

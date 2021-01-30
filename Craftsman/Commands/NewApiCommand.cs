@@ -10,7 +10,6 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using Craftsman.Removers;
     using FluentAssertions.Common;
     using LibGit2Sharp;
     using Newtonsoft.Json;
@@ -65,13 +64,9 @@
                 // scaffold projects
                 // add an accelerate.config.yaml file to the root?
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
-
-                // adding this for my test auth scaffolding so i don't have to do stuff that might not last manaully. **not officially supported**
-                if(template.AuthSetup.AuthMethod == "JWT")
-                    CreateNewFoundation(buildSolutionDirectory, template.SolutionName); // todo scaffold this manually instead of using dotnet new foundation
                 
                 SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
-                SolutionBuilder.AddProjects(solutionDirectory, solutionDirectory, template.DbContext.Provider, template.SolutionName, fileSystem, template.AuthSetup.InMemoryUsers);
+                SolutionBuilder.AddProjects(solutionDirectory, solutionDirectory, template.DbContext.Provider, template.SolutionName, fileSystem);
 
                 // add all files based on the given template config
                 RunTemplateBuilders(solutionDirectory, template, fileSystem);
@@ -100,7 +95,7 @@
         private static void RunTemplateBuilders(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
         {
             // dbcontext
-            DbContextBuilder.CreateDbContext(solutionDirectory, template.Entities, template.DbContext.ContextName, template.AuthSetup.AuthMethod, template.DbContext.Provider, template.DbContext.DatabaseName);
+            DbContextBuilder.CreateDbContext(solutionDirectory, template.Entities, template.DbContext.ContextName, template.DbContext.Provider, template.DbContext.DatabaseName);
 
             //entities
             foreach (var entity in template.Entities)
@@ -115,11 +110,11 @@
                 ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments);
 
                 FakesBuilder.CreateFakes(solutionDirectory, template.SolutionName, entity);
-                ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthSetup.AuthMethod);
+                ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName);
                 GetTestBuilder.CreateEntityGetTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName);
                 PostTestBuilder.CreateEntityWriteTests(solutionDirectory, entity, template.SolutionName);
                 UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName);
-                DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthSetup.AuthMethod);
+                DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName);
                 WebAppFactoryBuilder.CreateWebAppFactory(solutionDirectory, template.SolutionName, template.DbContext.ContextName);
             }
 
@@ -127,11 +122,9 @@
             AddStartupEnvironmentsWithServices(
                 solutionDirectory,
                 template.SolutionName,
-                template.AuthSetup.AuthMethod,
                 template.DbContext.DatabaseName,
                 template.Environments,
                 template.SwaggerConfig,
-                template.AuthSetup.InMemoryUsers,
                 template.Port
             );
 
@@ -140,14 +133,6 @@
 
             //services
             SwaggerBuilder.AddSwagger(solutionDirectory, template.SwaggerConfig, template.SolutionName);
-
-            if (template.AuthSetup.AuthMethod == "JWT")
-            {
-                IdentityServicesModifier.SetIdentityOptions(solutionDirectory, template.AuthSetup);
-                IdentitySeederBuilder.AddSeeders(solutionDirectory, template.AuthSetup.InMemoryUsers);
-                IdentityRoleBuilder.CreateRoles(solutionDirectory, template.AuthSetup.Roles);
-                RoleSeedBuilder.SeedRoles(solutionDirectory, template.AuthSetup.InMemoryUsers);
-            }
 
             //final
             ReadmeBuilder.CreateReadme(solutionDirectory, template.SolutionName, fileSystem);
@@ -258,11 +243,9 @@
         private static void AddStartupEnvironmentsWithServices(
             string solutionDirectory,
             string solutionName,
-            string authMethod,
             string databaseName,
             List<ApiEnvironment> environments,
             SwaggerConfig swaggerConfig,
-            List<ApplicationUser> inMemoryUsers,
             int port)
         {
             // add a development environment by default for local work if none exists
@@ -273,9 +256,9 @@
             {
                 // default startup is already built in cleanup phase
                 if (env.EnvironmentName != "Startup")
-                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, authMethod, inMemoryUsers);
+                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName);
 
-                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, authMethod);
+                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName);
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
 
                 //services

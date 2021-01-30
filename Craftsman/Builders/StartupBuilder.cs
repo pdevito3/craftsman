@@ -13,7 +13,7 @@
 
     public class StartupBuilder
     {
-        public static void CreateWebApiStartup(string solutionDirectory, string envName, string authMethod, List<ApplicationUser> inMemoryUsers)
+        public static void CreateWebApiStartup(string solutionDirectory, string envName)
         {
             try
             {
@@ -28,7 +28,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetStartupText(envName, authMethod, inMemoryUsers);
+                    data = GetStartupText(envName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -79,57 +79,10 @@
             }
         }
 
-        public static string GetStartupText(string envName, string authMethod, List<ApplicationUser> inMemoryUsers)
+        public static string GetStartupText(string envName)
         {
-            var authServices = "";
-            var authApp = "";
-            var authSeeder = "";
-            var authUsing = "";
-            var currentUserRegistration = "";
-            if (authMethod == "JWT")
-            {
-                authServices = @"
-            services.AddIdentityInfrastructure(_config);";
-                authApp = @"app.UseAuthentication();
-            app.UseAuthorization();";
-                var userSeeders = "";
-                if(inMemoryUsers != null)
-                {
-                    foreach(var user in inMemoryUsers)
-                    {
-                        var newLine = user == inMemoryUsers.LastOrDefault() ? "" : $"{Environment.NewLine}           ";
-                        var seederName = Utilities.GetIdentitySeederName(user);
-                        userSeeders += @$"{seederName}.SeedUserAsync(userManager);{newLine}";
-                    }
-                }
-                authSeeder = $@"
-
-            #region Identity Context Region - Do Not Delete
-
-            var userManager = app.ApplicationServices.GetService<UserManager<ApplicationUser>>();
-            var roleManager = app.ApplicationServices.GetService<RoleManager<IdentityRole>>();
-            RoleSeeder.SeedDemoRolesAsync(roleManager);
-
-            // user seeders -- do not delete this comment
-            {userSeeders}
-
-            #endregion";
-
-                authUsing = @$"
-    using Infrastructure.Identity;
-    using Infrastructure.Identity.Entities;
-    using Microsoft.AspNetCore.Identity;
-    using Infrastructure.Identity.Seeders;
-    using WebApi.Services;
-    using Application.Interfaces;";
-
-                currentUserRegistration = $@"
-            services.AddSingleton<ICurrentUserService, CurrentUserService>();";
-            }
-
             envName = envName == "Startup" ? "" : envName;
             if (envName == "Development")
-
                 return @$"namespace WebApi
 {{
     using Application;
@@ -142,7 +95,7 @@
     using Infrastructure.Persistence.Seeders;
     using Infrastructure.Persistence.Contexts;
     using WebApi.Extensions;
-    using Serilog;{authUsing}
+    using Serilog;
 
     public class Startup{envName}
     {{
@@ -157,13 +110,13 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             services.AddCorsService(""MyCorsPolicy"");
-            services.AddApplicationLayer();{authServices}
+            services.AddApplicationLayer();
             services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
-            services.AddHealthChecks();{currentUserRegistration}
+            services.AddHealthChecks();
 
             #region Dynamic Services
             #endregion
@@ -177,13 +130,13 @@
             app.UseHttpsRedirection();
 
             #region Entity Context Region - Do Not Delete
-            #endregion{authSeeder}
+            #endregion
 
             app.UseCors(""MyCorsPolicy"");
 
             app.UseSerilogRequestLogging();
             app.UseRouting();
-            {authApp}
+            
             app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>
             {{
@@ -208,7 +161,7 @@
     using Infrastructure.Persistence;
     using Infrastructure.Shared;
     using WebApi.Extensions;
-    using Serilog;{authUsing}
+    using Serilog;
 
     public class Startup{envName}
     {{
@@ -223,13 +176,13 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             services.AddCorsService(""MyCorsPolicy"");
-            services.AddApplicationLayer();{authServices}
+            services.AddApplicationLayer();
             services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
-            services.AddHealthChecks();{currentUserRegistration}
+            services.AddHealthChecks();
 
             #region Dynamic Services
             #endregion
@@ -250,7 +203,7 @@
 
             app.UseSerilogRequestLogging();
             app.UseRouting();
-            {authApp}
+            
             app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>
             {{

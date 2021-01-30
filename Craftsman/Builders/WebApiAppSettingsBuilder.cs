@@ -14,7 +14,7 @@
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string authMethod)
+        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName)
         {
             try
             {
@@ -30,7 +30,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetAppSettingsText(env, dbName, authMethod);
+                    data = GetAppSettingsText(env, dbName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -86,32 +86,11 @@
             }
         }
 
-        private static string GetAppSettingsText(ApiEnvironment env, string dbName, string authMethod)
+        private static string GetAppSettingsText(ApiEnvironment env, string dbName)
         {
             var jwtSettings = "";
             var mailSettings = "";
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
-
-            if (authMethod == "JWT")
-            {
-                jwtSettings = $@"
-  ""JwtSettings"": {{
-    ""Key"": ""{env.JwtSettings.Key}"",
-    ""Issuer"": ""{env.JwtSettings.Issuer}"",
-    ""Audience"": ""{env.JwtSettings.Audience}"",
-    ""DurationInMinutes"": {env.JwtSettings.DurationInMinutes}
-  }},";
-
-            mailSettings = @$"
-  ""MailSettings"": {{
-    ""EmailFrom"": ""{env.MailSettings.EmailFrom}"",
-    ""SmtpHost"": ""{env.MailSettings.SmtpHost}"",
-    ""SmtpPort"": ""{env.MailSettings.SmtpPort}"",
-    ""SmtpUser"": ""{env.MailSettings.SmtpUser}"",
-    ""SmtpPass"": ""{env.MailSettings.SmtpPass}"",
-    ""DisplayName"": ""{env.MailSettings.DisplayName}""
-  }},";
-            }
 
             if(env.EnvironmentName == "Development")
 

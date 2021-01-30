@@ -156,13 +156,6 @@
       ],
       ""UpstreamPathTemplate"": ""/recipes"",
       ""UpstreamHttpMethod"": [ ""GET"" ]
-      //""AuthenticationOptions"": {{
-      //""AuthenticationProviderKey"": ""GloboTicketGatewayAuthenticationScheme"" //,
-      //  ""AllowedScopes"": [ ""eventcatalog.fullaccess"" ]
-      //}},
-      //""DelegatingHandlers"": [
-      //  ""TokenExchangeDelegatingHandler""
-      //]
     }}
   ]
 }}";
