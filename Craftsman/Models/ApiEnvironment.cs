@@ -17,7 +17,13 @@
                     _environmentName = value;
             }
         }
+
         public string ConnectionString { get; set; }
+
         public string ProfileName { get; set; }
+
+        public string Authority { get; set; }
+
+        public string Audience { get; set; }
     }
 }

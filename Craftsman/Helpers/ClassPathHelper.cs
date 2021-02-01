@@ -178,6 +178,11 @@
             return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Shared"), className);
         }
 
+        public static ClassPath InfrastructureIdentityProjectRootClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Identity"), className);
+        }
+
         public static ClassPath CommonDomainClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Common"), className);
@@ -235,6 +240,11 @@
         public static ClassPath InfrastructureSharedProjectClassPath(string solutionDirectory)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Shared"), "Infrastructure.Shared.csproj");
+        }
+
+        public static ClassPath InfrastructureIdentityProjectClassPath(string solutionDirectory)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Identity"), "Infrastructure.Identity.csproj");
         }
     }
 }

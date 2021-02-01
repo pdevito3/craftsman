@@ -46,6 +46,9 @@
 
         public static string GetWebApiCsProjFileText()
         {
+            var identityProject = $@"
+    <ProjectReference Include=""..\Infrastructure.Identity\Infrastructure.Identity.csproj"" />";
+
             return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>
@@ -82,7 +85,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include=""..\Application\Application.csproj"" />
+    <ProjectReference Include=""..\Application\Application.csproj"" />{identityProject}
     <ProjectReference Include=""..\Infrastructure.Persistence\Infrastructure.Persistence.csproj"" />
     <ProjectReference Include=""..\Infrastructure.Shared\Infrastructure.Shared.csproj"" />
   </ItemGroup>

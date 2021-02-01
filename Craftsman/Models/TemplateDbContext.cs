@@ -1,13 +1,9 @@
-﻿using Craftsman.Enums;
-using Craftsman.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Craftsman.Models
+﻿namespace Craftsman.Models
 {
+    using Craftsman.Enums;
+    using Craftsman.Exceptions;
+    using System;
+
     public class TemplateDbContext
     {
         private DbProvider _provider = DbProvider.SqlServer;

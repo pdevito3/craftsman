@@ -4,9 +4,7 @@
     using Craftsman.Builders.Projects;
     using Craftsman.Builders.Tests.IntegrationTests;
     using Craftsman.Helpers;
-    using Craftsman.Models;
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
     using static Helpers.ConsoleWriter;
@@ -29,26 +27,32 @@
             }
         }
 
-        public static void AddProjects(string solutionDirectory, string projectDirectory, string dbProvider, string soutionName, IFileSystem fileSystem)
+        public static void AddProjects(string solutionDirectory, string projectDirectory, string dbProvider, string soutionName, bool addJwtAuth, IFileSystem fileSystem)
         {
             // add webapi first so it is default project
-            BuildWebApiProject(solutionDirectory, projectDirectory, "Api", fileSystem);
+            BuildWebApiProject(solutionDirectory, projectDirectory, "Api", addJwtAuth, fileSystem);
             BuildDomainProject(solutionDirectory, projectDirectory, "Core");
             BuildApplicationProject(solutionDirectory, projectDirectory, "Core", fileSystem);
             BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, "Infrastructure", dbProvider, fileSystem);
             BuildInfrastructureSharedProject(solutionDirectory, projectDirectory, "Infrastructure", fileSystem);
             BuildTestProject(solutionDirectory, projectDirectory, "Tests", soutionName);
+
+            if (addJwtAuth)
+                BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, "Infrastructure", fileSystem);
         }
 
-        public static void AddMicroServicesProjects(string solutionDirectory, string projectDirectory, string dbProvider, string solutionName, IFileSystem fileSystem)
+        public static void AddMicroServicesProjects(string solutionDirectory, string projectDirectory, string dbProvider, string solutionName, bool addJwtAuth, IFileSystem fileSystem)
         {
             var microSolutionFolder = Path.Combine("src", "services", solutionName);
-            BuildWebApiProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
+            BuildWebApiProject(solutionDirectory, projectDirectory, microSolutionFolder, addJwtAuth, fileSystem);
             BuildDomainProject(solutionDirectory, projectDirectory, microSolutionFolder);
             BuildApplicationProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
             BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, microSolutionFolder, dbProvider, fileSystem);
             BuildInfrastructureSharedProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
             BuildTestProject(solutionDirectory, projectDirectory, microSolutionFolder, solutionName);
+
+            if (addJwtAuth)
+                BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, "Infrastructure", fileSystem);
         }
 
         public static void AddGatewayProject(string solutionDirectory, string projectDirectory, string gatewayProjectName, IFileSystem fileSystem)
@@ -130,7 +134,17 @@
             InfrastructureSharedServiceRegistrationBuilder.CreateInfrastructureSharedServiceExtension(projectDirectory, fileSystem);
         }
 
-        private static void BuildWebApiProject(string solutionDirectory, string projectDirectory, string solutionFolder, IFileSystem fileSystem)
+        private static void BuildInfrastructureIdentityProject(string solutionDirectory, string projectDirectory, string solutionFolder, IFileSystem fileSystem)
+        {
+            var infrastructureIdentityProjectClassPath = ClassPathHelper.InfrastructureIdentityProjectClassPath(projectDirectory);
+
+            InfrastructureIdentityCsProjBuilder.CreateInfrastructureIdentityCsProj(projectDirectory);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""{infrastructureIdentityProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
+
+            InfrastructureIdentityServiceRegistrationBuilder.CreateInfrastructureIdentityServiceExtension(solutionDirectory, fileSystem);
+        }
+
+        private static void BuildWebApiProject(string solutionDirectory, string projectDirectory, string solutionFolder, bool useJwtAuth, IFileSystem fileSystem)
         {
             var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(projectDirectory);
 
@@ -148,7 +162,7 @@
             WebApiAppSettingsBuilder.CreateAppSettings(projectDirectory);
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, fileSystem);
             ProgramBuilder.CreateWebApiProgram(projectDirectory, fileSystem);
-            StartupBuilder.CreateWebApiStartup(projectDirectory, "Startup");
+            StartupBuilder.CreateWebApiStartup(projectDirectory, "Startup", useJwtAuth);
         }
 
         private static void BuildTestProject(string solutionDirectory, string projectDirectory, string solutionFolder, string solutionName)

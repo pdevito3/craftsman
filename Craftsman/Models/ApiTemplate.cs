@@ -45,5 +45,13 @@ namespace Craftsman.Models
         /// The port that will be used when running locally in the project.
         /// </summary>
         public int Port { get; set; } = 5000;
+
+        public bool AddJwtAuthentication
+        {
+            get => Environments
+                .Where(e => e.Authority.Length > 0)
+                .ToList()
+                .Count > 0;
+        }
     }
 }

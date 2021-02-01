@@ -46,7 +46,7 @@
         {
             if (env.EnvironmentName == "Development")
                 return $@"
-    ""{env.ProfileName}"": {{
+    ""{env.ProfileName ?? "Development"}"": {{
       ""commandName"": ""Project"",
       ""launchBrowser"": true,
       ""launchUrl"": ""swagger"",

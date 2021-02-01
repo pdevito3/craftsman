@@ -1,19 +1,15 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
-    using Craftsman.Models;
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
     public class StartupBuilder
     {
-        public static void CreateWebApiStartup(string solutionDirectory, string envName)
+        public static void CreateWebApiStartup(string solutionDirectory, string envName, bool useJwtAuth)
         {
             try
             {
@@ -28,7 +24,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetStartupText(envName);
+                    data = GetStartupText(envName, useJwtAuth);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -79,8 +75,18 @@
             }
         }
 
-        public static string GetStartupText(string envName)
+        public static string GetStartupText(string envName, bool useJwtAuth)
         {
+            var identityUsing = "";
+            var identityServiceRegistration = "";
+            if (useJwtAuth)
+            {
+                identityServiceRegistration = $@"
+            services.AddIdentityInfrastructure(_config);";
+                identityUsing = $@"
+    using Infrastructure.Identity;";
+            }
+
             envName = envName == "Startup" ? "" : envName;
             if (envName == "Development")
                 return @$"namespace WebApi
@@ -95,7 +101,7 @@
     using Infrastructure.Persistence.Seeders;
     using Infrastructure.Persistence.Contexts;
     using WebApi.Extensions;
-    using Serilog;
+    using Serilog;{identityUsing}
 
     public class Startup{envName}
     {{
@@ -111,7 +117,7 @@
         {{
             services.AddCorsService(""MyCorsPolicy"");
             services.AddApplicationLayer();
-            services.AddPersistenceInfrastructure(_config);
+            services.AddPersistenceInfrastructure(_config);{identityServiceRegistration}
             services.AddSharedInfrastructure(_config);
             services.AddControllers()
                 .AddNewtonsoftJson();
@@ -161,7 +167,7 @@
     using Infrastructure.Persistence;
     using Infrastructure.Shared;
     using WebApi.Extensions;
-    using Serilog;
+    using Serilog;{identityUsing}
 
     public class Startup{envName}
     {{
@@ -177,7 +183,7 @@
         {{
             services.AddCorsService(""MyCorsPolicy"");
             services.AddApplicationLayer();
-            services.AddPersistenceInfrastructure(_config);
+            services.AddPersistenceInfrastructure(_config);{identityServiceRegistration}
             services.AddSharedInfrastructure(_config);
             services.AddControllers()
                 .AddNewtonsoftJson();

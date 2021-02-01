@@ -88,8 +88,7 @@
 
         private static string GetAppSettingsText(ApiEnvironment env, string dbName)
         {
-            var jwtSettings = "";
-            var mailSettings = "";
+            var jwtSettings = GetJwtAuthSettings(env);
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
 
             if(env.EnvironmentName == "Development")
@@ -97,7 +96,7 @@
                 return @$"{{
   ""AllowedHosts"": ""*"",
   ""UseInMemoryDatabase"": true,
-{serilogSettings}{jwtSettings}{mailSettings}
+{serilogSettings}{jwtSettings}
 }}
 ";
         else
@@ -110,6 +109,15 @@
   }},
 }}
 ";
+        }
+
+        private static string GetJwtAuthSettings(ApiEnvironment env)
+        {
+            return $@"
+  ""JwtSettings"": {{
+    ""Audience"": ""{env.Audience}"",
+    ""Authority"": ""{env.Authority}""
+  }},";
         }
 
         private static string GetSerilogSettings(string env)

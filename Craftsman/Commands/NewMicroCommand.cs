@@ -72,7 +72,6 @@
                 fileSystem.Directory.CreateDirectory(srcDirectory);
                 SolutionBuilder.BuildSolution(srcDirectory, template.SolutionName, fileSystem);
 
-
                 // add all files based on the given template config
                 RunMicroTemplateBuilders(srcDirectory, template.Microservices, template.Gateways, fileSystem);
 
@@ -113,7 +112,7 @@
                 var microPath = Path.Combine(servicesPath, micro.ProjectFolderName);
 
                 // add projects
-                SolutionBuilder.AddMicroServicesProjects(solutionDirectory, microPath, micro.DbContext.Provider, micro.ProjectFolderName, fileSystem);
+                SolutionBuilder.AddMicroServicesProjects(solutionDirectory, microPath, micro.DbContext.Provider, micro.ProjectFolderName, micro.AddJwtAuthentication, fileSystem);
 
                 // dbcontext
                 DbContextBuilder.CreateDbContext(microPath, micro.Entities, micro.DbContext.ContextName, micro.DbContext.Provider, micro.DbContext.DatabaseName);
@@ -147,7 +146,8 @@
                     micro.DbContext.DatabaseName,
                     micro.Environments,
                     micro.SwaggerConfig,
-                    micro.Port
+                    micro.Port,
+                    micro.AddJwtAuthentication
                 );
 
                 //seeders
@@ -256,7 +256,8 @@
             string databaseName,
             List<ApiEnvironment> environments,
             SwaggerConfig swaggerConfig,
-            int port)
+            int port,
+            bool useJwtAuth)
         {
             // add a development environment by default for local work if none exists
             if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
@@ -266,7 +267,7 @@
             {
                 // default startup is already built in cleanup phase
                 if(env.EnvironmentName != "Startup")
-                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName);
+                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth);
 
                 WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName);
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port);

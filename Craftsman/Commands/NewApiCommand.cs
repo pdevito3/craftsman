@@ -66,7 +66,7 @@
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
                 
                 SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
-                SolutionBuilder.AddProjects(solutionDirectory, solutionDirectory, template.DbContext.Provider, template.SolutionName, fileSystem);
+                SolutionBuilder.AddProjects(solutionDirectory, solutionDirectory, template.DbContext.Provider, template.SolutionName, template.AddJwtAuthentication, fileSystem);
 
                 // add all files based on the given template config
                 RunTemplateBuilders(solutionDirectory, template, fileSystem);
@@ -125,7 +125,8 @@
                 template.DbContext.DatabaseName,
                 template.Environments,
                 template.SwaggerConfig,
-                template.Port
+                template.Port,
+                template.AddJwtAuthentication
             );
 
             //seeders
@@ -246,7 +247,8 @@
             string databaseName,
             List<ApiEnvironment> environments,
             SwaggerConfig swaggerConfig,
-            int port)
+            int port,
+            bool useJwtAuth)
         {
             // add a development environment by default for local work if none exists
             if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
@@ -256,7 +258,7 @@
             {
                 // default startup is already built in cleanup phase
                 if (env.EnvironmentName != "Startup")
-                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName);
+                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth);
 
                 WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName);
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port);

@@ -10,9 +10,6 @@
     {
         public string GatewayProjectName { get; set; }
 
-
-        //********************************* move below to GatewayEnvironments?
-
         public List<EnvironmentGateway> EnvironmentGateways { get; set; }
 
     }
