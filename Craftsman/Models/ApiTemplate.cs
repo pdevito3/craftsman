@@ -46,6 +46,9 @@ namespace Craftsman.Models
         /// </summary>
         public int Port { get; set; } = 5000;
 
+        /// <summary>
+        /// Calculation to determine whether or not authentication is added to the project
+        /// </summary>
         public bool AddJwtAuthentication
         {
             get => Environments
@@ -53,5 +56,7 @@ namespace Craftsman.Models
                 .ToList()
                 .Count > 0;
         }
+
+        public AuthorizationSettings AuthorizationSettings { get; set; }
     }
 }

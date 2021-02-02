@@ -107,7 +107,7 @@
                 ValidatorBuilder.CreateValidators(solutionDirectory, entity);
                 ProfileBuilder.CreateProfile(solutionDirectory, entity);
 
-                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments);
+                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies);
 
                 FakesBuilder.CreateFakes(solutionDirectory, template.SolutionName, entity);
                 ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName);
@@ -134,6 +134,9 @@
 
             //services
             SwaggerBuilder.AddSwagger(solutionDirectory, template.SwaggerConfig, template.SolutionName);
+
+            if(template.AddJwtAuthentication)
+                InfrastructureIdentityServiceRegistrationBuilder.CreateInfrastructureIdentityServiceExtension(solutionDirectory, template.AuthorizationSettings.Policies, fileSystem);
 
             //final
             ReadmeBuilder.CreateReadme(solutionDirectory, template.SolutionName, fileSystem);

@@ -6,7 +6,7 @@
 
     public class EntityEndpoint
     {
-        private List<Endpoint> _endpoints;
+        private List<Endpoint> _endpoints = new List<Endpoint>();
 
         public string EntityName { get; set; }
 

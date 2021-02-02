@@ -127,7 +127,7 @@
                     ValidatorBuilder.CreateValidators(microPath, entity);
                     ProfileBuilder.CreateProfile(microPath, entity);
 
-                    ControllerBuilder.CreateController(microPath, entity, micro.SwaggerConfig.AddSwaggerComments);
+                    ControllerBuilder.CreateController(microPath, entity, micro.SwaggerConfig.AddSwaggerComments, micro.AuthorizationSettings.Policies);
 
                     FakesBuilder.CreateFakes(microPath, micro.ProjectFolderName, entity);
                     ReadTestBuilder.CreateEntityReadTests(microPath, micro.ProjectFolderName, entity, micro.DbContext.ContextName);

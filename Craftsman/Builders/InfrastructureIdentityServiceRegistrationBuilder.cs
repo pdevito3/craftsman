@@ -4,13 +4,14 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
+    using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
     public class InfrastructureIdentityServiceRegistrationBuilder
     {
-        public static void CreateInfrastructureIdentityServiceExtension(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreateInfrastructureIdentityServiceExtension(string solutionDirectory, List<Policy> policies, IFileSystem fileSystem)
         {
             try
             {
@@ -25,7 +26,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetServiceRegistrationText(classPath.ClassNamespace);
+                    data = GetServiceRegistrationText(classPath.ClassNamespace, policies);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -43,8 +44,14 @@
             }
         }
 
-        public static string GetServiceRegistrationText(string classNamespace)
+        public static string GetServiceRegistrationText(string classNamespace, List<Policy> policies)
         {
+            var policiesString = "";
+            foreach (var policy in policies)
+            {
+                policiesString += $@"{Environment.NewLine}{Utilities.PolicyStringBuilder(policy)}";
+            }
+
             return @$"namespace {classNamespace}
 {{
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -61,6 +68,10 @@
                     options.Authority = configuration[""JwtSettings:Authority""];
                     options.Audience = configuration[""JwtSettings:Audience""];
                 }});
+            
+            services.AddAuthorization(options =>
+            {{{policiesString}
+            }});
         }}
     }}
 }}

@@ -42,5 +42,7 @@
                     .ToList()
                     .Count > 0;
         }
+
+        public AuthorizationSettings AuthorizationSettings { get; set; }
     }
 }

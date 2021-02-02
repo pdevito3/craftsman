@@ -128,5 +128,25 @@
         {
             return $@"api/{entityNamePlural}";
         }
+
+        public static string PolicyStringBuilder(Policy policy)
+        {
+            if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
+            {
+                // ex: options.AddPolicy("CanRead", policy => policy.RequireClaim("scope", "detailedrecipes.read"));
+                return $@"                options.AddPolicy(""{policy.Name}"", 
+                    policy => policy.RequireClaim(""scope"", ""{policy.PolicyValue}""));";
+            }
+            else if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Role))
+            {
+                // ex: options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Administrator"));
+                return $@"                options.AddPolicy(""{policy.Name}"", 
+                    policy => policy.RequireRole(""{policy.PolicyValue}""));";
+            }
+
+            // claim ex: options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
+            return $@"                options.AddPolicy(""{policy.Name}"", 
+                    policy => policy.RequireClaim(""{policy.PolicyValue}""));";
+        }
     }
 }

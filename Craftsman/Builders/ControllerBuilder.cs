@@ -6,13 +6,15 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
     public static class ControllerBuilder
     {
-        public static void CreateController(string solutionDirectory, Entity entity, bool AddSwaggerComments)
+        public static void CreateController(string solutionDirectory, Entity entity, bool AddSwaggerComments, List<Policy> policies)
         {
             try
             {
@@ -26,7 +28,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetControllerFileText(classPath.ClassNamespace, entity, AddSwaggerComments);
+                    var data = GetControllerFileText(classPath.ClassNamespace, entity, AddSwaggerComments, policies);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,7 +46,7 @@
             }
         }
 
-        public static string GetControllerFileText(string classNamespace, Entity entity, bool AddSwaggerComments)
+        public static string GetControllerFileText(string classNamespace, Entity entity, bool AddSwaggerComments, List<Policy> policies)
         {
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var lowercaseEntityVariableSingularDto = $@"{entity.Name.LowercaseFirstLetter()}Dto";
@@ -63,6 +65,12 @@
             var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
             var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";
             var endpointBase = Utilities.EndpointBaseGenerator(entityNamePlural);
+            var getListAuthorizations = BuildAuthorizations(policies, Endpoint.GetList, entity.Name);
+            var getRecordAuthorizations = BuildAuthorizations(policies, Endpoint.GetRecord, entity.Name);
+            var addRecordAuthorizations = BuildAuthorizations(policies, Endpoint.AddRecord, entity.Name);
+            var updateRecordAuthorizations = BuildAuthorizations(policies, Endpoint.UpdateRecord, entity.Name);
+            var updatePartialAuthorizations = BuildAuthorizations(policies, Endpoint.UpdatePartial, entity.Name);
+            var deleteRecordAuthorizations = BuildAuthorizations(policies, Endpoint.DeleteRecord, entity.Name);
 
             return @$"namespace {classNamespace}
 {{
@@ -97,7 +105,7 @@
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
         }}
-        {GetSwaggerComments_GetList(entity, AddSwaggerComments, listResponse)}
+        {GetSwaggerComments_GetList(entity, AddSwaggerComments, listResponse)}{getListAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpGet(Name = ""{getListEndpointName}"")]
@@ -126,7 +134,7 @@
 
             return Ok(response);
         }}
-        {GetSwaggerComments_GetRecord(entity, AddSwaggerComments, singleResponse)}
+        {GetSwaggerComments_GetRecord(entity, AddSwaggerComments, singleResponse)}{getRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""{getRecordEndpointName}"")]
         public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercaseEntityVariable}Id)
@@ -143,7 +151,7 @@
 
             return Ok(response);
         }}
-        {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments, singleResponse)}
+        {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments, singleResponse)}{addRecordAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpPost]
@@ -175,7 +183,7 @@
 
             return StatusCode(500);
         }}
-        {GetSwaggerComments_DeleteRecord(entity, AddSwaggerComments)}
+        {GetSwaggerComments_DeleteRecord(entity, AddSwaggerComments)}{deleteRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpDelete(""{{{lowercaseEntityVariable}Id}}"")]
         public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercaseEntityVariable}Id)
@@ -192,7 +200,8 @@
 
             return NoContent();
         }}
-        {GetSwaggerComments_PutRecord(entity, AddSwaggerComments)}
+
+        {GetSwaggerComments_PutRecord(entity, AddSwaggerComments)}{updateRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpPut(""{{{lowercaseEntityVariable}Id}}"")]
         public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercaseEntityVariable}Id, {updateDto} {lowercaseEntityVariable})
@@ -220,7 +229,8 @@
 
             return NoContent();
         }}
-        {GetSwaggerComments_PatchRecord(entity, AddSwaggerComments)}
+
+        {GetSwaggerComments_PatchRecord(entity, AddSwaggerComments)}{updatePartialAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpPatch(""{{{lowercaseEntityVariable}Id}}"")]
@@ -379,6 +389,31 @@
         [ProducesResponseType(500)]";
 
             return "";
+        }
+
+        private static string BuildAuthorizations(List<Policy> policies, Endpoint endpoint, string name)
+        {
+            //var result = policies
+            //    .Where(p => p.EndpointEntity.RestrictedEndpoints.Any(re => re == Enum.GetName(typeof(Endpoint), endpoint)))
+            //    .Where(p => p.EndpointEntity.EntityName == name);
+            var results = policies
+                .Where(p => p.EndpointEntity.EntityName == name 
+                    && p.EndpointEntity.RestrictedEndpoints.Any(re => re == Enum.GetName(typeof(Endpoint), endpoint)));
+            var authorizations = "";
+            foreach (var result in results)
+            {
+                if (result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope)
+                    || result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Claim))
+                {
+                    authorizations += $@"{Environment.NewLine}[Authorize(Policy = ""{result.PolicyValue}"")]";
+                }
+                else
+                {
+                    authorizations += $@"{Environment.NewLine}        [Authorize(Roles = ""{result.PolicyValue}"")]";
+                }
+            }
+
+            return authorizations;
         }
     }
 }

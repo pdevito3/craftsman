@@ -16,7 +16,7 @@
         /// <summary>
         /// The type of policy (scope, role, claim).
         /// </summary>
-        public string PolicyType // scope
+        public string PolicyType
         {
             get => Enum.GetName(typeof(PolicyType), _policyType);
             set

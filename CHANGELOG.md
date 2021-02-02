@@ -7,7 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- None yet!
+### Added
+
+- New `add:micro` command that scaffolds a new microservice template as well as an ocelot gateway
+- New `port ` property to let you customize and api or microservice port on localhost
+- Added `https` default on local
+- Added additional startup middleware
+  - `usehsts` for non dev
+  - `UseHttpsRedirection` with notes on even more secure options
+- New JWT Authentication for the `new:api` and `new:micro` commands
+- Added policy authorization options for scopes, roles, and claims on the `new:api` `new:micro` and `add:entity` commands
+
+### Fixed
+
+- 
+
+### Clean up
+
+- Internal tests now passing
+- refactored out template drilling
+- removed old auth debt from earlier alpha
 
 ## [0.7.0] - 2021-01-12
 

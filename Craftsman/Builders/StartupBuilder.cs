@@ -77,6 +77,7 @@
 
         public static string GetStartupText(string envName, bool useJwtAuth)
         {
+            var appAuth = "";
             var identityUsing = "";
             var identityServiceRegistration = "";
             if (useJwtAuth)
@@ -85,6 +86,10 @@
             services.AddIdentityInfrastructure(_config);";
                 identityUsing = $@"
     using Infrastructure.Identity;";
+                appAuth = $@"
+
+            app.UseAuthentication();
+            app.UseAuthorization();";
             }
 
             envName = envName == "Startup" ? "" : envName;
@@ -141,7 +146,7 @@
             app.UseCors(""MyCorsPolicy"");
 
             app.UseSerilogRequestLogging();
-            app.UseRouting();
+            app.UseRouting();{appAuth}
             
             app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>
@@ -208,7 +213,7 @@
             app.UseCors(""MyCorsPolicy"");
 
             app.UseSerilogRequestLogging();
-            app.UseRouting();
+            app.UseRouting();{appAuth}
             
             app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>

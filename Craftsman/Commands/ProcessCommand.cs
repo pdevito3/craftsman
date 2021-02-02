@@ -58,7 +58,7 @@
                     AddEntityCommand.Help();
                 else
                 {
-                    var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:","Users","Paul","Documents","testoutput") : fileSystem.Directory.GetCurrentDirectory();
+                    var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:","Users","Paul","Documents","testoutput","Lab.Api") : fileSystem.Directory.GetCurrentDirectory();
                     AddEntityCommand.Run(filePath, solutionDir, fileSystem);
                 }
             }
