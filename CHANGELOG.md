@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- 
+- The `CurrentStartIndex` calculation in the `PagedList` class was broken and now has a new calculation.
 
 ### Clean up
 
