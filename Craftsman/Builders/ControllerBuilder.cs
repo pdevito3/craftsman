@@ -393,23 +393,21 @@
 
         private static string BuildAuthorizations(List<Policy> policies, Endpoint endpoint, string name)
         {
-            //var result = policies
-            //    .Where(p => p.EndpointEntity.RestrictedEndpoints.Any(re => re == Enum.GetName(typeof(Endpoint), endpoint)))
-            //    .Where(p => p.EndpointEntity.EntityName == name);
             var results = policies
-                .Where(p => p.EndpointEntity.EntityName == name 
-                    && p.EndpointEntity.RestrictedEndpoints.Any(re => re == Enum.GetName(typeof(Endpoint), endpoint)));
+                .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == name )
+                    && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Any(re => re == Enum.GetName(typeof(Endpoint), endpoint))));
+
             var authorizations = "";
             foreach (var result in results)
             {
                 if (result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope)
                     || result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Claim))
                 {
-                    authorizations += $@"{Environment.NewLine}[Authorize(Policy = ""{result.PolicyValue}"")]";
+                    authorizations += $@"{Environment.NewLine}        [Authorize(Policy = ""{result.Name}"")]";
                 }
                 else
                 {
-                    authorizations += $@"{Environment.NewLine}        [Authorize(Roles = ""{result.PolicyValue}"")]";
+                    authorizations += $@"{Environment.NewLine}        [Authorize(Roles = ""{result.Name}"")]";
                 }
             }
 

@@ -37,6 +37,6 @@
         /// <summary>
         /// The entity endpoint information (e.g. Recipe, GetList, GetRecord).
         /// </summary>
-        public EntityEndpoint EndpointEntity { get; set; }
+        public List<EntityEndpoint> EndpointEntities { get; set; }
     }
 }

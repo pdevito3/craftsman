@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `UseHttpsRedirection` with notes on even more secure options
 - New JWT Authentication for the `new:api` and `new:micro` commands
 - Added policy authorization options for scopes, roles, and claims on the `new:api` `new:micro` and `add:entity` commands
+  - [roles](https://jakeydocs.readthedocs.io/en/latest/security/authorization/roles.html)
+  - [claims](https://jakeydocs.readthedocs.io/en/latest/security/authorization/claims.html)
+  - [custom (not included, but able to add manually)](https://jakeydocs.readthedocs.io/en/latest/security/authorization/policies.html)
 
 ### Fixed
 
