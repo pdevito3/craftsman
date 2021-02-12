@@ -5,6 +5,7 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -12,7 +13,7 @@
 
     public class UpdateTestBuilder
     {
-        public static void CreateEntityUpdateTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName)
+        public static void CreateEntityUpdateTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName, bool addJwtAuth, List<Policy> policies)
         {
             try
             {
@@ -26,7 +27,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = UpdateIntegrationTestFileText(classPath, entity, solutionName, dbContextName);
+                    var data = UpdateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, dbContextName, addJwtAuth, policies);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,8 +45,18 @@
             }
         }
 
-        private static string UpdateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionName, string dbContextName)
+        private static string UpdateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, string dbContextName, bool addJwtAuth, List<Policy> policies)
         {
+            var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
+            var authUsing = addJwtAuth ? $@"
+    using {httpClientExtensionsClassPath.ClassNamespace};" : "";
+
+            var authOnlyTests = $@"
+            {UpdateRecordEntityTestUnauthorized(entity)}
+            {UpdateRecordEntityTestForbidden(entity)}
+            {UpdatePartialEntityTestUnauthorized(entity)}
+            {UpdatePartialEntityTestForbidden(entity)}";
+
             return @$"
 namespace {classPath.ClassNamespace}
 {{
@@ -67,7 +78,7 @@ namespace {classPath.ClassNamespace}
     using Bogus;
     using Application.Mappings;
     using System.Text;
-    using Application.Wrappers;
+    using Application.Wrappers;{authUsing}
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>
@@ -79,13 +90,13 @@ namespace {classPath.ClassNamespace}
             _factory = factory;
         }}
 
-        {UpdateEntityTest(entity, dbContextName)}
-        {PutEntityTest(entity, dbContextName)}
+        {UpdateEntityTest(entity, dbContextName, addJwtAuth, policies)}
+        {PutEntityTest(entity, dbContextName, addJwtAuth, policies)}{authOnlyTests}
     }} 
 }}";
         }
 
-        private static string UpdateEntityTest(Entity entity, string dbContextName)
+        private static string UpdateEntityTest(Entity entity, string dbContextName, bool addJwtAuth, List<Policy> policies)
         {
             var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string" 
                 && e.CanFilter 
@@ -102,13 +113,20 @@ namespace {classPath.ClassNamespace}
                     && e.CanManipulate).FirstOrDefault();
                 lookupVal = "999999";
             }
+            var testName = addJwtAuth
+                ? @$"Patch{entity.Name}204AndFieldsWereSuccessfullyUpdated_WithAuth"
+                : @$"Patch{entity.Name}204AndFieldsWereSuccessfullyUpdated";
+            var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdatePartial, Endpoint.GetRecord }, entity.Name, PolicyType.Scope);
+            var clientAuth = addJwtAuth ? @$"
+
+            client.AddAuth(new[] {scopes});" : "";
 
             if (myProp == null)
                 return "";
             else
                 return $@"
         [Fact]
-        public async Task Patch{entity.Name}204AndFieldsWereSuccessfullyUpdated()
+        public async Task {testName}()
         {{
             //Arrange
             var mapper = new MapperConfiguration(cfg =>
@@ -136,7 +154,7 @@ namespace {classPath.ClassNamespace}
             var client = appFactory.CreateClient(new WebApplicationFactoryClientOptions
             {{
                 AllowAutoRedirect = false
-            }});
+            }});{clientAuth}
 
             var patchDoc = new JsonPatchDocument<{Utilities.GetDtoName(entity.Name, Dto.Update)}>();
             patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, lookupVal);
@@ -175,7 +193,7 @@ namespace {classPath.ClassNamespace}
         }}";
         }
 
-        private static string PutEntityTest(Entity entity, string dbContextName)
+        private static string PutEntityTest(Entity entity, string dbContextName, bool addJwtAuth, List<Policy> policies)
         {
             var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string"
                 && e.CanFilter
@@ -192,13 +210,20 @@ namespace {classPath.ClassNamespace}
                     && e.CanManipulate).FirstOrDefault();
                 lookupVal = "999999";
             }
+            var testName = addJwtAuth
+                ? @$"Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated_WithAuth"
+                : @$"Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated";
+            var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdateRecord, Endpoint.GetRecord }, entity.Name, PolicyType.Scope);
+            var clientAuth = addJwtAuth ? @$"
+
+            client.AddAuth(new[] {scopes});" : "";
 
             if (myProp == null)
                 return "";
             else
                 return $@"
         [Fact]
-        public async Task Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated()
+        public async Task {testName}()
         {{
             //Arrange
             var mapper = new MapperConfiguration(cfg =>
@@ -224,7 +249,7 @@ namespace {classPath.ClassNamespace}
             var client = appFactory.CreateClient(new WebApplicationFactoryClientOptions
             {{
                 AllowAutoRedirect = false
-            }});
+            }});{clientAuth}
 
             var serialized{entity.Name}ToUpdate = JsonConvert.SerializeObject(expectedFinalObject);
 
@@ -235,10 +260,10 @@ namespace {classPath.ClassNamespace}
             var getResponseContent = await getResult.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
             var getResponse = JsonConvert.DeserializeObject<Response<IEnumerable<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>>(getResponseContent);
-            var id = getResponse.Data.FirstOrDefault().{entity.PrimaryKeyProperty.Name};
+            var id = getResponse?.Data.FirstOrDefault().{entity.PrimaryKeyProperty.Name};
 
             // put it
-            var patchResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
+            var putResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
                 .ConfigureAwait(false);
 
             // get it again to confirm updates
@@ -249,9 +274,162 @@ namespace {classPath.ClassNamespace}
             var checkResponse = JsonConvert.DeserializeObject<Response<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>(checkResponseContent);
 
             // Assert
-            patchResult.StatusCode.Should().Be(204);
+            putResult.StatusCode.Should().Be(204);
             checkResponse.Should().BeEquivalentTo(expectedFinalObject, options =>
                 options.ExcludingMissingMembers());
+        }}";
+        }
+
+        private static string UpdateRecordEntityTestUnauthorized(Entity entity)
+        {
+            var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string"
+                && e.CanFilter
+                && e.IsPrimaryKey == false
+                && e.CanManipulate).FirstOrDefault();
+
+            if (myProp == null)
+                return "";
+            else
+                return $@"
+        [Fact]
+        public async Task UpdateRecord{entity.Plural}_Returns_Unauthorized_Without_Valid_Token()
+        {{
+            //Arrange
+            var mapper = new MapperConfiguration(cfg =>
+            {{
+                cfg.AddProfile<{Utilities.GetProfileName(entity.Name)}>();
+            }}).CreateMapper();
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var expectedFinalObject = mapper.Map<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(fake{entity.Name}One);
+            var id = fake{entity.Name}One.{entity.PrimaryKeyProperty.Name};
+
+            var patchDoc = new JsonPatchDocument<{Utilities.GetDtoName(entity.Name, Dto.Update)}>();
+            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, """");
+            var serialized{entity.Name}ToUpdate = JsonConvert.SerializeObject(patchDoc);
+
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {{
+                AllowAutoRedirect = false
+            }});
+
+            // Act
+            var putResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
+                .ConfigureAwait(false);
+
+            // Assert
+            putResult.StatusCode.Should().Be(401);
+        }}";
+        }
+
+        private static string UpdateRecordEntityTestForbidden(Entity entity)
+        {
+            return $@"
+        [Fact]
+        public async Task UpdateRecord{entity.Name}_Returns_Forbidden_Without_Proper_Scope()
+        {{
+            //Arrange
+            var mapper = new MapperConfiguration(cfg =>
+            {{
+                cfg.AddProfile<{Utilities.GetProfileName(entity.Name)}>();
+            }}).CreateMapper();
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var expectedFinalObject = mapper.Map<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(fake{entity.Name}One);
+            var id = fake{entity.Name}One.{entity.PrimaryKeyProperty.Name};
+
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {{
+                AllowAutoRedirect = false
+            }});
+
+            client.AddAuth(new[] {{ """" }});
+
+            // Act
+            var putResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
+                .ConfigureAwait(false);
+
+            // Assert
+            putResult.StatusCode.Should().Be(403);
+        }}";
+        }
+
+        private static string UpdatePartialEntityTestUnauthorized(Entity entity)
+        {
+            var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string"
+                && e.CanFilter
+                && e.IsPrimaryKey == false
+                && e.CanManipulate).FirstOrDefault();
+
+            if (myProp == null)
+                return "";
+            else
+                return $@"
+        [Fact]
+        public async Task UpdatePartial{entity.Plural}_Returns_Unauthorized_Without_Valid_Token()
+        {{
+            //Arrange
+            var mapper = new MapperConfiguration(cfg =>
+            {{
+                cfg.AddProfile<{Utilities.GetProfileName(entity.Name)}>();
+            }}).CreateMapper();
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var expectedFinalObject = mapper.Map<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(fake{entity.Name}One);
+            var id = fake{entity.Name}One.{entity.PrimaryKeyProperty.Name};
+
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {{
+                AllowAutoRedirect = false
+            }});
+            var patchDoc = new JsonPatchDocument<{Utilities.GetDtoName(entity.Name, Dto.Update)}>();
+            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, """");
+            var serialized{entity.Name}ToUpdate = JsonConvert.SerializeObject(patchDoc);
+
+            // Act
+            var method = new HttpMethod(""PATCH"");
+            var patchRequest = new HttpRequestMessage(method, $""api/{entity.Plural}/{{id}}"")
+            {{
+                Content = new StringContent(serialized{entity.Name}ToUpdate,
+                    Encoding.Unicode, ""application/json"")
+            }};
+            var patchResult = await client.SendAsync(patchRequest)
+                .ConfigureAwait(false);
+
+            // Assert
+            patchResult.StatusCode.Should().Be(401);
+        }}";
+        }
+
+        private static string UpdatePartialEntityTestForbidden(Entity entity)
+        {
+            return $@"
+        [Fact]
+        public async Task UpdatePartial{entity.Name}_Returns_Forbidden_Without_Proper_Scope()
+        {{
+            //Arrange
+            var mapper = new MapperConfiguration(cfg =>
+            {{
+                cfg.AddProfile<{Utilities.GetProfileName(entity.Name)}>();
+            }}).CreateMapper();
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var expectedFinalObject = mapper.Map<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(fake{entity.Name}One);
+            var id = fake{entity.Name}One.{entity.PrimaryKeyProperty.Name};
+
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {{
+                AllowAutoRedirect = false
+            }});
+
+            client.AddAuth(new[] {{ """" }});
+
+            // Act
+            var patchResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
+                .ConfigureAwait(false);
+
+            // Assert
+            patchResult.StatusCode.Should().Be(403);
         }}";
         }
     }

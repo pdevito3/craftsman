@@ -83,7 +83,7 @@
             if (useJwtAuth)
             {
                 identityServiceRegistration = $@"
-            services.AddIdentityInfrastructure(_config);";
+            services.AddIdentityInfrastructure(_config, _env);";
                 identityUsing = $@"
     using Infrastructure.Identity;";
                 appAuth = $@"
@@ -111,9 +111,12 @@
     public class Startup{envName}
     {{
         public IConfiguration _config {{ get; }}
-        public Startup{envName}(IConfiguration configuration)
+        public IWebHostEnvironment _env {{ get; }}
+
+        public Startup{envName}(IConfiguration configuration, IWebHostEnvironment env)
         {{
             _config = configuration;
+            _env = env;
         }}
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -177,9 +180,12 @@
     public class Startup{envName}
     {{
         public IConfiguration _config {{ get; }}
-        public Startup{envName}(IConfiguration configuration)
+        public IWebHostEnvironment _env {{ get; }}
+
+        public Startup{envName}(IConfiguration configuration, IWebHostEnvironment env)
         {{
             _config = configuration;
+            _env = env;
         }}
 
         // This method gets called by the runtime. Use this method to add services to the container.

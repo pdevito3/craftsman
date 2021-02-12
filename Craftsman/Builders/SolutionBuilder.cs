@@ -35,10 +35,10 @@
             BuildApplicationProject(solutionDirectory, projectDirectory, "Core", fileSystem);
             BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, "Infrastructure", dbProvider, fileSystem);
             BuildInfrastructureSharedProject(solutionDirectory, projectDirectory, "Infrastructure", fileSystem);
-            BuildTestProject(solutionDirectory, projectDirectory, "Tests", soutionName);
+            BuildTestProject(solutionDirectory, projectDirectory, "Tests", soutionName, addJwtAuth);
 
             if (addJwtAuth)
-                BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, "Infrastructure", fileSystem);
+                BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, "Infrastructure");
         }
 
         public static void AddMicroServicesProjects(string solutionDirectory, string projectDirectory, string dbProvider, string solutionName, bool addJwtAuth, IFileSystem fileSystem)
@@ -49,10 +49,10 @@
             BuildApplicationProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
             BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, microSolutionFolder, dbProvider, fileSystem);
             BuildInfrastructureSharedProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
-            BuildTestProject(solutionDirectory, projectDirectory, microSolutionFolder, solutionName);
+            BuildTestProject(solutionDirectory, projectDirectory, microSolutionFolder, solutionName, addJwtAuth);
 
             if (addJwtAuth)
-                BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, "Infrastructure", fileSystem);
+                BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, "Infrastructure");
         }
 
         public static void AddGatewayProject(string solutionDirectory, string projectDirectory, string gatewayProjectName, IFileSystem fileSystem)
@@ -134,7 +134,7 @@
             InfrastructureSharedServiceRegistrationBuilder.CreateInfrastructureSharedServiceExtension(projectDirectory, fileSystem);
         }
 
-        private static void BuildInfrastructureIdentityProject(string solutionDirectory, string projectDirectory, string solutionFolder, IFileSystem fileSystem)
+        private static void BuildInfrastructureIdentityProject(string solutionDirectory, string projectDirectory, string solutionFolder)
         {
             var infrastructureIdentityProjectClassPath = ClassPathHelper.InfrastructureIdentityProjectClassPath(projectDirectory);
 
@@ -163,14 +163,20 @@
             StartupBuilder.CreateWebApiStartup(projectDirectory, "Startup", useJwtAuth);
         }
 
-        private static void BuildTestProject(string solutionDirectory, string projectDirectory, string solutionFolder, string solutionName)
+        private static void BuildTestProject(string solutionDirectory, string projectDirectory, string solutionFolder, string solutionName, bool addJwtAuth)
         {
             var testProjectClassPath = ClassPathHelper.TestProjectRootClassPath(projectDirectory, "", solutionName);
 
-            TestsCsProjBuilder.CreateTestsCsProj(projectDirectory, solutionName);
+            TestsCsProjBuilder.CreateTestsCsProj(projectDirectory, solutionName, addJwtAuth);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
 
             HealthCheckTestBuilder.CreateHealthCheckTests(projectDirectory, solutionName);
+
+            if (addJwtAuth)
+            {
+                Directory.CreateDirectory(ClassPathHelper.HttpClientExtensionsClassPath(projectDirectory, solutionName, "").ClassDirectory);
+                HttpClientExtensionsBuilder.Create(projectDirectory, solutionName);
+            }
         }
     }
 }

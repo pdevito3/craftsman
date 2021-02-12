@@ -38,6 +38,11 @@
             return new ClassPath(solutionDirectory, Path.Combine("WebApi","Extensions"), className);
         }
 
+        public static ClassPath HttpClientExtensionsClassPath(string projectDirectory, string solutionName, string className)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{solutionName}.Tests", "Helpers"), className);
+        }
+
         public static ClassPath WebApiMiddlewareClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine("WebApi", "Middleware"), className);

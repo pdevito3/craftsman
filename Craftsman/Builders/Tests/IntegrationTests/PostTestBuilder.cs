@@ -5,6 +5,7 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -12,7 +13,7 @@
 
     public class PostTestBuilder
     {
-        public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName)
+        public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName, bool addJwtAuth, List<Policy> policies)
         {
             try
             {
@@ -26,7 +27,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = CreateIntegrationTestFileText(classPath, entity, solutionName);
+                    var data = CreateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, addJwtAuth, policies);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,7 +45,7 @@
             }
         }
 
-        private static string CreateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionName)
+        private static string CreateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, bool addJwtAuth, List<Policy> policies)
         {
             var assertString = "";
             foreach (var prop in entity.Properties)
@@ -52,6 +53,13 @@
                 var newLine = prop == entity.Properties.LastOrDefault() ? "" : $"{Environment.NewLine}";
                 assertString += @$"                {entity.Name.LowercaseFirstLetter()}ById.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
+            var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
+            var authUsing = addJwtAuth ? $@"
+    using {httpClientExtensionsClassPath.ClassNamespace};" : "";
+
+            var authOnlyTests = $@"
+            {CreateEntityTestUnauthorized(entity)}
+            {CreateEntityTestForbidden(entity)}";
 
             return @$"
 namespace {classPath.ClassNamespace}
@@ -66,7 +74,7 @@ namespace {classPath.ClassNamespace}
     using System.Net.Http;
     using WebApi;
     using System.Collections.Generic;
-    using Application.Wrappers;
+    using Application.Wrappers;{authUsing}
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>
@@ -78,12 +86,12 @@ namespace {classPath.ClassNamespace}
             _factory = factory;
         }}
 
-        {CreateEntityTest(entity)}
+        {CreateEntityTest(entity, addJwtAuth, policies)}{authOnlyTests}
     }} 
 }}";
         }
 
-        private static string CreateEntityTest(Entity entity)
+        private static string CreateEntityTest(Entity entity, bool addJwtAuth, List<Policy> policies)
         {
             var assertString = "";
             foreach (var prop in entity.Properties.Where(p => p.IsPrimaryKey == false))
@@ -91,17 +99,24 @@ namespace {classPath.ClassNamespace}
                 var newLine = prop == entity.Properties.LastOrDefault() ? "" : $"{Environment.NewLine}";
                 assertString += @$"            resultDto.Data.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
+            var testName = addJwtAuth
+                ? @$"Post{entity.Name}ReturnsSuccessCodeAndResourceWithAccurateFields_WithAuth"
+                : @$"Post{entity.Name}ReturnsSuccessCodeAndResourceWithAccurateFields";
+            var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.AddRecord }, entity.Name, PolicyType.Scope);
+            var clientAuth = addJwtAuth ? @$"
+
+            client.AddAuth(new[] {scopes});" : "";
 
             return $@"
         [Fact]
-        public async Task Post{entity.Name}ReturnsSuccessCodeAndResourceWithAccurateFields()
+        public async Task {testName}()
         {{
             // Arrange
             var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
             {{
                 AllowAutoRedirect = false
             }});
-            var fake{entity.Name} = new Fake{Utilities.GetDtoName(entity.Name, Dto.Read)}().Generate();
+            var fake{entity.Name} = new Fake{Utilities.GetDtoName(entity.Name, Dto.Read)}().Generate();{clientAuth}
 
             // Act
             var httpResponse = await client.PostAsJsonAsync(""api/{entity.Plural}"", fake{entity.Name})
@@ -115,6 +130,52 @@ namespace {classPath.ClassNamespace}
 
             httpResponse.StatusCode.Should().Be(201);
 {assertString}
+        }}";
+        }
+
+        private static string CreateEntityTestUnauthorized(Entity entity)
+        {
+            return $@"
+        [Fact]
+        public async Task Post{entity.Plural}_Returns_Unauthorized_Without_Valid_Token()
+        {{
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {{
+                AllowAutoRedirect = false
+            }});
+            var fake{entity.Name} = new Fake{Utilities.GetDtoName(entity.Name, Dto.Read)}().Generate();
+
+            // Act
+            var httpResponse = await client.PostAsJsonAsync(""api/{entity.Plural}"", fake{entity.Name})
+                .ConfigureAwait(false);
+
+            // Assert
+            httpResponse.StatusCode.Should().Be(401);
+        }}";
+        }
+
+        private static string CreateEntityTestForbidden(Entity entity)
+        {
+            return $@"
+        [Fact]
+        public async Task Post{entity.Name}_Returns_Forbidden_Without_Proper_Scope()
+        {{
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {{
+                AllowAutoRedirect = false
+            }});
+            var fake{entity.Name} = new Fake{Utilities.GetDtoName(entity.Name, Dto.Read)}().Generate();
+
+            client.AddAuth(new[] {{ """" }});
+
+            // Act
+            var httpResponse = await client.PostAsJsonAsync(""api/{entity.Plural}"", fake{entity.Name})
+                .ConfigureAwait(false);
+
+            // Assert
+            httpResponse.StatusCode.Should().Be(403);
         }}";
         }
     }

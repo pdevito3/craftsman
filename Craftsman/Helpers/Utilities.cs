@@ -148,5 +148,20 @@
             return $@"                options.AddPolicy(""{policy.Name}"", 
                     policy => policy.RequireClaim(""{policy.PolicyValue}""));";
         }
+
+        public static string BuildTestAuthorizationString(List<Policy> policies, List<Endpoint> endpoints, string entityName, PolicyType policyType)
+        {
+            var endpointStrings = new List<string>();
+            foreach(var endpoint in endpoints)
+            {
+                endpointStrings.Add(Enum.GetName(typeof(Endpoint), endpoint));
+            }
+
+            var results = policies
+                .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == entityName)
+                    && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Intersect(endpointStrings).Any()));
+            
+            return "{\"" + string.Join("\", \"", results.Select(r => r.PolicyValue)) + "\"}";
+        }
     }
 }
