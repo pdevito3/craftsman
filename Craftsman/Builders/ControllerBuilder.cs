@@ -1,6 +1,5 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Builders.Dtos;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
@@ -105,7 +104,7 @@
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
         }}
-        {GetSwaggerComments_GetList(entity, AddSwaggerComments, listResponse)}{getListAuthorizations}
+        {GetSwaggerComments_GetList(entity, AddSwaggerComments, listResponse, getListAuthorizations.Length > 0)}{getListAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpGet(Name = ""{getListEndpointName}"")]
@@ -134,7 +133,7 @@
 
             return Ok(response);
         }}
-        {GetSwaggerComments_GetRecord(entity, AddSwaggerComments, singleResponse)}{getRecordAuthorizations}
+        {GetSwaggerComments_GetRecord(entity, AddSwaggerComments, singleResponse, getRecordAuthorizations.Length > 0)}{getRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""{getRecordEndpointName}"")]
         public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercaseEntityVariable}Id)
@@ -151,7 +150,7 @@
 
             return Ok(response);
         }}
-        {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments, singleResponse)}{addRecordAuthorizations}
+        {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0)}{addRecordAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpPost]
@@ -183,7 +182,7 @@
 
             return StatusCode(500);
         }}
-        {GetSwaggerComments_DeleteRecord(entity, AddSwaggerComments)}{deleteRecordAuthorizations}
+        {GetSwaggerComments_DeleteRecord(entity, AddSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpDelete(""{{{lowercaseEntityVariable}Id}}"")]
         public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercaseEntityVariable}Id)
@@ -201,7 +200,7 @@
             return NoContent();
         }}
 
-        {GetSwaggerComments_PutRecord(entity, AddSwaggerComments)}{updateRecordAuthorizations}
+        {GetSwaggerComments_PutRecord(entity, AddSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpPut(""{{{lowercaseEntityVariable}Id}}"")]
         public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercaseEntityVariable}Id, {updateDto} {lowercaseEntityVariable})
@@ -230,7 +229,7 @@
             return NoContent();
         }}
 
-        {GetSwaggerComments_PatchRecord(entity, AddSwaggerComments)}{updatePartialAuthorizations}
+        {GetSwaggerComments_PatchRecord(entity, AddSwaggerComments, updatePartialAuthorizations.Length > 0)}{updatePartialAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpPatch(""{{{lowercaseEntityVariable}Id}}"")]
@@ -267,15 +266,18 @@
 }}";
         }
 
-        private static string GetSwaggerComments_GetList(Entity entity, bool buildComments, string listResponse)
+        private static string GetSwaggerComments_GetList(Entity entity, bool buildComments, string listResponse, bool hasAuthentications)
         {
+            var authResponses = GetAuthResponses(hasAuthentications);
+            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+
             if (buildComments)
                 return $@"
         /// <summary>
         /// Gets a list of all {entity.Plural}.
         /// </summary>
         /// <response code=""200"">{entity.Name} list returned successfully.</response>
-        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
+        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         /// <remarks>
         /// Requests can be narrowed down with a variety of query string values:
@@ -300,92 +302,103 @@
         ///    | `_=`     | Starts with                   |  `!_=*`   | Case-insensitive string does not Starts with |
         /// </remarks>
         [ProducesResponseType(typeof({listResponse}), 200)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
         }
 
-        private static string GetSwaggerComments_GetRecord(Entity entity, bool buildComments, string singleResponse)
+        private static string GetSwaggerComments_GetRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
         {
+            var authResponses = GetAuthResponses(hasAuthentications);
+            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+
             if (buildComments)
                 return $@"
         /// <summary>
         /// Gets a single {entity.Name} by ID.
         /// </summary>
         /// <response code=""200"">{entity.Name} record returned successfully.</response>
-        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
+        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(typeof({singleResponse}), 200)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
         }
 
-        private static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse)
+        private static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
         {
+            var authResponses = GetAuthResponses(hasAuthentications);
+            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
             if (buildComments)
                 return $@"
         /// <summary>
         /// Creates a new {entity.Name} record.
         /// </summary>
         /// <response code=""201"">{entity.Name} created.</response>
-        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
+        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(typeof({singleResponse}), 201)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
         }
 
-        private static string GetSwaggerComments_DeleteRecord(Entity entity, bool buildComments)
+        private static string GetSwaggerComments_DeleteRecord(Entity entity, bool buildComments, bool hasAuthentications)
         {
+            var authResponses = GetAuthResponses(hasAuthentications);
+            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
             if (buildComments)
                 return $@"
         /// <summary>
         /// Deletes an existing {entity.Name} record.
         /// </summary>
         /// <response code=""201"">{entity.Name} deleted.</response>
-        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
+        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(201)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
         }
 
-        private static string GetSwaggerComments_PatchRecord(Entity entity, bool buildComments)
+        private static string GetSwaggerComments_PatchRecord(Entity entity, bool buildComments, bool hasAuthentications)
         {
+            var authResponses = GetAuthResponses(hasAuthentications);
+            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
             if (buildComments)
                 return $@"
         /// <summary>
         /// Updates specific properties on an existing {entity.Name}.
         /// </summary>
         /// <response code=""201"">{entity.Name} updated.</response>
-        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
+        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(201)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
         }
 
-        private static string GetSwaggerComments_PutRecord(Entity entity, bool buildComments)
+        private static string GetSwaggerComments_PutRecord(Entity entity, bool buildComments, bool hasAuthentications)
         {
+            var authResponses = GetAuthResponses(hasAuthentications);
+            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
             if (buildComments)
                 return $@"
         /// <summary>
         /// Updates an entire existing {entity.Name}.
         /// </summary>
         /// <response code=""201"">{entity.Name} updated.</response>
-        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>
+        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(201)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
@@ -412,6 +425,33 @@
             }
 
             return authorizations;
+        }
+
+        private static string GetAuthResponses(bool hasAuthentications)
+        {
+            var authResponses = "";
+            if (hasAuthentications)
+            {
+                authResponses = $@"
+        [ProducesResponseType(401)] 
+        [ProducesResponseType(403)]";
+            }
+
+            return authResponses;
+        }
+
+        private static string GetAuthCommentResponses(bool hasAuthentications)
+        {
+            var authResponseComments = "";
+            if (hasAuthentications)
+            {
+                authResponseComments = $@"
+        /// <response code=""401"">This request was not able to be authenticated.</response>
+        /// <response code=""403"">The required permissions to access this resource were not present in the given request.</response>";
+            }
+
+            return authResponseComments;
+
         }
     }
 }
