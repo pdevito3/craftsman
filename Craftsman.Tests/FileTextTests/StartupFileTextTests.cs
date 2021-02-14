@@ -15,7 +15,6 @@
         [Fact]
         public void GetStartupText_Devlopment_env_returns_expected_text()
         {
-            var template = new ApiTemplate() { };
             var fileText = StartupBuilder.GetStartupText("Development", false);
 
             var expectedText = @$"namespace WebApi
@@ -35,9 +34,12 @@
     public class StartupDevelopment
     {{
         public IConfiguration _config {{ get; }}
-        public StartupDevelopment(IConfiguration configuration)
+        public IWebHostEnvironment _env {{ get; }}
+
+        public StartupDevelopment(IConfiguration configuration, IWebHostEnvironment env)
         {{
             _config = configuration;
+            _env = env;
         }}
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -113,9 +115,12 @@
     public class Startup{env}
     {{
         public IConfiguration _config {{ get; }}
-        public Startup{env}(IConfiguration configuration)
+        public IWebHostEnvironment _env {{ get; }}
+
+        public Startup{env}(IConfiguration configuration, IWebHostEnvironment env)
         {{
             _config = configuration;
+            _env = env;
         }}
 
         // This method gets called by the runtime. Use this method to add services to the container.
