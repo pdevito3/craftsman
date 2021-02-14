@@ -71,7 +71,7 @@
             PageSize = pageSize;
             PageNumber = pageNumber;
             CurrentPageSize = items.Count;
-            CurrentStartIndex = GetCurrentStartIndex(count, PageNumber, CurrentPageSize, PageSize);
+            CurrentStartIndex = count == 0 ? 0 : ((pageNumber - 1) * pageSize) + 1;
             CurrentEndIndex = count == 0 ? 0 : CurrentStartIndex + CurrentPageSize - 1;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 
@@ -83,17 +83,6 @@
             var count = source.Count();
             var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             return new PagedList<T>(items, count, pageNumber, pageSize);
-        }}
-
-        private static int GetCurrentStartIndex(int count, int pageNumber, int currentPageSize, int pageSize)
-        {{
-            if (count == 0)
-                return 0;
-
-            if (currentPageSize == pageSize)
-                return (pageNumber * currentPageSize) - currentPageSize + 1;
-
-            return ((pageNumber - 1) * pageSize) + 1;
         }}
 
         public static async Task<PagedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
