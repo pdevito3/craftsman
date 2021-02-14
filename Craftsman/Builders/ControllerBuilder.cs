@@ -199,7 +199,6 @@
 
             return NoContent();
         }}
-
         {GetSwaggerComments_PutRecord(entity, AddSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpPut(""{{{lowercaseEntityVariable}Id}}"")]
@@ -228,7 +227,6 @@
 
             return NoContent();
         }}
-
         {GetSwaggerComments_PatchRecord(entity, AddSwaggerComments, updatePartialAuthorizations.Length > 0)}{updatePartialAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
