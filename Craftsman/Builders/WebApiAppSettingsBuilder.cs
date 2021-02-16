@@ -91,7 +91,7 @@
             var jwtSettings = GetJwtAuthSettings(env);
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
 
-            if(env.EnvironmentName == "Development")
+            if(env.EnvironmentName == "Development" || env.EnvironmentName == "IntegrationTesting")
 
                 return @$"{{
   ""AllowedHosts"": ""*"",
@@ -120,9 +120,9 @@
   }},";
         }
 
-        private static string GetSerilogSettings(string env)
+        private static string GetSerilogSettings(string envName)
         {
-            var writeTo = env == "Development" ? $@"
+            var writeTo = envName == "Development" || envName == "IntegrationTesting" ? $@"
       {{ ""Name"": ""Console"" }},
       {{
         ""Name"": ""Seq"",

@@ -275,6 +275,10 @@
                 //services
                 if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
                     SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, env);
+
+                // add an integration testing env to make sure that an in memory database is used
+                var integEnv = new ApiEnvironment() { EnvironmentName = "IntegrationTesting" };
+                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, integEnv, "");
             }
         }
     }
