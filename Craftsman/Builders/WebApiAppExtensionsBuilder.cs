@@ -49,6 +49,7 @@
             return @$"namespace {classNamespace}
 {{
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.Extensions.Configuration;
     using WebApi.Middleware;
 
     public static class AppExtensions

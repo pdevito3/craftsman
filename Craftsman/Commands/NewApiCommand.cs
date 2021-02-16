@@ -133,7 +133,7 @@
             SeederBuilder.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName);
 
             //services
-            SwaggerBuilder.AddSwagger(solutionDirectory, template.SwaggerConfig, template.SolutionName);
+            SwaggerBuilder.AddSwagger(solutionDirectory, template.SwaggerConfig, template.SolutionName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies);
 
             if(template.AddJwtAuthentication)
                 InfrastructureIdentityServiceRegistrationBuilder.CreateInfrastructureIdentityServiceExtension(solutionDirectory, template.AuthorizationSettings.Policies, fileSystem);

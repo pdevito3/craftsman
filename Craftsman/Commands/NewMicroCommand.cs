@@ -154,7 +154,7 @@
                 SeederBuilder.AddSeeders(microPath, micro.Entities, micro.DbContext.ContextName);
 
                 //services
-                SwaggerBuilder.AddSwagger(microPath, micro.SwaggerConfig, micro.ProjectFolderName);
+                SwaggerBuilder.AddSwagger(microPath, micro.SwaggerConfig, micro.ProjectFolderName, micro.AddJwtAuthentication, micro.AuthorizationSettings.Policies);
             }
 
             // gateway path

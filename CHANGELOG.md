@@ -15,15 +15,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added additional startup middleware
   - `usehsts` for non dev
   - `UseHttpsRedirection` with notes on even more secure options
-- New JWT Authentication for the `new:api` and `new:micro` commands
+- New JWT Authentication options in the environments for the `new:api` and `new:micro` commands
 - Added policy authorization options for scopes, roles, and claims on the `new:api` `new:micro` and `add:entity` commands
-  - [roles](https://jakeydocs.readthedocs.io/en/latest/security/authorization/roles.html)
-  - [claims](https://jakeydocs.readthedocs.io/en/latest/security/authorization/claims.html)
-  - [custom (not included, but able to add manually)](https://jakeydocs.readthedocs.io/en/latest/security/authorization/policies.html)
+  - scopes
+  - ~~[roles](https://jakeydocs.readthedocs.io/en/latest/security/authorization/roles.html)~~
+  - ~~[claims](https://jakeydocs.readthedocs.io/en/latest/security/authorization/claims.html)~~
+  - ~~[custom (not included, but able to add manually)](https://jakeydocs.readthedocs.io/en/latest/security/authorization/policies.html)~~
+- Added new `GetEntity` integration test
+- Added 401/403 response types to swagger comments when using auth
+- Added auth to swagger setup
+  - note that secret is currently stored in appsettings
 
 ### Fixed
 
 - The `CurrentStartIndex` calculation in the `PagedList` class was broken and now has a new calculation.
+- Added null conditional operator (`?.`) to certain tests before `.Data` to make them fail more gracefully
+  - Get{entity.Plural}_ReturnsSuccessCodeAndResourceWithAccurateFields()
+  - Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated
+- Cleaned up `WebApplicationFactory` to remove deprecated services.
 
 ### Clean up
 

@@ -6,18 +6,19 @@
     using Craftsman.Models;
     using FluentAssertions.Common;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
     public class SwaggerBuilder
     {
-        public static void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName)
+        public static void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies)
         {
             if(!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
             {
-                AddSwaggerServiceExtension(solutionDirectory, swaggerConfig, solutionName);
-                AddSwaggerAppExtension(solutionDirectory, swaggerConfig);
+                AddSwaggerServiceExtension(solutionDirectory, swaggerConfig, solutionName, addJwtAuthentication, policies);
+                AddSwaggerAppExtension(solutionDirectory, swaggerConfig, addJwtAuthentication);
                 UpdateWebApiCsProjSwaggerSettings(solutionDirectory, solutionName);
             }
         }
@@ -45,11 +46,11 @@
                             var newText = $"{line}";
                             if (line.Contains("#region Dynamic Services"))
                             {
-                                newText += $"{Environment.NewLine}            services.AddSwaggerExtension();";
+                                newText += $"{Environment.NewLine}            services.AddSwaggerExtension(_config);";
                             }
                             else if (line.Contains("#region Dynamic App"))
                             {
-                                newText += $"{Environment.NewLine}            app.UseSwaggerExtension();";
+                                newText += $"{Environment.NewLine}            app.UseSwaggerExtension(_config);";
                             }
 
                             output.WriteLine(newText);
@@ -75,7 +76,7 @@
             }
         }
 
-        private static void AddSwaggerServiceExtension(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName)
+        private static void AddSwaggerServiceExtension(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies)
         {
             try
             {
@@ -98,7 +99,7 @@
                             var newText = $"{line}";
                             if (line.Contains("#region Swagger Region"))
                             {
-                                newText += GetSwaggerServiceExtensionText(swaggerConfig, solutionName);
+                                newText += GetSwaggerServiceExtensionText(swaggerConfig, solutionName, addJwtAuthentication, policies);
                             }
 
                             output.WriteLine(newText);
@@ -124,7 +125,7 @@
             }
         }
 
-        private static string GetSwaggerServiceExtensionText(SwaggerConfig swaggerConfig, string solutionName)
+        private static string GetSwaggerServiceExtensionText(SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies)
         {
             var contactUrlLine = IsCleanUri(swaggerConfig.ApiContact.Url) 
                 ? $@"
@@ -137,6 +138,43 @@
 
             var licenseText = GetLicenseText(swaggerConfig.LicenseName, LicenseUrlLine);
 
+            var policyScopes = GetPolicies(policies);
+            var swaggerAuth = addJwtAuthentication ? $@"
+
+                    config.AddSecurityDefinition(""oauth2"", new OpenApiSecurityScheme
+                    {{
+                Type = SecuritySchemeType.OAuth2,
+                        Flows = new OpenApiOAuthFlows
+                        {{
+                            AuthorizationCode = new OpenApiOAuthFlow
+                            {{
+                                AuthorizationUrl = new Uri(configuration[""JwtSettings:AuthorizationUrl""]),
+                                TokenUrl = new Uri(configuration[""JwtSettings:TokenUrl""]),
+                                Scopes = new Dictionary<string, string>
+                                {{{policyScopes}
+                                }}
+                            }}
+                        }}
+                    }});
+
+                    config.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                    {{
+                        {{
+                            new OpenApiSecurityScheme
+                            {{
+                                Reference = new OpenApiReference
+                                {{
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = ""oauth2""
+                                }},
+                                Scheme = ""oauth2"",
+                                Name = ""oauth2"",
+                                In = ParameterLocation.Header
+                            }},
+                            new List<string>()
+                        }}
+                    }}); " : $@"";
+
             var SwaggerXmlComments = "";
             if (swaggerConfig.AddSwaggerComments)
                 SwaggerXmlComments = $@"
@@ -144,7 +182,7 @@
                     config.IncludeXmlComments(string.Format(@""{{0}}\{solutionName}.WebApi.xml"", AppDomain.CurrentDomain.BaseDirectory));";
 
             var swaggerText = $@"
-            public static void AddSwaggerExtension(this IServiceCollection services)
+            public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
             {{
                 services.AddSwaggerGen(config =>
                 {{
@@ -160,11 +198,24 @@
                                 Name = ""{swaggerConfig.ApiContact.Name}"",
                                 Email = ""{swaggerConfig.ApiContact.Email}"",{contactUrlLine}
                             }},{licenseText}
-                        }});{SwaggerXmlComments}
+                        }});{swaggerAuth}{SwaggerXmlComments}
                 }});
             }}";
 
             return swaggerText;
+        }
+
+        private static object GetPolicies(List<Policy> policies)
+        {
+            var policyStrings = "";
+            foreach(var policy in policies)
+            {
+                policyStrings += $@"
+                                    {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},
+";
+            }
+
+            return policyStrings;
         }
 
         private static string GetLicenseText(string licenseName, string licenseUrlLine)
@@ -179,7 +230,7 @@
             return "";
         }
 
-        private static void AddSwaggerAppExtension(string solutionDirectory, SwaggerConfig swaggerConfig)
+        private static void AddSwaggerAppExtension(string solutionDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication)
         {
             try
             {
@@ -202,7 +253,7 @@
                             var newText = $"{line}";
                             if (line.Contains("#region Swagger Region"))
                             {
-                                newText += GetSwaggerAppExtensionText(swaggerConfig);
+                                newText += GetSwaggerAppExtensionText(swaggerConfig, addJwtAuthentication);
                             }
 
                             output.WriteLine(newText);
@@ -232,15 +283,20 @@
             return Uri.TryCreate(uri, UriKind.Absolute, out var outUri) && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps);
         }
 
-        private static string GetSwaggerAppExtensionText(SwaggerConfig swaggerConfig)
+        private static string GetSwaggerAppExtensionText(SwaggerConfig swaggerConfig, bool addJwtAuthentication)
         {
+            var swaggerAuth = addJwtAuthentication ? $@"
+                config.OAuthClientId(configuration[""JwtSettings:ClientId""]);
+                config.OAuthClientSecret(configuration[""JwtSettings:ClientSecret""]);
+                config.OAuthUsePkce();" : "";
+
            var swaggerText = $@"
-        public static void UseSwaggerExtension(this IApplicationBuilder app)
+        public static void UseSwaggerExtension(this IApplicationBuilder app, IConfiguration configuration)
         {{
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            app.UseSwaggerUI(config =>
             {{
-                c.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");
+                config.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");{swaggerAuth}
             }});
         }}";
 
