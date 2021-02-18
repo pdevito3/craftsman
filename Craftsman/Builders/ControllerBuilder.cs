@@ -411,8 +411,8 @@
             var authorizations = "";
             foreach (var result in results)
             {
-                if (result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope)
-                    || result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Claim))
+                if (result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
+                    //|| result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Claim))
                 {
                     authorizations += $@"{Environment.NewLine}        [Authorize(Policy = ""{result.Name}"")]";
                 }

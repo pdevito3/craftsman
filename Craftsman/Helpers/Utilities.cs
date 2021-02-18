@@ -137,12 +137,12 @@
                 return $@"                options.AddPolicy(""{policy.Name}"", 
                     policy => policy.RequireClaim(""scope"", ""{policy.PolicyValue}""));";
             }
-            else if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Role))
-            {
-                // ex: options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Administrator"));
-                return $@"                options.AddPolicy(""{policy.Name}"", 
-                    policy => policy.RequireRole(""{policy.PolicyValue}""));";
-            }
+            //else if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Role))
+            //{
+            //    // ex: options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Administrator"));
+            //    return $@"                options.AddPolicy(""{policy.Name}"", 
+            //        policy => policy.RequireRole(""{policy.PolicyValue}""));";
+            //}
 
             // claim ex: options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
             return $@"                options.AddPolicy(""{policy.Name}"", 

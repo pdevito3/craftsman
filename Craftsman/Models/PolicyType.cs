@@ -2,8 +2,8 @@
 {
     public enum PolicyType
     {
-        Role,
-        Claim,
+        //Role,
+        //Claim,
         Scope
     }
 }
