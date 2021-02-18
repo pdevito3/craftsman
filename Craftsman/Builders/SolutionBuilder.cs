@@ -52,7 +52,7 @@
             BuildTestProject(solutionDirectory, projectDirectory, microSolutionFolder, solutionName, addJwtAuth);
 
             if (addJwtAuth)
-                BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, "Infrastructure");
+                BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, microSolutionFolder);
         }
 
         public static void AddGatewayProject(string solutionDirectory, string projectDirectory, string gatewayProjectName, IFileSystem fileSystem)

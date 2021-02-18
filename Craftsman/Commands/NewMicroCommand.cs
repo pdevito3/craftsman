@@ -155,6 +155,9 @@
 
                 //services
                 SwaggerBuilder.AddSwagger(microPath, micro.SwaggerConfig, micro.ProjectFolderName, micro.AddJwtAuthentication, micro.AuthorizationSettings.Policies);
+
+                if (micro.AddJwtAuthentication)
+                    InfrastructureIdentityServiceRegistrationBuilder.CreateInfrastructureIdentityServiceExtension(microPath, micro.AuthorizationSettings.Policies, fileSystem);
             }
 
             // gateway path
@@ -191,63 +194,6 @@
 
             var author = new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
             repo.Commit("Initial Commit", author, author);
-        }
-
-        private static void UpdateFoundation()
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new Foundation.Api --update-apply",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-        }
-
-        private static void UninstallFoundation()
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new -u Foundation.Api",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-        }
-
-        private static void InstallFoundation()
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new -i Foundation.Api",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
         }
 
         private static void AddStartupEnvironmentsWithServices(

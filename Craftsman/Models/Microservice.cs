@@ -31,16 +31,19 @@
         public List<ApiEnvironment> Environments { get; set; } = new List<ApiEnvironment>();
 
         /// <summary>
-        /// The port that will be used when running locally in the project (and referenced by the gateway).
+        /// The port that will be used when running locally in the project.
         /// </summary>
         public int Port { get; set; } = 5000;
 
+        /// <summary>
+        /// Calculation to determine whether or not authentication is added to the project
+        /// </summary>
         public bool AddJwtAuthentication
         {
             get => Environments
-                    .Where(e => e.Authority.Length > 0)
-                    .ToList()
-                    .Count > 0;
+                .Where(e => e.Authority.Length > 0)
+                .ToList()
+                .Count > 0;
         }
 
         public AuthorizationSettings AuthorizationSettings { get; set; }

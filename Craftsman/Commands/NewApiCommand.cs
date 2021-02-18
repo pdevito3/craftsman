@@ -145,34 +145,6 @@
                 GitSetup(solutionDirectory);
         }
 
-        private static void CreateNewFoundation(string directory, string solutionName)
-        {
-            var newDir = $"{directory}{Path.DirectorySeparatorChar}{solutionName}";
-            if (Directory.Exists(newDir))
-                throw new DirectoryAlreadyExistsException(newDir);
-
-            //UninstallFoundation();
-            //InstallFoundation();
-            //UpdateFoundation();
-
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new foundation -n {solutionName}",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    WorkingDirectory = directory
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-        }
-
         private static void GitSetup(string solutionDirectory)
         {
             GitBuilder.CreateGitIgnore(solutionDirectory);
@@ -185,63 +157,6 @@
 
             var author = new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
             repo.Commit("Initial Commit", author, author);
-        }
-
-        private static void UpdateFoundation()
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new Foundation.Api --update-apply",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-        }
-
-        private static void UninstallFoundation()
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new -u Foundation.Api",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-        }
-
-        private static void InstallFoundation()
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new -i Foundation.Api",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
         }
 
         private static void AddStartupEnvironmentsWithServices(
