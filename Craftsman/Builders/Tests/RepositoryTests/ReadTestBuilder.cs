@@ -71,7 +71,6 @@ namespace {classPath.ClassNamespace}
     using Application.Interfaces;
     using Moq;
 
-    [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{ 
         {GetEntityTest(entity, dbContextName)}
