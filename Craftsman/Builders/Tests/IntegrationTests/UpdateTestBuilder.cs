@@ -13,7 +13,7 @@
 
     public class UpdateTestBuilder
     {
-        public static void CreateEntityUpdateTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName, bool addJwtAuth, List<Policy> policies)
+        public static void CreateEntityUpdateTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName, List<Policy> policies)
         {
             try
             {
@@ -27,7 +27,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = UpdateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, dbContextName, addJwtAuth, policies);
+                    var data = UpdateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, dbContextName, policies);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -45,17 +45,23 @@
             }
         }
 
-        private static string UpdateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, string dbContextName, bool addJwtAuth, List<Policy> policies)
+        private static string UpdateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, string dbContextName, List<Policy> policies)
         {
             var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
-            var authUsing = addJwtAuth ? $@"
-    using {httpClientExtensionsClassPath.ClassNamespace};" : "";
 
-            var authOnlyTests = $@"
+            var restrictedRecordUpdatePolicies = Utilities.GetEndpointPolicies(policies, Endpoint.UpdateRecord, entity.Name);
+            var hasRestrictedRecordUpdateEndpoints = restrictedRecordUpdatePolicies.Count > 0;
+            var authOnlyTests = hasRestrictedRecordUpdateEndpoints ? $@"
             {UpdateRecordEntityTestUnauthorized(entity)}
-            {UpdateRecordEntityTestForbidden(entity)}
+            {UpdateRecordEntityTestForbidden(entity)}" : "";
+
+            var restrictedPartialUpdatePolicies = Utilities.GetEndpointPolicies(policies, Endpoint.UpdatePartial, entity.Name);
+            var hasRestrictedPartialUpdateEndpoints = restrictedPartialUpdatePolicies.Count > 0;
+            authOnlyTests += hasRestrictedPartialUpdateEndpoints ? $@"
             {UpdatePartialEntityTestUnauthorized(entity)}
-            {UpdatePartialEntityTestForbidden(entity)}";
+            {UpdatePartialEntityTestForbidden(entity)}" : "";
+            var authUsing = hasRestrictedRecordUpdateEndpoints || hasRestrictedPartialUpdateEndpoints ? $@"
+    using {httpClientExtensionsClassPath.ClassNamespace};" : "";
 
             return @$"
 namespace {classPath.ClassNamespace}
@@ -90,13 +96,13 @@ namespace {classPath.ClassNamespace}
             _factory = factory;
         }}
 
-        {UpdateEntityTest(entity, dbContextName, addJwtAuth, policies)}
-        {PutEntityTest(entity, dbContextName, addJwtAuth, policies)}{authOnlyTests}
+        {UpdateEntityTest(entity, dbContextName, hasRestrictedPartialUpdateEndpoints, policies)}
+        {PutEntityTest(entity, dbContextName, hasRestrictedRecordUpdateEndpoints, policies)}{authOnlyTests}
     }} 
 }}";
         }
 
-        private static string UpdateEntityTest(Entity entity, string dbContextName, bool addJwtAuth, List<Policy> policies)
+        private static string UpdateEntityTest(Entity entity, string dbContextName, bool hasRestrictedPartialUpdateEndpoints, List<Policy> policies)
         {
             var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string" 
                 && e.CanFilter 
@@ -113,11 +119,11 @@ namespace {classPath.ClassNamespace}
                     && e.CanManipulate).FirstOrDefault();
                 lookupVal = "999999";
             }
-            var testName = addJwtAuth
+            var testName = hasRestrictedPartialUpdateEndpoints
                 ? @$"Patch{entity.Name}204AndFieldsWereSuccessfullyUpdated_WithAuth"
                 : @$"Patch{entity.Name}204AndFieldsWereSuccessfullyUpdated";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdatePartial, Endpoint.GetRecord }, entity.Name, PolicyType.Scope);
-            var clientAuth = addJwtAuth ? @$"
+            var clientAuth = hasRestrictedPartialUpdateEndpoints ? @$"
 
             client.AddAuth(new[] {scopes});" : "";
 
@@ -193,7 +199,7 @@ namespace {classPath.ClassNamespace}
         }}";
         }
 
-        private static string PutEntityTest(Entity entity, string dbContextName, bool addJwtAuth, List<Policy> policies)
+        private static string PutEntityTest(Entity entity, string dbContextName, bool hasRestrictedRecordUpdateEndpoints, List<Policy> policies)
         {
             var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string"
                 && e.CanFilter
@@ -210,11 +216,11 @@ namespace {classPath.ClassNamespace}
                     && e.CanManipulate).FirstOrDefault();
                 lookupVal = "999999";
             }
-            var testName = addJwtAuth
+            var testName = hasRestrictedRecordUpdateEndpoints
                 ? @$"Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated_WithAuth"
                 : @$"Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdateRecord, Endpoint.GetRecord }, entity.Name, PolicyType.Scope);
-            var clientAuth = addJwtAuth ? @$"
+            var clientAuth = hasRestrictedRecordUpdateEndpoints ? @$"
 
             client.AddAuth(new[] {scopes});" : "";
 

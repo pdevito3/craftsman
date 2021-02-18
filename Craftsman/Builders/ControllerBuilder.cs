@@ -404,9 +404,7 @@
 
         private static string BuildAuthorizations(List<Policy> policies, Endpoint endpoint, string entityName)
         {
-            var results = policies
-                .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == entityName )
-                    && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Any(re => re == Enum.GetName(typeof(Endpoint), endpoint))));
+            var results = Utilities.GetEndpointPolicies(policies, endpoint, entityName);
 
             var authorizations = "";
             foreach (var result in results)

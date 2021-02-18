@@ -131,9 +131,10 @@
 
                     FakesBuilder.CreateFakes(microPath, micro.ProjectFolderName, entity);
                     ReadTestBuilder.CreateEntityReadTests(microPath, micro.ProjectFolderName, entity, micro.DbContext.ContextName);
-                    GetTestBuilder.CreateEntityGetTests(microPath, micro.ProjectFolderName, entity, micro.DbContext.ContextName, micro.AddJwtAuthentication, micro.AuthorizationSettings.Policies);
-                    PostTestBuilder.CreateEntityWriteTests(microPath, entity, micro.ProjectFolderName, micro.AddJwtAuthentication, micro.AuthorizationSettings.Policies);
-                    UpdateTestBuilder.CreateEntityUpdateTests(microPath, entity, micro.ProjectFolderName, micro.DbContext.ContextName, micro.AddJwtAuthentication, micro.AuthorizationSettings.Policies);
+                    GetTestBuilder.CreateEntityGetTests(microPath, micro.ProjectFolderName, entity, micro.DbContext.ContextName, micro.AuthorizationSettings.Policies);
+                    PostTestBuilder.CreateEntityWriteTests(microPath, entity, micro.ProjectFolderName, micro.AuthorizationSettings.Policies);
+                    UpdateTestBuilder.CreateEntityUpdateTests(microPath, entity, micro.ProjectFolderName, micro.DbContext.ContextName, micro.AuthorizationSettings.Policies);
+                    DeleteIntegrationTestBuilder.CreateEntityDeleteTests(microPath, entity, micro.ProjectFolderName, micro.DbContext.ContextName, micro.AuthorizationSettings.Policies);
                     DeleteTestBuilder.DeleteEntityWriteTests(microPath, entity, micro.ProjectFolderName, micro.DbContext.ContextName);
                     WebAppFactoryBuilder.CreateWebAppFactory(microPath, micro.ProjectFolderName, micro.DbContext.ContextName, micro.AddJwtAuthentication);
                 }

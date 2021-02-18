@@ -198,5 +198,13 @@
             var integEnv = new ApiEnvironment() { EnvironmentName = "IntegrationTesting" };
             WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, integEnv, "");
         }
+
+        public static List<Policy> GetEndpointPolicies(List<Policy> policies, Endpoint endpoint, string entityName)
+        {
+            return policies
+                .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == entityName)
+                    && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Any(re => re == Enum.GetName(typeof(Endpoint), endpoint))))
+                .ToList();
+        }
     }
 }

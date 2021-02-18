@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added 401/403 response types to swagger comments when using auth
 - Added auth to swagger setup
   - note that secret is currently stored in appsettings
+- Added Delete integration tests with and without auth
+- auth only added to tests when they have a policy (no authorize attribute without it!)
 
 ### Fixed
 
@@ -33,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Get{entity.Plural}_ReturnsSuccessCodeAndResourceWithAccurateFields()
   - Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated
 - Cleaned up `WebApplicationFactory` to remove deprecated services.
+- removed `[Collection(""Sequential"")]` from repo tests
 
 ### Clean up
 

@@ -13,7 +13,7 @@
 
     public class PostTestBuilder
     {
-        public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName, bool addJwtAuth, List<Policy> policies)
+        public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName, List<Policy> policies)
         {
             try
             {
@@ -27,7 +27,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = CreateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, addJwtAuth, policies);
+                    var data = CreateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, policies);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -45,7 +45,7 @@
             }
         }
 
-        private static string CreateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, bool addJwtAuth, List<Policy> policies)
+        private static string CreateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, List<Policy> policies)
         {
             var assertString = "";
             foreach (var prop in entity.Properties)
@@ -54,12 +54,14 @@
                 assertString += @$"                {entity.Name.LowercaseFirstLetter()}ById.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
             var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
-            var authUsing = addJwtAuth ? $@"
-    using {httpClientExtensionsClassPath.ClassNamespace};" : "";
 
-            var authOnlyTests = $@"
+            var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.AddRecord, entity.Name);
+            var hasRestrictedEndpoints = restrictedPolicies.Count > 0;
+            var authOnlyTests = hasRestrictedEndpoints ? $@"
             {CreateEntityTestUnauthorized(entity)}
-            {CreateEntityTestForbidden(entity)}";
+            {CreateEntityTestForbidden(entity)}" : "";
+            var authUsing = hasRestrictedEndpoints ? $@"
+    using {httpClientExtensionsClassPath.ClassNamespace};" : "";
 
             return @$"
 namespace {classPath.ClassNamespace}
@@ -86,12 +88,12 @@ namespace {classPath.ClassNamespace}
             _factory = factory;
         }}
 
-        {CreateEntityTest(entity, addJwtAuth, policies)}{authOnlyTests}
+        {CreateEntityTest(entity, hasRestrictedEndpoints, policies)}{authOnlyTests}
     }} 
 }}";
         }
 
-        private static string CreateEntityTest(Entity entity, bool addJwtAuth, List<Policy> policies)
+        private static string CreateEntityTest(Entity entity, bool hasRestrictedEndpoints, List<Policy> policies)
         {
             var assertString = "";
             foreach (var prop in entity.Properties.Where(p => p.IsPrimaryKey == false))

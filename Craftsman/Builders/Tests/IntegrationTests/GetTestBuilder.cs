@@ -13,7 +13,7 @@
 
     public class GetTestBuilder
     {
-        public static void CreateEntityGetTests(string solutionDirectory, string solutionName, Entity entity, string dbContextName, bool addJwtAuth, List<Policy> policies)
+        public static void CreateEntityGetTests(string solutionDirectory, string solutionName, Entity entity, string dbContextName, List<Policy> policies)
         {
             try
             {
@@ -27,7 +27,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetIntegrationTestFileText(classPath, solutionDirectory, solutionName, entity, dbContextName, addJwtAuth, policies);
+                    var data = GetIntegrationTestFileText(classPath, solutionDirectory, solutionName, entity, dbContextName, policies);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -45,17 +45,23 @@
             }
         }
 
-        private static string GetIntegrationTestFileText(ClassPath classPath, string solutionDirectory, string solutionName, Entity entity, string dbContextName, bool addJwtAuth, List<Policy> policies)
+        private static string GetIntegrationTestFileText(ClassPath classPath, string solutionDirectory, string solutionName, Entity entity, string dbContextName, List<Policy> policies)
         {
             var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
-            var authUsing = addJwtAuth ? $@"
-    using {httpClientExtensionsClassPath.ClassNamespace};" : "";
 
-            var authOnlyTests = $@"
+            var restrictedGetListPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.GetList, entity.Name);
+            var hasRestrictedGetListEndpoints = restrictedGetListPolicies.Count > 0;
+            var authOnlyTests = hasRestrictedGetListEndpoints ? $@"
             {GetEntitiesTestUnauthorized(entity)}
+            {GetEntitiesTestForbidden(entity)}" : "";
+
+            var restrictedGetRecordPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.GetRecord, entity.Name);
+            var hasRestrictedGetRecordEndpoints = restrictedGetRecordPolicies.Count > 0;
+            authOnlyTests += hasRestrictedGetRecordEndpoints ? $@"
             {GetEntityTestUnauthorized(entity)}
-            {GetEntitiesTestForbidden(entity)}
-            {GetEntityTestForbidden(entity)}";
+            {GetEntityTestForbidden(entity)}" : "";
+            var authUsing = hasRestrictedGetRecordEndpoints || hasRestrictedGetListEndpoints ? $@"
+    using {httpClientExtensionsClassPath.ClassNamespace};" : "";
 
             return @$"
 namespace {classPath.ClassNamespace}
@@ -84,19 +90,19 @@ namespace {classPath.ClassNamespace}
             _factory = factory;
         }}
 
-        {GetEntitiesTest(entity, dbContextName, addJwtAuth, policies)}
-        {GetEntityTest(entity, dbContextName, addJwtAuth, policies)}{authOnlyTests}
+        {GetEntitiesTest(entity, dbContextName, hasRestrictedGetListEndpoints, policies)}
+        {GetEntityTest(entity, dbContextName, hasRestrictedGetRecordEndpoints, policies)}{authOnlyTests}
     }} 
 }}";
         }
 
-        private static string GetEntitiesTest(Entity entity, string dbContextName, bool addJwtAuth, List<Policy> policies)
+        private static string GetEntitiesTest(Entity entity, string dbContextName, bool hasRestrictedGetListEndpoints, List<Policy> policies)
         {
-            var testName = addJwtAuth 
+            var testName = hasRestrictedGetListEndpoints
                 ? @$"Get{entity.Plural}_ReturnsSuccessCodeAndResourceWithAccurateFields_WithAuth" 
                 : @$"Get{entity.Plural}_ReturnsSuccessCodeAndResourceWithAccurateFields";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.GetList }, entity.Name, PolicyType.Scope);
-            var clientAuth = addJwtAuth ? @$"
+            var clientAuth = hasRestrictedGetListEndpoints ? @$"
 
             client.AddAuth(new[] {scopes});" : "";
 
@@ -138,13 +144,13 @@ namespace {classPath.ClassNamespace}
         }}";
         }
 
-        private static string GetEntityTest(Entity entity, string dbContextName, bool addJwtAuth, List<Policy> policies)
+        private static string GetEntityTest(Entity entity, string dbContextName, bool hasRestrictedGetRecordEndpoints, List<Policy> policies)
         {
-            var testName = addJwtAuth
+            var testName = hasRestrictedGetRecordEndpoints
                 ? @$"Get{entity.Name}_ReturnsSuccessCodeAndResourceWithAccurateFields_WithAuth"
                 : @$"Get{entity.Name}_ReturnsSuccessCodeAndResourceWithAccurateFields";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.GetRecord }, entity.Name, PolicyType.Scope);
-            var clientAuth = addJwtAuth ? @$"
+            var clientAuth = hasRestrictedGetRecordEndpoints ? @$"
 
             client.AddAuth(new[] {scopes});" : "";
 
