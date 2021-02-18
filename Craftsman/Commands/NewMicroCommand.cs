@@ -140,7 +140,7 @@
 
 
                 // environments
-                AddStartupEnvironmentsWithServices(
+                Utilities.AddStartupEnvironmentsWithServices(
                     microPath,
                     micro.ProjectFolderName,
                     micro.DbContext.DatabaseName,
@@ -194,38 +194,6 @@
 
             var author = new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
             repo.Commit("Initial Commit", author, author);
-        }
-
-        private static void AddStartupEnvironmentsWithServices(
-            string solutionDirectory,
-            string solutionName,
-            string databaseName,
-            List<ApiEnvironment> environments,
-            SwaggerConfig swaggerConfig,
-            int port,
-            bool useJwtAuth)
-        {
-            // add a development environment by default for local work if none exists
-            if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
-                environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{solutionName} (Development)" });
-
-            foreach (var env in environments)
-            {
-                // default startup is already built in cleanup phase
-                if(env.EnvironmentName != "Startup")
-                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth);
-
-                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName);
-                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
-
-                //services
-                if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
-                    SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, env);
-
-                // add an integration testing env to make sure that an in memory database is used
-                var integEnv = new ApiEnvironment() { EnvironmentName = "IntegrationTesting" };
-                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, integEnv, "");
-            }
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿namespace Craftsman.Helpers
 {
+    using Craftsman.Builders;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Models;
+    using FluentAssertions.Common;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -162,6 +164,39 @@
                     && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Intersect(endpointStrings).Any()));
             
             return "{\"" + string.Join("\", \"", results.Select(r => r.PolicyValue)) + "\"}";
+        }
+
+        public static void AddStartupEnvironmentsWithServices(
+            string solutionDirectory,
+            string solutionName,
+            string databaseName,
+            List<ApiEnvironment> environments,
+            SwaggerConfig swaggerConfig,
+            int port,
+            bool useJwtAuth)
+        {
+            // add a development environment by default for local work if none exists
+            if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
+                environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{solutionName} (Development)" });
+
+            var sortedEnvironments = environments.OrderBy(e => e.EnvironmentName == "Development" ? 1 : 0).ToList(); // sets dev as default profile
+            foreach (var env in sortedEnvironments)
+            {
+                // default startup is already built in cleanup phase
+                if (env.EnvironmentName != "Startup")
+                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth);
+
+                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName);
+                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
+
+                //services
+                if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
+                    SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, env);
+            }
+
+            // add an integration testing env to make sure that an in memory database is used
+            var integEnv = new ApiEnvironment() { EnvironmentName = "IntegrationTesting" };
+            WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, integEnv, "");
         }
     }
 }
