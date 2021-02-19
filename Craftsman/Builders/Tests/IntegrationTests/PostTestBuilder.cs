@@ -101,11 +101,11 @@ namespace {classPath.ClassNamespace}
                 var newLine = prop == entity.Properties.LastOrDefault() ? "" : $"{Environment.NewLine}";
                 assertString += @$"            resultDto.Data.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
-            var testName = addJwtAuth
+            var testName = hasRestrictedEndpoints
                 ? @$"Post{entity.Name}ReturnsSuccessCodeAndResourceWithAccurateFields_WithAuth"
                 : @$"Post{entity.Name}ReturnsSuccessCodeAndResourceWithAccurateFields";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.AddRecord }, entity.Name, PolicyType.Scope);
-            var clientAuth = addJwtAuth ? @$"
+            var clientAuth = hasRestrictedEndpoints ? @$"
 
             client.AddAuth(new[] {scopes});" : "";
 
