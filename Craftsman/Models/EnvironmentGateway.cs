@@ -23,6 +23,6 @@
         /// </summary>
         public string GatewayUrl { get; set; }
 
-        public List<GatewayTemplate> GatewayTemplates { get; set; }
+        public List<GatewayResource> GatewayResources { get; set; }
     }
 }

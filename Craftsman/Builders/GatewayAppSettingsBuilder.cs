@@ -91,7 +91,7 @@
         {
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
             var gatewayRoute = "";
-            env.GatewayTemplates.ForEach(template => gatewayRoute += GetGatewayRoutes(template, microservices));
+            env.GatewayResources.ForEach(template => gatewayRoute += GetGatewayRoutes(template, microservices));
 
             if (env.EnvironmentName == "Development")
                 return @$"{{
@@ -161,9 +161,9 @@
 }}";
         }
 
-        private static string GetGatewayRoutes(GatewayTemplate template, List<Microservice> microservices)
+        private static string GetGatewayRoutes(GatewayResource template, List<Microservice> microservices)
         {
-            var upstreamPathTemplate = template.UpstreamPathTemplate.StartsWith("/") ? template.UpstreamPathTemplate : @$"/{template.UpstreamPathTemplate}";
+            var upstreamPathTemplate = template.GatewayRoute.StartsWith("/") ? template.GatewayRoute : @$"/{template.GatewayRoute}";
 
             // man this is ugly 🙈
             var microservice = microservices.Where(m => m.Entities.Any(e => String.Equals(e.Name, template.DownstreamEntityName, StringComparison.InvariantCultureIgnoreCase))).FirstOrDefault();

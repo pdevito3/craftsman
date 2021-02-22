@@ -6,12 +6,12 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    public class GatewayTemplate
+    public class GatewayResource
     {
         /// <summary>
         /// This is the path template for the GATEWAY url (e.g. /recipes)
         /// </summary>
-        public string UpstreamPathTemplate { get; set; }
+        public string GatewayRoute { get; set; }
 
         /// <summary>
         /// The name of the entity that will be called downstream
