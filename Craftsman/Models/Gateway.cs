@@ -10,7 +10,7 @@
     {
         public string GatewayProjectName { get; set; }
 
-        public List<EnvironmentGateway> EnvironmentGateways { get; set; }
+        public List<EnvironmentGateway> EnvironmentGateways { get; set; } = new List<EnvironmentGateway>();
 
     }
 }

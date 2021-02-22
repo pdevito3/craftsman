@@ -57,6 +57,6 @@ namespace Craftsman.Models
                 .Count > 0;
         }
 
-        public AuthorizationSettings AuthorizationSettings { get; set; }
+        public AuthorizationSettings AuthorizationSettings { get; set; } = new AuthorizationSettings();
     }
 }
