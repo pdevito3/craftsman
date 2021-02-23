@@ -71,7 +71,7 @@
             PageSize = pageSize;
             PageNumber = pageNumber;
             CurrentPageSize = items.Count;
-            CurrentStartIndex = count == 0 ? 0 : (PageNumber * CurrentPageSize) - CurrentPageSize + 1;
+            CurrentStartIndex = count == 0 ? 0 : ((pageNumber - 1) * pageSize) + 1;
             CurrentEndIndex = count == 0 ? 0 : CurrentStartIndex + CurrentPageSize - 1;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 

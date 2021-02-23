@@ -10,6 +10,7 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
@@ -52,7 +53,7 @@
                 GlobalSingleton instance = GlobalSingleton.GetInstance();
 
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetApiTemplateFromFile(filePath);
+                var template = FileParsingHelper.GetTemplateFromFile<ApiTemplate>(filePath);
 
                 //var solutionDirectory = Directory.GetCurrentDirectory();
                 //var solutionDirectory = @"C:\Users\Paul\Documents\testoutput\MyApi.Mine";
@@ -61,7 +62,7 @@
 
                 WriteHelpText($"Your template file was parsed successfully.");
 
-                FileParsingHelper.RunPrimaryKeyGuard(template);
+                FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
 
                 // add all files based on the given template config
                 RunEntityBuilders(solutionDirectory, template, fileSystem);
@@ -98,19 +99,21 @@
                 ValidatorBuilder.CreateValidators(solutionDirectory, entity);
                 ProfileBuilder.CreateProfile(solutionDirectory, entity);
 
-                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments);
+                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies);
+                InfrastructureIdentityServiceRegistrationModifier.AddPolicies(solutionDirectory, template.AuthorizationSettings.Policies);
 
-                FakesBuilder.CreateFakes(solutionDirectory, template, entity);
-                ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template, entity);
-                GetTestBuilder.CreateEntityGetTests(solutionDirectory, template, entity);
-                PostTestBuilder.CreateEntityWriteTests(solutionDirectory, template, entity);
-                UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, template, entity);
-                DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, template, entity);
+                FakesBuilder.CreateFakes(solutionDirectory, template.SolutionName, entity);
+                ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName);
+                GetTestBuilder.CreateEntityGetTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthorizationSettings.Policies);
+                PostTestBuilder.CreateEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.AuthorizationSettings.Policies);
+                UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies);
+                DeleteIntegrationTestBuilder.CreateEntityDeleteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies);
+                DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName);
             }
 
             //seeders & dbsets
-            SeederModifier.AddSeeders(solutionDirectory, template);
-            DbContextModifier.AddDbSet(solutionDirectory, template);
+            SeederModifier.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName);
+            DbContextModifier.AddDbSet(solutionDirectory, template.Entities, template.DbContext.ContextName);
         }
 
         private static string GetSlnFile(string filePath)

@@ -5,6 +5,7 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -12,11 +13,11 @@
 
     public class UpdateTestBuilder
     {
-        public static void CreateEntityUpdateTests(string solutionDirectory, ApiTemplate template, Entity entity)
+        public static void CreateEntityUpdateTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName, List<Policy> policies)
         {
             try
             {
-                var classPath = ClassPathHelper.TestEntityIntegrationClassPath(solutionDirectory, $"Update{entity.Name}IntegrationTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestEntityIntegrationClassPath(solutionDirectory, $"Update{entity.Name}IntegrationTests.cs", entity.Name, solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +27,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = UpdateIntegrationTestFileText(classPath, template, entity);
+                    var data = UpdateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, dbContextName, policies);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,14 +45,30 @@
             }
         }
 
-        private static string UpdateIntegrationTestFileText(ClassPath classPath, ApiTemplate template, Entity entity)
+        private static string UpdateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, string dbContextName, List<Policy> policies)
         {
+            var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
+
+            var restrictedRecordUpdatePolicies = Utilities.GetEndpointPolicies(policies, Endpoint.UpdateRecord, entity.Name);
+            var hasRestrictedRecordUpdateEndpoints = restrictedRecordUpdatePolicies.Count > 0;
+            var authOnlyTests = hasRestrictedRecordUpdateEndpoints ? $@"
+            {UpdateRecordEntityTestUnauthorized(entity)}
+            {UpdateRecordEntityTestForbidden(entity)}" : "";
+
+            var restrictedPartialUpdatePolicies = Utilities.GetEndpointPolicies(policies, Endpoint.UpdatePartial, entity.Name);
+            var hasRestrictedPartialUpdateEndpoints = restrictedPartialUpdatePolicies.Count > 0;
+            authOnlyTests += hasRestrictedPartialUpdateEndpoints ? $@"
+            {UpdatePartialEntityTestUnauthorized(entity)}
+            {UpdatePartialEntityTestForbidden(entity)}" : "";
+            var authUsing = hasRestrictedRecordUpdateEndpoints || hasRestrictedPartialUpdateEndpoints ? $@"
+    using {httpClientExtensionsClassPath.ClassNamespace};" : "";
+
             return @$"
 namespace {classPath.ClassNamespace}
 {{
     using Application.Dtos.{entity.Name};
     using FluentAssertions;
-    using {template.SolutionName}.Tests.Fakes.{entity.Name};
+    using {solutionName}.Tests.Fakes.{entity.Name};
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
@@ -67,7 +84,7 @@ namespace {classPath.ClassNamespace}
     using Bogus;
     using Application.Mappings;
     using System.Text;
-    using Application.Wrappers;
+    using Application.Wrappers;{authUsing}
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>
@@ -79,13 +96,13 @@ namespace {classPath.ClassNamespace}
             _factory = factory;
         }}
 
-        {UpdateEntityTest(template, entity)}
-        {PutEntityTest(template,entity)}
+        {UpdateEntityTest(entity, dbContextName, hasRestrictedPartialUpdateEndpoints, policies)}
+        {PutEntityTest(entity, dbContextName, hasRestrictedRecordUpdateEndpoints, policies)}{authOnlyTests}
     }} 
 }}";
         }
 
-        private static string UpdateEntityTest(ApiTemplate template, Entity entity)
+        private static string UpdateEntityTest(Entity entity, string dbContextName, bool hasRestrictedPartialUpdateEndpoints, List<Policy> policies)
         {
             var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string" 
                 && e.CanFilter 
@@ -102,13 +119,20 @@ namespace {classPath.ClassNamespace}
                     && e.CanManipulate).FirstOrDefault();
                 lookupVal = "999999";
             }
+            var testName = hasRestrictedPartialUpdateEndpoints
+                ? @$"Patch{entity.Name}204AndFieldsWereSuccessfullyUpdated_WithAuth"
+                : @$"Patch{entity.Name}204AndFieldsWereSuccessfullyUpdated";
+            var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdatePartial, Endpoint.GetRecord }, entity.Name, PolicyType.Scope);
+            var clientAuth = hasRestrictedPartialUpdateEndpoints ? @$"
+
+            client.AddAuth(new[] {scopes});" : "";
 
             if (myProp == null)
                 return "";
             else
                 return $@"
         [Fact]
-        public async Task Patch{entity.Name}204AndFieldsWereSuccessfullyUpdated()
+        public async Task {testName}()
         {{
             //Arrange
             var mapper = new MapperConfiguration(cfg =>
@@ -125,7 +149,7 @@ namespace {classPath.ClassNamespace}
             var appFactory = _factory;
             using (var scope = appFactory.Services.CreateScope())
             {{
-                var context = scope.ServiceProvider.GetRequiredService<{template.DbContext.ContextName}> ();
+                var context = scope.ServiceProvider.GetRequiredService<{dbContextName}> ();
                 context.Database.EnsureCreated();
 
                 context.{entity.Plural}.RemoveRange(context.{entity.Plural});
@@ -136,7 +160,7 @@ namespace {classPath.ClassNamespace}
             var client = appFactory.CreateClient(new WebApplicationFactoryClientOptions
             {{
                 AllowAutoRedirect = false
-            }});
+            }});{clientAuth}
 
             var patchDoc = new JsonPatchDocument<{Utilities.GetDtoName(entity.Name, Dto.Update)}>();
             patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, lookupVal);
@@ -175,7 +199,7 @@ namespace {classPath.ClassNamespace}
         }}";
         }
 
-        private static string PutEntityTest(ApiTemplate template, Entity entity)
+        private static string PutEntityTest(Entity entity, string dbContextName, bool hasRestrictedRecordUpdateEndpoints, List<Policy> policies)
         {
             var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string"
                 && e.CanFilter
@@ -192,13 +216,20 @@ namespace {classPath.ClassNamespace}
                     && e.CanManipulate).FirstOrDefault();
                 lookupVal = "999999";
             }
+            var testName = hasRestrictedRecordUpdateEndpoints
+                ? @$"Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated_WithAuth"
+                : @$"Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated";
+            var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdateRecord, Endpoint.GetRecord }, entity.Name, PolicyType.Scope);
+            var clientAuth = hasRestrictedRecordUpdateEndpoints ? @$"
+
+            client.AddAuth(new[] {scopes});" : "";
 
             if (myProp == null)
                 return "";
             else
                 return $@"
         [Fact]
-        public async Task Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated()
+        public async Task {testName}()
         {{
             //Arrange
             var mapper = new MapperConfiguration(cfg =>
@@ -213,7 +244,7 @@ namespace {classPath.ClassNamespace}
             var appFactory = _factory;
             using (var scope = appFactory.Services.CreateScope())
             {{
-                var context = scope.ServiceProvider.GetRequiredService<{template.DbContext.ContextName}> ();
+                var context = scope.ServiceProvider.GetRequiredService<{dbContextName}> ();
                 context.Database.EnsureCreated();
 
                 context.{entity.Plural}.RemoveRange(context.{entity.Plural});
@@ -224,7 +255,7 @@ namespace {classPath.ClassNamespace}
             var client = appFactory.CreateClient(new WebApplicationFactoryClientOptions
             {{
                 AllowAutoRedirect = false
-            }});
+            }});{clientAuth}
 
             var serialized{entity.Name}ToUpdate = JsonConvert.SerializeObject(expectedFinalObject);
 
@@ -235,10 +266,10 @@ namespace {classPath.ClassNamespace}
             var getResponseContent = await getResult.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
             var getResponse = JsonConvert.DeserializeObject<Response<IEnumerable<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>>(getResponseContent);
-            var id = getResponse.Data.FirstOrDefault().{entity.PrimaryKeyProperty.Name};
+            var id = getResponse?.Data.FirstOrDefault().{entity.PrimaryKeyProperty.Name};
 
             // put it
-            var patchResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
+            var putResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
                 .ConfigureAwait(false);
 
             // get it again to confirm updates
@@ -249,9 +280,162 @@ namespace {classPath.ClassNamespace}
             var checkResponse = JsonConvert.DeserializeObject<Response<{Utilities.GetDtoName(entity.Name, Dto.Read)}>>(checkResponseContent);
 
             // Assert
-            patchResult.StatusCode.Should().Be(204);
+            putResult.StatusCode.Should().Be(204);
             checkResponse.Should().BeEquivalentTo(expectedFinalObject, options =>
                 options.ExcludingMissingMembers());
+        }}";
+        }
+
+        private static string UpdateRecordEntityTestUnauthorized(Entity entity)
+        {
+            var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string"
+                && e.CanFilter
+                && e.IsPrimaryKey == false
+                && e.CanManipulate).FirstOrDefault();
+
+            if (myProp == null)
+                return "";
+            else
+                return $@"
+        [Fact]
+        public async Task UpdateRecord{entity.Plural}_Returns_Unauthorized_Without_Valid_Token()
+        {{
+            //Arrange
+            var mapper = new MapperConfiguration(cfg =>
+            {{
+                cfg.AddProfile<{Utilities.GetProfileName(entity.Name)}>();
+            }}).CreateMapper();
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var expectedFinalObject = mapper.Map<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(fake{entity.Name}One);
+            var id = fake{entity.Name}One.{entity.PrimaryKeyProperty.Name};
+
+            var patchDoc = new JsonPatchDocument<{Utilities.GetDtoName(entity.Name, Dto.Update)}>();
+            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, """");
+            var serialized{entity.Name}ToUpdate = JsonConvert.SerializeObject(patchDoc);
+
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {{
+                AllowAutoRedirect = false
+            }});
+
+            // Act
+            var putResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
+                .ConfigureAwait(false);
+
+            // Assert
+            putResult.StatusCode.Should().Be(401);
+        }}";
+        }
+
+        private static string UpdateRecordEntityTestForbidden(Entity entity)
+        {
+            return $@"
+        [Fact]
+        public async Task UpdateRecord{entity.Name}_Returns_Forbidden_Without_Proper_Scope()
+        {{
+            //Arrange
+            var mapper = new MapperConfiguration(cfg =>
+            {{
+                cfg.AddProfile<{Utilities.GetProfileName(entity.Name)}>();
+            }}).CreateMapper();
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var expectedFinalObject = mapper.Map<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(fake{entity.Name}One);
+            var id = fake{entity.Name}One.{entity.PrimaryKeyProperty.Name};
+
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {{
+                AllowAutoRedirect = false
+            }});
+
+            client.AddAuth(new[] {{ """" }});
+
+            // Act
+            var putResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
+                .ConfigureAwait(false);
+
+            // Assert
+            putResult.StatusCode.Should().Be(403);
+        }}";
+        }
+
+        private static string UpdatePartialEntityTestUnauthorized(Entity entity)
+        {
+            var myProp = entity.Properties.Where(e => Utilities.PropTypeCleanup(e.Type) == "string"
+                && e.CanFilter
+                && e.IsPrimaryKey == false
+                && e.CanManipulate).FirstOrDefault();
+
+            if (myProp == null)
+                return "";
+            else
+                return $@"
+        [Fact]
+        public async Task UpdatePartial{entity.Plural}_Returns_Unauthorized_Without_Valid_Token()
+        {{
+            //Arrange
+            var mapper = new MapperConfiguration(cfg =>
+            {{
+                cfg.AddProfile<{Utilities.GetProfileName(entity.Name)}>();
+            }}).CreateMapper();
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var expectedFinalObject = mapper.Map<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(fake{entity.Name}One);
+            var id = fake{entity.Name}One.{entity.PrimaryKeyProperty.Name};
+
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {{
+                AllowAutoRedirect = false
+            }});
+            var patchDoc = new JsonPatchDocument<{Utilities.GetDtoName(entity.Name, Dto.Update)}>();
+            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, """");
+            var serialized{entity.Name}ToUpdate = JsonConvert.SerializeObject(patchDoc);
+
+            // Act
+            var method = new HttpMethod(""PATCH"");
+            var patchRequest = new HttpRequestMessage(method, $""api/{entity.Plural}/{{id}}"")
+            {{
+                Content = new StringContent(serialized{entity.Name}ToUpdate,
+                    Encoding.Unicode, ""application/json"")
+            }};
+            var patchResult = await client.SendAsync(patchRequest)
+                .ConfigureAwait(false);
+
+            // Assert
+            patchResult.StatusCode.Should().Be(401);
+        }}";
+        }
+
+        private static string UpdatePartialEntityTestForbidden(Entity entity)
+        {
+            return $@"
+        [Fact]
+        public async Task UpdatePartial{entity.Name}_Returns_Forbidden_Without_Proper_Scope()
+        {{
+            //Arrange
+            var mapper = new MapperConfiguration(cfg =>
+            {{
+                cfg.AddProfile<{Utilities.GetProfileName(entity.Name)}>();
+            }}).CreateMapper();
+
+            var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
+            var expectedFinalObject = mapper.Map<{Utilities.GetDtoName(entity.Name, Dto.Read)}>(fake{entity.Name}One);
+            var id = fake{entity.Name}One.{entity.PrimaryKeyProperty.Name};
+
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {{
+                AllowAutoRedirect = false
+            }});
+
+            client.AddAuth(new[] {{ """" }});
+
+            // Act
+            var patchResult = await client.PutAsJsonAsync($""api/{entity.Plural}/{{id}}"", expectedFinalObject)
+                .ConfigureAwait(false);
+
+            // Assert
+            patchResult.StatusCode.Should().Be(403);
         }}";
         }
     }

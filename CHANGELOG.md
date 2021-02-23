@@ -7,7 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- None yet!
+### Added
+
+- New `add:micro` command that scaffolds a new microservice template as well as an ocelot gateway
+- New `port ` property on the `new:api` template to let you customize and api or microservice port on localhost
+- Added `https` default on local
+- Added additional startup middleware
+  - `UseHsts` for non dev
+  - `UseHttpsRedirection` with notes on even more secure options
+- New `AuthorizationSettings` object and authorization based properties on the environments for the `new:api` and `new:micro` commands
+- Added new `GetEntity` and `DeleteEntity` integration tests with and without auth
+- Added 401/403 response types to swagger comments when using auth
+- Added auth to swagger setup
+  - note that secret is currently stored in appsettings
+- Auth added to integration tests when required
+
+### Fixed
+
+- The `CurrentStartIndex` calculation in the `PagedList` class was broken and now has a new calculation.
+- Added null conditional operator (`?.`) to certain tests before `.Data` to make them fail more gracefully
+  - Get{entity.Plural}_ReturnsSuccessCodeAndResourceWithAccurateFields()
+  - Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated
+- Cleaned up `WebApplicationFactory` to remove deprecated services.
+- Removed `[Collection(""Sequential"")]` from repo tests
+
+### Clean up
+
+- Internal tests now passing
+- refactored out template drilling
+- removed old auth debt from earlier alpha
 
 ## [0.7.0] - 2021-01-12
 

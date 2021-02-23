@@ -18,7 +18,7 @@
             var classNamespace = "WebApi.Controllers.v1";
             var entity = CannedGenerator.FakeBasicProduct();
 
-            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, false);
+            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, false, new List<Policy>());
 
             var expectedText = @$"namespace WebApi.Controllers.v1
 {{
@@ -28,7 +28,6 @@
     using AutoMapper;
     using FluentValidation.AspNetCore;
     using Application.Dtos.Product;
-    using Application.Enums;
     using Application.Interfaces.Product;
     using Application.Validation.Product;
     using Domain.Entities;
@@ -225,7 +224,7 @@
             entity.Name = "Buffalo";
             entity.Plural = "Buffalo";
 
-            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, false);
+            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, false, new List<Policy>());
 
             var expectedText = @$"namespace WebApi.Controllers.v1
 {{
@@ -235,7 +234,6 @@
     using AutoMapper;
     using FluentValidation.AspNetCore;
     using Application.Dtos.Buffalo;
-    using Application.Enums;
     using Application.Interfaces.Buffalo;
     using Application.Validation.Buffalo;
     using Domain.Entities;
@@ -429,7 +427,7 @@
             var classNamespace = "WebApi.Controllers.v1";
             var entity = CannedGenerator.FakeBasicProduct();
 
-            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, true);
+            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, true, new List<Policy>());
 
             var expectedText = @$"namespace WebApi.Controllers.v1
 {{
@@ -439,7 +437,6 @@
     using AutoMapper;
     using FluentValidation.AspNetCore;
     using Application.Dtos.Product;
-    using Application.Enums;
     using Application.Interfaces.Product;
     using Application.Validation.Product;
     using Domain.Entities;

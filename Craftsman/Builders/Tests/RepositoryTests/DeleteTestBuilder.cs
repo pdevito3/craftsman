@@ -11,11 +11,11 @@
 
     public class DeleteTestBuilder
     {
-        public static void DeleteEntityWriteTests(string solutionDirectory, ApiTemplate template, Entity entity)
+        public static void DeleteEntityWriteTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName)
         {
             try
             {
-                var classPath = ClassPathHelper.TestRepositoryClassPath(solutionDirectory, $"Delete{entity.Name}RepositoryTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestRepositoryClassPath(solutionDirectory, $"Delete{entity.Name}RepositoryTests.cs", entity.Name, solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -25,7 +25,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = DeleteRepositoryTestFileText(classPath, template, entity);
+                    var data = DeleteRepositoryTestFileText(classPath, entity, solutionName, dbContextName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -43,7 +43,7 @@
             }
         }
 
-        private static string DeleteRepositoryTestFileText(ClassPath classPath, ApiTemplate template, Entity entity)
+        private static string DeleteRepositoryTestFileText(ClassPath classPath, Entity entity, string solutionName, string dbContextName)
         {
             var assertString = "";
             foreach (var prop in entity.Properties)
@@ -57,7 +57,7 @@ namespace {classPath.ClassNamespace}
 {{
     using Application.Dtos.{entity.Name};
     using FluentAssertions;
-    using {template.SolutionName}.Tests.Fakes.{entity.Name};
+    using {solutionName}.Tests.Fakes.{entity.Name};
     using Infrastructure.Persistence.Contexts;
     using Infrastructure.Persistence.Repositories;
     using Microsoft.EntityFrameworkCore;
@@ -70,29 +70,26 @@ namespace {classPath.ClassNamespace}
     using Application.Interfaces;
     using Moq;
 
-    [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{ 
-        {DeleteEntityTest(template, entity)}
+        {DeleteEntityTest(entity, dbContextName)}
     }} 
 }}";
         }
 
-        private static string DeleteEntityTest(ApiTemplate template, Entity entity)
+        private static string DeleteEntityTest(Entity entity, string dbContextName)
         {
-
-            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
-            var usingString = TestBuildingHelpers.GetUsingString(template);
+            var usingString = TestBuildingHelpers.GetUsingString(dbContextName);
 
             return $@"
         [Fact]
         public void Delete{entity.Name}_ReturnsProperCount()
         {{
             //Arrange
-            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+            var dbOptions = new DbContextOptionsBuilder<{dbContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
+            var sieveOptions = Options.Create(new SieveOptions());
 
             var fake{entity.Name}One = new Fake{entity.Name} {{ }}.Generate();
             var fake{entity.Name}Two = new Fake{entity.Name} {{ }}.Generate();

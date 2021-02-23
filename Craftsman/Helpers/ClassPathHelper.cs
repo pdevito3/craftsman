@@ -38,6 +38,11 @@
             return new ClassPath(solutionDirectory, Path.Combine("WebApi","Extensions"), className);
         }
 
+        public static ClassPath HttpClientExtensionsClassPath(string projectDirectory, string solutionName, string className)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{solutionName}.Tests", "Helpers"), className);
+        }
+
         public static ClassPath WebApiMiddlewareClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine("WebApi", "Middleware"), className);
@@ -46,6 +51,11 @@
         public static ClassPath StartupClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "WebApi", className);
+        }
+
+        public static ClassPath StartupClassPath(string solutionDirectory, string className, string gatewayProjectName)
+        {
+            return new ClassPath(solutionDirectory, gatewayProjectName, className);
         }
 
         public static ClassPath TestProjectClassPath(string solutionDirectory, string solutionName)
@@ -58,14 +68,24 @@
             return new ClassPath(solutionDirectory, "WebApi", "WebApi.csproj");
         }
 
-        public static ClassPath AppSettingsClassPath(string solutionDirectory, string className)
+        public static ClassPath WebApiAppSettingsClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "WebApi", className);
         }
 
-        public static ClassPath LaunchSettingsClassPath(string solutionDirectory, string className)
+        public static ClassPath WebApiLaunchSettingsClassPath(string solutionDirectory, string className)
         {
-            return new ClassPath(solutionDirectory, Path.Combine("WebApi","Properties"), className);
+            return new ClassPath(solutionDirectory, Path.Combine("WebApi", "Properties"), className);
+        }
+
+        public static ClassPath GatewayAppSettingsClassPath(string solutionDirectory, string className, string gatewayProjectName)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine(gatewayProjectName), className);
+        }
+
+        public static ClassPath GatewayLaunchSettingsClassPath(string solutionDirectory, string className, string gatewayProjectName)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine(gatewayProjectName, "Properties"), className);
         }
 
         public static ClassPath TestRepositoryClassPath(string solutionDirectory, string className, string entityName, string solutionName)
@@ -138,6 +158,11 @@
             return new ClassPath(solutionDirectory, Path.Combine($"WebApi"), className);
         }
 
+        public static ClassPath GatewayProjectRootClassPath(string solutionDirectory, string className, string gatewayProjectName)
+        {
+            return new ClassPath(solutionDirectory, gatewayProjectName, className);
+        }
+
         public static ClassPath ApplicationProjectRootClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Application"), className);
@@ -156,6 +181,11 @@
         public static ClassPath InfrastructureSharedProjectRootClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Shared"), className);
+        }
+
+        public static ClassPath InfrastructureIdentityProjectRootClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Identity"), className);
         }
 
         public static ClassPath CommonDomainClassPath(string solutionDirectory, string className)
@@ -197,6 +227,11 @@
             return new ClassPath(solutionDirectory, Path.Combine($"Application"), "Application.csproj");
         }
 
+        public static ClassPath GatewayProjectClassPath(string solutionDirectory, string gatewayProjectName)
+        {
+            return new ClassPath(solutionDirectory, gatewayProjectName, @$"{gatewayProjectName}.csproj");
+        }
+
         public static ClassPath DomainProjectClassPath(string solutionDirectory)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Domain"), "Domain.csproj");
@@ -210,6 +245,11 @@
         public static ClassPath InfrastructureSharedProjectClassPath(string solutionDirectory)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Shared"), "Infrastructure.Shared.csproj");
+        }
+
+        public static ClassPath InfrastructureIdentityProjectClassPath(string solutionDirectory)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Identity"), "Infrastructure.Identity.csproj");
         }
     }
 }

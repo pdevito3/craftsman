@@ -15,11 +15,11 @@
 
     public class SeederModifier
     {
-        public static void AddSeeders(string solutionDirectory, ApiTemplate template)
+        public static void AddSeeders(string solutionDirectory, List<Entity> entities, string dbContextName)
         {
             try
             {
-                foreach (var entity in template.Entities)
+                foreach (var entity in entities)
                 {
                     var classPath = ClassPathHelper.SeederClassPath(solutionDirectory, $"{Utilities.GetSeederName(entity)}.cs");
 
@@ -31,14 +31,14 @@
 
                     using (FileStream fs = File.Create(classPath.FullClassPath))
                     {
-                        var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, template);
+                        var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, dbContextName);
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
 
                     GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
                 }
 
-                RegisterAllNewSeeders(solutionDirectory, template);
+                RegisterAllNewSeeders(solutionDirectory, entities, dbContextName);
             }
             catch (FileAlreadyExistsException e)
             {
@@ -52,7 +52,7 @@
             }
         }
 
-        private static void RegisterAllNewSeeders(string solutionDirectory, ApiTemplate template)
+        private static void RegisterAllNewSeeders(string solutionDirectory, List<Entity> entities, string dbContextName)
         {
             //TODO move these to a dictionary to lookup and overwrite if I want
             var repoTopPath = "WebApi";
@@ -74,9 +74,9 @@
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
-                        if (line.Contains($"#region {template.DbContext.ContextName} Seeder Region"))
+                        if (line.Contains($"#region {dbContextName} Seeder Region"))
                         {
-                            newText += @$"{Environment.NewLine}{GetSeederContextText(template)}";
+                            newText += @$"{Environment.NewLine}{GetSeederContextText(entities, dbContextName)}";
                         }
 
                         output.WriteLine(newText);
@@ -91,12 +91,12 @@
             GlobalSingleton.AddUpdatedFile(pathString.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
 
-        private static string GetSeederContextText(ApiTemplate template)
+        private static string GetSeederContextText(List<Entity> entities, string dbContextName)
         {
             var seeders = "";
-            foreach (var entity in template.Entities)
+            foreach (var entity in entities)
             {
-                seeders += @$"                    {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{template.DbContext.ContextName}>());";
+                seeders += @$"                    {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{dbContextName}>());";
             }
 
             return seeders;

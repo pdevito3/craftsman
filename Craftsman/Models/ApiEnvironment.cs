@@ -17,9 +17,21 @@
                     _environmentName = value;
             }
         }
+
         public string ConnectionString { get; set; }
+
         public string ProfileName { get; set; }
-        public JwtSettings JwtSettings { get; set; } = new JwtSettings();
-        public MailSettings MailSettings { get; set; } = new MailSettings();
+
+        public string Authority { get; set; }
+
+        public string Audience { get; set; }
+        
+        public string AuthorizationUrl { get; set; }
+
+        public string TokenUrl { get; set; }
+
+        public string ClientId { get; set; }
+
+        public string ClientSecret { get; set; }
     }
 }

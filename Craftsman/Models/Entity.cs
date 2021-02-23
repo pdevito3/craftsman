@@ -58,11 +58,6 @@ namespace Craftsman.Models
         }
 
         /// <summary>
-        /// When set to true, will have the entity inherit from 'AuditableEntity'. Defaults to false.
-        /// </summary>
-        public bool Auditable { get; set; } = false;
-
-        /// <summary>
         /// The custom table name that will be used in the database. Optional and null if they want to use default value.
         /// </summary>
         public string TableName { get; set; }

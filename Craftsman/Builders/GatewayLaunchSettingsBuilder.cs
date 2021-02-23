@@ -9,13 +9,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class WebApiAppExtensionsBuilder
+    public class GatewayLaunchSettingsBuilder
     {
-        public static void CreateWebApiAppExtension(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreateLaunchSettings(string solutionDirectory, string gatewayProjectName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"AppExtensions.cs");
+                var classPath = ClassPathHelper.GatewayLaunchSettingsClassPath(solutionDirectory, $"launchSettings.json", gatewayProjectName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetAppExtensionText(classPath.ClassNamespace);
+                    data = GetLaunchSettingsText();
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,24 +44,20 @@
             }
         }
 
-        public static string GetAppExtensionText(string classNamespace)
+        public static string GetLaunchSettingsText()
         {
-            return @$"namespace {classNamespace}
-{{
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.Configuration;
-    using WebApi.Middleware;
-
-    public static class AppExtensions
-    {{
-        #region Swagger Region - Do Not Delete
-        #endregion
-
-        public static void UseErrorHandlingMiddleware(this IApplicationBuilder app)
-        {{
-            app.UseMiddleware<ErrorHandlerMiddleware>();
-        }}
+            return @$"{{
+  ""iisSettings"": {{
+    ""windowsAuthentication"": false,
+    ""anonymousAuthentication"": true,
+    ""iisExpress"": {{
+                ""applicationUrl"": ""http://localhost:52117"",
+      ""sslPort"": 0
     }}
+        }},
+  ""$schema"": ""http://json.schemastore.org/launchsettings.json"",
+  ""profiles"": {{
+  }}
 }}";
         }
     }

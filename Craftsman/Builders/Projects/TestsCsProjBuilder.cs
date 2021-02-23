@@ -11,7 +11,7 @@
 
     public class TestsCsProjBuilder
     {
-        public static void CreateTestsCsProj(string solutionDirectory, string solutionName)
+        public static void CreateTestsCsProj(string solutionDirectory, string solutionName, bool addJwtAuth)
         {
             try
             {
@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetTestsCsProjFileText();
+                    data = GetTestsCsProjFileText(addJwtAuth);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,8 +44,11 @@
             }
         }
 
-        public static string GetTestsCsProjFileText()
+        public static string GetTestsCsProjFileText(bool addJwtAuth)
         {
+            var authPackages = addJwtAuth ? @$"
+    <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""3.1.0"" />" : "";
+
             return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>
@@ -63,7 +66,7 @@
     <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""5.0.1"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""16.8.3"" />
     <PackageReference Include=""Moq"" Version=""4.15.2"" />
-    <PackageReference Include=""Respawn"" Version=""3.3.0"" />
+    <PackageReference Include=""Respawn"" Version=""3.3.0"" />{authPackages}
     <PackageReference Include=""xunit"" Version=""2.4.1"" />
     <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.4.3"">
       <PrivateAssets>all</PrivateAssets>

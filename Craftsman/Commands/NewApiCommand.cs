@@ -10,11 +10,11 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using Craftsman.Removers;
     using FluentAssertions.Common;
     using LibGit2Sharp;
     using Newtonsoft.Json;
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Diagnostics;
     using System.IO;
@@ -55,21 +55,18 @@
                 GlobalSingleton instance = GlobalSingleton.GetInstance();
 
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetApiTemplateFromFile(filePath);
+                var template = FileParsingHelper.GetTemplateFromFile<ApiTemplate>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 
-                FileParsingHelper.RunPrimaryKeyGuard(template);
-                FileParsingHelper.RunSolutionNameAssignedGuard(template);
+                FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
+                FileParsingHelper.RunSolutionNameAssignedGuard(template.SolutionName);
 
                 // scaffold projects
                 // add an accelerate.config.yaml file to the root?
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
-
-                // adding this for my test auth scaffolding so i don't have to do stuff that might not last manaully. **not officially supported**
-                if(template.AuthSetup.AuthMethod == "JWT")
-                    CreateNewFoundation(template, buildSolutionDirectory); // todo scaffold this manually instead of using dotnet new foundation
                 
-                SolutionBuilder.BuildSolution(solutionDirectory, template, fileSystem);
+                SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
+                SolutionBuilder.AddProjects(solutionDirectory, solutionDirectory, template.DbContext.Provider, template.SolutionName, template.AddJwtAuthentication, fileSystem);
 
                 // add all files based on the given template config
                 RunTemplateBuilders(solutionDirectory, template, fileSystem);
@@ -98,7 +95,7 @@
         private static void RunTemplateBuilders(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
         {
             // dbcontext
-            DbContextBuilder.CreateDbContext(solutionDirectory, template);
+            DbContextBuilder.CreateDbContext(solutionDirectory, template.Entities, template.DbContext.ContextName, template.DbContext.Provider, template.DbContext.DatabaseName);
 
             //entities
             foreach (var entity in template.Entities)
@@ -110,67 +107,43 @@
                 ValidatorBuilder.CreateValidators(solutionDirectory, entity);
                 ProfileBuilder.CreateProfile(solutionDirectory, entity);
 
-                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments);
+                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies);
 
-                FakesBuilder.CreateFakes(solutionDirectory, template, entity);
-                ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template, entity);
-                GetTestBuilder.CreateEntityGetTests(solutionDirectory, template, entity);
-                PostTestBuilder.CreateEntityWriteTests(solutionDirectory, template, entity);
-                UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, template, entity);
-                DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, template, entity);
-                WebAppFactoryBuilder.CreateWebAppFactory(solutionDirectory, template, entity);
+                FakesBuilder.CreateFakes(solutionDirectory, template.SolutionName, entity);
+                ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName);
+                GetTestBuilder.CreateEntityGetTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthorizationSettings.Policies);
+                PostTestBuilder.CreateEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.AuthorizationSettings.Policies);
+                UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies);
+                DeleteIntegrationTestBuilder.CreateEntityDeleteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies);
+                DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName);
+                WebAppFactoryBuilder.CreateWebAppFactory(solutionDirectory, template.SolutionName, template.DbContext.ContextName, template.AddJwtAuthentication);
             }
 
             // environments
-            AddStartupEnvironmentsWithServices(solutionDirectory, template);
+            Utilities.AddStartupEnvironmentsWithServices(
+                solutionDirectory,
+                template.SolutionName,
+                template.DbContext.DatabaseName,
+                template.Environments,
+                template.SwaggerConfig,
+                template.Port,
+                template.AddJwtAuthentication
+            );
 
             //seeders
-            SeederBuilder.AddSeeders(solutionDirectory, template);
+            SeederBuilder.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName);
 
             //services
-            SwaggerBuilder.AddSwagger(solutionDirectory, template);
-            
-            if(template.AuthSetup.AuthMethod == "JWT")
-            {
-                IdentityServicesModifier.SetIdentityOptions(solutionDirectory, template.AuthSetup);
-                IdentitySeederBuilder.AddSeeders(solutionDirectory, template);
-                IdentityRoleBuilder.CreateRoles(solutionDirectory, template.AuthSetup.Roles);
-                RoleSeedBuilder.SeedRoles(solutionDirectory, template);
-            }
+            SwaggerBuilder.AddSwagger(solutionDirectory, template.SwaggerConfig, template.SolutionName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies);
+
+            if(template.AddJwtAuthentication)
+                InfrastructureIdentityServiceRegistrationBuilder.CreateInfrastructureIdentityServiceExtension(solutionDirectory, template.AuthorizationSettings.Policies, fileSystem);
 
             //final
-            ReadmeBuilder.CreateReadme(solutionDirectory, template, fileSystem);
+            ReadmeBuilder.CreateReadme(solutionDirectory, template.SolutionName, fileSystem);
 
             if (template.AddGit)
                 GitSetup(solutionDirectory);
-        }
-
-        private static void CreateNewFoundation(ApiTemplate template, string directory)
-        {
-            var newDir = $"{directory}{Path.DirectorySeparatorChar}{template.SolutionName}";
-            if (Directory.Exists(newDir))
-                throw new DirectoryAlreadyExistsException(newDir);
-
-            //UninstallFoundation();
-            //InstallFoundation();
-            //UpdateFoundation();
-
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new foundation -n {template.SolutionName}",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    WorkingDirectory = directory
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
         }
 
         private static void GitSetup(string solutionDirectory)
@@ -185,84 +158,6 @@
 
             var author = new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
             repo.Commit("Initial Commit", author, author);
-        }
-
-        private static void UpdateFoundation()
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new Foundation.Api --update-apply",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-        }
-
-        private static void UninstallFoundation()
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new -u Foundation.Api",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-        }
-
-        private static void InstallFoundation()
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = @$"new -i Foundation.Api",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-        }
-
-        private static void AddStartupEnvironmentsWithServices(string solutionDirectory, ApiTemplate template)
-        {
-            // add a development environment by default for local work if none exists
-            if (template.Environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
-                template.Environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{template.SolutionName} (Development)" });
-
-            foreach (var env in template.Environments)
-            {
-                // default startup is already built in cleanup phase
-                if(env.EnvironmentName != "Startup")
-                    StartupBuilder.CreateStartup(solutionDirectory, env.EnvironmentName, template);
-
-                AppSettingsBuilder.CreateAppSettings(solutionDirectory, env, template.DbContext.DatabaseName, template);
-                LaunchSettingsModifier.AddProfile(solutionDirectory, env);
-
-                //services
-                if (!template.SwaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
-                    SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, env);
-            }
         }
     }
 }

@@ -1,22 +1,14 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Builders.Dtos;
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using System;
     using System.IO;
-    using System.Linq;
-    using System.Reflection.Emit;
-    using System.Text;
-    using static Helpers.ConsoleWriter;
 
-    public class LaunchSettingsModifier
+    public class WebApiLaunchSettingsModifier
     {
-        public static void AddProfile(string solutionDirectory, ApiEnvironment env)
+        public static void AddProfile(string solutionDirectory, ApiEnvironment env, int port)
         {
-            var classPath = ClassPathHelper.LaunchSettingsClassPath(solutionDirectory, $"launchsettings.json");
+            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(solutionDirectory, $"launchsettings.json"); // hard coding webapi here not great
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -35,7 +27,7 @@
                         var newText = $"{line}";
                         if (line.Contains(@$"""profiles"""))
                         {
-                            newText += GetProfileText(env);
+                            newText += GetProfileText(env, port);
                         }
 
                         output.WriteLine(newText);
@@ -50,18 +42,18 @@
             GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
 
-        private static string GetProfileText(ApiEnvironment env)
+        private static string GetProfileText(ApiEnvironment env, int port)
         {
             if (env.EnvironmentName == "Development")
                 return $@"
-    ""{env.ProfileName}"": {{
+    ""{env.ProfileName ?? "Development"}"": {{
       ""commandName"": ""Project"",
       ""launchBrowser"": true,
       ""launchUrl"": ""swagger"",
       ""environmentVariables"": {{
         ""ASPNETCORE_ENVIRONMENT"": ""{env.EnvironmentName}""
       }},
-      ""applicationUrl"": ""http://localhost:5000""
+      ""applicationUrl"": ""https://localhost:{port}""
     }},";
             else if (env.EnvironmentName == "Startup")
                 return $@"

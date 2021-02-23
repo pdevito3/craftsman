@@ -9,17 +9,17 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class AppSettingsBuilder
+    public class WebApiAppSettingsBuilder
     {
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, ApiTemplate template)
+        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName)
         {
             try
             {
                 var appSettingFilename = Utilities.GetAppSettingsName(env.EnvironmentName);
-                var classPath = ClassPathHelper.AppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
+                var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -30,7 +30,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetAppSettingsText(env, dbName, template);
+                    data = GetAppSettingsText(env, dbName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -57,7 +57,7 @@
             try
             {
                 var appSettingFilename = "appsettings.json";
-                var classPath = ClassPathHelper.AppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
+                var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -86,39 +86,17 @@
             }
         }
 
-        private static string GetAppSettingsText(ApiEnvironment env, string dbName, ApiTemplate template)
+        private static string GetAppSettingsText(ApiEnvironment env, string dbName)
         {
-            var jwtSettings = "";
-            var mailSettings = "";
+            var jwtSettings = GetJwtAuthSettings(env);
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
 
-            if (template.AuthSetup.AuthMethod == "JWT")
-            {
-                jwtSettings = $@"
-  ""JwtSettings"": {{
-    ""Key"": ""{env.JwtSettings.Key}"",
-    ""Issuer"": ""{env.JwtSettings.Issuer}"",
-    ""Audience"": ""{env.JwtSettings.Audience}"",
-    ""DurationInMinutes"": {env.JwtSettings.DurationInMinutes}
-  }},";
-
-            mailSettings = @$"
-  ""MailSettings"": {{
-    ""EmailFrom"": ""{env.MailSettings.EmailFrom}"",
-    ""SmtpHost"": ""{env.MailSettings.SmtpHost}"",
-    ""SmtpPort"": ""{env.MailSettings.SmtpPort}"",
-    ""SmtpUser"": ""{env.MailSettings.SmtpUser}"",
-    ""SmtpPass"": ""{env.MailSettings.SmtpPass}"",
-    ""DisplayName"": ""{env.MailSettings.DisplayName}""
-  }},";
-            }
-
-            if(env.EnvironmentName == "Development")
+            if(env.EnvironmentName == "Development" || env.EnvironmentName == "IntegrationTesting")
 
                 return @$"{{
   ""AllowedHosts"": ""*"",
   ""UseInMemoryDatabase"": true,
-{serilogSettings}{jwtSettings}{mailSettings}
+{serilogSettings}{jwtSettings}
 }}
 ";
         else
@@ -133,9 +111,22 @@
 ";
         }
 
-        private static string GetSerilogSettings(string env)
+        private static string GetJwtAuthSettings(ApiEnvironment env)
         {
-            var writeTo = env == "Development" ? $@"
+            return $@"
+  ""JwtSettings"": {{
+    ""Audience"": ""{env.Audience}"",
+    ""Authority"": ""{env.Authority}"",
+    ""AuthorizationUrl"": ""{env.AuthorizationUrl}"",
+    ""TokenUrl"": ""{env.TokenUrl}"",
+    ""ClientId"": ""{env.ClientId}"",
+    ""ClientSecret"": ""{env.ClientSecret}""
+  }},";
+        }
+
+        private static string GetSerilogSettings(string envName)
+        {
+            var writeTo = envName == "Development" || envName == "IntegrationTesting" ? $@"
       {{ ""Name"": ""Console"" }},
       {{
         ""Name"": ""Seq"",
@@ -158,7 +149,6 @@
     ""WriteTo"": [{writeTo}]
   }},";
         }
-
 
         private static string GetAppSettingsText()
         {

@@ -11,11 +11,11 @@
 
     public class WriteTestBuilder
     {
-        public static void CreateEntityWriteTests(string solutionDirectory, ApiTemplate template, Entity entity)
+        public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName)
         {
             try
             {
-                var classPath = ClassPathHelper.TestRepositoryClassPath(solutionDirectory, $"Create{entity.Name}RepositoryTests.cs", entity.Name, template.SolutionName);
+                var classPath = ClassPathHelper.TestRepositoryClassPath(solutionDirectory, $"Create{entity.Name}RepositoryTests.cs", entity.Name, solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -25,7 +25,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = WriteRepositoryTestFileText(classPath, template, entity);
+                    var data = WriteRepositoryTestFileText(classPath, entity, solutionName, dbContextName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -43,7 +43,7 @@
             }
         }
 
-        private static string WriteRepositoryTestFileText(ClassPath classPath, ApiTemplate template, Entity entity)
+        private static string WriteRepositoryTestFileText(ClassPath classPath, Entity entity, string solutionName, string dbContextName)
         {
             var assertString = "";
             foreach (var prop in entity.Properties)
@@ -57,7 +57,7 @@ namespace {classPath.ClassNamespace}
 {{
     using Application.Dtos.{entity.Name};
     using FluentAssertions;
-    using {template.SolutionName}.Tests.Fakes.{entity.Name};
+    using {solutionName}.Tests.Fakes.{entity.Name};
     using Infrastructure.Persistence.Contexts;
     using Infrastructure.Persistence.Repositories;
     using Microsoft.EntityFrameworkCore;
@@ -70,15 +70,14 @@ namespace {classPath.ClassNamespace}
     using Application.Interfaces;
     using Moq;
 
-    [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{ 
-        {CreateEntityTest(template, entity)}
+        {CreateEntityTest(entity, dbContextName)}
     }} 
 }}";
         }
 
-        private static string CreateEntityTest(ApiTemplate template, Entity entity)
+        private static string CreateEntityTest(Entity entity, string dbContextName)
         {
             var assertString = "";
             foreach (var prop in entity.Properties)
@@ -87,18 +86,17 @@ namespace {classPath.ClassNamespace}
                 assertString += @$"                {entity.Name.LowercaseFirstLetter()}ById.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
 
-            var mockedUserString = TestBuildingHelpers.GetUserServiceString(template);
-            var usingString = TestBuildingHelpers.GetUsingString(template);
+            var usingString = TestBuildingHelpers.GetUsingString(dbContextName);
 
             return $@"
         [Fact]
         public void Add{entity.Name}_NewRecordAddedWithProperValues()
         {{
             //Arrange
-            var dbOptions = new DbContextOptionsBuilder<{template.DbContext.ContextName}>()
+            var dbOptions = new DbContextOptionsBuilder<{dbContextName}>()
                 .UseInMemoryDatabase(databaseName: $""{entity.Name}Db{{Guid.NewGuid()}}"")
                 .Options;
-            var sieveOptions = Options.Create(new SieveOptions());{mockedUserString}
+            var sieveOptions = Options.Create(new SieveOptions());
 
             var fake{entity.Name} = new Fake{entity.Name} {{ }}.Generate();
 
@@ -114,7 +112,7 @@ namespace {classPath.ClassNamespace}
             }}
 
             //Assert
-            using (var context = new {template.DbContext.ContextName}(dbOptions))
+            using (var context = new {dbContextName}(dbOptions))
             {{
                 context.{entity.Plural}.Count().Should().Be(1);
 

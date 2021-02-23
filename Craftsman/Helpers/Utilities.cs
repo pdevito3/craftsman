@@ -1,8 +1,10 @@
 ﻿namespace Craftsman.Helpers
 {
+    using Craftsman.Builders;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Models;
+    using FluentAssertions.Common;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -35,11 +37,6 @@
         public static string GetRepositoryName(string entityName, bool isInterface)
         {
             return isInterface ? $"I{entityName}Repository" : $"{entityName}Repository";
-        }
-
-        public static string GetIdentitySeederName(ApplicationUser user)
-        {
-            return user.SeederName ?? $"{user.UserName}Seeder" ?? $"{user.FirstName.Substring(0, 1)}{user.LastName}Seeder";
         }
 
         public static string GetControllerName(string entityName)
@@ -127,6 +124,87 @@
 
             process.Start();
             process.WaitForExit();
+        }
+
+        public static string EndpointBaseGenerator(string entityNamePlural)
+        {
+            return $@"api/{entityNamePlural}";
+        }
+
+        public static string PolicyStringBuilder(Policy policy)
+        {
+            if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
+            {
+                // ex: options.AddPolicy("CanRead", policy => policy.RequireClaim("scope", "detailedrecipes.read"));
+                return $@"                options.AddPolicy(""{policy.Name}"", 
+                    policy => policy.RequireClaim(""scope"", ""{policy.PolicyValue}""));";
+            }
+            //else if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Role))
+            //{
+            //    // ex: options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Administrator"));
+            //    return $@"                options.AddPolicy(""{policy.Name}"", 
+            //        policy => policy.RequireRole(""{policy.PolicyValue}""));";
+            //}
+
+            // claim ex: options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
+            return $@"                options.AddPolicy(""{policy.Name}"", 
+                    policy => policy.RequireClaim(""{policy.PolicyValue}""));";
+        }
+
+        public static string BuildTestAuthorizationString(List<Policy> policies, List<Endpoint> endpoints, string entityName, PolicyType policyType)
+        {
+            var endpointStrings = new List<string>();
+            foreach(var endpoint in endpoints)
+            {
+                endpointStrings.Add(Enum.GetName(typeof(Endpoint), endpoint));
+            }
+
+            var results = policies
+                .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == entityName)
+                    && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Intersect(endpointStrings).Any()));
+            
+            return "{\"" + string.Join("\", \"", results.Select(r => r.PolicyValue)) + "\"}";
+        }
+
+        public static void AddStartupEnvironmentsWithServices(
+            string solutionDirectory,
+            string solutionName,
+            string databaseName,
+            List<ApiEnvironment> environments,
+            SwaggerConfig swaggerConfig,
+            int port,
+            bool useJwtAuth)
+        {
+            // add a development environment by default for local work if none exists
+            if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
+                environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{solutionName} (Development)" });
+
+            var sortedEnvironments = environments.OrderBy(e => e.EnvironmentName == "Development" ? 1 : 0).ToList(); // sets dev as default profile
+            foreach (var env in sortedEnvironments)
+            {
+                // default startup is already built in cleanup phase
+                if (env.EnvironmentName != "Startup")
+                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth);
+
+                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName);
+                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
+
+                //services
+                if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
+                    SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, env);
+            }
+
+            // add an integration testing env to make sure that an in memory database is used
+            var integEnv = new ApiEnvironment() { EnvironmentName = "IntegrationTesting" };
+            WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, integEnv, "");
+        }
+
+        public static List<Policy> GetEndpointPolicies(List<Policy> policies, Endpoint endpoint, string entityName)
+        {
+            return policies
+                .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == entityName)
+                    && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Any(re => re == Enum.GetName(typeof(Endpoint), endpoint))))
+                .ToList();
         }
     }
 }
