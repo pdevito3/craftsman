@@ -10,23 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - New `add:micro` command that scaffolds a new microservice template as well as an ocelot gateway
-- New `port ` property to let you customize and api or microservice port on localhost
+- New `port ` property on the `new:api` template to let you customize and api or microservice port on localhost
 - Added `https` default on local
 - Added additional startup middleware
-  - `usehsts` for non dev
+  - `UseHsts` for non dev
   - `UseHttpsRedirection` with notes on even more secure options
-- New JWT Authentication options in the environments for the `new:api` and `new:micro` commands
-- Added policy authorization options for scopes, roles, and claims on the `new:api` `new:micro` and `add:entity` commands
-  - scopes
-  - ~~[roles](https://jakeydocs.readthedocs.io/en/latest/security/authorization/roles.html)~~
-  - ~~[claims](https://jakeydocs.readthedocs.io/en/latest/security/authorization/claims.html)~~
-  - ~~[custom (not included, but able to add manually)](https://jakeydocs.readthedocs.io/en/latest/security/authorization/policies.html)~~
-- Added new `GetEntity` integration test
+- New `AuthorizationSettings` object and authorization based properties on the environments for the `new:api` and `new:micro` commands
+- Added new `GetEntity` and `DeleteEntity` integration tests with and without auth
 - Added 401/403 response types to swagger comments when using auth
 - Added auth to swagger setup
   - note that secret is currently stored in appsettings
-- Added Delete integration tests with and without auth
-- auth only added to tests when they have a policy (no authorize attribute without it!)
+- Auth added to integration tests when required
 
 ### Fixed
 
@@ -35,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Get{entity.Plural}_ReturnsSuccessCodeAndResourceWithAccurateFields()
   - Put{entity.Name}ReturnsBodyAndFieldsWereSuccessfullyUpdated
 - Cleaned up `WebApplicationFactory` to remove deprecated services.
-- removed `[Collection(""Sequential"")]` from repo tests
+- Removed `[Collection(""Sequential"")]` from repo tests
 
 ### Clean up
 
