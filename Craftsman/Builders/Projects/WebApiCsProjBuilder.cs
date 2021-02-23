@@ -11,7 +11,7 @@
 
     public class WebApiCsProjBuilder
     {
-        public static void CreateWebApiCsProj(string solutionDirectory)
+        public static void CreateWebApiCsProj(string solutionDirectory, bool addIdentity)
         {
             try
             {
@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetWebApiCsProjFileText();
+                    data = GetWebApiCsProjFileText(addIdentity);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,10 +44,10 @@
             }
         }
 
-        public static string GetWebApiCsProjFileText()
+        public static string GetWebApiCsProjFileText(bool addIdentity)
         {
-            var identityProject = $@"
-    <ProjectReference Include=""..\Infrastructure.Identity\Infrastructure.Identity.csproj"" />";
+            var identityProject = addIdentity ? $@"
+    <ProjectReference Include=""..\Infrastructure.Identity\Infrastructure.Identity.csproj"" />" : "";
 
             return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 

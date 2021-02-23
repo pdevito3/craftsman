@@ -146,7 +146,7 @@
         {
             var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(projectDirectory);
 
-            WebApiCsProjBuilder.CreateWebApiCsProj(projectDirectory);
+            WebApiCsProjBuilder.CreateWebApiCsProj(projectDirectory, useJwtAuth);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{webApiProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
 
             // base folders
