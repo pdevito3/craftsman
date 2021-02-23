@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- None yet!
+- Not yet!
+
+## [0.8.1] - 2021-02-22
+
+### Fixed
+
+- fixed bug when creating an api with auth settings
 
 ## [0.8.0] - 2021-02-22
 

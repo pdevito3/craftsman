@@ -41,7 +41,7 @@
         public bool AddJwtAuthentication
         {
             get => Environments
-                .Where(e => e.Authority.Length > 0)
+                .Where(e => e?.Authority?.Length > 0)
                 .ToList()
                 .Count > 0;
         }
