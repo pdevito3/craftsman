@@ -179,7 +179,7 @@
             if (swaggerConfig.AddSwaggerComments)
                 SwaggerXmlComments = $@"
 
-                    config.IncludeXmlComments(string.Format(@""{{0}}\{solutionName}.WebApi.xml"", AppDomain.CurrentDomain.BaseDirectory));";
+                    config.IncludeXmlComments(string.Format(@$""{{AppDomain.CurrentDomain.BaseDirectory}}{{Path.DirectorySeparatorChar}}{solutionName}.WebApi.xml""));";
 
             var swaggerText = $@"
             public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
