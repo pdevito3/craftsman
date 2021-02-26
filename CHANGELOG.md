@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Not yet!
 
+## [0.8.2] - 2021-02-25
+
+### Fixed
+
+- Fixed issue where xml comments would throw an error on non windows machines (#16)
+
 ## [0.8.1] - 2021-02-22
 
 ### Fixed
