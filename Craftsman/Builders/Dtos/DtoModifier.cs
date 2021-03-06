@@ -15,16 +15,16 @@
 
     public class DtoModifier
     {
-        public static void AddPropertiesToDtos(string solutionDirectory, string entityName, List<EntityProperty> props)
+        public static void AddPropertiesToDtos(string solutionDirectory, string entityName, List<EntityProperty> props, string projectBaseName)
         {
-            UpdateDtoFile(solutionDirectory, entityName, props, Dto.Read);
-            UpdateDtoFile(solutionDirectory, entityName, props, Dto.Manipulation);
+            UpdateDtoFile(solutionDirectory, entityName, props, Dto.Read, projectBaseName);
+            UpdateDtoFile(solutionDirectory, entityName, props, Dto.Manipulation, projectBaseName);
         }
 
-        private static void UpdateDtoFile(string solutionDirectory, string entityName, List<EntityProperty> props, Dto dto)
+        private static void UpdateDtoFile(string solutionDirectory, string entityName, List<EntityProperty> props, Dto dto, string projectBaseName)
         {
             var dtoFileName = $"{Utilities.GetDtoName(entityName, dto)}.cs";
-            var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, dtoFileName, entityName);
+            var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, dtoFileName, entityName, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
@@ -45,7 +45,7 @@
                         foreach (var prop in props)
                         {
                             if(prop.IsForeignKey)
-                                fkUsingStatements += DtoFileTextGenerator.GetForeignKeyUsingStatements(classPath, fkUsingStatements, prop, dto);
+                                fkUsingStatements += DtoFileTextGenerator.GetForeignKeyUsingStatements(classPath, fkUsingStatements, prop, dto, projectBaseName);
                         }
                     }
 

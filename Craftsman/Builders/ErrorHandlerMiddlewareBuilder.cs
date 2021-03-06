@@ -26,7 +26,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetErrorHandlerMiddlewareText(classPath.ClassNamespace);
+                    data = GetErrorHandlerMiddlewareText(solutionDirectory, projectBaseName, classPath.ClassNamespace);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,12 +44,15 @@
             }
         }
 
-        public static string GetErrorHandlerMiddlewareText(string classNamespace)
+        public static string GetErrorHandlerMiddlewareText(string solutionDirectory, string projectBaseName, string classNamespace)
         {
+            var wrappersClassPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, "", projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, "", projectBaseName);
+
             return @$"namespace {classNamespace}
 {{
-    using Application.Exceptions;
-    using Application.Wrappers;
+    using {exceptionsClassPath.ClassNamespace};
+    using {wrappersClassPath.ClassNamespace};
     using Microsoft.AspNetCore.Http;
     using System;
     using System.Collections.Generic;

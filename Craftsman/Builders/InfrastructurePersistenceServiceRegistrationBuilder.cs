@@ -9,11 +9,11 @@
 
     public class InfrastructurePersistenceServiceRegistrationBuilder
     {
-        public static void CreateInfrastructurePersistenceServiceExtension(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreateInfrastructurePersistenceServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.InfrastructurePersistenceProjectRootClassPath(solutionDirectory, $"ServiceRegistration.cs");
+                var classPath = ClassPathHelper.InfrastructurePersistenceProjectRootClassPath(solutionDirectory, $"ServiceRegistration.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

@@ -13,7 +13,7 @@
 
     public class PostTestBuilder
     {
-        public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName, List<Policy> policies)
+        public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName, List<Policy> policies, string projectBaseName)
         {
             try
             {
@@ -27,7 +27,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = CreateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, policies);
+                    var data = CreateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, policies, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -45,7 +45,7 @@
             }
         }
 
-        private static string CreateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, List<Policy> policies)
+        private static string CreateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, List<Policy> policies, string projectBaseName)
         {
             var assertString = "";
             foreach (var prop in entity.Properties)
@@ -54,6 +54,9 @@
                 assertString += @$"                {entity.Name.LowercaseFirstLetter()}ById.{prop.Name}.Should().Be(fake{entity.Name}.{prop.Name});{newLine}";
             }
             var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
+            var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var testFakesClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
             var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.AddRecord, entity.Name);
             var hasRestrictedEndpoints = restrictedPolicies.Count > 0;
@@ -66,16 +69,16 @@
             return @$"
 namespace {classPath.ClassNamespace}
 {{
-    using Application.Dtos.{entity.Name};
+    using {dtoClassPath.ClassNamespace};
     using FluentAssertions;
-    using {solutionName}.Tests.Fakes.{entity.Name};
+    using {testFakesClassPath.ClassNamespace};
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
     using Newtonsoft.Json;
     using System.Net.Http;
     using System.Collections.Generic;
-    using Application.Wrappers;{authUsing}
+    using {wrapperClassPath.ClassNamespace};{authUsing}
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>

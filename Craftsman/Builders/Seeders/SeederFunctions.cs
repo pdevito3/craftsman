@@ -8,8 +8,9 @@
 
     public static class SeederFunctions
     {
-        public static string GetEntitySeederFileText(string classNamespace, Entity entity, string dbContextName)
+        public static string GetEntitySeederFileText(string classNamespace, Entity entity, string dbContextName, string solutionDirectory, string projectBaseName)
         {
+            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             if (dbContextName is null)
             {
                 throw new ArgumentNullException(nameof(dbContextName));
@@ -19,7 +20,7 @@
 {{
 
     using AutoBogus;
-    using Domain.Entities;
+    using {entitiesClassPath.ClassNamespace};
     using Infrastructure.Persistence.Contexts;
     using System.Linq;
 

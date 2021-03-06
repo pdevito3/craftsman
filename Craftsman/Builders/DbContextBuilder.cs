@@ -16,7 +16,7 @@
 
     public class DbContextBuilder
     {
-        public static void CreateDbContext(string solutionDirectory, List<Entity> entities, string dbContextName, string dbProvider, string dbName)
+        public static void CreateDbContext(string solutionDirectory, List<Entity> entities, string dbContextName, string dbProvider, string dbName, string projectBaseName)
         {
             try
             {
@@ -30,7 +30,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetContextFileText(classPath.ClassNamespace, entities,dbContextName);
+                    var data = GetContextFileText(classPath.ClassNamespace, entities,dbContextName, solutionDirectory, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -50,12 +50,12 @@
             }
         }
 
-        public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName)
+        public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
         {
+            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             return @$"namespace {classNamespace}
 {{
-    using Application.Interfaces;
-    using Domain.Entities;
+    using {entitiesClassPath.ClassNamespace};
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using System.Threading;
@@ -176,12 +176,13 @@
             return "UseSqlServer";
         }
 
-        public static string GetAuditableSaveOverride(string classNamespace, List<Entity> entities, string dbContextName)
+        public static string GetAuditableSaveOverride(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
         {
+            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+            // notice domain.common that would need to be added and looked up. possibly interfaces too
             return @$"namespace {classNamespace}
 {{
-    using Application.Interfaces;
-    using Domain.Entities;
+    using {entitiesClassPath.ClassNamespace};
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using System.Threading;

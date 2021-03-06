@@ -9,13 +9,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class InfrastructureSharedCsProjBuilder
+    public class CoreCsProjBuilder
     {
-        public static void CreateInfrastructureSharedCsProj(string solutionDirectory)
+        public static void CreateCoreCsProj(string solutionDirectory, string solutionName)
         {
             try
             {
-                var classPath = ClassPathHelper.InfrastructureSharedProjectClassPath(solutionDirectory);
+                var classPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetInfrastructureSharedCsProjFileText();
+                    data = GetCoreCsProjFileText();
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,20 +44,16 @@
             }
         }
 
-        public static string GetInfrastructureSharedCsProjFileText()
+        public static string GetCoreCsProjFileText()
         {
             return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include=""Microsoft.Extensions.Options.ConfigurationExtensions"" Version=""5.0.0"" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include=""..\Application\Application.csproj"" />
+    <PackageReference Include=""Sieve"" Version=""2.4.0"" />
   </ItemGroup>
 
 </Project>";

@@ -11,11 +11,11 @@
 
     public class BasePaginationParametersBuilder
     {
-        public static void CreateBasePaginationParameters(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreateBasePaginationParameters(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, $"BasePaginationParameters.cs");
+                var classPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, $"BasePaginationParameters.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

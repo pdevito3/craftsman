@@ -11,11 +11,11 @@
 
     public class TestsCsProjBuilder
     {
-        public static void CreateTestsCsProj(string solutionDirectory, string projectPrefix, bool addJwtAuth)
+        public static void CreateTestsCsProj(string solutionDirectory, string projectBaseName, bool addJwtAuth)
         {
             try
             {
-                var classPath = ClassPathHelper.TestProjectClassPath(solutionDirectory, projectPrefix);
+                var classPath = ClassPathHelper.TestProjectClassPath(solutionDirectory, projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetTestsCsProjFileText(addJwtAuth, projectPrefix);
+                    data = GetTestsCsProjFileText(addJwtAuth, solutionDirectory, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,13 +44,11 @@
             }
         }
 
-        public static string GetTestsCsProjFileText(bool addJwtAuth, string projectPrefix = "")
+        public static string GetTestsCsProjFileText(bool addJwtAuth, string solutionDirectory, string projectBaseName)
         {
-            var webApiProjectName = "WebApi";
-            if(projectPrefix.Length > 0)
-            {
-                webApiProjectName = $"{projectPrefix}.WebApi";
-            }
+            var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
+            var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
+
             var authPackages = addJwtAuth ? @$"
     <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""3.1.0"" />" : "";
 
@@ -84,11 +82,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include=""..\Application\Application.csproj"" />
-    <ProjectReference Include=""..\Domain\Domain.csproj"" />
+    <ProjectReference Include=""..\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />
     <ProjectReference Include=""..\Infrastructure.Persistence\Infrastructure.Persistence.csproj"" />
-    <ProjectReference Include=""..\Infrastructure.Shared\Infrastructure.Shared.csproj"" />
-    <ProjectReference Include=""..\{webApiProjectName}\{webApiProjectName}.csproj"" />
+    <ProjectReference Include=""..\{webApiClassPath.ClassNamespace}\{webApiClassPath.ClassName}"" />
   </ItemGroup>
 
 </Project>";

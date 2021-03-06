@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Not yet!
+- Add Entity is Broken where I say `EntityBrokenHere`
+  - need to update addentity command to use an add entity template that includes a `ProjectBaseName` that must match the base of the api and the core
 
 ## [0.8.2] - 2021-02-25
 

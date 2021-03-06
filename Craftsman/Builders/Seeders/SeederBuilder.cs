@@ -31,7 +31,7 @@
 
                     using (FileStream fs = File.Create(classPath.FullClassPath))
                     {
-                        var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, dbContextName);
+                        var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, dbContextName, solutionDirectory, projectBaseName);
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
 

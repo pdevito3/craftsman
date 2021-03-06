@@ -63,8 +63,7 @@
                 var propList = new List<EntityProperty>() { prop };
                 
                 EntityModifier.AddEntityProperties(solutionDirectory, entityName, propList);
-                DtoModifier.AddPropertiesToDtos(solutionDirectory, entityName, propList);
-                RepositoryModifier.AddInclude(solutionDirectory, entityName, propList);
+                DtoModifier.AddPropertiesToDtos(solutionDirectory, entityName, propList, "EntityBrokenHere");
 
                 WriteHelpHeader($"{Environment.NewLine}The '{prop.Name}' property was successfully added to the '{entityName}' entity and it's associated DTOs. Keep up the good work!");
             }

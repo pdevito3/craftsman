@@ -9,20 +9,20 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class ApplicationExceptionsBuilder
+    public class CoreExceptionsBuilder
     {
-        public static void CreateExceptions(string solutionDirectory)
+        public static void CreateExceptions(string solutionDirectory, string projectBaseName)
         {
             try
             {
                 // ****this class path will have an invalid FullClassPath. just need the directory
-                var classPath = ClassPathHelper.ApplicationExceptionClassPath(solutionDirectory, "");
+                var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
 
-                CreateApiException(solutionDirectory);
-                CreateValidationException(solutionDirectory);
+                CreateApiException(solutionDirectory, projectBaseName);
+                CreateValidationException(solutionDirectory, projectBaseName);
             }
             catch (FileAlreadyExistsException e)
             {
@@ -36,11 +36,11 @@
             }
         }
 
-        public static void CreateApiException(string solutionDirectory)
+        public static void CreateApiException(string solutionDirectory, string projectBaseName)
         {
             try
             {
-                var classPath = ClassPathHelper.ApplicationExceptionClassPath(solutionDirectory, $"ApiException.cs");
+                var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, projectBaseName, $"ApiException.cs");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -90,11 +90,11 @@
 }}";
         }
 
-        public static void CreateValidationException(string solutionDirectory)
+        public static void CreateValidationException(string solutionDirectory, string projectBaseName)
         {
             try
             {
-                var classPath = ClassPathHelper.ApplicationExceptionClassPath(solutionDirectory, $"ValidationException.cs");
+                var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, $"ValidationException.cs", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);

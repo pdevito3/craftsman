@@ -14,13 +14,13 @@
 
     public class ValidatorBuilder
     {
-        public static void CreateValidators(string solutionDirectory, Entity entity)
+        public static void CreateValidators(string solutionDirectory, string projectBaseName, Entity entity)
         {
             try
             {
-                BuildValidatorClass(solutionDirectory, entity, Validator.Manipulation);
-                BuildValidatorClass(solutionDirectory, entity, Validator.Creation);
-                BuildValidatorClass(solutionDirectory, entity, Validator.Update);
+                BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Manipulation);
+                BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Creation);
+                BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Update);
             }
             catch (FileAlreadyExistsException e)
             {
@@ -34,9 +34,9 @@
             }
         }
 
-        private static void BuildValidatorClass(string solutionDirectory, Entity entity, Validator validator)
+        private static void BuildValidatorClass(string solutionDirectory, string projectBaseName, Entity entity, Validator validator)
         {
-            var classPath = ClassPathHelper.ValidationClassPath(solutionDirectory, $"{Utilities.ValidatorNameGenerator(entity.Name, validator)}.cs",entity.Name);
+            var classPath = ClassPathHelper.ValidationClassPath(solutionDirectory, $"{Utilities.ValidatorNameGenerator(entity.Name, validator)}.cs", entity.Plural, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -48,11 +48,11 @@
             {
                 var data = "";
                 if (validator == Validator.Creation)
-                    data = GetCreationValidatorFileText(classPath.ClassNamespace, entity);
+                    data = GetCreationValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity);
                 else if (validator == Validator.Update)
-                    data = GetUpdateValidatorFileText(classPath.ClassNamespace, entity);
+                    data = GetUpdateValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity);
                 else if (validator == Validator.Manipulation)
-                    data = GetManipulationValidatorFileText(classPath.ClassNamespace, entity);
+                    data = GetManipulationValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity);
                 else
                     throw new Exception("Unrecognized validator exception."); // this shouldn't really be possible, so not adding a special validator, but putting here for good measure
 
@@ -62,11 +62,12 @@
             GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
 
-        public static string GetCreationValidatorFileText(string classNamespace, Entity entity)
+        public static string GetCreationValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
         {
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             return @$"namespace {classNamespace}
 {{
-    using Application.Dtos.{entity.Name};
+    using {dtoClassPath.ClassNamespace};
     using FluentValidation;
 
     public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.GetDtoName(entity.Name, Dto.Creation)}>
@@ -80,11 +81,12 @@
 }}";
         }
 
-        public static string GetUpdateValidatorFileText(string classNamespace, Entity entity)
+        public static string GetUpdateValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
         {
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             return @$"namespace {classNamespace}
 {{
-    using Application.Dtos.{entity.Name};
+    using {dtoClassPath.ClassNamespace};
     using FluentValidation;
 
     public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.GetDtoName(entity.Name, Dto.Update)}>
@@ -98,11 +100,12 @@
 }}";
         }
 
-        public static string GetManipulationValidatorFileText(string classNamespace, Entity entity)
+        public static string GetManipulationValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
         {
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             return @$"namespace {classNamespace}
 {{
-    using Application.Dtos.{entity.Name};
+    using {dtoClassPath.ClassNamespace};
     using FluentValidation;
     using System;
 

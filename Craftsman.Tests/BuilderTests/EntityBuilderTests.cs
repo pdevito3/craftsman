@@ -24,7 +24,7 @@
             fileSystem.AddDirectory(solutionDirectory);
 
             var entity = CannedGenerator.FakeBasicProduct();
-            var expectedFilePath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs").FullClassPath;
+            var expectedFilePath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs", "").FullClassPath;
 
             EntityBuilder.CreateEntity(solutionDirectory, entity, fileSystem);
 
@@ -41,7 +41,7 @@
             fileSystem.AddDirectory(solutionDirectory);
 
             var entity = CannedGenerator.FakeBasicProduct();
-            var expectedFilePath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs").FullClassPath;
+            var expectedFilePath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs", "").FullClassPath;
             fileSystem.AddFile(expectedFilePath, new MockFileData("content doesn't matter"));
 
             Assert.Throws<FileAlreadyExistsException>(() => EntityBuilder.CreateEntity(solutionDirectory, entity, fileSystem));

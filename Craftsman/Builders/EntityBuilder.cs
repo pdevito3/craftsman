@@ -14,11 +14,11 @@
 
     public static class EntityBuilder
     {
-        public static void CreateEntity(string solutionDirectory, Entity entity, IFileSystem fileSystem)
+        public static void CreateEntity(string solutionDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs");
+                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

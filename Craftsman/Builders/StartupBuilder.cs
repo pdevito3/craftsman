@@ -49,6 +49,7 @@
             var appAuth = "";
             var identityUsing = "";
             var apiExtensionsClassPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, "", projectBaseName);
+            var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
             var identityServiceRegistration = "";
             if (useJwtAuth)
             {
@@ -66,7 +67,7 @@
             if (envName == "Development")
                 return @$"namespace {classNamespace}
 {{
-    using Application;
+    using {coreClassPath.ClassNamespace};
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -137,7 +138,7 @@
 
             return @$"namespace {classNamespace}
 {{
-    using Application;
+    using {coreClassPath.ClassNamespace};
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;

@@ -92,12 +92,11 @@
             //entities
             foreach (var entity in template.Entities)
             {
-                EntityBuilder.CreateEntity(solutionDirectory, entity, fileSystem);
-                DtoBuilder.CreateDtos(solutionDirectory, entity);
+                EntityBuilder.CreateEntity(solutionDirectory, entity, "EntityBrokenHere", fileSystem);
+                DtoBuilder.CreateDtos(solutionDirectory, entity, "EntityBrokenHere");
 
-                RepositoryBuilder.AddRepository(solutionDirectory, entity, template.DbContext);
-                ValidatorBuilder.CreateValidators(solutionDirectory, entity);
-                ProfileBuilder.CreateProfile(solutionDirectory, entity);
+                ValidatorBuilder.CreateValidators(solutionDirectory, "EntityBrokenHere", entity);
+                ProfileBuilder.CreateProfile(solutionDirectory, entity, "EntityBrokenHere");
 
                 ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies);
                 InfrastructureIdentityServiceRegistrationModifier.AddPolicies(solutionDirectory, template.AuthorizationSettings.Policies);
@@ -112,7 +111,7 @@
             }
 
             //seeders & dbsets
-            SeederModifier.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName);
+            SeederModifier.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName, "EntityBrokenHere");
             DbContextModifier.AddDbSet(solutionDirectory, template.Entities, template.DbContext.ContextName);
         }
 

@@ -13,6 +13,7 @@
             FullClassPath = Path.Combine(ClassDirectory, className);
             ClassNamespace = topPath.Replace(Path.DirectorySeparatorChar, '.');
             SolutionDirectory = solutionDirectory;
+            ClassName = className;
         }
 
         /// <summary>
@@ -34,5 +35,10 @@
         /// This is the solution directory mirrored back
         /// </summary>
         public string SolutionDirectory { get; set; }
+
+        /// <summary>
+        /// This is the classname mirrored back
+        /// </summary>
+        public string ClassName { get; set; }
     }
 }

@@ -13,7 +13,7 @@
 
     public class GetTestBuilder
     {
-        public static void CreateEntityGetTests(string solutionDirectory, string solutionName, Entity entity, string dbContextName, List<Policy> policies)
+        public static void CreateEntityGetTests(string solutionDirectory, string solutionName, Entity entity, string dbContextName, List<Policy> policies, string projectBaseName)
         {
             try
             {
@@ -27,7 +27,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetIntegrationTestFileText(classPath, solutionDirectory, solutionName, entity, dbContextName, policies);
+                    var data = GetIntegrationTestFileText(classPath, solutionDirectory, solutionName, entity, dbContextName, policies, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -45,9 +45,12 @@
             }
         }
 
-        private static string GetIntegrationTestFileText(ClassPath classPath, string solutionDirectory, string solutionName, Entity entity, string dbContextName, List<Policy> policies)
+        private static string GetIntegrationTestFileText(ClassPath classPath, string solutionDirectory, string solutionName, Entity entity, string dbContextName, List<Policy> policies, string projectBaseName)
         {
             var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
+            var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var testFakesClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
             var restrictedGetListPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.GetList, entity.Name);
             var hasRestrictedGetListEndpoints = restrictedGetListPolicies.Count > 0;
@@ -66,9 +69,9 @@
             return @$"
 namespace {classPath.ClassNamespace}
 {{
-    using Application.Dtos.{entity.Name};
+    using {dtoClassPath.ClassNamespace};
     using FluentAssertions;
-    using {solutionName}.Tests.Fakes.{entity.Name};
+    using {testFakesClassPath.ClassNamespace};
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
@@ -77,7 +80,7 @@ namespace {classPath.ClassNamespace}
     using System.Collections.Generic;
     using Infrastructure.Persistence.Contexts;
     using Microsoft.Extensions.DependencyInjection;
-    using Application.Wrappers;{authUsing}
+    using {wrapperClassPath.ClassNamespace};{authUsing}
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>

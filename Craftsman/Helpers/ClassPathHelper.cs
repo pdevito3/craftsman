@@ -13,74 +13,64 @@
             return new ClassPath(solutionDirectory, "", className);
         }
 
-        public static ClassPath WebApiServicesClassPath(string solutionDirectory, string className, string solutionName)
+        public static ClassPath ControllerClassPath(string solutionDirectory, string className, string projectBaseName, string version = "v1")
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi", "Services"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Controllers", version), className);
         }
 
-        public static ClassPath IdentityProjectPath(string solutionDirectory, string className = "")
+        public static ClassPath TestEntityIntegrationClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, "Infrastructure.Identity", className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Tests", "IntegrationTests", entityName), className);
         }
 
-        public static ClassPath ControllerClassPath(string solutionDirectory, string className, string solutionName, string version = "v1")
+        public static ClassPath WebApiExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi", "Controllers", version), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Extensions"), className);
         }
 
-        public static ClassPath TestEntityIntegrationClassPath(string solutionDirectory, string className, string entityName, string solutionName)
+        public static ClassPath HttpClientExtensionsClassPath(string projectDirectory, string projectBaseName, string className)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.Tests", "IntegrationTests", entityName), className);
+            return new ClassPath(projectDirectory, Path.Combine($"{projectBaseName}.Tests", "Helpers"), className);
         }
 
-        public static ClassPath WebApiExtensionsClassPath(string solutionDirectory, string className, string solutionName)
+        public static ClassPath WebApiMiddlewareClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi", "Extensions"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Middleware"), className);
         }
 
-        public static ClassPath HttpClientExtensionsClassPath(string projectDirectory, string solutionName, string className)
+        public static ClassPath StartupClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(projectDirectory, Path.Combine($"{solutionName}.Tests", "Helpers"), className);
+            return new ClassPath(solutionDirectory, $"{projectBaseName}.WebApi", className);
         }
 
-        public static ClassPath WebApiMiddlewareClassPath(string solutionDirectory, string className, string solutionName)
+        public static ClassPath TestProjectClassPath(string solutionDirectory, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi", "Middleware"), className);
+            return new ClassPath(solutionDirectory, $"{projectBaseName}.Tests", $"{projectBaseName}.Tests.csproj");
         }
 
-        public static ClassPath StartupClassPath(string solutionDirectory, string className, string solutionName)
+        public static ClassPath WebApiProjectClassPath(string solutionDirectory, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, $"{solutionName}.WebApi", className);
+            return new ClassPath(solutionDirectory, $"{projectBaseName}.WebApi", $"{projectBaseName}.WebApi.csproj");
         }
 
-        public static ClassPath TestProjectClassPath(string solutionDirectory, string solutionName)
+        public static ClassPath WebApiAppSettingsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, $"{solutionName}.Tests", $"{solutionName}.Tests.csproj");
+            return new ClassPath(solutionDirectory, $"{projectBaseName}.WebApi", className);
         }
 
-        public static ClassPath WebApiProjectClassPath(string solutionDirectory, string solutionName)
+        public static ClassPath WebApiLaunchSettingsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, $"{solutionName}.WebApi", $"{solutionName}.WebApi.csproj");
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Properties"), className);
         }
 
-        public static ClassPath WebApiAppSettingsClassPath(string solutionDirectory, string className, string solutionName)
+        public static ClassPath TestRepositoryClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, $"{solutionName}.WebApi", className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Tests","RepositoryTests",entityName), className);
         }
 
-        public static ClassPath WebApiLaunchSettingsClassPath(string solutionDirectory, string className, string solutionName)
+        public static ClassPath TestFakesClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi", "Properties"), className);
-        }
-
-        public static ClassPath TestRepositoryClassPath(string solutionDirectory, string className, string entityName, string solutionName)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.Tests","RepositoryTests",entityName), className);
-        }
-
-        public static ClassPath TestFakesClassPath(string solutionDirectory, string className, string entityName, string solutionName)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.Tests","Fakes",entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Tests","Fakes",entityName), className);
         }
 
         public static ClassPath InfraPersistenceServiceProviderClassPath(string solutionDirectory, string className)
@@ -88,9 +78,9 @@
             return new ClassPath(solutionDirectory, "Infrastructure.Persistence", className);
         }
 
-        public static ClassPath EntityClassPath(string solutionDirectory, string className)
+        public static ClassPath EntityClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine("Domain","Entities"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core", "Entities"), className);
         }
 
         public static ClassPath SeederClassPath(string solutionDirectory, string className)
@@ -98,64 +88,54 @@
             return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Persistence","Seeders"), className);
         }
 
-        public static ClassPath IdentitySeederClassPath(string solutionDirectory, string className)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Identity", "Seeders"), className);
-        }
-
         public static ClassPath DbContextClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Persistence","Contexts"), className);
         }
 
-        public static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityName)
+        public static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Application","Validation",entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Features", entityName, "Validators"), className);
         }
 
-        public static ClassPath IRepositoryClassPath(string solutionDirectory, string className, string entityName)
+        public static ClassPath ProfileClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Application","Interfaces",entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Features", entityName, "Mappings"), className);
         }
 
-        public static ClassPath ProfileClassPath(string solutionDirectory, string className)
+        public static ClassPath ApplicationInterfaceClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Application","Mappings"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core", "Interfaces"), className);
         }
 
-        public static ClassPath ApplicationInterfaceClassPath(string solutionDirectory, string className)
+        public static ClassPath CoreExceptionClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Application", "Interfaces"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core", "Exceptions"), className);
         }
 
-        public static ClassPath ApplicationExceptionClassPath(string solutionDirectory, string className)
+        public static ClassPath WrappersClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Application", "Exceptions"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core", "Wrappers"), className);
         }
 
-        public static ClassPath WrappersClassPath(string solutionDirectory, string className)
+        public static ClassPath WebApiProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Application", "Wrappers"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi"), className);
         }
 
-        public static ClassPath WebApiProjectRootClassPath(string solutionDirectory, string className, string solutionName)
+        public static ClassPath ApplicationProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core"), className);
         }
 
-        public static ClassPath ApplicationProjectRootClassPath(string solutionDirectory, string className)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Application"), className);
-        }
-
-        public static ClassPath InfrastructurePersistenceProjectRootClassPath(string solutionDirectory, string className)
+        public static ClassPath InfrastructurePersistenceProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Persistence"), className);
         }
 
-        public static ClassPath TestProjectRootClassPath(string solutionDirectory, string className, string solutionName)
+        public static ClassPath TestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, $"{solutionName}.Tests", className);
+            return new ClassPath(solutionDirectory, $"{projectBaseName}.Tests", className);
         }
 
         public static ClassPath InfrastructureSharedProjectRootClassPath(string solutionDirectory, string className)
@@ -168,58 +148,29 @@
             return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Identity"), className);
         }
 
-        public static ClassPath CommonDomainClassPath(string solutionDirectory, string className)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Common"), className);
-        }
-
-        public static ClassPath DomainEnumClassPath(string solutionDirectory, string className)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Enums"), className);
-        }
-        public static ClassPath DomainCommonClassPath(string solutionDirectory, string className)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Common"), className);
-        }
-
-        public static ClassPath DomainSettingsClassPath(string solutionDirectory, string className)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Domain", "Settings"), className);
-        }
-
         public static ClassPath RepositoryClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Persistence","Repositories"), className);
         }
 
-        public static ClassPath DtoClassPath(string solutionDirectory, string className, string entityName)
+        public static ClassPath DtoClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Application","Dtos",entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core", "Dtos",entityName), className);
         }
 
-        public static ClassPath SharedDtoClassPath(string solutionDirectory, string className)
+        public static ClassPath SharedDtoClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Application", "Dtos", "Shared"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core", "Dtos", "Shared"), className);
         }
 
-        public static ClassPath ApplicationProjectClassPath(string solutionDirectory)
+        public static ClassPath CoreProjectClassPath(string solutionDirectory, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Application"), "Application.csproj");
-        }
-
-        public static ClassPath DomainProjectClassPath(string solutionDirectory)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Domain"), "Domain.csproj");
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core"), $"{projectBaseName}.Core.csproj");
         }
 
         public static ClassPath InfrastructurePersistenceProjectClassPath(string solutionDirectory)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Persistence"), "Infrastructure.Persistence.csproj");
-        }
-
-        public static ClassPath InfrastructureSharedProjectClassPath(string solutionDirectory)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Shared"), "Infrastructure.Shared.csproj");
         }
 
         public static ClassPath InfrastructureIdentityProjectClassPath(string solutionDirectory)

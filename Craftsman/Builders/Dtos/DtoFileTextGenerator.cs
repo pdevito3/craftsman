@@ -9,11 +9,13 @@
 
     public static class DtoFileTextGenerator
     {
-        public static string GetReadParameterDtoText(string classNamespace, Entity entity, Dto dto)
+        public static string GetReadParameterDtoText(string solutionDirectory, string classNamespace, Entity entity, Dto dto, string projectBaseName)
         {
+            var sharedDtoClassPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, "", projectBaseName);
+
             return @$"namespace {classNamespace}
 {{
-    using Application.Dtos.Shared;
+    using {sharedDtoClassPath.ClassNamespace};
 
     public class {Utilities.GetDtoName(entity.Name, dto)} : BasePaginationParameters
     {{
@@ -23,7 +25,7 @@
 }}";
         }
 
-        public static string GetDtoText(ClassPath dtoClassPath, Entity entity, Dto dto)
+        public static string GetDtoText(ClassPath dtoClassPath, Entity entity, Dto dto, string projectBaseName)
         {
             var propString = dto == Dto.Creation || dto == Dto.Update ? "" : DtoPropBuilder(entity.Properties, dto);
             var fkUsingStatements = "";
@@ -37,7 +39,7 @@
             {
                 foreach(var prop in entity.Properties.Where(p => p.IsForeignKey))
                 {
-                    fkUsingStatements += GetForeignKeyUsingStatements(dtoClassPath, fkUsingStatements, prop, dto);
+                    fkUsingStatements += GetForeignKeyUsingStatements(dtoClassPath, fkUsingStatements, prop, dto, projectBaseName);
                 }
             }
 
@@ -56,10 +58,10 @@
 }}";
         }
 
-        public static string GetForeignKeyUsingStatements(ClassPath dtoClassPath, string fkUsingStatements, EntityProperty prop, Dto dto)
+        public static string GetForeignKeyUsingStatements(ClassPath dtoClassPath, string fkUsingStatements, EntityProperty prop, Dto dto, string projectBaseName)
         {
             var dtoFileName = $"{Utilities.GetDtoName(prop.Type, dto)}.cs";
-            var fkClasspath = ClassPathHelper.DtoClassPath(dtoClassPath.SolutionDirectory, dtoFileName, prop.Type);
+            var fkClasspath = ClassPathHelper.DtoClassPath(dtoClassPath.SolutionDirectory, dtoFileName, prop.Type, projectBaseName);
 
             fkUsingStatements += $"{Environment.NewLine}    using {fkClasspath.ClassNamespace};";   
             

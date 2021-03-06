@@ -27,7 +27,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetControllerFileText(classPath.ClassNamespace, entity, AddSwaggerComments, policies);
+                    var data = GetControllerFileText(classPath.ClassNamespace, entity, AddSwaggerComments, policies, solutionDirectory, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -45,7 +45,7 @@
             }
         }
 
-        public static string GetControllerFileText(string classNamespace, Entity entity, bool AddSwaggerComments, List<Policy> policies)
+        public static string GetControllerFileText(string classNamespace, Entity entity, bool AddSwaggerComments, List<Policy> policies, string solutionDirectory, string projectBaseName)
         {
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var lowercaseEntityVariableSingularDto = $@"{entity.Name.LowercaseFirstLetter()}Dto";
@@ -71,6 +71,11 @@
             var updatePartialAuthorizations = BuildAuthorizations(policies, Endpoint.UpdatePartial, entity.Name);
             var deleteRecordAuthorizations = BuildAuthorizations(policies, Endpoint.DeleteRecord, entity.Name);
 
+            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
+            var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
+            var validatorClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
+
             return @$"namespace {classNamespace}
 {{
     using System;
@@ -78,15 +83,14 @@
     using System.Text.Json;
     using AutoMapper;
     using FluentValidation.AspNetCore;
-    using Application.Dtos.{entityName};
-    using Application.Interfaces.{entityName};
-    using Application.Validation.{entityName};
-    using Domain.Entities;
+    using {dtoClassPath.ClassNamespace};
+    using {validatorClassPath.ClassNamespace};
+    using {entitiesClassPath.ClassNamespace};
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
     using System.Threading.Tasks;
-    using Application.Wrappers;
+    using {wrapperClassPath.ClassNamespace};
 
     [ApiController]
     [Route(""{endpointBase}"")]

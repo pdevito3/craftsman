@@ -9,11 +9,11 @@
 
     public class ResponseBuilder
     {
-        public static void CreateResponse(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreateResponse(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.WrappersClassPath(solutionDirectory, $"Response.cs");
+                var classPath = ClassPathHelper.WrappersClassPath(solutionDirectory, $"Response.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

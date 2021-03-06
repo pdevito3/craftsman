@@ -49,17 +49,18 @@
 
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = GetFakeFileText(classPath.ClassNamespace, objectToFakeClassName, entity);
+                var data = GetFakeFileText(classPath.ClassNamespace, objectToFakeClassName, entity, solutionDirectory, solutionName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
 
                 GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             }
         }
 
-        private static string GetFakeFileText(string classNamespace, string objectToFakeClassName, Entity entity)
+        private static string GetFakeFileText(string classNamespace, string objectToFakeClassName, Entity entity, string solutionDirectory, string projectBaseName)
         {
+            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             // this... is super fragile. Should really refactor this
-            var usingStatement = objectToFakeClassName.Contains("DTO", StringComparison.InvariantCultureIgnoreCase) ? @$"    using Application.Dtos.{entity.Name};" : "    using Domain.Entities;";
+            var usingStatement = objectToFakeClassName.Contains("DTO", StringComparison.InvariantCultureIgnoreCase) ? @$"    using Application.Dtos.{entity.Name};" : $"    using {entitiesClassPath.ClassNamespace};";
             return @$"namespace {classNamespace}
 {{
     using AutoBogus;

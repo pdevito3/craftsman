@@ -11,11 +11,11 @@
 
     public class ProfileBuilder
     {
-        public static void CreateProfile(string solutionDirectory, Entity entity)
+        public static void CreateProfile(string solutionDirectory, Entity entity, string projectBaseName)
         {
             try
             {
-                var classPath = ClassPathHelper.ProfileClassPath(solutionDirectory, $"{Utilities.GetProfileName(entity.Name)}.cs");
+                var classPath = ClassPathHelper.ProfileClassPath(solutionDirectory, $"{Utilities.GetProfileName(entity.Name)}.cs", entity.Plural, projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetProfileFileText(classPath.ClassNamespace, entity);
+                    data = GetProfileFileText(classPath.ClassNamespace, entity, solutionDirectory, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,13 +44,16 @@
             }
         }
 
-        public static string GetProfileFileText(string classNamespace, Entity entity)
+        public static string GetProfileFileText(string classNamespace, Entity entity, string solutionDirectory, string projectBaseName)
         {
+            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+
             return @$"namespace {classNamespace}
 {{
-    using Application.Dtos.{entity.Name};
+    using {dtoClassPath.ClassNamespace};
     using AutoMapper;
-    using Domain.Entities;
+    using {entitiesClassPath.ClassNamespace};
 
     public class {Utilities.GetProfileName(entity.Name)} : Profile
     {{

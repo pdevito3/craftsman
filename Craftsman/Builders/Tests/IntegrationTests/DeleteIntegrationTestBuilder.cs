@@ -13,7 +13,7 @@
 
     public class DeleteIntegrationTestBuilder
     {
-        public static void CreateEntityDeleteTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName, List<Policy> policies)
+        public static void CreateEntityDeleteTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName, List<Policy> policies, string projectBaseName)
         {
             try
             {
@@ -27,7 +27,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = UpdateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, dbContextName, policies);
+                    var data = UpdateIntegrationTestFileText(classPath, entity, solutionDirectory, solutionName, dbContextName, policies, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -45,9 +45,13 @@
             }
         }
 
-        private static string UpdateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, string dbContextName, List<Policy> policies)
+        private static string UpdateIntegrationTestFileText(ClassPath classPath, Entity entity, string solutionDirectory, string solutionName, string dbContextName, List<Policy> policies, string projectBaseName)
         {
             var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
+            var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
+            var profileClassPath = ClassPathHelper.ProfileClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var testFakesClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
             var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.DeleteRecord, entity.Name);
             var hasRestrictedEndpoints = restrictedPolicies.Count > 0;
@@ -60,9 +64,9 @@
             return @$"
 namespace {classPath.ClassNamespace}
 {{
-    using Application.Dtos.{entity.Name};
+    using {dtoClassPath.ClassNamespace};
     using FluentAssertions;
-    using {solutionName}.Tests.Fakes.{entity.Name};
+    using {testFakesClassPath.ClassNamespace};
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
@@ -75,9 +79,9 @@ namespace {classPath.ClassNamespace}
     using System.Linq;
     using AutoMapper;
     using Bogus;
-    using Application.Mappings;
+    using {profileClassPath.ClassNamespace};
     using System.Text;
-    using Application.Wrappers;{authUsing}
+    using {wrapperClassPath.ClassNamespace};{authUsing}
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>

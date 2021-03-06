@@ -18,7 +18,7 @@
             var classNamespace = "WebApi.Controllers.v1";
             var entity = CannedGenerator.FakeBasicProduct();
 
-            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, false, new List<Policy>());
+            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, false, new List<Policy>(), "", "");
 
             var expectedText = @$"namespace WebApi.Controllers.v1
 {{
@@ -224,7 +224,7 @@
             entity.Name = "Buffalo";
             entity.Plural = "Buffalo";
 
-            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, false, new List<Policy>());
+            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, false, new List<Policy>(), "", "");
 
             var expectedText = @$"namespace WebApi.Controllers.v1
 {{
@@ -427,7 +427,7 @@
             var classNamespace = "WebApi.Controllers.v1";
             var entity = CannedGenerator.FakeBasicProduct();
 
-            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, true, new List<Policy>());
+            var fileText = ControllerBuilder.GetControllerFileText(classNamespace, entity, true, new List<Policy>(), "", "");
 
             var expectedText = @$"namespace WebApi.Controllers.v1
 {{

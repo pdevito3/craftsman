@@ -17,7 +17,7 @@
     {
         public static void AddEntityProperties(string solutionDirectory, string entityName, List<EntityProperty> props)
         {
-            var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entityName}.cs");
+            var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entityName}.cs", "EntityBrokenHere");
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");

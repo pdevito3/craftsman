@@ -9,13 +9,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class ApplicationServiceExtensionsBuilder
+    public class CoreServiceExtensionsBuilder
     {
-        public static void CreateApplicationServiceExtension(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreateCoreServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.ApplicationProjectRootClassPath(solutionDirectory, $"ServiceExtensions.cs");
+                var classPath = ClassPathHelper.ApplicationProjectRootClassPath(solutionDirectory, $"ServiceExtensions.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

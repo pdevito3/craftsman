@@ -9,11 +9,11 @@
 
     public class PagedListBuilder
     {
-        public static void CreatePagedList(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreatePagedList(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.WrappersClassPath(solutionDirectory, $"PagedList.cs");
+                var classPath = ClassPathHelper.WrappersClassPath(solutionDirectory, projectBaseName, $"PagedList.cs");
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

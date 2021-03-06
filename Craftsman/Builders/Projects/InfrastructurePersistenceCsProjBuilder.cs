@@ -11,7 +11,7 @@
 
     public class InfrastructurePersistenceCsProjBuilder
     {
-        public static void CreateInfrastructurePersistenceCsProj(string solutionDirectory, string dbProvider)
+        public static void CreateInfrastructurePersistenceCsProj(string solutionDirectory, string projectPrefix, string dbProvider)
         {
             try
             {
@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetInfrastructurePersistenceCsProjFileText(dbProvider);
+                    data = GetInfrastructurePersistenceCsProjFileText(solutionDirectory, projectPrefix, dbProvider);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,8 +44,9 @@
             }
         }
 
-        public static string GetInfrastructurePersistenceCsProjFileText(string dbProvider)
+        public static string GetInfrastructurePersistenceCsProjFileText(string solutionDirectory, string projectPrefix, string dbProvider)
         {
+            var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectPrefix);
             var sqlPackage = @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""5.0.0"" />";
             if (Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == dbProvider)
                 sqlPackage = @$"<PackageReference Include=""npgsql.entityframeworkcore.postgresql"" Version=""5.0.0"" />";
@@ -68,8 +69,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include=""..\Application\Application.csproj"" />
-    <ProjectReference Include=""..\Domain\Domain.csproj"" />
+    <ProjectReference Include=""..\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />
   </ItemGroup>
 
 </Project>";

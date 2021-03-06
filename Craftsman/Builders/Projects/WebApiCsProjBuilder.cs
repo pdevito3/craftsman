@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetWebApiCsProjFileText(addIdentity);
+                    data = GetWebApiCsProjFileText(solutionDirectory, projectBaseName, addIdentity);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,8 +44,9 @@
             }
         }
 
-        public static string GetWebApiCsProjFileText(bool addIdentity)
+        public static string GetWebApiCsProjFileText(string solutionDirectory, string projectBaseName, bool addIdentity)
         {
+            var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
             var identityProject = addIdentity ? $@"
     <ProjectReference Include=""..\Infrastructure.Identity\Infrastructure.Identity.csproj"" />" : "";
 
@@ -85,9 +86,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include=""..\Application\Application.csproj"" />{identityProject}
+    <ProjectReference Include=""..\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />{identityProject}
     <ProjectReference Include=""..\Infrastructure.Persistence\Infrastructure.Persistence.csproj"" />
-    <ProjectReference Include=""..\Infrastructure.Shared\Infrastructure.Shared.csproj"" />
   </ItemGroup>
 
 </Project>";
