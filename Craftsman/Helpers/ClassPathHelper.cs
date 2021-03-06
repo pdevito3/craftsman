@@ -73,24 +73,19 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Tests","Fakes",entityName), className);
         }
 
-        public static ClassPath InfraPersistenceServiceProviderClassPath(string solutionDirectory, string className)
-        {
-            return new ClassPath(solutionDirectory, "Infrastructure.Persistence", className);
-        }
-
         public static ClassPath EntityClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core", "Entities"), className);
         }
 
-        public static ClassPath SeederClassPath(string solutionDirectory, string className)
+        public static ClassPath SeederClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Persistence","Seeders"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Infrastructure", "Seeders"), className);
         }
 
-        public static ClassPath DbContextClassPath(string solutionDirectory, string className)
+        public static ClassPath DbContextClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine("Infrastructure.Persistence","Contexts"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Infrastructure", "Contexts"), className);
         }
 
         public static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
@@ -128,29 +123,9 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core"), className);
         }
 
-        public static ClassPath InfrastructurePersistenceProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Persistence"), className);
-        }
-
         public static ClassPath TestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, $"{projectBaseName}.Tests", className);
-        }
-
-        public static ClassPath InfrastructureSharedProjectRootClassPath(string solutionDirectory, string className)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Shared"), className);
-        }
-
-        public static ClassPath InfrastructureIdentityProjectRootClassPath(string solutionDirectory, string className)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Identity"), className);
-        }
-
-        public static ClassPath RepositoryClassPath(string solutionDirectory, string className)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Persistence","Repositories"), className);
         }
 
         public static ClassPath DtoClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
@@ -168,14 +143,14 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core"), $"{projectBaseName}.Core.csproj");
         }
 
-        public static ClassPath InfrastructurePersistenceProjectClassPath(string solutionDirectory)
+        public static ClassPath InfrastructureProjectClassPath(string solutionDirectory, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Persistence"), "Infrastructure.Persistence.csproj");
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Infrastructure"), $"{projectBaseName}.Infrastructure.csproj");
         }
 
-        public static ClassPath InfrastructureIdentityProjectClassPath(string solutionDirectory)
+        public static ClassPath InfrastructureServiceRegistrationClassPath(string solutionDirectory, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"Infrastructure.Identity"), "Infrastructure.Identity.csproj");
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Infrastructure"), $"ServiceRegistration.cs");
         }
     }
 }

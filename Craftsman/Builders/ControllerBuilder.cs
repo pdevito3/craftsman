@@ -74,7 +74,7 @@
             var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
-            var validatorClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
+            var validatorClassPath = ClassPathHelper.ValidationClassPath(solutionDirectory, "", entityName, projectBaseName);
 
             return @$"namespace {classNamespace}
 {{
@@ -83,13 +83,13 @@
     using System.Text.Json;
     using AutoMapper;
     using FluentValidation.AspNetCore;
-    using {dtoClassPath.ClassNamespace};
-    using {validatorClassPath.ClassNamespace};
-    using {entitiesClassPath.ClassNamespace};
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
     using System.Threading.Tasks;
+    using {dtoClassPath.ClassNamespace};
+    using {validatorClassPath.ClassNamespace};
+    using {entitiesClassPath.ClassNamespace};
     using {wrapperClassPath.ClassNamespace};
 
     [ApiController]

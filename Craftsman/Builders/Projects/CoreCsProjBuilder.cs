@@ -54,6 +54,9 @@
 
   <ItemGroup>
     <PackageReference Include=""Sieve"" Version=""2.4.0"" />
+    <PackageReference Include=""AutoMapper.Extensions.Microsoft.DependencyInjection"" Version=""8.1.0"" />
+    <PackageReference Include=""FluentValidation"" Version=""9.3.0"" />
+    <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""5.0.1"" />
   </ItemGroup>
 
 </Project>";

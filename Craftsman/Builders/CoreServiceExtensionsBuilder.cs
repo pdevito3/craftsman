@@ -53,7 +53,7 @@
     using System.Reflection;
     public static class ServiceExtensions
     {{
-        public static void AddApplicationLayer(this IServiceCollection services)
+        public static void AddCoreLayer(this IServiceCollection services)
         {{
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 

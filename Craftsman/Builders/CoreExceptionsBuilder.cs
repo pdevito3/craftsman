@@ -40,7 +40,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, projectBaseName, $"ApiException.cs");
+                var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, $"ApiException.cs", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);

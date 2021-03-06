@@ -13,7 +13,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.WrappersClassPath(solutionDirectory, projectBaseName, $"PagedList.cs");
+                var classPath = ClassPathHelper.WrappersClassPath(solutionDirectory, $"PagedList.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

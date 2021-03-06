@@ -15,9 +15,9 @@
 
     public class DbContextModifier
     {
-        public static void AddDbSet(string solutionDirectory, List<Entity> entities, string dbContextName)
+        public static void AddDbSet(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
         {
-            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs");
+            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);

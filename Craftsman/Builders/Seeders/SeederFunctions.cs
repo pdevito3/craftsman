@@ -11,6 +11,7 @@
         public static string GetEntitySeederFileText(string classNamespace, Entity entity, string dbContextName, string solutionDirectory, string projectBaseName)
         {
             var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+            var dbContextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             if (dbContextName is null)
             {
                 throw new ArgumentNullException(nameof(dbContextName));
@@ -21,7 +22,7 @@
 
     using AutoBogus;
     using {entitiesClassPath.ClassNamespace};
-    using Infrastructure.Persistence.Contexts;
+    using {entitiesdbContextClassPathClassPath.ClassNamespace};
     using System.Linq;
 
     public static class {Utilities.GetSeederName(entity)}

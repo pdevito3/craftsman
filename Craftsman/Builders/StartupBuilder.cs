@@ -47,21 +47,20 @@
         public static string GetStartupText(string solutionDirectory, string classNamespace, string envName, bool useJwtAuth, string projectBaseName = "")
         {
             var appAuth = "";
-            var identityUsing = "";
             var apiExtensionsClassPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, "", projectBaseName);
             var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
-            var identityServiceRegistration = "";
+            var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
+            var seederClassPath = ClassPathHelper.SeederClassPath(solutionDirectory, "", projectBaseName);
+
             if (useJwtAuth)
             {
-                identityServiceRegistration = $@"
-            services.AddIdentityInfrastructure(_config, _env);";
-                identityUsing = $@"
-    using Infrastructure.Identity;";
                 appAuth = $@"
 
             app.UseAuthentication();
             app.UseAuthorization();";
             }
+
+            var dbContextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
 
             envName = envName == "Startup" ? "" : envName;
             if (envName == "Development")
@@ -72,12 +71,11 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Infrastructure.Persistence;
-    using Infrastructure.Shared;
-    using Infrastructure.Persistence.Seeders;
-    using Infrastructure.Persistence.Contexts;
+    using {infraClassPath.ClassNamespace};
+    using {seederClassPath.ClassNamespace};
+    using {dbContextClassPath.ClassNamespace};
     using {apiExtensionsClassPath.ClassNamespace};
-    using Serilog;{identityUsing}
+    using Serilog;
 
     public class Startup{envName}
     {{
@@ -95,9 +93,8 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             services.AddCorsService(""MyCorsPolicy"");
-            services.AddApplicationLayer();
-            services.AddPersistenceInfrastructure(_config);{identityServiceRegistration}
-            services.AddSharedInfrastructure(_config);
+            services.AddCoreLayer();
+            services.AddInfrastructure(_config, _env);
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
@@ -143,10 +140,9 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Infrastructure.Persistence;
-    using Infrastructure.Shared;
+    using {infraClassPath.ClassNamespace};
     using {apiExtensionsClassPath.ClassNamespace};
-    using Serilog;{identityUsing}
+    using Serilog;
 
     public class Startup{envName}
     {{
@@ -164,9 +160,8 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             services.AddCorsService(""MyCorsPolicy"");
-            services.AddApplicationLayer();
-            services.AddPersistenceInfrastructure(_config);{identityServiceRegistration}
-            services.AddSharedInfrastructure(_config);
+            services.AddCoreLayer();
+            services.AddInfrastructure(_config, _env);
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
@@ -201,87 +196,6 @@
 
             #region Dynamic App
             #endregion
-        }}
-    }}
-}}";
-        }
-
-
-        public static string GetStartupText(string classNamespace, string envName)
-        {
-            envName = envName == "Startup" ? "" : envName;
-            if (envName == "Development")
-
-                return @$"namespace {classNamespace}
-{{
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Serilog;
-    using Ocelot.DependencyInjection;
-    using Ocelot.Middleware;
-
-    public class Startup{envName}
-    {{
-        public IConfiguration _config {{ get; }}
-        public Startup{envName}(IConfiguration configuration)
-        {{
-            _config = configuration;
-        }}
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {{
-            services.AddHttpClient();
-
-            services.AddOcelot();
-        }}
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {{
-            app.UseDeveloperExceptionPage();
-            app.UseSerilogRequestLogging();
-
-            await app.UseOcelot();   
-        }}
-    }}
-}}";
-            else
-                return @$"namespace {classNamespace}
-{{
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Serilog;
-    using Ocelot.DependencyInjection;
-    using Ocelot.Middleware;
-
-    public class Startup{envName}
-    {{
-        public IConfiguration _config {{ get; }}
-        public Startup{envName}(IConfiguration configuration)
-        {{
-            _config = configuration;
-        }}
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {{
-            services.AddHttpClient();
-
-            services.AddOcelot();
-        }}
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {{
-            app.UseSerilogRequestLogging();
-            await app.UseOcelot(); 
         }}
     }}
 }}";

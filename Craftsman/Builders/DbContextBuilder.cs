@@ -20,7 +20,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs");
+                var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -34,7 +34,7 @@
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
-                RegisterContext(solutionDirectory, dbProvider, dbContextName, dbName);
+                RegisterContext(solutionDirectory, dbProvider, dbContextName, dbName, projectBaseName);
 
                 GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             }
@@ -88,9 +88,9 @@
             return dbSetText;
         }
 
-        private static void RegisterContext(string solutionDirectory, string dbProvider, string dbContextName, string dbName)
+        private static void RegisterContext(string solutionDirectory, string dbProvider, string dbContextName, string dbName, string projectBaseName)
         {
-            var classPath = ClassPathHelper.InfraPersistenceServiceProviderClassPath(solutionDirectory, "ServiceRegistration.cs");
+            var classPath = ClassPathHelper.InfrastructureServiceRegistrationClassPath(solutionDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -110,7 +110,7 @@
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
-                        if (line.Contains("#region DbContext"))
+                        if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                         {
                             newText += @$"          
             if (configuration.GetValue<bool>(""UseInMemoryDatabase""))

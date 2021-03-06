@@ -47,8 +47,7 @@
         public static string GetWebApiCsProjFileText(string solutionDirectory, string projectBaseName, bool addIdentity)
         {
             var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
-            var identityProject = addIdentity ? $@"
-    <ProjectReference Include=""..\Infrastructure.Identity\Infrastructure.Identity.csproj"" />" : "";
+            var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
 
             return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
@@ -86,8 +85,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include=""..\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />{identityProject}
-    <ProjectReference Include=""..\Infrastructure.Persistence\Infrastructure.Persistence.csproj"" />
+    <ProjectReference Include=""..\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />
+    <ProjectReference Include=""..\{infraClassPath.ClassNamespace}\{infraClassPath.ClassName}"" />
   </ItemGroup>
 
 </Project>";

@@ -1,4 +1,5 @@
-﻿namespace Craftsman.Commands
+﻿
+namespace Craftsman.Commands
 {
     using Craftsman.Builders;
     using Craftsman.Builders.Dtos;
@@ -99,20 +100,20 @@
                 ProfileBuilder.CreateProfile(solutionDirectory, entity, "EntityBrokenHere");
 
                 ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies);
-                InfrastructureIdentityServiceRegistrationModifier.AddPolicies(solutionDirectory, template.AuthorizationSettings.Policies);
+                InfrastructureServiceRegistrationModifier.AddPolicies(solutionDirectory, template.AuthorizationSettings.Policies, "EntityBrokenHere");
 
                 FakesBuilder.CreateFakes(solutionDirectory, template.SolutionName, entity);
                 ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName);
-                GetTestBuilder.CreateEntityGetTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthorizationSettings.Policies);
-                PostTestBuilder.CreateEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.AuthorizationSettings.Policies);
-                UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies);
-                DeleteIntegrationTestBuilder.CreateEntityDeleteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies);
+                GetTestBuilder.CreateEntityGetTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
+                PostTestBuilder.CreateEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
+                UpdateTestBuilder.CreateEntityUpdateTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
+                DeleteIntegrationTestBuilder.CreateEntityDeleteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
                 DeleteTestBuilder.DeleteEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName);
             }
 
             //seeders & dbsets
             SeederModifier.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName, "EntityBrokenHere");
-            DbContextModifier.AddDbSet(solutionDirectory, template.Entities, template.DbContext.ContextName);
+            DbContextModifier.AddDbSet(solutionDirectory, template.Entities, template.DbContext.ContextName, "EntityBrokenHere");
         }
 
         private static string GetSlnFile(string filePath)
@@ -131,7 +132,7 @@
 
         private static ApiTemplate GetDbContext(string solutionDirectory, ApiTemplate template)
         {
-            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"");
+            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"", "EntityBrokenHere");
             var contextClass = Directory.GetFiles(classPath.FullClassPath, "*.cs").FirstOrDefault();
 
             template.DbContext.ContextName = Path.GetFileNameWithoutExtension(contextClass);

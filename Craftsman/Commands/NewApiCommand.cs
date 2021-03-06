@@ -141,10 +141,11 @@
             SeederBuilder.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName, template.SolutionName);
 
             //services
+            // TODO move the auth stuff to a modifier to make it SOLID so i can add it to an add auth command
             SwaggerBuilder.AddSwagger(solutionDirectory, template.SwaggerConfig, template.SolutionName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies, template.SolutionName);
 
-            if(template.AddJwtAuthentication)
-                InfrastructureIdentityServiceRegistrationBuilder.CreateInfrastructureIdentityServiceExtension(solutionDirectory, template.AuthorizationSettings.Policies, fileSystem);
+            if (template.AddJwtAuthentication)
+                InfrastructureServiceRegistrationModifier.InitializeAuthServices(solutionDirectory, template.SolutionName, template.AuthorizationSettings.Policies);
 
             //final
             ReadmeBuilder.CreateReadme(rootDirectory, template.SolutionName, fileSystem);

@@ -9,13 +9,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class InfrastructurePersistenceCsProjBuilder
+    public class InfrastructureCsProjBuilder
     {
-        public static void CreateInfrastructurePersistenceCsProj(string solutionDirectory, string projectPrefix, string dbProvider)
+        public static void CreateInfrastructurePersistenceCsProj(string solutionDirectory, string projectBaseName, string dbProvider)
         {
             try
             {
-                var classPath = ClassPathHelper.InfrastructurePersistenceProjectClassPath(solutionDirectory);
+                var classPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetInfrastructurePersistenceCsProjFileText(solutionDirectory, projectPrefix, dbProvider);
+                    data = GetInfrastructurePersistenceCsProjFileText(solutionDirectory, projectBaseName, dbProvider);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,9 +44,9 @@
             }
         }
 
-        public static string GetInfrastructurePersistenceCsProjFileText(string solutionDirectory, string projectPrefix, string dbProvider)
+        public static string GetInfrastructurePersistenceCsProjFileText(string solutionDirectory, string projectBaseName, string dbProvider)
         {
-            var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectPrefix);
+            var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
             var sqlPackage = @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""5.0.0"" />";
             if (Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == dbProvider)
                 sqlPackage = @$"<PackageReference Include=""npgsql.entityframeworkcore.postgresql"" Version=""5.0.0"" />";
@@ -66,6 +66,7 @@
     <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""5.0.1"" />
     {sqlPackage}
     <PackageReference Include=""Microsoft.Extensions.Configuration.Binder"" Version=""5.0.0"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Authentication.JwtBearer"" Version=""5.0.1"" />
   </ItemGroup>
 
   <ItemGroup>

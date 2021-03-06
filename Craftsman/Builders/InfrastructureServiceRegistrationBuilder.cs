@@ -2,18 +2,20 @@
 {
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
+    using Craftsman.Models;
     using System;
+    using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class InfrastructurePersistenceServiceRegistrationBuilder
+    public class InfrastructureServiceRegistrationBuilder
     {
-        public static void CreateInfrastructurePersistenceServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateInfrastructureServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.InfrastructurePersistenceProjectRootClassPath(solutionDirectory, $"ServiceRegistration.cs", projectBaseName);
+                var classPath = ClassPathHelper.InfrastructureServiceRegistrationClassPath(solutionDirectory, projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
@@ -24,7 +26,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetServiceRegistrationText(classPath.ClassNamespace);
+                    data = GetServiceRegistrationText(solutionDirectory, projectBaseName, classPath.ClassNamespace);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -42,12 +44,12 @@
             }
         }
 
-        public static string GetServiceRegistrationText(string classNamespace)
+        public static string GetServiceRegistrationText(string solutionDirectory, string projectBaseName, string classNamespace)
         {
+            var dbContextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             return @$"namespace {classNamespace}
 {{
-    using Infrastructure.Persistence.Contexts;
-    using Infrastructure.Persistence.Repositories;
+    using {dbContextClassPath.ClassNamespace};
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -55,15 +57,13 @@
 
     public static class ServiceRegistration
     {{
-        public static void AddPersistenceInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         {{
-            #region DbContext -- Do Not Delete  
-            #endregion
+            // DbContext -- Do Not Delete
 
             services.AddScoped<SieveProcessor>();
 
-            #region Repositories -- Do Not Delete
-            #endregion
+            // Auth -- Do Not Delete
         }}
     }}
 }}
