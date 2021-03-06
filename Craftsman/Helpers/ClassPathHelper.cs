@@ -13,10 +13,9 @@
             return new ClassPath(solutionDirectory, "", className);
         }
 
-        public static ClassPath WebApiServicesClassPath(string solutionDirectory, string className, string projectPrefix = "")
+        public static ClassPath WebApiServicesClassPath(string solutionDirectory, string className, string solutionName)
         {
-            var pathBase = projectPrefix.Length > 0 ? @$"{projectPrefix}.WebApi" : "WebApi";
-            return new ClassPath(solutionDirectory, Path.Combine(pathBase, "Services"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi", "Services"), className);
         }
 
         public static ClassPath IdentityProjectPath(string solutionDirectory, string className = "")
@@ -24,10 +23,9 @@
             return new ClassPath(solutionDirectory, "Infrastructure.Identity", className);
         }
 
-        public static ClassPath ControllerClassPath(string solutionDirectory, string className, string version = "v1", string projectPrefix = "")
+        public static ClassPath ControllerClassPath(string solutionDirectory, string className, string solutionName, string version = "v1")
         {
-            var pathBase = projectPrefix.Length > 0 ? @$"{projectPrefix}.WebApi" : "WebApi";
-            return new ClassPath(solutionDirectory, Path.Combine(pathBase,"Controllers", version), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi", "Controllers", version), className);
         }
 
         public static ClassPath TestEntityIntegrationClassPath(string solutionDirectory, string className, string entityName, string solutionName)
@@ -35,10 +33,9 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.Tests", "IntegrationTests", entityName), className);
         }
 
-        public static ClassPath WebApiExtensionsClassPath(string solutionDirectory, string className, string projectPrefix = "")
+        public static ClassPath WebApiExtensionsClassPath(string solutionDirectory, string className, string solutionName)
         {
-            var pathBase = projectPrefix.Length > 0 ? @$"{projectPrefix}.WebApi" : "WebApi";
-            return new ClassPath(solutionDirectory, Path.Combine(pathBase, "Extensions"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi", "Extensions"), className);
         }
 
         public static ClassPath HttpClientExtensionsClassPath(string projectDirectory, string solutionName, string className)
@@ -46,21 +43,14 @@
             return new ClassPath(projectDirectory, Path.Combine($"{solutionName}.Tests", "Helpers"), className);
         }
 
-        public static ClassPath WebApiMiddlewareClassPath(string solutionDirectory, string className, string projectPrefix = "")
+        public static ClassPath WebApiMiddlewareClassPath(string solutionDirectory, string className, string solutionName)
         {
-            var pathBase = projectPrefix.Length > 0 ? @$"{projectPrefix}.WebApi" : "WebApi";
-            return new ClassPath(solutionDirectory, Path.Combine(pathBase, "Middleware"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi", "Middleware"), className);
         }
 
-        public static ClassPath StartupClassPath(string solutionDirectory, string className, string projectPrefix = "")
+        public static ClassPath StartupClassPath(string solutionDirectory, string className, string solutionName)
         {
-            var pathBase = projectPrefix.Length > 0 ? @$"{projectPrefix}.WebApi" : "WebApi";
-            return new ClassPath(solutionDirectory, pathBase, className);
-        }
-
-        public static ClassPath GatewayStartupClassPath(string solutionDirectory, string className, string gatewayProjectName)
-        {
-            return new ClassPath(solutionDirectory, gatewayProjectName, className);
+            return new ClassPath(solutionDirectory, $"{solutionName}.WebApi", className);
         }
 
         public static ClassPath TestProjectClassPath(string solutionDirectory, string solutionName)
@@ -68,32 +58,19 @@
             return new ClassPath(solutionDirectory, $"{solutionName}.Tests", $"{solutionName}.Tests.csproj");
         }
 
-        public static ClassPath WebApiProjectClassPath(string solutionDirectory, string projectPrefix = "")
+        public static ClassPath WebApiProjectClassPath(string solutionDirectory, string solutionName)
         {
-            var pathBase = projectPrefix.Length > 0 ? @$"{projectPrefix}.WebApi" : "WebApi";
-            return new ClassPath(solutionDirectory, pathBase, $"{pathBase}.csproj");
+            return new ClassPath(solutionDirectory, $"{solutionName}.WebApi", $"{solutionName}.WebApi.csproj");
         }
 
-        public static ClassPath WebApiAppSettingsClassPath(string solutionDirectory, string className, string projectPrefix = "")
+        public static ClassPath WebApiAppSettingsClassPath(string solutionDirectory, string className, string solutionName)
         {
-            var pathBase = projectPrefix.Length > 0 ? @$"{projectPrefix}.WebApi" : "WebApi";
-            return new ClassPath(solutionDirectory, pathBase, className);
+            return new ClassPath(solutionDirectory, $"{solutionName}.WebApi", className);
         }
 
-        public static ClassPath WebApiLaunchSettingsClassPath(string solutionDirectory, string className, string projectPrefix = "")
+        public static ClassPath WebApiLaunchSettingsClassPath(string solutionDirectory, string className, string solutionName)
         {
-            var pathBase = projectPrefix.Length > 0 ? @$"{projectPrefix}.WebApi" : "WebApi";
-            return new ClassPath(solutionDirectory, Path.Combine(pathBase, "Properties"), className);
-        }
-
-        public static ClassPath GatewayAppSettingsClassPath(string solutionDirectory, string className, string gatewayProjectName)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine(gatewayProjectName), className);
-        }
-
-        public static ClassPath GatewayLaunchSettingsClassPath(string solutionDirectory, string className, string gatewayProjectName)
-        {
-            return new ClassPath(solutionDirectory, Path.Combine(gatewayProjectName, "Properties"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi", "Properties"), className);
         }
 
         public static ClassPath TestRepositoryClassPath(string solutionDirectory, string className, string entityName, string solutionName)
@@ -161,15 +138,9 @@
             return new ClassPath(solutionDirectory, Path.Combine($"Application", "Wrappers"), className);
         }
 
-        public static ClassPath WebApiProjectRootClassPath(string solutionDirectory, string className, string projectPrefix = "")
+        public static ClassPath WebApiProjectRootClassPath(string solutionDirectory, string className, string solutionName)
         {
-            var pathBase = projectPrefix.Length > 0 ? @$"{projectPrefix}.WebApi" : "WebApi";
-            return new ClassPath(solutionDirectory, Path.Combine(pathBase), className);
-        }
-
-        public static ClassPath GatewayProjectRootClassPath(string solutionDirectory, string className, string gatewayProjectName)
-        {
-            return new ClassPath(solutionDirectory, gatewayProjectName, className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{solutionName}.WebApi"), className);
         }
 
         public static ClassPath ApplicationProjectRootClassPath(string solutionDirectory, string className)
@@ -234,11 +205,6 @@
         public static ClassPath ApplicationProjectClassPath(string solutionDirectory)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"Application"), "Application.csproj");
-        }
-
-        public static ClassPath GatewayProjectClassPath(string solutionDirectory, string gatewayProjectName)
-        {
-            return new ClassPath(solutionDirectory, gatewayProjectName, @$"{gatewayProjectName}.csproj");
         }
 
         public static ClassPath DomainProjectClassPath(string solutionDirectory)

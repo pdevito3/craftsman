@@ -64,6 +64,8 @@
                 // scaffold projects
                 // add an accelerate.config.yaml file to the root?
                 // solution level stuff
+
+                // ***********will add a root directory read from template here for the entire overarching whatever (Koi Katan Operations, LimsLite, ProfiseePlatform)
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
                 var srcDirectory = Path.Combine(solutionDirectory, "src");
                 var testDirectory = Path.Combine(solutionDirectory, "tests");
@@ -112,7 +114,7 @@
                 ValidatorBuilder.CreateValidators(solutionDirectory, entity);
                 ProfileBuilder.CreateProfile(solutionDirectory, entity);
 
-                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies);
+                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies, template.SolutionName);
 
                 FakesBuilder.CreateFakes(solutionDirectory, template.SolutionName, entity);
                 ReadTestBuilder.CreateEntityReadTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName);
@@ -132,14 +134,15 @@
                 template.Environments,
                 template.SwaggerConfig,
                 template.Port,
-                template.AddJwtAuthentication
+                template.AddJwtAuthentication, 
+                template.SolutionName
             );
 
             //seeders
-            SeederBuilder.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName);
+            SeederBuilder.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName, template.SolutionName);
 
             //services
-            SwaggerBuilder.AddSwagger(solutionDirectory, template.SwaggerConfig, template.SolutionName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies);
+            SwaggerBuilder.AddSwagger(solutionDirectory, template.SwaggerConfig, template.SolutionName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies, template.SolutionName);
 
             if(template.AddJwtAuthentication)
                 InfrastructureIdentityServiceRegistrationBuilder.CreateInfrastructureIdentityServiceExtension(solutionDirectory, template.AuthorizationSettings.Policies, fileSystem);

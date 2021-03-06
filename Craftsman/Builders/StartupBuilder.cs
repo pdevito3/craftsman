@@ -44,41 +44,6 @@
             }
         }
 
-        public static void CreateGatewayStartup(string solutionDirectory, string envName, string gatewayProjectName)
-        {
-            try
-            {
-                var classPath = envName == "Startup" 
-                    ? ClassPathHelper.GatewayStartupClassPath(solutionDirectory, $"Startup.cs", gatewayProjectName) 
-                    : ClassPathHelper.GatewayStartupClassPath(solutionDirectory, $"Startup{envName}.cs", gatewayProjectName);
-
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
-
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetStartupText(classPath.ClassNamespace, envName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-
-                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
-        }
-
         public static string GetStartupText(string solutionDirectory, string classNamespace, string envName, bool useJwtAuth, string projectBaseName = "")
         {
             var appAuth = "";
