@@ -26,7 +26,7 @@
 
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var data = GetWebAppFactoryFileText(classPath, dbContextName, addJwtAuthentication);
+                    var data = GetWebAppFactoryFileText(classPath, dbContextName, solutionDirectory, solutionName, addJwtAuthentication);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,8 +44,9 @@
             }
         }
 
-        private static string GetWebAppFactoryFileText(ClassPath classPath, string dbContextName, bool addJwtAuthentication)
+        private static string GetWebAppFactoryFileText(ClassPath classPath, string dbContextName, string solutionDirectory, string solutionName, bool addJwtAuthentication)
         {
+            var webApiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", solutionName);
             var authUsing = addJwtAuthentication ? $@"
     using WebMotions.Fake.Authentication.JwtBearer;" : "";
 
@@ -73,7 +74,7 @@ namespace {classPath.ClassNamespace}
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using WebApi;{authUsing}
+    using {webApiClassPath.ClassNamespace};{authUsing}
 
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebApplicationFactory<Startup>
     {{

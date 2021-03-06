@@ -59,7 +59,6 @@ namespace {classPath.ClassNamespace}
     using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using WebApi;
     using Xunit;
 
     [Collection(""Sequential"")]

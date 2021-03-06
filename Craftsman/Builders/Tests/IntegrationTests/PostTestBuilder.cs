@@ -74,7 +74,6 @@ namespace {classPath.ClassNamespace}
     using Xunit;
     using Newtonsoft.Json;
     using System.Net.Http;
-    using WebApi;
     using System.Collections.Generic;
     using Application.Wrappers;{authUsing}
 

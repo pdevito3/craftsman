@@ -11,11 +11,11 @@
 
     public class WebApiAppExtensionsBuilder
     {
-        public static void CreateWebApiAppExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateWebApiAppExtension(string solutionDirectory, string solutionName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"AppExtensions.cs", projectBaseName);
+                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"AppExtensions.cs", solutionName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetAppExtensionText(classPath.ClassNamespace);
+                    data = GetAppExtensionText(classPath.ClassNamespace, solutionDirectory, solutionName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,13 +44,14 @@
             }
         }
 
-        public static string GetAppExtensionText(string classNamespace)
+        public static string GetAppExtensionText(string classNamespace, string solutionDirectory, string solutionName)
         {
+            var webApiClassPath = ClassPathHelper.WebApiMiddlewareClassPath(solutionDirectory, "", solutionName);
             return @$"namespace {classNamespace}
 {{
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.Configuration;
-    using WebApi.Middleware;
+    using {webApiClassPath.ClassNamespace};
 
     public static class AppExtensions
     {{
