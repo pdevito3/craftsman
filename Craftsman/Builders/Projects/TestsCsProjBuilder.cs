@@ -11,11 +11,11 @@
 
     public class TestsCsProjBuilder
     {
-        public static void CreateTestsCsProj(string solutionDirectory, string solutionName, bool addJwtAuth)
+        public static void CreateTestsCsProj(string solutionDirectory, string projectPrefix, bool addJwtAuth)
         {
             try
             {
-                var classPath = ClassPathHelper.TestProjectClassPath(solutionDirectory, solutionName);
+                var classPath = ClassPathHelper.TestProjectClassPath(solutionDirectory, projectPrefix);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetTestsCsProjFileText(addJwtAuth);
+                    data = GetTestsCsProjFileText(addJwtAuth, projectPrefix);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,8 +44,13 @@
             }
         }
 
-        public static string GetTestsCsProjFileText(bool addJwtAuth)
+        public static string GetTestsCsProjFileText(bool addJwtAuth, string projectPrefix = "")
         {
+            var webApiProjectName = "WebApi";
+            if(projectPrefix.Length > 0)
+            {
+                webApiProjectName = $"{projectPrefix}.WebApi";
+            }
             var authPackages = addJwtAuth ? @$"
     <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""3.1.0"" />" : "";
 
@@ -83,7 +88,7 @@
     <ProjectReference Include=""..\Domain\Domain.csproj"" />
     <ProjectReference Include=""..\Infrastructure.Persistence\Infrastructure.Persistence.csproj"" />
     <ProjectReference Include=""..\Infrastructure.Shared\Infrastructure.Shared.csproj"" />
-    <ProjectReference Include=""..\WebApi\WebApi.csproj"" />
+    <ProjectReference Include=""..\{webApiProjectName}\{webApiProjectName}.csproj"" />
   </ItemGroup>
 
 </Project>";

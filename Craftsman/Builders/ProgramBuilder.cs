@@ -9,11 +9,11 @@
 
     public class ProgramBuilder
     {
-        public static void CreateWebApiProgram(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreateWebApiProgram(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, $"Program.cs");
+                var classPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, $"Program.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

@@ -11,11 +11,11 @@
 
     public class WebApiAppExtensionsBuilder
     {
-        public static void CreateWebApiAppExtension(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreateWebApiAppExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"AppExtensions.cs");
+                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"AppExtensions.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

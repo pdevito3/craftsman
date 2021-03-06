@@ -41,15 +41,15 @@
                 BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, "Infrastructure");
         }
 
-        public static void AddMicroServicesProjects(string solutionDirectory, string projectDirectory, string dbProvider, string solutionName, bool addJwtAuth, IFileSystem fileSystem)
+        public static void AddMicroServicesProjects(string solutionDirectory, string projectDirectory, string dbProvider, string projectBaseName, bool addJwtAuth, IFileSystem fileSystem)
         {
-            var microSolutionFolder = Path.Combine("src", "services", solutionName);
-            BuildWebApiProject(solutionDirectory, projectDirectory, microSolutionFolder, addJwtAuth, fileSystem);
+            var microSolutionFolder = Path.Combine("src", "services", projectBaseName);
+            BuildWebApiProject(solutionDirectory, projectDirectory, microSolutionFolder, addJwtAuth, fileSystem, projectBaseName);
             BuildDomainProject(solutionDirectory, projectDirectory, microSolutionFolder);
             BuildApplicationProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
             BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, microSolutionFolder, dbProvider, fileSystem);
             BuildInfrastructureSharedProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
-            BuildTestProject(solutionDirectory, projectDirectory, microSolutionFolder, solutionName, addJwtAuth);
+            BuildTestProject(solutionDirectory, projectDirectory, microSolutionFolder, projectBaseName, addJwtAuth);
 
             if (addJwtAuth)
                 BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, microSolutionFolder);
@@ -142,40 +142,40 @@
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{infrastructureIdentityProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
         }
 
-        private static void BuildWebApiProject(string solutionDirectory, string projectDirectory, string solutionFolder, bool useJwtAuth, IFileSystem fileSystem)
+        private static void BuildWebApiProject(string solutionDirectory, string projectDirectory, string solutionFolder, bool useJwtAuth, IFileSystem fileSystem, string projectBaseName = "")
         {
-            var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(projectDirectory);
+            var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(projectDirectory, projectBaseName);
 
-            WebApiCsProjBuilder.CreateWebApiCsProj(projectDirectory, useJwtAuth);
+            WebApiCsProjBuilder.CreateWebApiCsProj(projectDirectory, projectBaseName, useJwtAuth);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{webApiProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
 
             // base folders
-            Directory.CreateDirectory(ClassPathHelper.ControllerClassPath(projectDirectory, "").ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.WebApiExtensionsClassPath(projectDirectory, "").ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.WebApiMiddlewareClassPath(projectDirectory, "").ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.ControllerClassPath(projectDirectory, "", "v1", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.WebApiExtensionsClassPath(projectDirectory, "", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.WebApiMiddlewareClassPath(projectDirectory, "", projectBaseName).ClassDirectory);
 
-            WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(projectDirectory, fileSystem);
-            WebApiAppExtensionsBuilder.CreateWebApiAppExtension(projectDirectory, fileSystem);
-            ErrorHandlerMiddlewareBuilder.CreateErrorHandlerMiddleware(projectDirectory, fileSystem);
-            WebApiAppSettingsBuilder.CreateAppSettings(projectDirectory);
-            WebApiLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, fileSystem);
-            ProgramBuilder.CreateWebApiProgram(projectDirectory, fileSystem);
-            StartupBuilder.CreateWebApiStartup(projectDirectory, "Startup", useJwtAuth);
+            WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(projectDirectory, projectBaseName, fileSystem);
+            WebApiAppExtensionsBuilder.CreateWebApiAppExtension(projectDirectory, projectBaseName, fileSystem);
+            ErrorHandlerMiddlewareBuilder.CreateErrorHandlerMiddleware(projectDirectory, projectBaseName, fileSystem);
+            WebApiAppSettingsBuilder.CreateAppSettings(projectDirectory, projectBaseName);
+            WebApiLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, projectBaseName, fileSystem);
+            ProgramBuilder.CreateWebApiProgram(projectDirectory, projectBaseName, fileSystem);
+            StartupBuilder.CreateWebApiStartup(projectDirectory, "Startup", useJwtAuth, projectBaseName);
         }
 
-        private static void BuildTestProject(string solutionDirectory, string projectDirectory, string solutionFolder, string solutionName, bool addJwtAuth)
+        private static void BuildTestProject(string solutionDirectory, string projectDirectory, string solutionFolder, string projectBaseName, bool addJwtAuth)
         {
-            var testProjectClassPath = ClassPathHelper.TestProjectRootClassPath(projectDirectory, "", solutionName);
+            var testProjectClassPath = ClassPathHelper.TestProjectRootClassPath(projectDirectory, "", projectBaseName);
 
-            TestsCsProjBuilder.CreateTestsCsProj(projectDirectory, solutionName, addJwtAuth);
+            TestsCsProjBuilder.CreateTestsCsProj(projectDirectory, projectBaseName, addJwtAuth);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
 
-            HealthCheckTestBuilder.CreateHealthCheckTests(projectDirectory, solutionName);
+            HealthCheckTestBuilder.CreateHealthCheckTests(projectDirectory, projectBaseName);
 
             if (addJwtAuth)
             {
-                Directory.CreateDirectory(ClassPathHelper.HttpClientExtensionsClassPath(projectDirectory, solutionName, "").ClassDirectory);
-                HttpClientExtensionsBuilder.Create(projectDirectory, solutionName);
+                Directory.CreateDirectory(ClassPathHelper.HttpClientExtensionsClassPath(projectDirectory, projectBaseName, "").ClassDirectory);
+                HttpClientExtensionsBuilder.Create(projectDirectory, projectBaseName);
             }
         }
     }

@@ -11,11 +11,11 @@
 
     public class WebApiLaunchSettingsBuilder
     {
-        public static void CreateLaunchSettings(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreateLaunchSettings(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(solutionDirectory, $"launchSettings.json");
+                var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(solutionDirectory, $"launchSettings.json", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

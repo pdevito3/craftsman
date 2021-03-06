@@ -173,7 +173,8 @@
             List<ApiEnvironment> environments,
             SwaggerConfig swaggerConfig,
             int port,
-            bool useJwtAuth)
+            bool useJwtAuth,
+            string projectBaseName = "")
         {
             // add a development environment by default for local work if none exists
             if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
@@ -184,19 +185,19 @@
             {
                 // default startup is already built in cleanup phase
                 if (env.EnvironmentName != "Startup")
-                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth);
+                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth, projectBaseName);
 
-                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName);
-                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port);
+                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, projectBaseName);
+                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, projectBaseName);
 
                 //services
                 if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
-                    SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, env);
+                    SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, env, projectBaseName);
             }
 
             // add an integration testing env to make sure that an in memory database is used
             var integEnv = new ApiEnvironment() { EnvironmentName = "IntegrationTesting" };
-            WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, integEnv, "");
+            WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, integEnv, "", projectBaseName);
         }
 
         public static List<Policy> GetEndpointPolicies(List<Policy> policies, Endpoint endpoint, string entityName)

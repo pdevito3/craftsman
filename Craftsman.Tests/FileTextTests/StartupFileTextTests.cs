@@ -15,7 +15,7 @@
         [Fact]
         public void GetStartupText_Devlopment_env_returns_expected_text()
         {
-            var fileText = StartupBuilder.GetStartupText("Development", false);
+            var fileText = StartupBuilder.GetStartupText("", "WebApi", "Development", false);
 
             var expectedText = @$"namespace WebApi
 {{
@@ -97,8 +97,7 @@
         [InlineData("Local")]
         public void GetStartupText_NonDevlopment_env_returns_expected_text(string env)
         {
-            var template = new ApiTemplate() { };
-            var fileText = StartupBuilder.GetStartupText(env, false);
+            var fileText = StartupBuilder.GetStartupText("", "WebApi", env, false);
 
             var expectedText = @$"namespace WebApi
 {{

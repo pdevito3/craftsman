@@ -13,11 +13,11 @@
 
     public static class ControllerBuilder
     {
-        public static void CreateController(string solutionDirectory, Entity entity, bool AddSwaggerComments, List<Policy> policies)
+        public static void CreateController(string solutionDirectory, Entity entity, bool AddSwaggerComments, List<Policy> policies, string projectBaseName = "")
         {
             try
             {
-                var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs");
+                var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", "v1", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);

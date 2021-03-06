@@ -11,11 +11,11 @@
 
     public class ErrorHandlerMiddlewareBuilder
     {
-        public static void CreateErrorHandlerMiddleware(string solutionDirectory, IFileSystem fileSystem)
+        public static void CreateErrorHandlerMiddleware(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.WebApiMiddlewareClassPath(solutionDirectory, $"ErrorHandlerMiddleware.cs");
+                var classPath = ClassPathHelper.WebApiMiddlewareClassPath(solutionDirectory, $"ErrorHandlerMiddleware.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

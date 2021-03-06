@@ -6,9 +6,9 @@
 
     public class WebApiLaunchSettingsModifier
     {
-        public static void AddProfile(string solutionDirectory, ApiEnvironment env, int port)
+        public static void AddProfile(string solutionDirectory, ApiEnvironment env, int port, string projectBaseName = "")
         {
-            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(solutionDirectory, $"launchsettings.json"); // hard coding webapi here not great
+            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(solutionDirectory, $"launchsettings.json", projectBaseName); // hard coding webapi here not great
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);

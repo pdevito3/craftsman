@@ -14,12 +14,12 @@
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName)
+        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string projectBaseName = "")
         {
             try
             {
                 var appSettingFilename = Utilities.GetAppSettingsName(env.EnvironmentName);
-                var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
+                var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -52,12 +52,12 @@
         /// this build will only do a skeleton app settings for the initial project build.
         /// </summary>
         /// <param name="solutionDirectory"></param>
-        public static void CreateAppSettings(string solutionDirectory)
+        public static void CreateAppSettings(string solutionDirectory, string projectBaseName)
         {
             try
             {
                 var appSettingFilename = "appsettings.json";
-                var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}");
+                var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);

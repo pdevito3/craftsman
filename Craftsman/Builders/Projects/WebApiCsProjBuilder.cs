@@ -11,11 +11,11 @@
 
     public class WebApiCsProjBuilder
     {
-        public static void CreateWebApiCsProj(string solutionDirectory, bool addIdentity)
+        public static void CreateWebApiCsProj(string solutionDirectory, string projectBaseName, bool addIdentity)
         {
             try
             {
-                var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory);
+                var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);

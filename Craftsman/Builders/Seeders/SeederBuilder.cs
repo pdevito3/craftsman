@@ -15,7 +15,7 @@
 
     public class SeederBuilder
     {
-        public static void AddSeeders(string solutionDirectory, List<Entity> entities, string dbContextName)
+        public static void AddSeeders(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName = "")
         {
             try
             {
@@ -38,7 +38,7 @@
                     GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
                 }
 
-                RegisterAllSeeders(solutionDirectory, entities, dbContextName);
+                RegisterAllSeeders(solutionDirectory, entities, dbContextName, projectBaseName);
             }
             catch (FileAlreadyExistsException e)
             {
@@ -52,21 +52,17 @@
             }
         }
 
-        private static void RegisterAllSeeders(string solutionDirectory, List<Entity> entities, string dbContextName)
+        private static void RegisterAllSeeders(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
         {
-            //TODO move these to a dictionary to lookup and overwrite if I want
-            var repoTopPath = "WebApi";
+            var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"StartupDevelopment.cs", projectBaseName);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
 
-            var entityDir = Path.Combine(solutionDirectory, repoTopPath);
-            if (!Directory.Exists(entityDir))
-                throw new DirectoryNotFoundException($"The `{entityDir}` directory could not be found.");
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
-            var pathString = Path.Combine(entityDir, $"StartupDevelopment.cs");
-            if (!File.Exists(pathString))
-                throw new FileNotFoundException($"The `{pathString}` file could not be found.");
-
-            var tempPath = $"{pathString}temp";
-            using (var input = File.OpenText(pathString))
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
             {
                 using (var output = new StreamWriter(tempPath))
                 {
@@ -85,10 +81,10 @@
             }
 
             // delete the old file and set the name of the new one to the original name
-            File.Delete(pathString);
-            File.Move(tempPath, pathString);
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
 
-            GlobalSingleton.AddUpdatedFile(pathString.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
+            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             //WriteWarning($"TODO Need a message for the update of Startup.");
         }
 

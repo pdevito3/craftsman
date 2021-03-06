@@ -9,11 +9,13 @@
 
     public class StartupBuilder
     {
-        public static void CreateWebApiStartup(string solutionDirectory, string envName, bool useJwtAuth)
+        public static void CreateWebApiStartup(string solutionDirectory, string envName, bool useJwtAuth, string projectBaseName = "")
         {
             try
             {
-                var classPath = envName == "Startup" ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs") : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs");
+                var classPath = envName == "Startup" 
+                    ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", projectBaseName) 
+                    : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -24,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetStartupText(envName, useJwtAuth);
+                    data = GetStartupText(solutionDirectory, classPath.ClassNamespace, envName, useJwtAuth, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -46,7 +48,9 @@
         {
             try
             {
-                var classPath = envName == "Startup" ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", gatewayProjectName) : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs", gatewayProjectName);
+                var classPath = envName == "Startup" 
+                    ? ClassPathHelper.GatewayStartupClassPath(solutionDirectory, $"Startup.cs", gatewayProjectName) 
+                    : ClassPathHelper.GatewayStartupClassPath(solutionDirectory, $"Startup{envName}.cs", gatewayProjectName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -75,10 +79,11 @@
             }
         }
 
-        public static string GetStartupText(string envName, bool useJwtAuth)
+        public static string GetStartupText(string solutionDirectory, string classNamespace, string envName, bool useJwtAuth, string projectBaseName = "")
         {
             var appAuth = "";
             var identityUsing = "";
+            var apiExtensionsClassPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, "", projectBaseName);
             var identityServiceRegistration = "";
             if (useJwtAuth)
             {
@@ -94,7 +99,7 @@
 
             envName = envName == "Startup" ? "" : envName;
             if (envName == "Development")
-                return @$"namespace WebApi
+                return @$"namespace {classNamespace}
 {{
     using Application;
     using Microsoft.AspNetCore.Builder;
@@ -105,7 +110,7 @@
     using Infrastructure.Shared;
     using Infrastructure.Persistence.Seeders;
     using Infrastructure.Persistence.Contexts;
-    using WebApi.Extensions;
+    using {apiExtensionsClassPath.ClassNamespace};
     using Serilog;{identityUsing}
 
     public class Startup{envName}
@@ -165,7 +170,7 @@
 }}";
         else
 
-            return @$"namespace WebApi
+            return @$"namespace {classNamespace}
 {{
     using Application;
     using Microsoft.AspNetCore.Builder;
@@ -174,7 +179,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Infrastructure.Persistence;
     using Infrastructure.Shared;
-    using WebApi.Extensions;
+    using {apiExtensionsClassPath.ClassNamespace};
     using Serilog;{identityUsing}
 
     public class Startup{envName}

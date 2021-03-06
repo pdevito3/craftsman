@@ -127,7 +127,7 @@
                     ValidatorBuilder.CreateValidators(microPath, entity);
                     ProfileBuilder.CreateProfile(microPath, entity);
 
-                    ControllerBuilder.CreateController(microPath, entity, micro.SwaggerConfig.AddSwaggerComments, micro.AuthorizationSettings.Policies);
+                    ControllerBuilder.CreateController(microPath, entity, micro.SwaggerConfig.AddSwaggerComments, micro.AuthorizationSettings.Policies, micro.ProjectFolderName);
 
                     FakesBuilder.CreateFakes(microPath, micro.ProjectFolderName, entity);
                     ReadTestBuilder.CreateEntityReadTests(microPath, micro.ProjectFolderName, entity, micro.DbContext.ContextName);
@@ -148,14 +148,15 @@
                     micro.Environments,
                     micro.SwaggerConfig,
                     micro.Port,
-                    micro.AddJwtAuthentication
+                    micro.AddJwtAuthentication,
+                    micro.ProjectFolderName
                 );
 
                 //seeders
-                SeederBuilder.AddSeeders(microPath, micro.Entities, micro.DbContext.ContextName);
+                SeederBuilder.AddSeeders(microPath, micro.Entities, micro.DbContext.ContextName, micro.ProjectFolderName);
 
                 //services
-                SwaggerBuilder.AddSwagger(microPath, micro.SwaggerConfig, micro.ProjectFolderName, micro.AddJwtAuthentication, micro.AuthorizationSettings.Policies);
+                SwaggerBuilder.AddSwagger(microPath, micro.SwaggerConfig, micro.ProjectFolderName, micro.AddJwtAuthentication, micro.AuthorizationSettings.Policies, micro.ProjectFolderName);
 
                 if (micro.AddJwtAuthentication)
                     InfrastructureIdentityServiceRegistrationBuilder.CreateInfrastructureIdentityServiceExtension(microPath, micro.AuthorizationSettings.Policies, fileSystem);

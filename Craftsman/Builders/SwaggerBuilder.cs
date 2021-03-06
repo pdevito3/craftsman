@@ -13,21 +13,21 @@
 
     public class SwaggerBuilder
     {
-        public static void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies)
+        public static void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies, string projectBaseName = "")
         {
             if(!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
             {
-                AddSwaggerServiceExtension(solutionDirectory, swaggerConfig, solutionName, addJwtAuthentication, policies);
-                AddSwaggerAppExtension(solutionDirectory, swaggerConfig, addJwtAuthentication);
-                UpdateWebApiCsProjSwaggerSettings(solutionDirectory, solutionName);
+                AddSwaggerServiceExtension(solutionDirectory, swaggerConfig, solutionName, addJwtAuthentication, policies, projectBaseName);
+                AddSwaggerAppExtension(solutionDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
+                UpdateWebApiCsProjSwaggerSettings(solutionDirectory, solutionName, projectBaseName);
             }
         }
 
-        public static void RegisterSwaggerInStartup(string solutionDirectory, ApiEnvironment env)
+        public static void RegisterSwaggerInStartup(string solutionDirectory, ApiEnvironment env, string projectBaseName = "")
         {
             try
             {
-                var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"{Utilities.GetStartupName(env.EnvironmentName)}.cs");
+                var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"{Utilities.GetStartupName(env.EnvironmentName)}.cs", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
@@ -76,11 +76,11 @@
             }
         }
 
-        private static void AddSwaggerServiceExtension(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies)
+        private static void AddSwaggerServiceExtension(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies, string projectBaseName = "")
         {
             try
             {
-                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"ServiceExtensions.cs");
+                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"ServiceExtensions.cs", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
@@ -143,7 +143,7 @@
 
                     config.AddSecurityDefinition(""oauth2"", new OpenApiSecurityScheme
                     {{
-                Type = SecuritySchemeType.OAuth2,
+                        Type = SecuritySchemeType.OAuth2,
                         Flows = new OpenApiOAuthFlows
                         {{
                             AuthorizationCode = new OpenApiOAuthFlow
@@ -211,8 +211,7 @@
             foreach(var policy in policies)
             {
                 policyStrings += $@"
-                                    {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},
-";
+                                    {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},";
             }
 
             return policyStrings;
@@ -230,11 +229,11 @@
             return "";
         }
 
-        private static void AddSwaggerAppExtension(string solutionDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication)
+        private static void AddSwaggerAppExtension(string solutionDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication, string projectBaseName = "")
         {
             try
             {
-                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"AppExtensions.cs");
+                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"AppExtensions.cs", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
@@ -303,9 +302,9 @@
             return swaggerText;
         }
 
-        public static void UpdateWebApiCsProjSwaggerSettings(string solutionDirectory, string solutionName)
+        public static void UpdateWebApiCsProjSwaggerSettings(string solutionDirectory, string solutionName, string projectBaseName = "")
         {
-            var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory);
+            var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
