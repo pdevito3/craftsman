@@ -63,13 +63,18 @@
 
                 // scaffold projects
                 // add an accelerate.config.yaml file to the root?
+                // solution level stuff
                 var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{template.SolutionName}";
-                
+                var srcDirectory = Path.Combine(solutionDirectory, "src");
+                var testDirectory = Path.Combine(solutionDirectory, "tests");
+                fileSystem.Directory.CreateDirectory(srcDirectory);
+                fileSystem.Directory.CreateDirectory(testDirectory);
+
                 SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
-                SolutionBuilder.AddProjects(solutionDirectory, solutionDirectory, template.DbContext.Provider, template.SolutionName, template.AddJwtAuthentication, fileSystem);
+                SolutionBuilder.AddProjects(solutionDirectory, srcDirectory, template.DbContext.Provider, template.SolutionName, template.AddJwtAuthentication, fileSystem);
 
                 // add all files based on the given template config
-                RunTemplateBuilders(solutionDirectory, template, fileSystem);
+                RunTemplateBuilders(solutionDirectory, srcDirectory, template, fileSystem);
 
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
@@ -92,7 +97,7 @@
             }
         }
 
-        private static void RunTemplateBuilders(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
+        private static void RunTemplateBuilders(string rootDirectory, string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
         {
             // dbcontext
             DbContextBuilder.CreateDbContext(solutionDirectory, template.Entities, template.DbContext.ContextName, template.DbContext.Provider, template.DbContext.DatabaseName);
@@ -140,10 +145,10 @@
                 InfrastructureIdentityServiceRegistrationBuilder.CreateInfrastructureIdentityServiceExtension(solutionDirectory, template.AuthorizationSettings.Policies, fileSystem);
 
             //final
-            ReadmeBuilder.CreateReadme(solutionDirectory, template.SolutionName, fileSystem);
+            ReadmeBuilder.CreateReadme(rootDirectory, template.SolutionName, fileSystem);
 
             if (template.AddGit)
-                GitSetup(solutionDirectory);
+                GitSetup(rootDirectory);
         }
 
         private static void GitSetup(string solutionDirectory)

@@ -30,21 +30,21 @@
         public static void AddProjects(string solutionDirectory, string projectDirectory, string dbProvider, string soutionName, bool addJwtAuth, IFileSystem fileSystem)
         {
             // add webapi first so it is default project
-            BuildWebApiProject(solutionDirectory, projectDirectory, "Api", addJwtAuth, fileSystem);
-            BuildDomainProject(solutionDirectory, projectDirectory, "Core");
-            BuildApplicationProject(solutionDirectory, projectDirectory, "Core", fileSystem);
-            BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, "Infrastructure", dbProvider, fileSystem);
-            BuildInfrastructureSharedProject(solutionDirectory, projectDirectory, "Infrastructure", fileSystem);
-            BuildTestProject(solutionDirectory, projectDirectory, "Tests", soutionName, addJwtAuth);
+            BuildWebApiProject(solutionDirectory, projectDirectory, addJwtAuth, fileSystem);
+            BuildDomainProject(solutionDirectory, projectDirectory, "src");
+            BuildApplicationProject(solutionDirectory, projectDirectory, "src", fileSystem);
+            BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, "src", dbProvider, fileSystem);
+            BuildInfrastructureSharedProject(solutionDirectory, projectDirectory, "src", fileSystem);
+            BuildTestProject(solutionDirectory, projectDirectory, "tests", soutionName, addJwtAuth);
 
             if (addJwtAuth)
-                BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, "Infrastructure");
+                BuildInfrastructureIdentityProject(solutionDirectory, projectDirectory, "src");
         }
 
         public static void AddMicroServicesProjects(string solutionDirectory, string projectDirectory, string dbProvider, string projectBaseName, bool addJwtAuth, IFileSystem fileSystem)
         {
             var microSolutionFolder = Path.Combine("src", "services", projectBaseName);
-            BuildWebApiProject(solutionDirectory, projectDirectory, microSolutionFolder, addJwtAuth, fileSystem, projectBaseName);
+            BuildWebApiProject(solutionDirectory, projectDirectory, addJwtAuth, fileSystem, projectBaseName);
             BuildDomainProject(solutionDirectory, projectDirectory, microSolutionFolder);
             BuildApplicationProject(solutionDirectory, projectDirectory, microSolutionFolder, fileSystem);
             BuildInfrastructurePersistenceProject(solutionDirectory, projectDirectory, microSolutionFolder, dbProvider, fileSystem);
@@ -142,8 +142,9 @@
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{infrastructureIdentityProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
         }
 
-        private static void BuildWebApiProject(string solutionDirectory, string projectDirectory, string solutionFolder, bool useJwtAuth, IFileSystem fileSystem, string projectBaseName = "")
+        private static void BuildWebApiProject(string solutionDirectory, string projectDirectory, bool useJwtAuth, IFileSystem fileSystem, string projectBaseName = "")
         {
+            var solutionFolder = projectDirectory.Replace(solutionDirectory, "").Replace(Path.DirectorySeparatorChar.ToString(), "");
             var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(projectDirectory, projectBaseName);
 
             WebApiCsProjBuilder.CreateWebApiCsProj(projectDirectory, projectBaseName, useJwtAuth);
