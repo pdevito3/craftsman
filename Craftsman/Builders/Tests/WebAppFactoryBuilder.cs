@@ -44,9 +44,11 @@
             }
         }
 
-        private static string GetWebAppFactoryFileText(ClassPath classPath, string dbContextName, string solutionDirectory, string solutionName, bool addJwtAuthentication)
+        private static string GetWebAppFactoryFileText(ClassPath classPath, string dbContextName, string solutionDirectory, string projectBaseName, bool addJwtAuthentication)
         {
-            var webApiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", solutionName);
+            var webApiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", projectBaseName);
+            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
+
             var authUsing = addJwtAuthentication ? $@"
     using WebMotions.Fake.Authentication.JwtBearer;" : "";
 
@@ -62,7 +64,8 @@
             return @$"
 namespace {classPath.ClassNamespace}
 {{
-    using Infrastructure.Persistence.Contexts;
+    using {contextClassPath.ClassNamespace};
+    using {webApiClassPath.ClassNamespace};{authUsing}
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.Testing;
     using Microsoft.EntityFrameworkCore;
@@ -74,7 +77,6 @@ namespace {classPath.ClassNamespace}
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using {webApiClassPath.ClassNamespace};{authUsing}
 
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebApplicationFactory<Startup>
     {{

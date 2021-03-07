@@ -52,6 +52,7 @@
             var profileClassPath = ClassPathHelper.ProfileClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var testFakesClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
 
             var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.DeleteRecord, entity.Name);
             var hasRestrictedEndpoints = restrictedPolicies.Count > 0;
@@ -65,23 +66,23 @@
 namespace {classPath.ClassNamespace}
 {{
     using {dtoClassPath.ClassNamespace};
-    using FluentAssertions;
+    using {contextClassPath.ClassNamespace};
     using {testFakesClassPath.ClassNamespace};
+    using {profileClassPath.ClassNamespace};
+    using {wrapperClassPath.ClassNamespace};{authUsing}
+    using FluentAssertions;
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
     using Newtonsoft.Json;
     using System.Net.Http;
     using System.Collections.Generic;
-    using Infrastructure.Persistence.Contexts;
     using Microsoft.Extensions.DependencyInjection;    
     using Microsoft.AspNetCore.JsonPatch;
     using System.Linq;
     using AutoMapper;
     using Bogus;
-    using {profileClassPath.ClassNamespace};
     using System.Text;
-    using {wrapperClassPath.ClassNamespace};{authUsing}
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>

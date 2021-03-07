@@ -11,7 +11,7 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class PostTestBuilder
+    public class PostIntegrationTestBuilder
     {
         public static void CreateEntityWriteTests(string solutionDirectory, Entity entity, string solutionName, List<Policy> policies, string projectBaseName)
         {
@@ -57,6 +57,7 @@
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var testFakesClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
 
             var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.AddRecord, entity.Name);
             var hasRestrictedEndpoints = restrictedPolicies.Count > 0;
@@ -70,15 +71,16 @@
 namespace {classPath.ClassNamespace}
 {{
     using {dtoClassPath.ClassNamespace};
-    using FluentAssertions;
+    using {contextClassPath.ClassNamespace};
     using {testFakesClassPath.ClassNamespace};
+    using {wrapperClassPath.ClassNamespace};{authUsing}
+    using FluentAssertions;
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
     using Newtonsoft.Json;
     using System.Net.Http;
     using System.Collections.Generic;
-    using {wrapperClassPath.ClassNamespace};{authUsing}
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>

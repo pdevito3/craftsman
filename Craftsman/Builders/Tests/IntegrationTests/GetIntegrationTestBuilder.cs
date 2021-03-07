@@ -11,7 +11,7 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class GetTestBuilder
+    public class GetIntegrationTestBuilder
     {
         public static void CreateEntityGetTests(string solutionDirectory, string solutionName, Entity entity, string dbContextName, List<Policy> policies, string projectBaseName)
         {
@@ -51,6 +51,7 @@
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var testFakesClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
 
             var restrictedGetListPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.GetList, entity.Name);
             var hasRestrictedGetListEndpoints = restrictedGetListPolicies.Count > 0;
@@ -70,17 +71,17 @@
 namespace {classPath.ClassNamespace}
 {{
     using {dtoClassPath.ClassNamespace};
-    using FluentAssertions;
+    using {contextClassPath.ClassNamespace};
     using {testFakesClassPath.ClassNamespace};
+    using {wrapperClassPath.ClassNamespace};{authUsing}
+    using FluentAssertions;
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
     using Newtonsoft.Json;
     using System.Net.Http;
     using System.Collections.Generic;
-    using Infrastructure.Persistence.Contexts;
     using Microsoft.Extensions.DependencyInjection;
-    using {wrapperClassPath.ClassNamespace};{authUsing}
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>

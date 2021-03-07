@@ -50,7 +50,6 @@
 namespace {classPath.ClassNamespace}
 {{
     using FluentAssertions;
-    using Infrastructure.Persistence.Contexts;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.Testing;

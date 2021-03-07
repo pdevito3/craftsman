@@ -124,12 +124,13 @@
                 ControllerBuilder.CreateController(srcDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies, template.SolutionName);
 
                 FakesBuilder.CreateFakes(testDirectory, template.SolutionName, entity);
-                ReadTestBuilder.CreateEntityReadTests(testDirectory, template.SolutionName, entity, template.DbContext.ContextName);
-                GetTestBuilder.CreateEntityGetTests(testDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthorizationSettings.Policies, template.SolutionName);
-                PostTestBuilder.CreateEntityWriteTests(testDirectory, entity, template.SolutionName, template.AuthorizationSettings.Policies, template.SolutionName);
-                UpdateTestBuilder.CreateEntityUpdateTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, template.SolutionName);
+                //ReadTestBuilder.CreateEntityReadTests(testDirectory, template.SolutionName, entity, template.DbContext.ContextName);
+                //DeleteTestBuilder.DeleteEntityWriteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName);
+                //WriteTestBuilder.CreateEntityWriteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName);
+                GetIntegrationTestBuilder.CreateEntityGetTests(testDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthorizationSettings.Policies, template.SolutionName);
+                PostIntegrationTestBuilder.CreateEntityWriteTests(testDirectory, entity, template.SolutionName, template.AuthorizationSettings.Policies, template.SolutionName);
+                UpdateIntegrationTestBuilder.CreateEntityUpdateTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, template.SolutionName);
                 DeleteIntegrationTestBuilder.CreateEntityDeleteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, template.SolutionName);
-                DeleteTestBuilder.DeleteEntityWriteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName);
                 WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, template.SolutionName, template.DbContext.ContextName, template.AddJwtAuthentication);
             }
 

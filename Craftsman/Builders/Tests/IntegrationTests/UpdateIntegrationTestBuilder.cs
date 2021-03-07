@@ -11,7 +11,7 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class UpdateTestBuilder
+    public class UpdateIntegrationTestBuilder
     {
         public static void CreateEntityUpdateTests(string solutionDirectory, Entity entity, string solutionName, string dbContextName, List<Policy> policies, string projectBaseName)
         {
@@ -52,6 +52,7 @@
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var testFakesClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var profileClassPath = ClassPathHelper.ProfileClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
 
             var restrictedRecordUpdatePolicies = Utilities.GetEndpointPolicies(policies, Endpoint.UpdateRecord, entity.Name);
             var hasRestrictedRecordUpdateEndpoints = restrictedRecordUpdatePolicies.Count > 0;
@@ -71,23 +72,23 @@
 namespace {classPath.ClassNamespace}
 {{
     using {dtoClassPath.ClassNamespace};
-    using FluentAssertions;
+    using {contextClassPath.ClassNamespace};
     using {testFakesClassPath.ClassNamespace};
+    using {profileClassPath.ClassNamespace};
+    using {wrapperClassPath.ClassNamespace};{authUsing}
+    using FluentAssertions;
     using Microsoft.AspNetCore.Mvc.Testing;
     using System.Threading.Tasks;
     using Xunit;
     using Newtonsoft.Json;
     using System.Net.Http;
     using System.Collections.Generic;
-    using Infrastructure.Persistence.Contexts;
     using Microsoft.Extensions.DependencyInjection;    
     using Microsoft.AspNetCore.JsonPatch;
     using System.Linq;
     using AutoMapper;
     using Bogus;
-    using {profileClassPath.ClassNamespace};
     using System.Text;
-    using {wrapperClassPath.ClassNamespace};{authUsing}
 
     [Collection(""Sequential"")]
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : IClassFixture<CustomWebApplicationFactory>
