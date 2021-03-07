@@ -2,6 +2,7 @@
   "profiles": {
     "Craftsman Dev": {
       "commandName": "Project",
+      "commandLineArgs": "new:api C:\\Users\\Paul\\Documents\\SoontoBeVsaLab.yaml",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Dev"
       }

@@ -55,8 +55,7 @@
 
     public static class AppExtensions
     {{
-        #region Swagger Region - Do Not Delete
-        #endregion
+        // Swagger Marker - Do Not Delete
 
         public static void UseErrorHandlingMiddleware(this IApplicationBuilder app)
         {{

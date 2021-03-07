@@ -51,7 +51,6 @@
             Directory.CreateDirectory(ClassPathHelper.WrappersClassPath(projectDirectory, "", projectBaseName).ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.SharedDtoClassPath(projectDirectory, "", projectBaseName).ClassDirectory);
 
-            CoreServiceExtensionsBuilder.CreateCoreServiceExtension(projectDirectory, projectBaseName, fileSystem);
             BasePaginationParametersBuilder.CreateBasePaginationParameters(projectDirectory, projectBaseName, fileSystem);
             PagedListBuilder.CreatePagedList(projectDirectory, projectBaseName, fileSystem);
             ResponseBuilder.CreateResponse(projectDirectory, projectBaseName, fileSystem);

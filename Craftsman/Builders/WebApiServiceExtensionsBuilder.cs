@@ -48,6 +48,9 @@
         {
             return @$"namespace {classNamespace}
 {{
+    using AutoMapper;
+    using FluentValidation.AspNetCore;
+    using MediatR;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -55,11 +58,11 @@
     using System;
     using System.IO;
     using System.Collections.Generic;
+    using System.Reflection;
 
     public static class ServiceExtensions
     {{
-        #region Swagger Region - Do Not Delete
-        #endregion
+        // Swagger Marker - Do Not Delete
 
         public static void AddApiVersioningExtension(this IServiceCollection services)
         {{
@@ -84,6 +87,15 @@
                     .AllowAnyHeader()
                     .WithExposedHeaders(""X-Pagination""));
             }});
+        }}
+
+        public static void AddWebApiServices(this IServiceCollection services)
+        {{
+            services.AddMediatR(typeof(Startup));
+            services.AddMvc()
+                .AddFluentValidation(cfg => {{ cfg.RegisterValidatorsFromAssemblyContaining<Startup>(); }});
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
         }}
     }}
 }}";

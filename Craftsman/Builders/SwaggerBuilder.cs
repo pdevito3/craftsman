@@ -97,7 +97,7 @@
                         while (null != (line = input.ReadLine()))
                         {
                             var newText = $"{line}";
-                            if (line.Contains("#region Swagger Region"))
+                            if (line.Contains("// Swagger Marker - Do Not Delete"))
                             {
                                 newText += GetSwaggerServiceExtensionText(swaggerConfig, solutionName, addJwtAuthentication, policies);
                             }
@@ -129,7 +129,7 @@
         {
             var contactUrlLine = IsCleanUri(swaggerConfig.ApiContact.Url) 
                 ? $@"
-                                Url = new Uri(""{ swaggerConfig.ApiContact.Url }""),"
+                            Url = new Uri(""{ swaggerConfig.ApiContact.Url }""),"
                 : "";
 
             var LicenseUrlLine = IsCleanUri(swaggerConfig.LicenseUrl)
@@ -141,66 +141,66 @@
             var policyScopes = GetPolicies(policies);
             var swaggerAuth = addJwtAuthentication ? $@"
 
-                    config.AddSecurityDefinition(""oauth2"", new OpenApiSecurityScheme
+                config.AddSecurityDefinition(""oauth2"", new OpenApiSecurityScheme
+                {{
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
                     {{
-                        Type = SecuritySchemeType.OAuth2,
-                        Flows = new OpenApiOAuthFlows
+                        AuthorizationCode = new OpenApiOAuthFlow
                         {{
-                            AuthorizationCode = new OpenApiOAuthFlow
-                            {{
-                                AuthorizationUrl = new Uri(configuration[""JwtSettings:AuthorizationUrl""]),
-                                TokenUrl = new Uri(configuration[""JwtSettings:TokenUrl""]),
-                                Scopes = new Dictionary<string, string>
-                                {{{policyScopes}
-                                }}
+                            AuthorizationUrl = new Uri(configuration[""JwtSettings:AuthorizationUrl""]),
+                            TokenUrl = new Uri(configuration[""JwtSettings:TokenUrl""]),
+                            Scopes = new Dictionary<string, string>
+                            {{{policyScopes}
                             }}
                         }}
-                    }});
+                    }}
+                }});
 
-                    config.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                config.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {{
                     {{
+                        new OpenApiSecurityScheme
                         {{
-                            new OpenApiSecurityScheme
+                            Reference = new OpenApiReference
                             {{
-                                Reference = new OpenApiReference
-                                {{
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = ""oauth2""
-                                }},
-                                Scheme = ""oauth2"",
-                                Name = ""oauth2"",
-                                In = ParameterLocation.Header
+                                Type = ReferenceType.SecurityScheme,
+                                Id = ""oauth2""
                             }},
-                            new List<string>()
-                        }}
-                    }}); " : $@"";
+                            Scheme = ""oauth2"",
+                            Name = ""oauth2"",
+                            In = ParameterLocation.Header
+                        }},
+                        new List<string>()
+                    }}
+                }}); " : $@"";
 
             var SwaggerXmlComments = "";
             if (swaggerConfig.AddSwaggerComments)
                 SwaggerXmlComments = $@"
 
-                    config.IncludeXmlComments(string.Format(@$""{{AppDomain.CurrentDomain.BaseDirectory}}{{Path.DirectorySeparatorChar}}{solutionName}.WebApi.xml""));";
+                config.IncludeXmlComments(string.Format(@$""{{AppDomain.CurrentDomain.BaseDirectory}}{{Path.DirectorySeparatorChar}}{solutionName}.WebApi.xml""));";
 
             var swaggerText = $@"
-            public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
+        public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
+        {{
+            services.AddSwaggerGen(config =>
             {{
-                services.AddSwaggerGen(config =>
-                {{
-                    config.SwaggerDoc(
-                        ""v1"", 
-                        new OpenApiInfo
+                config.SwaggerDoc(
+                    ""v1"", 
+                    new OpenApiInfo
+                    {{
+                        Version = ""v1"",
+                        Title = ""{swaggerConfig.Title}"",
+                        Description = ""{swaggerConfig.Description}"",
+                        Contact = new OpenApiContact
                         {{
-                            Version = ""v1"",
-                            Title = ""{swaggerConfig.Title}"",
-                            Description = ""{swaggerConfig.Description}"",
-                            Contact = new OpenApiContact
-                            {{
-                                Name = ""{swaggerConfig.ApiContact.Name}"",
-                                Email = ""{swaggerConfig.ApiContact.Email}"",{contactUrlLine}
-                            }},{licenseText}
-                        }});{swaggerAuth}{SwaggerXmlComments}
-                }});
-            }}";
+                            Name = ""{swaggerConfig.ApiContact.Name}"",
+                            Email = ""{swaggerConfig.ApiContact.Email}"",{contactUrlLine}
+                        }},{licenseText}
+                    }});{swaggerAuth}{SwaggerXmlComments}
+            }});
+        }}";
 
             return swaggerText;
         }
@@ -250,7 +250,7 @@
                         while (null != (line = input.ReadLine()))
                         {
                             var newText = $"{line}";
-                            if (line.Contains("#region Swagger Region"))
+                            if (line.Contains("// Swagger Marker - Do Not Delete"))
                             {
                                 newText += GetSwaggerAppExtensionText(swaggerConfig, addJwtAuthentication);
                             }

@@ -83,9 +83,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include=""..\..\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />
-    <ProjectReference Include=""..\..\{infraClassPath.ClassNamespace}\{infraClassPath.ClassName}"" />
-    <ProjectReference Include=""..\..\{webApiClassPath.ClassNamespace}\{webApiClassPath.ClassName}"" />
+    <ProjectReference Include=""..\..\src\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />
+    <ProjectReference Include=""..\..\src\{infraClassPath.ClassNamespace}\{infraClassPath.ClassName}"" />
+    <ProjectReference Include=""..\..\src\{webApiClassPath.ClassNamespace}\{webApiClassPath.ClassName}"" />
   </ItemGroup>
 
 </Project>";

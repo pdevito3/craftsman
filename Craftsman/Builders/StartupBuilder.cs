@@ -48,7 +48,6 @@
         {
             var appAuth = "";
             var apiExtensionsClassPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, "", projectBaseName);
-            var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
             var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
             var seederClassPath = ClassPathHelper.SeederClassPath(solutionDirectory, "", projectBaseName);
 
@@ -66,7 +65,6 @@
             if (envName == "Development")
                 return @$"namespace {classNamespace}
 {{
-    using {coreClassPath.ClassNamespace};
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -93,11 +91,11 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             services.AddCorsService(""MyCorsPolicy"");
-            services.AddCoreLayer();
             services.AddInfrastructure(_config, _env);
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
+            services.AddWebApiServices();
             services.AddHealthChecks();
 
             #region Dynamic Services
@@ -135,7 +133,6 @@
 
             return @$"namespace {classNamespace}
 {{
-    using {coreClassPath.ClassNamespace};
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -160,11 +157,11 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             services.AddCorsService(""MyCorsPolicy"");
-            services.AddCoreLayer();
             services.AddInfrastructure(_config, _env);
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
+            services.AddWebApiServices();
             services.AddHealthChecks();
 
             #region Dynamic Services
