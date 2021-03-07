@@ -88,14 +88,14 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Infrastructure", "Contexts"), className);
         }
 
-        public static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        public static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityPlural, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Features", entityName, "Validators"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Features", entityPlural, "Validators"), className);
         }
 
-        public static ClassPath ProfileClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        public static ClassPath ProfileClassPath(string solutionDirectory, string className, string entityPlural, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Features", entityName, "Mappings"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Features", entityPlural, "Mappings"), className);
         }
 
         public static ClassPath FeaturesClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)

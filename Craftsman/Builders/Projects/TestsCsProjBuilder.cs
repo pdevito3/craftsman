@@ -48,6 +48,7 @@
         {
             var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
             var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
+            var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
 
             var authPackages = addJwtAuth ? @$"
     <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""3.1.0"" />" : "";
@@ -82,9 +83,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include=""..\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />
-    <ProjectReference Include=""..\Infrastructure.Persistence\Infrastructure.Persistence.csproj"" />
-    <ProjectReference Include=""..\{webApiClassPath.ClassNamespace}\{webApiClassPath.ClassName}"" />
+    <ProjectReference Include=""..\..\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />
+    <ProjectReference Include=""..\..\{infraClassPath.ClassNamespace}\{infraClassPath.ClassName}"" />
+    <ProjectReference Include=""..\..\{webApiClassPath.ClassNamespace}\{webApiClassPath.ClassName}"" />
   </ItemGroup>
 
 </Project>";

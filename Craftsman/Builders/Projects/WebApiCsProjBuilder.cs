@@ -11,7 +11,7 @@
 
     public class WebApiCsProjBuilder
     {
-        public static void CreateWebApiCsProj(string solutionDirectory, string projectBaseName, bool addIdentity)
+        public static void CreateWebApiCsProj(string solutionDirectory, string projectBaseName)
         {
             try
             {
@@ -26,7 +26,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetWebApiCsProjFileText(solutionDirectory, projectBaseName, addIdentity);
+                    data = GetWebApiCsProjFileText(solutionDirectory, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -44,7 +44,7 @@
             }
         }
 
-        public static string GetWebApiCsProjFileText(string solutionDirectory, string projectBaseName, bool addIdentity)
+        public static string GetWebApiCsProjFileText(string solutionDirectory, string projectBaseName)
         {
             var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
             var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);

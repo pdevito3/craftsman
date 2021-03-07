@@ -10,13 +10,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class CommandAddRecordBuilder
+    public class CommandPatchRecordBuilder
     {
         public static void CreateCommand(string solutionDirectory, Entity entity, string contextName, string projectBaseName)
         {
             try
             {
-                var classPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, $"{Utilities.AddEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+                var classPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, $"{Utilities.PatchEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -47,19 +47,16 @@
 
         public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string projectBaseName)
         {
-            var className = Utilities.AddEntityFeatureClassName(entity.Name);
-            var addCommandName = Utilities.CommandAddName(entity.Name);
-            var readDto = Utilities.GetDtoName(entity.Name, Dto.Read);
-            var createDto = Utilities.GetDtoName(entity.Name, Dto.Creation);
+            var className = Utilities.PatchEntityFeatureClassName(entity.Name);
+            var patchCommandName = Utilities.CommandPatchName(entity.Name);
+            var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var manipulationValidator = Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation);
 
-            var entityName = entity.Name;
-            var entityNameLowercase = entity.Name.LowercaseFirstLetter();
+            var primaryKeyPropType = entity.PrimaryKeyProperty.Type;
             var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
-            var commandProp = $"{entityName}ToAdd";
-            var newEntityProp = $"{entityNameLowercase}ToAdd";
-
-            var fkIncludes = Utilities.GetForeignKeyIncludes(entity);
+            var entityNameLowercase = entity.Name.LowercaseFirstLetter();
+            var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
+            var patchedEntityProp = $"{entityNameLowercase}ToPatch";
 
             var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
@@ -77,6 +74,7 @@
     using AutoMapper;
     using AutoMapper.QueryableExtensions;
     using MediatR;
+    using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Threading;
@@ -85,24 +83,26 @@
 
     public class {className}
     {{
-        public class {addCommandName} : IRequest<{readDto}>
+        public class {patchCommandName} : IRequest<bool>
         {{
-            public {createDto} {commandProp} {{ get; set; }}
+            public {primaryKeyPropType} {primaryKeyPropName} {{ get; set; }}
+            public JsonPatchDocument<{updateDto}> PatchDoc {{ get; set; }}
 
-            public {addCommandName}({createDto} {newEntityProp})
+            public {patchCommandName}({primaryKeyPropType} {entityNameLowercase}, JsonPatchDocument<{updateDto}> patchDoc)
             {{
-                {commandProp} = {newEntityProp};
+                {primaryKeyPropName} = {entityNameLowercase};
+                PatchDoc = patchDoc;
             }}
         }}
 
-        public class CustomCreate{entityName}Validation : {manipulationValidator}<{createDto}>
+        public class CustomPatch{entity.Name}Validation : {manipulationValidator}<{updateDto}>
         {{
-            public CustomCreate{entityName}Validation()
+            public CustomPatch{entity.Name}Validation()
             {{
             }}
         }}
 
-        public class Handler : IRequestHandler<{addCommandName}, {readDto}>
+        public class Handler : IRequestHandler<{patchCommandName}, bool>
         {{
             private readonly {contextName} _db;
             private readonly IMapper _mapper;
@@ -113,24 +113,43 @@
                 _db = db;
             }}
 
-            public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
+            public async Task<bool> Handle({patchCommandName} request, CancellationToken cancellationToken)
             {{
-                var {entityNameLowercase} = _mapper.Map<{entityName}> (request.{commandProp});
-                _db.{entity.Plural}.Add({entityNameLowercase});
+                // add logger (and a try catch with logger so i can cap the unexpected info)........ unless this happens in my logger decorator that i am going to add?
+                if (request.PatchDoc == null)
+                {{
+                    // log error
+                    throw new ApiException(""Invalid patch document."");
+                }}
+
+                var {updatedEntityProp} = await _db.{entity.Plural}
+                    .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
+
+                if ({updatedEntityProp} == null)
+                {{
+                    // log error
+                    throw new KeyNotFoundException();
+                }}
+                
+                var {patchedEntityProp} = _mapper.Map<{updateDto}>({updatedEntityProp}); // map the {entityNameLowercase} we got from the database to an updatable {entityNameLowercase} model
+                request.PatchDoc.ApplyTo({patchedEntityProp}); // apply patchdoc updates to the updatable {entityNameLowercase}
+                
+                var validationResults = new CustomPatch{entity.Name}Validation().Validate({patchedEntityProp});
+                if (!validationResults.IsValid)
+                {{
+                    throw new ValidationException(validationResults.Errors);
+                }}
+
+                _mapper.Map({patchedEntityProp}, {updatedEntityProp});
                 var saveSuccessful = await _db.SaveChangesAsync() > 0;
 
-                if (saveSuccessful)
-                {{
-                    // include marker -- to accomodate adding includes with craftsman commands, the next line must stay as `var result = await _db.{entity.Plural}`. -- do not delete this comment
-                    return await _db.{entity.Plural}{fkIncludes}
-                        .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
-                        .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName});
-                }}
-                else
+                if (!saveSuccessful)
                 {{
                     // add log
-                    throw new Exception(""Unable to save the new record. Please check the logs for more information."");
+                    throw new Exception(""Unable to save the requested changes. Please check the logs for more information."");
                 }}
+
+                return true;
             }}
         }}
     }}

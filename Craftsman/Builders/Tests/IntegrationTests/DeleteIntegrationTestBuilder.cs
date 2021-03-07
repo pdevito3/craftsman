@@ -49,7 +49,7 @@
         {
             var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
-            var profileClassPath = ClassPathHelper.ProfileClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var profileClassPath = ClassPathHelper.ProfileClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var testFakesClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 

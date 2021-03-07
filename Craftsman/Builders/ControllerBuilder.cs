@@ -183,7 +183,7 @@
         public async Task<IActionResult> Update{entityName}({pkPropertyType} {idParam}, {updateDto} {lowercaseEntityVariable})
         {{
             // add error handling
-            var command = new {updateRecordCommandMethodName}({idParam});
+            var command = new {updateRecordCommandMethodName}({idParam}, {lowercaseEntityVariable});
             await _mediator.Send(command);
 
             return NoContent();

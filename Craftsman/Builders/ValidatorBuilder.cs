@@ -19,8 +19,14 @@
             try
             {
                 BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Manipulation);
-                BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Creation);
-                BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Update);
+
+                // not building the creation and update ones anymore to KISS. Mainipulation can server as 
+                // shared validation. If there is shared validation required for just updates or just adds
+                // then they can copy manipulation and make it themselves. I think this will be a rarity 
+                // enough that we can feel comfortable with this. even manip is possibly sharing prematurely
+
+                //BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Creation);
+                //BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Update);
             }
             catch (FileAlreadyExistsException e)
             {

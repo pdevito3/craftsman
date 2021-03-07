@@ -10,13 +10,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class CommandAddRecordBuilder
+    public class CommandUpdateRecordBuilder
     {
         public static void CreateCommand(string solutionDirectory, Entity entity, string contextName, string projectBaseName)
         {
             try
             {
-                var classPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, $"{Utilities.AddEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+                var classPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, $"{Utilities.UpdateEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -47,19 +47,16 @@
 
         public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string projectBaseName)
         {
-            var className = Utilities.AddEntityFeatureClassName(entity.Name);
-            var addCommandName = Utilities.CommandAddName(entity.Name);
-            var readDto = Utilities.GetDtoName(entity.Name, Dto.Read);
-            var createDto = Utilities.GetDtoName(entity.Name, Dto.Creation);
+            var className = Utilities.UpdateEntityFeatureClassName(entity.Name);
+            var updateCommandName = Utilities.CommandUpdateName(entity.Name);
+            var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var manipulationValidator = Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation);
 
-            var entityName = entity.Name;
-            var entityNameLowercase = entity.Name.LowercaseFirstLetter();
+            var primaryKeyPropType = entity.PrimaryKeyProperty.Type;
             var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
-            var commandProp = $"{entityName}ToAdd";
-            var newEntityProp = $"{entityNameLowercase}ToAdd";
-
-            var fkIncludes = Utilities.GetForeignKeyIncludes(entity);
+            var entityNameLowercase = entity.Name.LowercaseFirstLetter();
+            var commandProp = $"{entity.Name}ToUpdate";
+            var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
 
             var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
@@ -85,24 +82,26 @@
 
     public class {className}
     {{
-        public class {addCommandName} : IRequest<{readDto}>
+        public class {updateCommandName} : IRequest<bool>
         {{
-            public {createDto} {commandProp} {{ get; set; }}
+            public {primaryKeyPropType} {primaryKeyPropName} {{ get; set; }}
+            public {updateDto} {commandProp} {{ get; set; }}
 
-            public {addCommandName}({createDto} {newEntityProp})
+            public {updateCommandName}({primaryKeyPropType} {entityNameLowercase}, {updateDto} {updatedEntityProp})
             {{
-                {commandProp} = {newEntityProp};
+                {primaryKeyPropName} = {entityNameLowercase};
+                {commandProp} = {updatedEntityProp};
             }}
         }}
 
-        public class CustomCreate{entityName}Validation : {manipulationValidator}<{createDto}>
+        public class CustomUpdate{entity.Name}Validation : {manipulationValidator}<{updateDto}>
         {{
-            public CustomCreate{entityName}Validation()
+            public CustomUpdate{entity.Name}Validation()
             {{
             }}
         }}
 
-        public class Handler : IRequestHandler<{addCommandName}, {readDto}>
+        public class Handler : IRequestHandler<{updateCommandName}, bool>
         {{
             private readonly {contextName} _db;
             private readonly IMapper _mapper;
@@ -113,24 +112,29 @@
                 _db = db;
             }}
 
-            public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
+            public async Task<bool> Handle({updateCommandName} request, CancellationToken cancellationToken)
             {{
-                var {entityNameLowercase} = _mapper.Map<{entityName}> (request.{commandProp});
-                _db.{entity.Plural}.Add({entityNameLowercase});
+                // add logger (and a try catch with logger so i can cap the unexpected info)........ unless this happens in my logger decorator that i am going to add?
+
+                var recordToUpdate = await _db.{entity.Plural}
+                    .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
+
+                if (recordToUpdate == null)
+                {{
+                    // log error
+                    throw new KeyNotFoundException();
+                }}
+
+                _mapper.Map(request.{commandProp}, recordToUpdate);
                 var saveSuccessful = await _db.SaveChangesAsync() > 0;
 
-                if (saveSuccessful)
-                {{
-                    // include marker -- to accomodate adding includes with craftsman commands, the next line must stay as `var result = await _db.{entity.Plural}`. -- do not delete this comment
-                    return await _db.{entity.Plural}{fkIncludes}
-                        .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
-                        .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName});
-                }}
-                else
+                if (!saveSuccessful)
                 {{
                     // add log
-                    throw new Exception(""Unable to save the new record. Please check the logs for more information."");
+                    throw new Exception(""Unable to save the requested changes. Please check the logs for more information."");
                 }}
+
+                return true;
             }}
         }}
     }}

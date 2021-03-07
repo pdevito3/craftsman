@@ -49,7 +49,6 @@
         {
             var className = Utilities.DeleteEntityFeatureClassName(entity.Name);
             var deleteCommandName = Utilities.CommandDeleteName(entity.Name);
-            var readDto = Utilities.GetDtoName(entity.Name, Dto.Read);
 
             var primaryKeyPropType = entity.PrimaryKeyProperty.Type;
             var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
@@ -102,17 +101,16 @@
             {{
                 // add logger (and a try catch with logger so i can cap the unexpected info)........ unless this happens in my logger decorator that i am going to add?
 
-                // include marker -- to accomodate adding includes with craftsman commands, the next line must stay as `var result = await _db.{entity.Plural}`. -- do not delete this comment
-                var result = await _db.{entity.Plural}
+                var recordToDelete = await _db.{entity.Plural}
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
 
-                if (result == null)
+                if (recordToDelete == null)
                 {{
                     // log error
                     throw new KeyNotFoundException();
                 }}
 
-                _db.{entity.Plural}.Remove(result);
+                _db.{entity.Plural}.Remove(recordToDelete);
                 var saveSuccessful = await _db.SaveChangesAsync() > 0;
 
                 if (!saveSuccessful)
