@@ -55,12 +55,12 @@
             var creationDto = Utilities.GetDtoName(entityName, Dto.Creation);
             var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
             var primaryKeyProp = entity.PrimaryKeyProperty;
-            var queryListMethodName = Utilities.GetQueryListMethodName(entityName);
-            var queryRecordMethodName = Utilities.GetQueryRecordMethodName(entityName);
-            var addRecordCommandMethodName = Utilities.AddRecordCommandMethodName(entityName);
-            var deleteRecordCommandMethodName = Utilities.DeleteRecordCommandMethodName(entityName);
-            var updateRecordCommandMethodName = Utilities.UpdateRecordCommandMethodName(entityName);
-            var patchRecordCommandMethodName = Utilities.PatchRecordCommandMethodName(entityName);
+            var queryListMethodName = Utilities.QueryListName(entityName);
+            var queryRecordMethodName = Utilities.QueryRecordName(entityName);
+            var addRecordCommandMethodName = Utilities.CommandAddName(entityName);
+            var deleteRecordCommandMethodName = Utilities.CommandDeleteName(entityName);
+            var updateRecordCommandMethodName = Utilities.CommandUpdateName(entityName);
+            var patchRecordCommandMethodName = Utilities.CommandPatchName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
             var listResponse = $@"Response<PagedList<{readDto}>>";
             var singleResponse = $@"Response<{readDto}>";
@@ -75,10 +75,9 @@
             var deleteRecordAuthorizations = BuildAuthorizations(policies, Endpoint.DeleteRecord, entity.Name);
             var idParam = $@"{lowercaseEntityVariable}Id";
 
-              var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
-            var validatorClassPath = ClassPathHelper.ValidationClassPath(solutionDirectory, "", entityName, projectBaseName);
+            var featureClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
 
             return @$"namespace {classNamespace}
 {{
@@ -92,6 +91,13 @@
     using {dtoClassPath.ClassNamespace};
     using {wrapperClassPath.ClassNamespace};
     using System.Threading;
+    using MediatR;
+    using static {featureClassPath.ClassNamespace}.{Utilities.GetEntityListFeatureClassName(entity.Name)};
+    using static {featureClassPath.ClassNamespace}.{Utilities.GetEntityFeatureClassName(entity.Name)};
+    using static {featureClassPath.ClassNamespace}.{Utilities.AddEntityFeatureClassName(entity.Name)};
+    using static {featureClassPath.ClassNamespace}.{Utilities.DeleteEntityFeatureClassName(entity.Name)};
+    using static {featureClassPath.ClassNamespace}.{Utilities.UpdateEntityFeatureClassName(entity.Name)};
+    using static {featureClassPath.ClassNamespace}.{Utilities.PatchEntityFeatureClassName(entity.Name)};
 
     [ApiController]
     [Route(""{endpointBase}"")]
@@ -108,11 +114,11 @@
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpGet(Name = ""{getListEndpointName}"")]
-        public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto, CancellationToken cancellationToken)
+        public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
         {{
             // add error handling
             var query = new {queryListMethodName}({lowercaseEntityVariable}ParametersDto);
-            var queryResponse = await _mediator.Send(query, cancellationToken);
+            var queryResponse = await _mediator.Send(query);
 
             var paginationMetadata = new
             {{
@@ -136,11 +142,11 @@
         {GetSwaggerComments_GetRecord(entity, AddSwaggerComments, singleResponse, getRecordAuthorizations.Length > 0)}{getRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""{getRecordEndpointName}"")]
-        public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {idParam}, CancellationToken cancellationToken)
+        public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {idParam})
         {{
             // add error handling
             var query = new {queryRecordMethodName}({idParam});
-            var queryResponse = await _mediator.Send(query, cancellationToken);
+            var queryResponse = await _mediator.Send(query);
 
             var response = new {singleResponse}(queryResponse);
             return Ok(response);
@@ -149,36 +155,36 @@
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpPost]
-        public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {lowercaseEntityVariable}ForCreation, CancellationToken cancellationToken)
+        public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {lowercaseEntityVariable}ForCreation)
         {{
             // add error handling
             var command = new {addRecordCommandMethodName}({lowercaseEntityVariable}ForCreation);
-            var commandResponse = await _mediator.Send(command, cancellationToken);
+            var commandResponse = await _mediator.Send(command);
             var response = new {singleResponse}(commandResponse);
 
             return CreatedAtRoute(""Get{entityName}"",
-                new {{ {lowercaseEntityVariable}Dto.{primaryKeyProp.Name} }},
+                new {{ commandResponse.{primaryKeyProp.Name} }},
                 response);
         }}
         {GetSwaggerComments_DeleteRecord(entity, AddSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpDelete(""{{{idParam}}}"")]
-        public async Task<ActionResult> Delete{entityName}({pkPropertyType} {idParam}, CancellationToken cancellationToken)
+        public async Task<ActionResult> Delete{entityName}({pkPropertyType} {idParam})
         {{
             // add error handling
             var command = new {deleteRecordCommandMethodName}({idParam});
-            var commandResponse = await _mediator.Send(command, cancellationToken);
+            var commandResponse = await _mediator.Send(command);
 
             return NoContent();
         }}
         {GetSwaggerComments_PutRecord(entity, AddSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpPut(""{{{idParam}}}"")]
-        public async Task<IActionResult> Update{entityName}({pkPropertyType} {idParam}, {updateDto} {lowercaseEntityVariable}, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update{entityName}({pkPropertyType} {idParam}, {updateDto} {lowercaseEntityVariable})
         {{
             // add error handling
             var command = new {updateRecordCommandMethodName}({idParam});
-            var commandResponse = await _mediator.Send(command, cancellationToken);
+            var commandResponse = await _mediator.Send(command);
 
             return NoContent();
         }}
@@ -186,11 +192,11 @@
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpPatch(""{{{idParam}}}"")]
-        public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {idParam}, JsonPatchDocument<{updateDto}> patchDoc, CancellationToken cancellationToken)
+        public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {idParam}, JsonPatchDocument<{updateDto}> patchDoc)
         {{
             // add error handling
             var command = new {patchRecordCommandMethodName}({idParam}, patchDoc);
-            var commandResponse = await _mediator.Send(command, cancellationToken);
+            var commandResponse = await _mediator.Send(command);
 
             return NoContent();
         }}

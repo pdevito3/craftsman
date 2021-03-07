@@ -98,6 +98,11 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Features", entityName, "Mappings"), className);
         }
 
+        public static ClassPath FeaturesClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.WebApi", "Features", entityName), className);
+        }
+
         public static ClassPath ApplicationInterfaceClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.Core", "Interfaces"), className);

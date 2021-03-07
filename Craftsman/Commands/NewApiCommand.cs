@@ -2,6 +2,7 @@
 {
     using Craftsman.Builders;
     using Craftsman.Builders.Dtos;
+    using Craftsman.Builders.Features;
     using Craftsman.Builders.Seeders;
     using Craftsman.Builders.Tests.Fakes;
     using Craftsman.Builders.Tests.IntegrationTests;
@@ -112,6 +113,10 @@
 
                 ValidatorBuilder.CreateValidators(solutionDirectory, template.SolutionName, entity);
                 ProfileBuilder.CreateProfile(solutionDirectory, entity, template.SolutionName);
+
+                QueryGetRecordBuilder.CreateQuery(solutionDirectory, entity, template.DbContext.ContextName, template.SolutionName);
+                QueryGetListBuilder.CreateQuery(solutionDirectory, entity, template.DbContext.ContextName, template.SolutionName);
+                CommandAddRecordBuilder.CreateCommand(solutionDirectory, entity, template.DbContext.ContextName, template.SolutionName);
 
                 ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies, template.SolutionName);
 

@@ -72,32 +72,62 @@
             return $"{entityName}Profile";
         }
 
-        public static string GetQueryListMethodName(string entityName)
+        public static string GetEntityFeatureClassName(string entityName)
+        {
+            return $"Get{entityName}";
+        }
+
+        public static string GetEntityListFeatureClassName(string entityName)
+        {
+            return $"Get{entityName}List";
+        }
+
+        public static string AddEntityFeatureClassName(string entityName)
+        {
+            return $"Add{entityName}";
+        }
+
+        public static string DeleteEntityFeatureClassName(string entityName)
+        {
+            return $"Delete{entityName}";
+        }
+
+        public static string UpdateEntityFeatureClassName(string entityName)
+        {
+            return $"Update{entityName}";
+        }
+
+        public static string PatchEntityFeatureClassName(string entityName)
+        {
+            return $"Patch{entityName}";
+        }
+
+        public static string QueryListName(string entityName)
         {
             return $"{entityName}ListQuery";
         }
 
-        public static string GetQueryRecordMethodName(string entityName)
+        public static string QueryRecordName(string entityName)
         {
             return $"{entityName}Query";
         }
 
-        public static string AddRecordCommandMethodName(string entityName)
+        public static string CommandAddName(string entityName)
         {
             return $"Add{entityName}Command";
         }
 
-        public static string DeleteRecordCommandMethodName(string entityName)
+        public static string CommandDeleteName(string entityName)
         {
             return $"Delete{entityName}Command";
         }
 
-        public static string UpdateRecordCommandMethodName(string entityName)
+        public static string CommandUpdateName(string entityName)
         {
             return $"Update{entityName}Command";
         }
 
-        public static string PatchRecordCommandMethodName(string entityName)
+        public static string CommandPatchName(string entityName)
         {
             return $"Patch{entityName}Command";
         }
@@ -236,6 +266,17 @@
                 .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == entityName)
                     && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Any(re => re == Enum.GetName(typeof(Endpoint), endpoint))))
                 .ToList();
+        }
+
+        public static string GetForeignKeyIncludes(Entity entity)
+        {
+            var fkIncludes = "";
+            foreach (var fk in entity.Properties.Where(p => p.IsForeignKey))
+            {
+                fkIncludes += $@"{Environment.NewLine}                .Include({fk.Name.ToLower().Substring(0, 1)} => {fk.Name.ToLower().Substring(0, 1)}.{fk.Name})";
+            }
+
+            return fkIncludes;
         }
     }
 }

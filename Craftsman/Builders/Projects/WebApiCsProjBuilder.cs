@@ -63,6 +63,8 @@
   <ItemGroup>
     <PackageReference Include=""Autofac.Extensions.DependencyInjection"" Version=""7.1.0"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""9.3.0"" />
+    <PackageReference Include=""MediatR"" Version=""9.0.0"" />
+    <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""9.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""5.0.1"" />
     <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""5.0.1"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.NewtonsoftJson"" Version=""5.0.1"" />
