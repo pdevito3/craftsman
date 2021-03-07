@@ -173,7 +173,7 @@
         {{
             // add error handling
             var command = new {deleteRecordCommandMethodName}({idParam});
-            var commandResponse = await _mediator.Send(command);
+            await _mediator.Send(command);
 
             return NoContent();
         }}
@@ -184,7 +184,7 @@
         {{
             // add error handling
             var command = new {updateRecordCommandMethodName}({idParam});
-            var commandResponse = await _mediator.Send(command);
+            await _mediator.Send(command);
 
             return NoContent();
         }}
@@ -196,7 +196,7 @@
         {{
             // add error handling
             var command = new {patchRecordCommandMethodName}({idParam}, patchDoc);
-            var commandResponse = await _mediator.Send(command);
+            await _mediator.Send(command);
 
             return NoContent();
         }}

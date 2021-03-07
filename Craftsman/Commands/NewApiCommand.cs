@@ -117,6 +117,7 @@
                 QueryGetRecordBuilder.CreateQuery(solutionDirectory, entity, template.DbContext.ContextName, template.SolutionName);
                 QueryGetListBuilder.CreateQuery(solutionDirectory, entity, template.DbContext.ContextName, template.SolutionName);
                 CommandAddRecordBuilder.CreateCommand(solutionDirectory, entity, template.DbContext.ContextName, template.SolutionName);
+                CommandDeleteRecordBuilder.CreateCommand(solutionDirectory, entity, template.DbContext.ContextName, template.SolutionName);
 
                 ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies, template.SolutionName);
 
