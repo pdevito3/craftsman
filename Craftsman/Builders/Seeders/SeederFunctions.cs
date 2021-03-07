@@ -22,7 +22,7 @@
 
     using AutoBogus;
     using {entitiesClassPath.ClassNamespace};
-    using {entitiesdbContextClassPathClassPath.ClassNamespace};
+    using {dbContextClassPath.ClassNamespace};
     using System.Linq;
 
     public static class {Utilities.GetSeederName(entity)}

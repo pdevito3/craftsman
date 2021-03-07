@@ -48,8 +48,6 @@
         public static string GetControllerFileText(string classNamespace, Entity entity, bool AddSwaggerComments, List<Policy> policies, string solutionDirectory, string projectBaseName)
         {
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
-            var lowercaseEntityVariableSingularDto = $@"{entity.Name.LowercaseFirstLetter()}Dto";
-            var lowercaseEntityVariablePluralDto = $@"{entity.Plural.LowercaseFirstLetter()}Dto";
             var entityName = entity.Name;
             var entityNamePlural = entity.Plural;
             var readDto = Utilities.GetDtoName(entityName, Dto.Read);
@@ -57,9 +55,14 @@
             var creationDto = Utilities.GetDtoName(entityName, Dto.Creation);
             var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
             var primaryKeyProp = entity.PrimaryKeyProperty;
-            var getListMethodName = Utilities.GetRepositoryListMethodName(entity.Plural);
+            var queryListMethodName = Utilities.GetQueryListMethodName(entityName);
+            var queryRecordMethodName = Utilities.GetQueryRecordMethodName(entityName);
+            var addRecordCommandMethodName = Utilities.AddRecordCommandMethodName(entityName);
+            var deleteRecordCommandMethodName = Utilities.DeleteRecordCommandMethodName(entityName);
+            var updateRecordCommandMethodName = Utilities.UpdateRecordCommandMethodName(entityName);
+            var patchRecordCommandMethodName = Utilities.PatchRecordCommandMethodName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
-            var listResponse = $@"Response<IEnumerable<{readDto}>>";
+            var listResponse = $@"Response<PagedList<{readDto}>>";
             var singleResponse = $@"Response<{readDto}>";
             var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
             var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";
@@ -70,8 +73,9 @@
             var updateRecordAuthorizations = BuildAuthorizations(policies, Endpoint.UpdateRecord, entity.Name);
             var updatePartialAuthorizations = BuildAuthorizations(policies, Endpoint.UpdatePartial, entity.Name);
             var deleteRecordAuthorizations = BuildAuthorizations(policies, Endpoint.DeleteRecord, entity.Name);
+            var idParam = $@"{lowercaseEntityVariable}Id";
 
-            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+              var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
             var validatorClassPath = ClassPathHelper.ValidationClassPath(solutionDirectory, "", entityName, projectBaseName);
@@ -81,186 +85,112 @@
     using System;
     using System.Collections.Generic;
     using System.Text.Json;
-    using AutoMapper;
-    using FluentValidation.AspNetCore;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
     using System.Threading.Tasks;
     using {dtoClassPath.ClassNamespace};
-    using {validatorClassPath.ClassNamespace};
-    using {entitiesClassPath.ClassNamespace};
     using {wrapperClassPath.ClassNamespace};
+    using System.Threading;
 
     [ApiController]
     [Route(""{endpointBase}"")]
     [ApiVersion(""1.0"")]
     public class {entityNamePlural}Controller: Controller
     {{
-        private readonly {Utilities.GetRepositoryName(entity.Name, true)} _{lowercaseEntityVariable}Repository;
-        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
-        public {entityNamePlural}Controller({Utilities.GetRepositoryName(entity.Name, true)} {lowercaseEntityVariable}Repository
-            , IMapper mapper)
+        public {entityNamePlural}Controller(IMediator mediator)
         {{
-            _{lowercaseEntityVariable}Repository = {lowercaseEntityVariable}Repository ??
-                throw new ArgumentNullException(nameof({lowercaseEntityVariable}Repository));
-            _mapper = mapper ??
-                throw new ArgumentNullException(nameof(mapper));
+            _mediator = mediator;
         }}
         {GetSwaggerComments_GetList(entity, AddSwaggerComments, listResponse, getListAuthorizations.Length > 0)}{getListAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpGet(Name = ""{getListEndpointName}"")]
-        public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
+        public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto, CancellationToken cancellationToken)
         {{
-            var {lowercaseEntityVariable}sFromRepo = await _{lowercaseEntityVariable}Repository.{getListMethodName}({lowercaseEntityVariable}ParametersDto);
+            // add error handling
+            var query = new {queryListMethodName}({lowercaseEntityVariable}ParametersDto);
+            var queryResponse = await _mediator.Send(query, cancellationToken);
 
             var paginationMetadata = new
             {{
-                totalCount = {lowercaseEntityVariable}sFromRepo.TotalCount,
-                pageSize = {lowercaseEntityVariable}sFromRepo.PageSize,
-                currentPageSize = {lowercaseEntityVariable}sFromRepo.CurrentPageSize,
-                currentStartIndex = {lowercaseEntityVariable}sFromRepo.CurrentStartIndex,
-                currentEndIndex = {lowercaseEntityVariable}sFromRepo.CurrentEndIndex,
-                pageNumber = {lowercaseEntityVariable}sFromRepo.PageNumber,
-                totalPages = {lowercaseEntityVariable}sFromRepo.TotalPages,
-                hasPrevious = {lowercaseEntityVariable}sFromRepo.HasPrevious,
-                hasNext = {lowercaseEntityVariable}sFromRepo.HasNext
+                totalCount = queryResponse.TotalCount,
+                pageSize = queryResponse.PageSize,
+                currentPageSize = queryResponse.CurrentPageSize,
+                currentStartIndex = queryResponse.CurrentStartIndex,
+                currentEndIndex = queryResponse.CurrentEndIndex,
+                pageNumber = queryResponse.PageNumber,
+                totalPages = queryResponse.TotalPages,
+                hasPrevious = queryResponse.HasPrevious,
+                hasNext = queryResponse.HasNext
             }};
 
             Response.Headers.Add(""X-Pagination"",
                 JsonSerializer.Serialize(paginationMetadata));
 
-            var {lowercaseEntityVariablePluralDto} = _mapper.Map<IEnumerable<{entityName}Dto>>({lowercaseEntityVariable}sFromRepo);
-            var response = new {listResponse}({lowercaseEntityVariablePluralDto});
-
+            var response = new {listResponse}(queryResponse);
             return Ok(response);
         }}
         {GetSwaggerComments_GetRecord(entity, AddSwaggerComments, singleResponse, getRecordAuthorizations.Length > 0)}{getRecordAuthorizations}
         [Produces(""application/json"")]
         [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""{getRecordEndpointName}"")]
-        public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercaseEntityVariable}Id)
+        public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {idParam}, CancellationToken cancellationToken)
         {{
-            var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
+            // add error handling
+            var query = new {queryRecordMethodName}({idParam});
+            var queryResponse = await _mediator.Send(query, cancellationToken);
 
-            if ({lowercaseEntityVariable}FromRepo == null)
-            {{
-                return NotFound();
-            }}
-
-            var {lowercaseEntityVariableSingularDto} = _mapper.Map<{readDto}>({lowercaseEntityVariable}FromRepo);
-            var response = new {singleResponse}({lowercaseEntityVariableSingularDto});
-
+            var response = new {singleResponse}(queryResponse);
             return Ok(response);
         }}
         {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0)}{addRecordAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpPost]
-        public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {lowercaseEntityVariable}ForCreation)
+        public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {lowercaseEntityVariable}ForCreation, CancellationToken cancellationToken)
         {{
-            var validationResults = new {entityName}ForCreationDtoValidator().Validate({lowercaseEntityVariable}ForCreation);
-            validationResults.AddToModelState(ModelState, null);
+            // add error handling
+            var command = new {addRecordCommandMethodName}({lowercaseEntityVariable}ForCreation);
+            var commandResponse = await _mediator.Send(command, cancellationToken);
+            var response = new {singleResponse}(commandResponse);
 
-            if (!ModelState.IsValid)
-            {{
-                return BadRequest(new ValidationProblemDetails(ModelState));
-                //return ValidationProblem();
-            }}
-
-            var {lowercaseEntityVariable} = _mapper.Map<{entityName}>({lowercaseEntityVariable}ForCreation);
-            await _{lowercaseEntityVariable}Repository.Add{entityName}({lowercaseEntityVariable});
-            var saveSuccessful = await _{lowercaseEntityVariable}Repository.SaveAsync();
-
-            if(saveSuccessful)
-            {{
-                var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}.{entity.PrimaryKeyProperty.Name});
-                var {lowercaseEntityVariableSingularDto} = _mapper.Map<{readDto}>({lowercaseEntityVariable}FromRepo);
-                var response = new {singleResponse}({lowercaseEntityVariableSingularDto});
-                
-                return CreatedAtRoute(""Get{entityName}"",
-                    new {{ {lowercaseEntityVariable}Dto.{primaryKeyProp.Name} }},
-                    response);
-            }}
-
-            return StatusCode(500);
+            return CreatedAtRoute(""Get{entityName}"",
+                new {{ {lowercaseEntityVariable}Dto.{primaryKeyProp.Name} }},
+                response);
         }}
         {GetSwaggerComments_DeleteRecord(entity, AddSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
         [Produces(""application/json"")]
-        [HttpDelete(""{{{lowercaseEntityVariable}Id}}"")]
-        public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercaseEntityVariable}Id)
+        [HttpDelete(""{{{idParam}}}"")]
+        public async Task<ActionResult> Delete{entityName}({pkPropertyType} {idParam}, CancellationToken cancellationToken)
         {{
-            var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
-
-            if ({lowercaseEntityVariable}FromRepo == null)
-            {{
-                return NotFound();
-            }}
-
-            _{lowercaseEntityVariable}Repository.Delete{entityName}({lowercaseEntityVariable}FromRepo);
-            await _{lowercaseEntityVariable}Repository.SaveAsync();
+            // add error handling
+            var command = new {deleteRecordCommandMethodName}({idParam});
+            var commandResponse = await _mediator.Send(command, cancellationToken);
 
             return NoContent();
         }}
         {GetSwaggerComments_PutRecord(entity, AddSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
         [Produces(""application/json"")]
-        [HttpPut(""{{{lowercaseEntityVariable}Id}}"")]
-        public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercaseEntityVariable}Id, {updateDto} {lowercaseEntityVariable})
+        [HttpPut(""{{{idParam}}}"")]
+        public async Task<IActionResult> Update{entityName}({pkPropertyType} {idParam}, {updateDto} {lowercaseEntityVariable}, CancellationToken cancellationToken)
         {{
-            var {lowercaseEntityVariable}FromRepo = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
-
-            if ({lowercaseEntityVariable}FromRepo == null)
-            {{
-                return NotFound();
-            }}
-
-            var validationResults = new {entityName}ForUpdateDtoValidator().Validate({lowercaseEntityVariable});
-            validationResults.AddToModelState(ModelState, null);
-
-            if (!ModelState.IsValid)
-            {{
-                return BadRequest(new ValidationProblemDetails(ModelState));
-                //return ValidationProblem();
-            }}
-
-            _mapper.Map({lowercaseEntityVariable}, {lowercaseEntityVariable}FromRepo);
-            _{lowercaseEntityVariable}Repository.Update{entityName}({lowercaseEntityVariable}FromRepo);
-
-            await _{lowercaseEntityVariable}Repository.SaveAsync();
+            // add error handling
+            var command = new {updateRecordCommandMethodName}({idParam});
+            var commandResponse = await _mediator.Send(command, cancellationToken);
 
             return NoContent();
         }}
         {GetSwaggerComments_PatchRecord(entity, AddSwaggerComments, updatePartialAuthorizations.Length > 0)}{updatePartialAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
-        [HttpPatch(""{{{lowercaseEntityVariable}Id}}"")]
-        public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {lowercaseEntityVariable}Id, JsonPatchDocument<{updateDto}> patchDoc)
+        [HttpPatch(""{{{idParam}}}"")]
+        public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {idParam}, JsonPatchDocument<{updateDto}> patchDoc, CancellationToken cancellationToken)
         {{
-            if (patchDoc == null)
-            {{
-                return BadRequest();
-            }}
-
-            var existing{entityName} = await _{lowercaseEntityVariable}Repository.Get{entityName}Async({lowercaseEntityVariable}Id);
-
-            if (existing{entityName} == null)
-            {{
-                return NotFound();
-            }}
-
-            var {lowercaseEntityVariable}ToPatch = _mapper.Map<{updateDto}>(existing{entityName}); // map the {lowercaseEntityVariable} we got from the database to an updatable {lowercaseEntityVariable} model
-            patchDoc.ApplyTo({lowercaseEntityVariable}ToPatch, ModelState); // apply patchdoc updates to the updatable {lowercaseEntityVariable}
-
-            if (!TryValidateModel({lowercaseEntityVariable}ToPatch))
-            {{
-                return ValidationProblem(ModelState);
-            }}
-
-            _mapper.Map({lowercaseEntityVariable}ToPatch, existing{entityName}); // apply updates from the updatable {lowercaseEntityVariable} to the db entity so we can apply the updates to the database
-            _{lowercaseEntityVariable}Repository.Update{entityName}(existing{entityName}); // apply business updates to data if needed
-
-            await _{lowercaseEntityVariable}Repository.SaveAsync(); // save changes in the database
+            // add error handling
+            var command = new {patchRecordCommandMethodName}({idParam}, patchDoc);
+            var commandResponse = await _mediator.Send(command, cancellationToken);
 
             return NoContent();
         }}

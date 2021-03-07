@@ -72,6 +72,36 @@
             return $"{entityName}Profile";
         }
 
+        public static string GetQueryListMethodName(string entityName)
+        {
+            return $"{entityName}ListQuery";
+        }
+
+        public static string GetQueryRecordMethodName(string entityName)
+        {
+            return $"{entityName}Query";
+        }
+
+        public static string AddRecordCommandMethodName(string entityName)
+        {
+            return $"Add{entityName}Command";
+        }
+
+        public static string DeleteRecordCommandMethodName(string entityName)
+        {
+            return $"Delete{entityName}Command";
+        }
+
+        public static string UpdateRecordCommandMethodName(string entityName)
+        {
+            return $"Update{entityName}Command";
+        }
+
+        public static string PatchRecordCommandMethodName(string entityName)
+        {
+            return $"Patch{entityName}Command";
+        }
+
         public static string GetDtoName(string entityName, Dto dto)
         {
             switch (dto)
