@@ -24,7 +24,7 @@
     using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
 
-    public static class NewApiCommand
+    public static class NewDomainProjectCommand
     {
         public static void Help()
         {
@@ -43,9 +43,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yaml");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yml");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.json{Environment.NewLine}");
+            WriteHelpText(@$"       craftsman new:domain C:\fullpath\domain.yaml");
+            WriteHelpText(@$"       craftsman new:domain C:\fullpath\domain.yml");
+            WriteHelpText(@$"       craftsman new:domain C:\fullpath\domain.json{Environment.NewLine}");
 
         }
 
@@ -56,14 +56,26 @@
                 GlobalSingleton instance = GlobalSingleton.GetInstance();
 
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetTemplateFromFile<ApiTemplate>(filePath);
+                var domainProject = FileParsingHelper.GetTemplateFromFile<DomainProject>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 
-                ApiScaffolding.ScaffoldApi(buildSolutionDirectory, template, fileSystem);
+                var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
+                fileSystem.Directory.CreateDirectory(domainDirectory);
+
+                foreach (var template in domainProject.BoundedContexts)
+                {
+                    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem);
+                }
+
+                //final
+                ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
+
+                if (domainProject.AddGit)
+                    Utilities.GitSetup(domainDirectory);
 
                 WriteFileCreatedUpdatedResponse();
-                WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
-                WriteGettingStarted(template.SolutionName);
+                WriteHelpHeader($"{Environment.NewLine}Your domain project is ready! Build something amazing.");
+                //WriteGettingStarted(template.SolutionName);
                 StarGithubRequest();
             }
             catch (Exception e)

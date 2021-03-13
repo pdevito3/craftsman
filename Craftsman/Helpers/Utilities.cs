@@ -5,6 +5,7 @@
     using Craftsman.Exceptions;
     using Craftsman.Models;
     using FluentAssertions.Common;
+    using LibGit2Sharp;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -277,6 +278,22 @@
             }
 
             return fkIncludes;
+        }
+
+
+
+        public static void GitSetup(string solutionDirectory)
+        {
+            GitBuilder.CreateGitIgnore(solutionDirectory);
+
+            Repository.Init(solutionDirectory);
+            var repo = new Repository(solutionDirectory);
+
+            string[] allFiles = Directory.GetFiles(solutionDirectory, "*.*", SearchOption.AllDirectories);
+            Commands.Stage(repo, allFiles);
+
+            var author = new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
+            repo.Commit("Initial Commit", author, author);
         }
     }
 }

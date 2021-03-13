@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - need to update addentity command to use an add entity template that includes a `ProjectBaseName` that must match the base of the api and the core
 - consolidated projects
 - projects will now have a prefix of the solution name before each project type. for example, the api project with a solution name of `ordering` is `ordering.webapi`
+- added a `newdomain` command to create a ddd based domain with various bounded contexts inside of it. this is recommended for long term maintainability
+- removed `micro` command to consolidate and reduce complexity. if you still want to build a microservice, you can build a domain and deploy each bounded context as a microservice (recommended) or do it with a standalone API from a `neW:api` command. 
+  - Gateways were removed though and will be added back in with better integration in a future release
+- 
 
 ## [0.8.2] - 2021-02-25
 
