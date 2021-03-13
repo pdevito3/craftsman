@@ -29,10 +29,10 @@
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   Scaffolds out API files and projects based on a given template file in a json or yaml format.{Environment.NewLine}");
+            WriteHelpText(@$"   Scaffolds out a DDD project based on a given template file in a json or yaml format.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman new:api [options] <filepath>{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman new:domain [options] <filepath>{Environment.NewLine}");
 
             WriteHelpHeader(@$"Arguments:");
             WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that describes your web API using a proper Wrapt format.");

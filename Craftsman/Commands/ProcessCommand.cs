@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO.Abstractions;
+    using static Helpers.ConsoleWriter;
 
     public class ProcessCommand
     {
@@ -27,15 +28,20 @@
                 return;
             }
 
-            if (args.Length == 2 && (args[0] == "new:api" || args[0] == "new:webapi"))
+            if (args.Length == 2 && (args[0] == "new:api"))
+            {
+                WriteHelpHeader($"This command has been depricated. If you'd like to create a new project, use the `new:domain` command. If you want to add a new bounded context to an existing project, use the `add:bc` command. Run `craftsman list` for a full list of commands.");
+            }
+
+            if (args.Length == 2 && (args[0] == "add:bc" || args[0] == "add:boundedcontext"))
             {
                 var filePath = args[1];
                 if (filePath == "-h" || filePath == "--help")
-                    NewApiCommand.Help();
+                    AddBoundedContextCommand.Help();
                 else
                 {
-                    var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:","Users","Paul","Documents","testoutput") : fileSystem.Directory.GetCurrentDirectory();
-                    NewApiCommand.Run(filePath, solutionDir, fileSystem);
+                    var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:","Users","Paul","Documents","testoutput","LimsLite") : fileSystem.Directory.GetCurrentDirectory();
+                    AddBoundedContextCommand.Run(filePath, solutionDir, fileSystem);
                 }
             }
 
@@ -43,7 +49,7 @@
             {
                 var filePath = args[1];
                 if (filePath == "-h" || filePath == "--help")
-                    NewApiCommand.Help();
+                    AddBoundedContextCommand.Help();
                 else
                 {
                     var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:", "Users", "Paul", "Documents", "testoutput") : fileSystem.Directory.GetCurrentDirectory();

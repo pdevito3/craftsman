@@ -24,15 +24,17 @@
     using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
 
-    public static class NewApiCommand
+    public static class AddBoundedContextCommand
     {
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   Scaffolds out API files and projects based on a given template file in a json or yaml format.{Environment.NewLine}");
+            WriteHelpText(@$"   Scaffolds out new bounded context for a Wrapt domain project based on a given template file in a json or yaml format.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman new:api [options] <filepath>{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman add:bc [options] <filepath>{Environment.NewLine}");
+            WriteHelpText(@$"   or");
+            WriteHelpText(@$"   craftsman add:boundedcontext [options] <filepath>{Environment.NewLine}");
 
             WriteHelpHeader(@$"Arguments:");
             WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that describes your web API using a proper Wrapt format.");
@@ -43,9 +45,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yaml");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.yml");
-            WriteHelpText(@$"       craftsman new:api C:\fullpath\api.json{Environment.NewLine}");
+            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.yaml");
+            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.yml");
+            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.json{Environment.NewLine}");
 
         }
 
