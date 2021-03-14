@@ -62,7 +62,7 @@
             var updateRecordCommandMethodName = Utilities.CommandUpdateName(entityName);
             var patchRecordCommandMethodName = Utilities.CommandPatchName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
-            var listResponse = $@"Response<PagedList<{readDto}>>";
+            var listResponse = $@"Response<IEnumerable<{readDto}>>";
             var singleResponse = $@"Response<{readDto}>";
             var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
             var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";

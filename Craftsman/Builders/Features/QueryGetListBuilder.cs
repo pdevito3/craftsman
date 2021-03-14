@@ -112,7 +112,7 @@
 
                 // include marker -- to accomodate adding includes with craftsman commands, the next line must stay as `var result = await _db.{entity.Plural}`. -- do not delete this comment
                 var collection = _db.{entity.Plural}{fkIncludes}
-                    .ProjectTo<{readDto}>(_mapper.ConfigurationProvider);
+                    as IQueryable<{entity.Name}>;
 
                 var sieveModel = new SieveModel
                 {{
@@ -121,8 +121,10 @@
                 }};
 
                 collection = _sieveProcessor.Apply(sieveModel, collection);
+                var dtoCollection = _db.{entity.Plural}{fkIncludes}
+                    .ProjectTo<{readDto}>(_mapper.ConfigurationProvider);
 
-                return await PagedList<{readDto}>.CreateAsync(collection,
+                return await PagedList<{readDto}>.CreateAsync(dtoCollection,
                     request.QueryParameters.PageNumber,
                     request.QueryParameters.PageSize);
             }}
