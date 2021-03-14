@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added the `add:bc` command which will add a new bounded context to your ddd project
 - Moved 'addGit' property from the api template to the domain template
 - readme will now be generated in the domain directory
+- added a `version` or `-v` command to get the craftsman version
 
 ## [0.8.2] - 2021-02-25
 

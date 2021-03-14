@@ -16,12 +16,13 @@
 
             WriteHelpHeader(@$"    assistance");
             WriteHelpText(@$"      list                List commands");
-            WriteHelpText(@$"      help                Displays help for a command");
+            WriteHelpText(@$"      version, -v         Display the current Craftsman version.");
+            WriteHelpText(@$"      help                Display help for a command");
 
             WriteHelpHeader(@$"{Environment.NewLine}    add");
             WriteHelpText(@$"      new:bc              Add an API to your DDD project.");
             WriteHelpText(@$"      add:entity          Add a new entity to your API.");
-            WriteHelpText(@$"      add:property        Adds a new property to an entity in your API.");
+            WriteHelpText(@$"      add:property        Add a new property to an entity in your API.");
 
             WriteHelpHeader(@$"{Environment.NewLine}    new");
             WriteHelpText(@$"      new:domain          Create a new DDD based Project");

@@ -22,6 +22,12 @@
                 return;
             }
 
+            if (args[0] == "version" || args[0] == "-v" || args[0] == "--version")
+            {
+                WriteHelpHeader($"v{typeof(ProcessCommand).Assembly.GetName().Version}");
+                return;
+            }
+
             if (args[0] == "list" || args[0] == "-h" || args[0] == "--help")
             {
                 ListCommand.Run();
