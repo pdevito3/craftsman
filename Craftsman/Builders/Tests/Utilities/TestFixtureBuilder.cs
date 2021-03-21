@@ -9,11 +9,11 @@
 
     public class TestFixtureBuilder
     {
-        public static void CreateFixture(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "TestFixture.cs");
+                var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestFixture.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
@@ -24,7 +24,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName);
+                    data = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -42,7 +42,7 @@
             }
         }
 
-        public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName)
+        public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName)
         {
             var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
@@ -94,7 +94,7 @@
                 .AddInMemoryCollection(new Dictionary<string, string>
                     {{
                         {{ ""UseInMemoryDatabase"", ""false"" }},
-                        {{ ""ConnectionStrings:AccessioningDbContext"", dockerConnectionString }}
+                        {{ ""ConnectionStrings:{dbContextName}"", dockerConnectionString }}
                     }})
                 .AddEnvironmentVariables();
 
@@ -136,7 +136,7 @@
         {{
             using var scope = _scopeFactory.CreateScope();
 
-            var context = scope.ServiceProvider.GetService<AccessioningDbContext>();
+            var context = scope.ServiceProvider.GetService<{dbContextName}>();
             
             context.Database.Migrate();
         }}
@@ -152,10 +152,10 @@
 
         public static async Task ResetState()
         {{
-            await _checkpoint.Reset(_configuration.GetConnectionString(""AccessioningDbContext""));
+            await _checkpoint.Reset(_configuration.GetConnectionString(""{dbContextName}""));
             //_currentUserId = null;
 
-            //using (var conn = new NpgsqlConnection(_configuration.GetConnectionString(""AccessioningDbContext"")))
+            //using (var conn = new NpgsqlConnection(_configuration.GetConnectionString(""{dbContextName}"")))
             //{{
             //    await conn.OpenAsync();
 
@@ -168,7 +168,7 @@
         {{
             using var scope = _scopeFactory.CreateScope();
 
-            var context = scope.ServiceProvider.GetService<AccessioningDbContext>();
+            var context = scope.ServiceProvider.GetService<{dbContextName}>();
 
             return await context.FindAsync<TEntity>(keyValues);
         }}
@@ -178,7 +178,7 @@
         {{
             using var scope = _scopeFactory.CreateScope();
 
-            var context = scope.ServiceProvider.GetService<AccessioningDbContext>();
+            var context = scope.ServiceProvider.GetService<{dbContextName}>();
 
             context.Add(entity);
 
@@ -188,7 +188,7 @@
         public static async Task ExecuteScopeAsync(Func<IServiceProvider, Task> action)
         {{
             using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<AccessioningDbContext>();
+            var dbContext = scope.ServiceProvider.GetRequiredService<{dbContextName}>();
 
             try
             {{
@@ -208,7 +208,7 @@
         public static async Task<T> ExecuteScopeAsync<T>(Func<IServiceProvider, Task<T>> action)
         {{
             using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<AccessioningDbContext>();
+            var dbContext = scope.ServiceProvider.GetRequiredService<{dbContextName}>();
 
             try
             {{
@@ -227,23 +227,23 @@
             }}
         }}
 
-        public static Task ExecuteDbContextAsync(Func<AccessioningDbContext, Task> action)
-            => ExecuteScopeAsync(sp => action(sp.GetService<AccessioningDbContext>()));
+        public static Task ExecuteDbContextAsync(Func<{dbContextName}, Task> action)
+            => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>()));
 
-        public static Task ExecuteDbContextAsync(Func<AccessioningDbContext, ValueTask> action)
-            => ExecuteScopeAsync(sp => action(sp.GetService<AccessioningDbContext>()).AsTask());
+        public static Task ExecuteDbContextAsync(Func<{dbContextName}, ValueTask> action)
+            => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>()).AsTask());
 
-        public static Task ExecuteDbContextAsync(Func<AccessioningDbContext, IMediator, Task> action)
-            => ExecuteScopeAsync(sp => action(sp.GetService<AccessioningDbContext>(), sp.GetService<IMediator>()));
+        public static Task ExecuteDbContextAsync(Func<{dbContextName}, IMediator, Task> action)
+            => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>(), sp.GetService<IMediator>()));
 
-        public static Task<T> ExecuteDbContextAsync<T>(Func<AccessioningDbContext, Task<T>> action)
-            => ExecuteScopeAsync(sp => action(sp.GetService<AccessioningDbContext>()));
+        public static Task<T> ExecuteDbContextAsync<T>(Func<{dbContextName}, Task<T>> action)
+            => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>()));
 
-        public static Task<T> ExecuteDbContextAsync<T>(Func<AccessioningDbContext, ValueTask<T>> action)
-            => ExecuteScopeAsync(sp => action(sp.GetService<AccessioningDbContext>()).AsTask());
+        public static Task<T> ExecuteDbContextAsync<T>(Func<{dbContextName}, ValueTask<T>> action)
+            => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>()).AsTask());
 
-        public static Task<T> ExecuteDbContextAsync<T>(Func<AccessioningDbContext, IMediator, Task<T>> action)
-            => ExecuteScopeAsync(sp => action(sp.GetService<AccessioningDbContext>(), sp.GetService<IMediator>()));
+        public static Task<T> ExecuteDbContextAsync<T>(Func<{dbContextName}, IMediator, Task<T>> action)
+            => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>(), sp.GetService<IMediator>()));
 
         public static Task<int> InsertAsync<T>(params T[] entities) where T : class
         {{

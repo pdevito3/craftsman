@@ -56,7 +56,6 @@
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
-            var integTestUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, testFixtureName);
 
             return @$"namespace {classPath.ClassNamespace}
 {{
@@ -67,7 +66,7 @@
     using NUnit.Framework;
     using System.Threading.Tasks;
     using static {featuresClassPath.ClassNamespace}.{featureName};
-    using static {integTestUtilsClassPath.ClassNamespace}.{testFixtureName};
+    using static {testFixtureName};
 
     public class {addCommandName}Tests : TestBase
     {{

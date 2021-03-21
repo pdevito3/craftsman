@@ -13,7 +13,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "TestBase.cs");
+                var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestBase.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
@@ -24,7 +24,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetBaseText(classPath.ClassNamespace, solutionDirectory, projectBaseName);
+                    data = GetBaseText(classPath.ClassNamespace);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -42,16 +42,15 @@
             }
         }
 
-        public static string GetBaseText(string classNamespace, string solutionDirectory, string projectBaseName)
+        public static string GetBaseText(string classNamespace)
         {
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
-            var integTestUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, testFixtureName);
 
             return @$"namespace {classNamespace}
 {{
     using NUnit.Framework;
     using System.Threading.Tasks;
-    using static {integTestUtilsClassPath.ClassNamespace}.{testFixtureName};
+    using static {testFixtureName};
 
     public class TestBase
     {{

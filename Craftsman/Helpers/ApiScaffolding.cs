@@ -61,7 +61,6 @@
                 ControllerBuilder.CreateController(srcDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies, template.SolutionName);
 
                 FakesBuilder.CreateFakes(testDirectory, template.SolutionName, entity);
-
                 AddCommandTests.CreateEntityWriteTests(testDirectory, entity, template.SolutionName);
                 //ReadTestBuilder.CreateEntityReadTests(testDirectory, template.SolutionName, entity, template.DbContext.ContextName);
                 //DeleteTestBuilder.DeleteEntityWriteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName);
@@ -89,8 +88,9 @@
             );
 
             // test helpers
-            TestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, fileSystem);
+            TestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, fileSystem);
             TestBaseBuilder.CreateBase(testDirectory, template.SolutionName, fileSystem);
+            DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, template.SolutionName, fileSystem);
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, template.SolutionName);
@@ -101,6 +101,8 @@
 
             if (template.AddJwtAuthentication)
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, template.SolutionName, template.AuthorizationSettings.Policies);
+
+            ReadmeBuilder.CreateBoundedContextReadme(srcDirectory, template.SolutionName, fileSystem);
         }
     }
 }

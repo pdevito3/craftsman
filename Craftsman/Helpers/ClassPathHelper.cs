@@ -12,7 +12,7 @@
         public const string IntegrationTestProjectSuffix = "IntegrationTests";
         public const string FunctionalTestProjectSuffix = "FunctionalTests";
         public const string ApiProjectSuffix = "WebApi";
-        public const string InfraProjectSuffix = "Inrastructure";
+        public const string InfraProjectSuffix = "Infrastructure";
         public const string CoreProjectSuffix = "Core";
 
         public static ClassPath SolutionClassPath(string solutionDirectory, string className)
