@@ -33,7 +33,9 @@
             BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, fileSystem);
             BuildCoreProject(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
             BuildInfrastructureProject(solutionDirectory, srcDirectory, projectBaseName, dbProvider, fileSystem);
-            BuildTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
+            BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
+            BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
+            BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
         }
 
         private static void BuildCoreProject(string solutionDirectory, string projectDirectory, string projectBaseName, IFileSystem fileSystem)
@@ -94,21 +96,37 @@
             StartupBuilder.CreateWebApiStartup(projectDirectory, "Startup", useJwtAuth, projectBaseName);
         }
 
-        private static void BuildTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)
+        private static void BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)
         {
             var solutionFolder = testDirectory.Replace(solutionDirectory, "").Replace(Path.DirectorySeparatorChar.ToString(), "");
-            var testProjectClassPath = ClassPathHelper.TestProjectRootClassPath(testDirectory, "", projectBaseName);
+            var testProjectClassPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "", projectBaseName);
 
-            TestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName, addJwtAuth);
+            IntegrationTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName, addJwtAuth);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
+        }
 
-            HealthCheckTestBuilder.CreateHealthCheckTests(testDirectory, projectBaseName);
+        private static void BuildFunctionalTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)
+        {
+            var solutionFolder = testDirectory.Replace(solutionDirectory, "").Replace(Path.DirectorySeparatorChar.ToString(), "");
+            var testProjectClassPath = ClassPathHelper.FunctionalTestProjectRootClassPath(testDirectory, "", projectBaseName);
+
+            FunctionalTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName, addJwtAuth);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
 
             if (addJwtAuth)
             {
-                Directory.CreateDirectory(ClassPathHelper.HttpClientExtensionsClassPath(testDirectory, projectBaseName, "").ClassDirectory);
+                Directory.CreateDirectory(ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "").ClassDirectory);
                 HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
             }
+        }
+
+        private static void BuildSharedTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)
+        {
+            var solutionFolder = testDirectory.Replace(solutionDirectory, "").Replace(Path.DirectorySeparatorChar.ToString(), "");
+            var testProjectClassPath = ClassPathHelper.SharedTestProjectRootClassPath(testDirectory, "", projectBaseName);
+
+            SharedTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
         }
     }
 }

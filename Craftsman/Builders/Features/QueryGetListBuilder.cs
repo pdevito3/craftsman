@@ -55,6 +55,7 @@
 
             var fkIncludes = Utilities.GetForeignKeyIncludes(entity);
 
+            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var exceptionsClassPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
@@ -62,6 +63,7 @@
 
             return @$"namespace {classNamespace}
 {{
+    using {entityClassPath.ClassNamespace};
     using {dtoClassPath.ClassNamespace};
     using {exceptionsClassPath.ClassNamespace};
     using {contextClassPath.ClassNamespace};

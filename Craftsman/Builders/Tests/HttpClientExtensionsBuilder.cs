@@ -14,7 +14,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
+                var classPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);

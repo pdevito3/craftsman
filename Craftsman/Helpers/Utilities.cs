@@ -73,6 +73,11 @@
             return $"{entityName}Profile";
         }
 
+        public static string GetIntegrationTestFixtureName()
+        {
+            return $"TestFixture";
+        }
+
         public static string GetEntityFeatureClassName(string entityName)
         {
             return $"Get{entityName}";
@@ -131,6 +136,11 @@
         public static string CommandPatchName(string entityName)
         {
             return $"Patch{entityName}Command";
+        }
+
+        public static string FakerName(string objectToFakeName)
+        {
+            return $"Fake{objectToFakeName}";
         }
 
         public static string GetDtoName(string entityName, Dto dto)

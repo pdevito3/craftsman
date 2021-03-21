@@ -9,13 +9,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class TestsCsProjBuilder
+    public class FunctionalTestsCsProjBuilder
     {
         public static void CreateTestsCsProj(string solutionDirectory, string projectBaseName, bool addJwtAuth)
         {
             try
             {
-                var classPath = ClassPathHelper.TestProjectClassPath(solutionDirectory, projectBaseName);
+                var classPath = ClassPathHelper.FunctionalTestProjectClassPath(solutionDirectory, projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -49,6 +49,7 @@
             var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
             var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
+            var sharedTestClassPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
 
             var authPackages = addJwtAuth ? @$"
     <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""3.1.0"" />" : "";
@@ -64,28 +65,23 @@
   <ItemGroup>
     <PackageReference Include=""AutoBogus"" Version=""2.12.0"" />
     <PackageReference Include=""Bogus"" Version=""32.0.2"" />
+    <PackageReference Include=""Docker.DotNet"" Version=""3.125.4"" />
     <PackageReference Include=""FluentAssertions"" Version=""5.10.3"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""5.0.1"" />
-    <PackageReference Include=""Microsoft.AspNet.WebApi.Client"" Version=""5.2.7"" />
-    <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""5.0.1"" />
+    <PackageReference Include=""MediatR"" Version=""9.0.0"" />
+    <PackageReference Include=""Moq"" Version=""4.16.1"" />
+    <PackageReference Include=""Newtonsoft.Json"" Version=""12.0.3"" />
+    <PackageReference Include=""NUnit"" Version=""3.12.0"" />
+    <PackageReference Include=""NUnit3TestAdapter"" Version=""3.16.1"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""16.8.3"" />
-    <PackageReference Include=""Moq"" Version=""4.15.2"" />
     <PackageReference Include=""Respawn"" Version=""3.3.0"" />{authPackages}
-    <PackageReference Include=""xunit"" Version=""2.4.1"" />
-    <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.4.3"">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include=""coverlet.collector"" Version=""1.3.0"">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include=""..\..\src\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />
     <ProjectReference Include=""..\..\src\{infraClassPath.ClassNamespace}\{infraClassPath.ClassName}"" />
     <ProjectReference Include=""..\..\src\{webApiClassPath.ClassNamespace}\{webApiClassPath.ClassName}"" />
+    <ProjectReference Include=""..\{sharedTestClassPath.ClassNamespace}\{sharedTestClassPath.ClassName}"" />
   </ItemGroup>
 
 </Project>";

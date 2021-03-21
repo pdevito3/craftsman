@@ -47,7 +47,7 @@
 
         private static string GetIntegrationTestFileText(ClassPath classPath, string solutionDirectory, string solutionName, Entity entity, string dbContextName, List<Policy> policies, string projectBaseName)
         {
-            var httpClientExtensionsClassPath = ClassPathHelper.HttpClientExtensionsClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
+            var httpClientExtensionsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var testFakesClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);

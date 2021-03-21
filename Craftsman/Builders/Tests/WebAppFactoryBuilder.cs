@@ -16,7 +16,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.TestProjectRootClassPath(solutionDirectory, $"CustomWebApplicationFactory.cs", solutionName);
+                var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, $"CustomWebApplicationFactory.cs", solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
