@@ -61,16 +61,9 @@
                 ControllerBuilder.CreateController(srcDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies, template.SolutionName);
 
                 FakesBuilder.CreateFakes(testDirectory, template.SolutionName, entity);
-                AddCommandTests.CreateEntityWriteTests(testDirectory, entity, template.SolutionName);
-                //ReadTestBuilder.CreateEntityReadTests(testDirectory, template.SolutionName, entity, template.DbContext.ContextName);
-                //DeleteTestBuilder.DeleteEntityWriteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName);
-                //WriteTestBuilder.CreateEntityWriteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName);
-                //GetIntegrationTestBuilder.CreateEntityGetTests(testDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthorizationSettings.Policies, template.SolutionName);
-                //PostIntegrationTestBuilder.CreateEntityWriteTests(testDirectory, entity, template.SolutionName, template.AuthorizationSettings.Policies, template.SolutionName);
-                //UpdateIntegrationTestBuilder.CreateEntityUpdateTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, template.SolutionName);
-                //DeleteIntegrationTestBuilder.CreateEntityDeleteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, template.SolutionName);
-                //WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, template.SolutionName, template.DbContext.ContextName, template.AddJwtAuthentication);
-
+                AddCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
+                DeleteCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
+                PatchCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
 
                 //HealthCheckTestBuilder.CreateHealthCheckTests(testDirectory, template.SolutionName);
             }
@@ -88,9 +81,9 @@
             );
 
             // test helpers
-            TestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, fileSystem);
+            TestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, template.DbContext.Provider, fileSystem);
             TestBaseBuilder.CreateBase(testDirectory, template.SolutionName, fileSystem);
-            DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, template.SolutionName, fileSystem);
+            DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, template.SolutionName, template.DbContext.Provider, fileSystem);
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, template.SolutionName);
@@ -102,7 +95,7 @@
             if (template.AddJwtAuthentication)
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, template.SolutionName, template.AuthorizationSettings.Policies);
 
-            ReadmeBuilder.CreateBoundedContextReadme(srcDirectory, template.SolutionName, fileSystem);
+            ReadmeBuilder.CreateBoundedContextReadme(rootDirectory, template.SolutionName, srcDirectory, fileSystem);
         }
     }
 }

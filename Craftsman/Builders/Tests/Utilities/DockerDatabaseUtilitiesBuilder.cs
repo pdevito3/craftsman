@@ -1,5 +1,6 @@
 ﻿namespace Craftsman.Builders
 {
+    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using System;
@@ -9,7 +10,7 @@
 
     public class DockerDatabaseUtilitiesBuilder
     {
-        public static void CreateClass(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateClass(string solutionDirectory, string projectBaseName, string provider, IFileSystem fileSystem)
         {
             try
             {
@@ -24,7 +25,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetBaseText(classPath.ClassNamespace, projectBaseName);
+                    data = GetBaseText(classPath.ClassNamespace, provider, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -42,14 +43,62 @@
             }
         }
 
-        public static string GetBaseText(string classNamespace, string projectBaseName)
+        public static string GetBaseText(string classNamespace, string provider, string projectBaseName)
         {
+            var providerPort = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider ? "5432" : "1433";
+            var envList = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
+                ? $@"""POSTGRES_PASSWORD={{DB_PASSWORD}}"",
+                            $""POSTGRES_DB={{DB_NAME}}"",
+                            $""POSTGRES_PASSWORD={{DB_PASSWORD}}"""
+                : $@"""ACCEPT_EULA=Y"",
+                        $""SA_PASSWORD={{DB_PASSWORD}}""";
+
+            var constants = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider 
+                ? @$"public const string DB_PASSWORD = ""#testingDockerPassword#"";
+        public const string DB_USER = ""postgres"";
+        public const string DB_NAME = ""{projectBaseName}"";
+        public const string DB_IMAGE = ""postgres"";
+        public const string DB_IMAGE_TAG = ""latest"";;
+        public const string DB_CONTAINER_NAME = ""IntegrationTestingContainer_{projectBaseName}"";
+        public const string DB_VOLUME_NAME = ""IntegrationTestingVolume_{projectBaseName}"";"
+                : @$"public const string DB_PASSWORD = ""#testingDockerPassword#"";
+        public const string DB_USER = ""SA"";
+        public const string DB_NAME = ""@@databaseName@@"";
+        public const string DB_IMAGE = ""mcr.microsoft.com/mssql/server"";
+        public const string DB_IMAGE_TAG = ""2019-latest"";
+        public const string DB_CONTAINER_NAME = ""IntegrationTestingContainer_{projectBaseName}"";
+        public const string DB_VOLUME_NAME = ""IntegrationTestingVolume_{projectBaseName}"";";
+
+            var getSqlString = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
+                ? $@"return new NpgsqlConnectionStringBuilder()
+            {{
+                Host = ""localhost"",
+                Password = DB_SA_PASSWORD,
+                Username = DB_USER,
+                Database = DB_NAME,
+                Port = Int32.Parse(port)
+            }}.ToString();"
+            : $@"return $""Data Source=localhost,{{port}};"" +
+                $""Initial Catalog={{DB_NAME}};"" +
+                ""Integrated Security=False;"" +
+                ""User ID={{DB_USER}};"" +
+                $""Password={{DB_PASSWORD}}"";";
+
+            var dbConnection = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
+                ? $@"new NpgsqlConnection(sqlConnectionString);"
+                : $@"new SqlConnection(sqlConnectionString);";
+
+            var usingStatement = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
+                ? $@"
+    using Npgsql;"
+                : null;
+
             return @$"// based on https://blog.dangl.me/archive/running-sql-server-integration-tests-in-net-core-projects-via-docker/
 
 namespace {classNamespace}
 {{
     using Docker.DotNet;
-    using Docker.DotNet.Models;
+    using Docker.DotNet.Models;{usingStatement}
     using System;
     using System.Collections.Generic;
     using System.Data.SqlClient;
@@ -61,11 +110,7 @@ namespace {classNamespace}
 
     public static class DockerSqlDatabaseUtilities
     {{
-        public const string SQLSERVER_SA_PASSWORD = ""#testingDockerPassword#"";
-        public const string SQLSERVER_IMAGE = ""mcr.microsoft.com/mssql/server"";
-        public const string SQLSERVER_IMAGE_TAG = ""2017-latest"";
-        public const string SQLSERVER_CONTAINER_NAME = ""IntegrationTestingContainer_{projectBaseName}"";
-        public const string SQLSERVER_VOLUME_NAME = ""IntegrationTestingVolume_{projectBaseName}"";
+        {constants}
 
         public static async Task<(string containerId, string port)> EnsureDockerStartedAndGetContainerIdAndPortAsync()
         {{
@@ -77,17 +122,17 @@ namespace {classNamespace}
             // This call ensures that the latest SQL Server Docker image is pulled
             await dockerClient.Images.CreateImageAsync(new ImagesCreateParameters
             {{
-                FromImage = $""{{SQLSERVER_IMAGE}}:{{SQLSERVER_IMAGE_TAG}}""
+                FromImage = $""{{DB_IMAGE}}:{{DB_IMAGE_TAG}}""
             }}, null, new Progress<JSONMessage>());
 
             // create a volume, if one doesn't already exist
             var volumeList = await dockerClient.Volumes.ListAsync();
-            var volumeCount = volumeList.Volumes.Where(v => v.Name == SQLSERVER_VOLUME_NAME).Count();
+            var volumeCount = volumeList.Volumes.Where(v => v.Name == DB_VOLUME_NAME).Count();
             if(volumeCount <= 0)
             {{
                 await dockerClient.Volumes.CreateAsync(new VolumesCreateParameters
                 {{
-                    Name = SQLSERVER_VOLUME_NAME,
+                    Name = DB_VOLUME_NAME,
                 }});
             }}
 
@@ -95,7 +140,7 @@ namespace {classNamespace}
             var contList = await dockerClient
                 .Containers.ListContainersAsync(new ContainersListParameters() {{ All = true }});
             var existingCont = contList
-                .Where(c => c.Names.Any(n => n.Contains(SQLSERVER_CONTAINER_NAME))).FirstOrDefault();
+                .Where(c => c.Names.Any(n => n.Contains(DB_CONTAINER_NAME))).FirstOrDefault();
 
             if (existingCont == null)
             {{
@@ -103,19 +148,18 @@ namespace {classNamespace}
                     .Containers
                     .CreateContainerAsync(new CreateContainerParameters
                     {{
-                        Name = SQLSERVER_CONTAINER_NAME,
-                        Image = $""{{SQLSERVER_IMAGE}}:{{SQLSERVER_IMAGE_TAG}}"",
+                        Name = DB_CONTAINER_NAME,
+                        Image = $""{{DB_IMAGE}}:{{DB_IMAGE_TAG}}"",
                         Env = new List<string>
                         {{
-                        ""ACCEPT_EULA=Y"",
-                        $""SA_PASSWORD={{SQLSERVER_SA_PASSWORD}}""
+                        {envList}
                         }},
                         HostConfig = new HostConfig
                         {{
                             PortBindings = new Dictionary<string, IList<PortBinding>>
                             {{
                             {{
-                                ""1433/tcp"",
+                                ""{providerPort}/tcp"",
                                 new PortBinding[]
                                 {{
                                     new PortBinding
@@ -127,7 +171,7 @@ namespace {classNamespace}
                             }},
                             Binds = new List<string>
                             {{
-                                $""{{SQLSERVER_VOLUME_NAME}}:/mytestdata""
+                                $""{{DB_VOLUME_NAME}}:/{projectBaseName}_data""
                             }}
                         }},
                     }});
@@ -174,7 +218,7 @@ namespace {classNamespace}
             var runningContainers = await dockerClient.Containers
                 .ListContainersAsync(new ContainersListParameters());
 
-            foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(SQLSERVER_CONTAINER_NAME))))
+            foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(DB_CONTAINER_NAME))))
             {{
                 // Stopping all test containers that are expired -- defaulted to a day
                 var expiration = hoursTillExpiration > 0 
@@ -200,7 +244,7 @@ namespace {classNamespace}
 
             var runningVolumes = await dockerClient.Volumes.ListAsync();
 
-            foreach (var runningVolume in runningVolumes.Volumes.Where(v => v.Name == SQLSERVER_VOLUME_NAME))
+            foreach (var runningVolume in runningVolumes.Volumes.Where(v => v.Name == DB_VOLUME_NAME))
             {{
                 // Stopping all test containers that are older than one hour, they likely failed to cleanup
                 var expiration = hoursTillExpiration > 0
@@ -229,8 +273,8 @@ namespace {classNamespace}
             {{
                 try
                 {{
-                    var sqlConnectionString = $""Data Source=localhost,{{databasePort}};Integrated Security=False;User ID=SA;Password={{SQLSERVER_SA_PASSWORD}}"";
-                    using var sqlConnection = new SqlConnection(sqlConnectionString);
+                    var sqlConnectionString = GetSqlConnectionString(databasePort);
+                    using var sqlConnection = {dbConnection}
                     await sqlConnection.OpenAsync();
                     connectionEstablised = true;
                 }}
@@ -243,7 +287,7 @@ namespace {classNamespace}
 
             if (!connectionEstablised)
             {{
-                throw new Exception(""Connection to the SQL docker database could not be established within 60 seconds."");
+                throw new Exception($""Connection to the SQL docker database could not be established within {{maxWaitTimeSeconds}} seconds."");
             }}
 
             return;
@@ -262,6 +306,11 @@ namespace {classNamespace}
         private static bool IsRunningOnWindows()
         {{
             return Environment.OSVersion.Platform == PlatformID.Win32NT;
+        }}
+
+        public static string GetSqlConnectionString(string port)
+        {{
+            {getSqlString}
         }}
     }}
 }}";

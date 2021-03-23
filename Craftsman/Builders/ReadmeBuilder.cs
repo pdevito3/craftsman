@@ -45,7 +45,7 @@
             }
         }
 
-        public static void CreateBoundedContextReadme(string solutionDirectory, string solutionName, IFileSystem fileSystem)
+        public static void CreateBoundedContextReadme(string solutionDirectory, string solutionName, string srcDirectory, IFileSystem fileSystem)
         {
             try
             {
@@ -60,7 +60,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetBoundedContextReadmeFileText(solutionName, solutionDirectory);
+                    data = GetBoundedContextReadmeFileText(solutionName, srcDirectory);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 

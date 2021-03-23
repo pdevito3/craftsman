@@ -67,6 +67,7 @@
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""5.0.1"" />
     <PackageReference Include=""MediatR"" Version=""9.0.0"" />
     <PackageReference Include=""Moq"" Version=""4.16.1"" />
+    <PackageReference Include=""Npgsql"" Version=""5.0.3"" />
     <PackageReference Include=""Newtonsoft.Json"" Version=""12.0.3"" />
     <PackageReference Include=""NUnit"" Version=""3.12.0"" />
     <PackageReference Include=""NUnit3TestAdapter"" Version=""3.16.1"" />

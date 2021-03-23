@@ -40,6 +40,11 @@
             return new ClassPath(projectDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "TestUtilities"), className);
         }
 
+        public static ClassPath FunctionalTestUtilitiesClassPath(string projectDirectory, string projectBaseName, string className)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{projectBaseName}.{FunctionalTestProjectSuffix}", "TestUtilities"), className);
+        }
+
         public static ClassPath WebApiMiddlewareClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{ApiProjectSuffix}", "Middleware"), className);

@@ -1,5 +1,6 @@
 ﻿namespace Craftsman.Builders
 {
+    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using System;
@@ -9,7 +10,7 @@
 
     public class TestFixtureBuilder
     {
-        public static void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, IFileSystem fileSystem)
+        public static void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, string provider, IFileSystem fileSystem)
         {
             try
             {
@@ -24,7 +25,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName);
+                    data = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, provider);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -42,11 +43,36 @@
             }
         }
 
-        public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName)
+        public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName, string provider)
         {
             var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var testUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
+
+            var usingStatement = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
+                ? $@"
+    using Npgsql;"
+                : null;
+
+            var checkpoint = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
+                ? $@"_checkpoint = new Checkpoint
+            {{
+                TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
+                SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
+                DbAdapter = DbAdapter.Postgres
+            }};"
+                : $@"_checkpoint = new Checkpoint
+            {{
+                TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
+            }};";
+
+            var resetString = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
+                ? $@"using (var conn = new NpgsqlConnection(_configuration.GetConnectionString(""{dbContextName}"")))
+            {{
+                await conn.OpenAsync();
+                await _checkpoint.Reset(conn);
+            }}"
+                : $@"await _checkpoint.Reset(_configuration.GetConnectionString(""{dbContextName}""));";
 
             return @$"namespace {classNamespace}
 {{
@@ -59,8 +85,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
-    using Npgsql;
+    using Moq;{usingStatement}
     using NUnit.Framework;
     using Respawn;
     using System;
@@ -122,12 +147,7 @@
 
             _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
 
-            _checkpoint = new Checkpoint
-            {{
-                TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
-                //SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
-                //DbAdapter = DbAdapter.Postgres
-            }};
+            {checkpoint}
 
             EnsureDatabase();
         }}
@@ -255,15 +275,6 @@
                 }}
                 return db.SaveChangesAsync();
             }});
-        }}
-
-        public string GetSqlConnectionString()
-        {{
-            return $""Data Source=localhost,{{_dockerSqlPort}};"" +
-                $""Initial Catalog={{DATABASE_NAME_PLACEHOLDER}};"" +
-                ""Integrated Security=False;"" +
-                ""User ID=SA;"" +
-                $""Password={{DockerSqlDatabaseUtilities.SQLSERVER_SA_PASSWORD}}"";
         }}
 
         [OneTimeTearDown]

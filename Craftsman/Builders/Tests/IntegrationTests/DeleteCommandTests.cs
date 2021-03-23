@@ -10,13 +10,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class AddCommandTests
+    public class DeleteCommandTests
     {
         public static void CreateTests(string solutionDirectory, Entity entity, string projectBaseName)
         {
             try
             {
-                var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"Add{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
+                var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"Delete{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -46,12 +46,15 @@
 
         private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, string projectBaseName)
         {
-            var featureName = Utilities.AddEntityFeatureClassName(entity.Name);
+            var featureName = Utilities.DeleteEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
-            var commandName = Utilities.CommandAddName(entity.Name);
-            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
+            var commandName = Utilities.CommandDeleteName(entity.Name);
+            var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
+            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+            var pkName = entity.PrimaryKeyProperty.Name;
+            var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
@@ -71,21 +74,22 @@
     public class {commandName}Tests : TestBase
     {{
         [Test]
-        public async Task {commandName}_Adds_New_{entity.Name}_To_Db()
+        public async Task {commandName}_Deletes_{entity.Name}_From_Db()
         {{
             // Arrange
-            var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
+            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+            await InsertAsync({fakeEntityVariableName});
+            var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+            var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
             // Act
-            var command = new {commandName}({fakeEntityVariableName});
+            var command = new {commandName}({lowercaseEntityPk});
             var {lowercaseEntityName}Returned = await SendAsync(command);
-            var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+            await SendAsync(command);
+            var {lowercaseEntityPluralName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
 
             // Assert
-            {lowercaseEntityName}Returned.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-                options.ExcludingMissingMembers());
-            {lowercaseEntityName}Created.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-                options.ExcludingMissingMembers());
+            {lowercaseEntityPluralName}.Count.Should().Be(0);
         }}
     }}
 }}";
