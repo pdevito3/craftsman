@@ -103,7 +103,6 @@
         private static Checkpoint _checkpoint;
         //private static string _currentUserId;
 
-        public const string DATABASE_NAME_PLACEHOLDER = ""@@databaseName@@"";
         private string _dockerContainerId;
         private string _dockerSqlPort;
 
@@ -112,8 +111,8 @@
         {{
 
             (_dockerContainerId, _dockerSqlPort) = await DockerSqlDatabaseUtilities.EnsureDockerStartedAndGetContainerIdAndPortAsync();
+            var dockerConnectionString = DockerSqlDatabaseUtilities.GetSqlConnectionString(_dockerSqlPort);
 
-            var dockerConnectionString = GetSqlConnectionString();
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddInMemoryCollection(new Dictionary<string, string>
@@ -172,15 +171,7 @@
 
         public static async Task ResetState()
         {{
-            await _checkpoint.Reset(_configuration.GetConnectionString(""{dbContextName}""));
-            //_currentUserId = null;
-
-            //using (var conn = new NpgsqlConnection(_configuration.GetConnectionString(""{dbContextName}"")))
-            //{{
-            //    await conn.OpenAsync();
-
-            //    await _checkpoint.Reset(conn);
-            //}}
+            {resetString}
         }}
 
         public static async Task<TEntity> FindAsync<TEntity>(params object[] keyValues)

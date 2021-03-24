@@ -58,7 +58,7 @@
         public const string DB_USER = ""postgres"";
         public const string DB_NAME = ""{projectBaseName}"";
         public const string DB_IMAGE = ""postgres"";
-        public const string DB_IMAGE_TAG = ""latest"";;
+        public const string DB_IMAGE_TAG = ""latest"";
         public const string DB_CONTAINER_NAME = ""IntegrationTestingContainer_{projectBaseName}"";
         public const string DB_VOLUME_NAME = ""IntegrationTestingVolume_{projectBaseName}"";"
                 : @$"public const string DB_PASSWORD = ""#testingDockerPassword#"";
@@ -73,7 +73,7 @@
                 ? $@"return new NpgsqlConnectionStringBuilder()
             {{
                 Host = ""localhost"",
-                Password = DB_SA_PASSWORD,
+                Password = DB_PASSWORD,
                 Username = DB_USER,
                 Database = DB_NAME,
                 Port = Int32.Parse(port)
