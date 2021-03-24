@@ -87,7 +87,7 @@
                     }                    
                 }
                 else
-                    propString += $@"        public {Utilities.PropTypeCleanup(props[eachProp].Type)} {props[eachProp].Name} {{ get; set; }}{newLine}";
+                    propString += $@"        public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
             }
 
             return propString;

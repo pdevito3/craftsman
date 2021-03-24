@@ -49,7 +49,8 @@
             var featureName = Utilities.PatchEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var commandName = Utilities.CommandPatchName(entity.Name);
-            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
+            var fakeEntity = Utilities.FakerName(entity.Name);
+            var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
@@ -58,38 +59,55 @@
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
+
+            var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
+            var lookupVal = $@"""Easily Identified Value For Test""";
+
+            // if no string properties, do one with an int
+            if (myProp == null)
+            {
+                myProp = entity.Properties.Where(e => e.Type.Contains("int") && e.CanManipulate).FirstOrDefault();
+                lookupVal = "999999";
+            }
 
             return @$"namespace {classPath.ClassNamespace}
 {{
     using {fakerClassPath.ClassNamespace};
     using {testUtilClassPath.ClassNamespace};
+    using {dtoClassPath.ClassNamespace};
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using NUnit.Framework;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.JsonPatch;
+    using System.Linq;
     using static {featuresClassPath.ClassNamespace}.{featureName};
     using static {testFixtureName};
 
     public class {commandName}Tests : TestBase
     {{
         [Test]
-        public async Task {commandName}_Updates_Existing_{entity.Name}_To_Db()
+        public async Task {commandName}_Updates_Existing_{entity.Name}_In_Db()
         {{
             // Arrange
-            var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
+            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
             await InsertAsync({fakeEntityVariableName});
             var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
             var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
+            var patchDoc = new JsonPatchDocument<{updateDto}>();
+            var newValue = {lookupVal};
+            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, newValue);
+
             // Act
-            var command = new {commandName}({lowercaseEntityPk});
-            var {lowercaseEntityName}Returned = await SendAsync(command);
+            var command = new {commandName}({lowercaseEntityPk}, patchDoc);
             await SendAsync(command);
-            var {lowercaseEntityPluralName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
+            var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
 
             // Assert
-            {lowercaseEntityPluralName}.Count.Should().Be(0);
+            updated{entity.Name}.{myProp.Name}.Should().Be(newValue);
         }}
     }}
 }}";

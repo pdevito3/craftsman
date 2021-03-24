@@ -84,7 +84,6 @@
 
             // Act
             var command = new {commandName}({lowercaseEntityPk});
-            var {lowercaseEntityName}Returned = await SendAsync(command);
             await SendAsync(command);
             var {lowercaseEntityPluralName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
 
