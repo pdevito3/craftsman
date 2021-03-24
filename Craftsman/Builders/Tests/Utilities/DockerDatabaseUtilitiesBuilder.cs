@@ -51,7 +51,7 @@
                             $""POSTGRES_DB={{DB_NAME}}"",
                             $""POSTGRES_PASSWORD={{DB_PASSWORD}}"""
                 : $@"""ACCEPT_EULA=Y"",
-                        $""SA_PASSWORD={{DB_PASSWORD}}""";
+                            $""SA_PASSWORD={{DB_PASSWORD}}""";
 
             var constants = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider 
                 ? @$"public const string DB_PASSWORD = ""#testingDockerPassword#"";
@@ -63,7 +63,6 @@
         public const string DB_VOLUME_NAME = ""IntegrationTestingVolume_{projectBaseName}"";"
                 : @$"public const string DB_PASSWORD = ""#testingDockerPassword#"";
         public const string DB_USER = ""SA"";
-        public const string DB_NAME = ""@@databaseName@@"";
         public const string DB_IMAGE = ""mcr.microsoft.com/mssql/server"";
         public const string DB_IMAGE_TAG = ""2019-latest"";
         public const string DB_CONTAINER_NAME = ""IntegrationTestingContainer_{projectBaseName}"";
@@ -79,9 +78,8 @@
                 Port = Int32.Parse(port)
             }}.ToString();"
             : $@"return $""Data Source=localhost,{{port}};"" +
-                $""Initial Catalog={{DB_NAME}};"" +
                 ""Integrated Security=False;"" +
-                ""User ID={{DB_USER}};"" +
+                $""User ID={{DB_USER}};"" +
                 $""Password={{DB_PASSWORD}}"";";
 
             var dbConnection = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
@@ -152,7 +150,7 @@ namespace {classNamespace}
                         Image = $""{{DB_IMAGE}}:{{DB_IMAGE_TAG}}"",
                         Env = new List<string>
                         {{
-                        {envList}
+                            {envList}
                         }},
                         HostConfig = new HostConfig
                         {{
