@@ -101,7 +101,6 @@
         private static IWebHostEnvironment _env;
         private static IServiceScopeFactory _scopeFactory;
         private static Checkpoint _checkpoint;
-        //private static string _currentUserId;
 
         private string _dockerContainerId;
         private string _dockerSqlPort;
@@ -109,7 +108,6 @@
         [OneTimeSetUp]
         public async Task RunBeforeAnyTests()
         {{
-
             (_dockerContainerId, _dockerSqlPort) = await DockerSqlDatabaseUtilities.EnsureDockerStartedAndGetContainerIdAndPortAsync();
             var dockerConnectionString = DockerSqlDatabaseUtilities.GetSqlConnectionString(_dockerSqlPort);
 
@@ -132,17 +130,6 @@
             services.AddLogging();
 
             startup.ConfigureServices(services);
-
-            // Replace service registration for ICurrentUserService
-            // Remove existing registration
-            //var currentUserServiceDescriptor = services.FirstOrDefault(d =>
-            //    d.ServiceType == typeof(ICurrentUserService));
-
-            //services.Remove(currentUserServiceDescriptor);
-
-            // Register testing version
-            //services.AddTransient(provider =>
-            //    Mock.Of<ICurrentUserService>(s => s.UserId == _currentUserId));
 
             _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
 
