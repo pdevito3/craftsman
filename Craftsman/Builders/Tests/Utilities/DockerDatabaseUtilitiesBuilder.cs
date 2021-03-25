@@ -185,19 +185,9 @@ namespace {classNamespace}
             return (existingCont.ID, existingCont.Ports.FirstOrDefault().PublicPort.ToString());
         }}
 
-        public static async Task EnsureDockerContainersStoppedAndRemovedAsync(string dockerContainerId)
+        private static bool IsRunningOnWindows()
         {{
-            var dockerClient = GetDockerClient();
-            await dockerClient.Containers
-                .StopContainerAsync(dockerContainerId, new ContainerStopParameters());
-            await dockerClient.Containers
-                .RemoveContainerAsync(dockerContainerId, new ContainerRemoveParameters());
-        }}
-
-        public static async Task EnsureDockerVolumesRemovedAsync(string volumeName)
-        {{
-            var dockerClient = GetDockerClient();
-            await dockerClient.Volumes.RemoveAsync(volumeName);
+            return Environment.OSVersion.Platform == PlatformID.Win32NT;
         }}
 
         private static DockerClient GetDockerClient()
@@ -218,7 +208,7 @@ namespace {classNamespace}
 
             foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(DB_CONTAINER_NAME))))
             {{
-                // Stopping all test containers that are expired -- defaulted to a day
+                // Stopping all test containers that are older than 24 hours
                 var expiration = hoursTillExpiration > 0 
                     ? hoursTillExpiration * -1 
                     : hoursTillExpiration;
@@ -244,7 +234,7 @@ namespace {classNamespace}
 
             foreach (var runningVolume in runningVolumes.Volumes.Where(v => v.Name == DB_VOLUME_NAME))
             {{
-                // Stopping all test containers that are older than one hour, they likely failed to cleanup
+                // Stopping all test volumes that are older than 24 hours
                 var expiration = hoursTillExpiration > 0
                     ? hoursTillExpiration * -1
                     : hoursTillExpiration;
@@ -262,19 +252,34 @@ namespace {classNamespace}
             }}
         }}
 
+        public static async Task EnsureDockerContainersStoppedAndRemovedAsync(string dockerContainerId)
+        {{
+            var dockerClient = GetDockerClient();
+            await dockerClient.Containers
+                .StopContainerAsync(dockerContainerId, new ContainerStopParameters());
+            await dockerClient.Containers
+                .RemoveContainerAsync(dockerContainerId, new ContainerRemoveParameters());
+        }}
+
+        public static async Task EnsureDockerVolumesRemovedAsync(string volumeName)
+        {{
+            var dockerClient = GetDockerClient();
+            await dockerClient.Volumes.RemoveAsync(volumeName);
+        }}
+
         private static async Task WaitUntilDatabaseAvailableAsync(string databasePort)
         {{
             var start = DateTime.UtcNow;
             const int maxWaitTimeSeconds = 60;
-            var connectionEstablised = false;
-            while (!connectionEstablised && start.AddSeconds(maxWaitTimeSeconds) > DateTime.UtcNow)
+            var connectionEstablished = false;
+            while (!connectionEstablished && start.AddSeconds(maxWaitTimeSeconds) > DateTime.UtcNow)
             {{
                 try
                 {{
                     var sqlConnectionString = GetSqlConnectionString(databasePort);
                     using var sqlConnection = {dbConnection}
                     await sqlConnection.OpenAsync();
-                    connectionEstablised = true;
+                    connectionEstablished = true;
                 }}
                 catch
                 {{
@@ -283,7 +288,7 @@ namespace {classNamespace}
                 }}
             }}
 
-            if (!connectionEstablised)
+            if (!connectionEstablished)
             {{
                 throw new Exception($""Connection to the SQL docker database could not be established within {{maxWaitTimeSeconds}} seconds."");
             }}
@@ -299,11 +304,6 @@ namespace {classNamespace}
             var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
             tcpListener.Stop();
             return port.ToString();
-        }}
-
-        private static bool IsRunningOnWindows()
-        {{
-            return Environment.OSVersion.Platform == PlatformID.Win32NT;
         }}
 
         public static string GetSqlConnectionString(string port)
