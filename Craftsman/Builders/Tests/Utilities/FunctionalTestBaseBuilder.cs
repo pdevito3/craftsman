@@ -1,6 +1,5 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using System;
@@ -8,13 +7,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class TestFixtureBuilder
+    public class FunctionalTestBaseBuilder
     {
-        public static void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, string provider, IFileSystem fileSystem)
+        public static void CreateBase(string solutionDirectory, string projectBaseName, string dbContextName, IFileSystem fileSystem)
         {
             try
             {
-                var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestFixture.cs", projectBaseName);
+                var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, "TestBase.cs", projectBaseName);
 
                 if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                     fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
@@ -25,7 +24,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, provider);
+                    data = GetBaseText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
 
@@ -43,108 +42,38 @@
             }
         }
 
-        public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName, string provider)
+        public static string GetBaseText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName)
         {
-            var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-            var testUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-
-            var usingStatement = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
-                ? $@"
-    using Npgsql;"
-                : null;
-
-            var checkpoint = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
-                ? $@"_checkpoint = new Checkpoint
-            {{
-                TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
-                SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
-                DbAdapter = DbAdapter.Postgres
-            }};"
-                : $@"_checkpoint = new Checkpoint
-            {{
-                TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
-            }};";
-
-            var resetString = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
-                ? $@"using (var conn = new NpgsqlConnection(_configuration.GetConnectionString(""{dbContextName}"")))
-            {{
-                await conn.OpenAsync();
-                await _checkpoint.Reset(conn);
-            }}"
-                : $@"await _checkpoint.Reset(_configuration.GetConnectionString(""{dbContextName}""));";
+            var apiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", projectBaseName);
 
             return @$"namespace {classNamespace}
 {{
     using {contextClassPath.ClassNamespace};
-    using {testUtilsClassPath.ClassNamespace};
     using {apiClassPath.ClassNamespace};
     using MediatR;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore;
+    using Microsoft.AspNetCore.Mvc.Testing;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;{usingStatement}
     using NUnit.Framework;
-    using Respawn;
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
+    using System.Net.Http;
     using System.Threading.Tasks;
 
-    [SetUpFixture]
-    public class TestFixture
+    public class TestBase
     {{
-        private static IConfigurationRoot _configuration;
-        private static IWebHostEnvironment _env;
-        private static IServiceScopeFactory _scopeFactory;
-        private static Checkpoint _checkpoint;
+        public static IConfiguration _configuration;
+        public static IServiceScopeFactory _scopeFactory;
+        public static WebApplicationFactory<Startup> _factory;
+        public static HttpClient _client;
 
-        private string _dockerContainerId;
-        private string _dockerSqlPort;
-
-        [OneTimeSetUp]
-        public async Task RunBeforeAnyTests()
+        [SetUp]
+        public async Task TestSetUp()
         {{
-            (_dockerContainerId, _dockerSqlPort) = await DockerSqlDatabaseUtilities.EnsureDockerStartedAndGetContainerIdAndPortAsync();
-            var dockerConnectionString = DockerSqlDatabaseUtilities.GetSqlConnectionString(_dockerSqlPort);
-
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddInMemoryCollection(new Dictionary<string, string>
-                    {{
-                        {{ ""UseInMemoryDatabase"", ""false"" }},
-                        {{ ""ConnectionStrings:{dbContextName}"", dockerConnectionString }}
-                    }})
-                .AddEnvironmentVariables();
-
-            _configuration = builder.Build();
-            _env = Mock.Of<IWebHostEnvironment>();
-
-            var startup = new Startup(_configuration, _env);
-
-            var services = new ServiceCollection();
-
-            services.AddLogging();
-
-            startup.ConfigureServices(services);
-
-            _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
-
-            {checkpoint}
-
-            EnsureDatabase();
-        }}
-
-        private static void EnsureDatabase()
-        {{
-            using var scope = _scopeFactory.CreateScope();
-
-            var context = scope.ServiceProvider.GetService<{dbContextName}>();
-            
-            context.Database.Migrate();
+            _factory = new {Utilities.GetWebHostFactoryName()}();
+            _configuration = _factory.Services.GetRequiredService<IConfiguration>();
+            _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
+            _client = _factory.CreateClient(new WebApplicationFactoryClientOptions());
         }}
 
         public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
@@ -154,11 +83,6 @@
             var mediator = scope.ServiceProvider.GetService<ISender>();
 
             return await mediator.Send(request);
-        }}
-
-        public static async Task ResetState()
-        {{
-            {resetString}
         }}
 
         public static async Task<TEntity> FindAsync<TEntity>(params object[] keyValues)
@@ -253,13 +177,6 @@
                 }}
                 return db.SaveChangesAsync();
             }});
-        }}
-
-        [OneTimeTearDown]
-        public Task RunAfterAnyTests()
-        {{
-            return Task.CompletedTask;
-            //return DockerSqlDatabaseUtilities.EnsureDockerStoppedAndRemovedAsync(_dockerContainerId);
         }}
     }}
 }}";

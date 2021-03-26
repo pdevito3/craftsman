@@ -7,7 +7,7 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class TestBaseBuilder
+    public class IntegrationTestBaseBuilder
     {
         public static void CreateBase(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {

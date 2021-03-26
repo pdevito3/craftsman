@@ -40,6 +40,11 @@
             return isInterface ? $"I{entityName}Repository" : $"{entityName}Repository";
         }
 
+        public static string GetWebHostFactoryName()
+        {
+            return "TestingWebApplicationFactory";
+        }
+
         public static string GetControllerName(string entityName)
         {
             return $"{entityName}Controller";

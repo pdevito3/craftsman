@@ -6,7 +6,6 @@ namespace Craftsman.Commands
     using Craftsman.Builders.Seeders;
     using Craftsman.Builders.Tests.Fakes;
     using Craftsman.Builders.Tests.IntegrationTests;
-    using Craftsman.Builders.Tests.RepositoryTests;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
@@ -106,10 +105,10 @@ namespace Craftsman.Commands
                 //ReadTestBuilder.CreateEntityReadTests(testDirectory, template.SolutionName, entity, template.DbContext.ContextName);
                 //DeleteTestBuilder.DeleteEntityWriteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName);
                 //WriteTestBuilder.CreateEntityWriteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName);
-                GetIntegrationTestBuilder.CreateEntityGetTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
-                PostIntegrationTestBuilder.CreateEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
-                UpdateIntegrationTestBuilder.CreateEntityUpdateTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
-                DeleteIntegrationTestBuilder.CreateEntityDeleteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
+                //GetIntegrationTestBuilder.CreateEntityGetTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
+                //PostIntegrationTestBuilder.CreateEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
+                //UpdateIntegrationTestBuilder.CreateEntityUpdateTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
+                //DeleteIntegrationTestBuilder.CreateEntityDeleteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
             }
 
             //seeders & dbsets

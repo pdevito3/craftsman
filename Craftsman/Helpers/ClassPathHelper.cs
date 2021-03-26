@@ -70,6 +70,11 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}","FeatureTests",entityName), className);
         }
 
+        public static ClassPath FunctionalTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{FunctionalTestProjectSuffix}", "FunctionalTests", entityName), className);
+        }
+
         public static ClassPath TestFakesClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{SharedTestProjectSuffix}","Fakes",entityName), className);

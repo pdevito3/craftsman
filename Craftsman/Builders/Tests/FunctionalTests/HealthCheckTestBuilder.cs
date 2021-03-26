@@ -1,4 +1,4 @@
-﻿namespace Craftsman.Builders.Tests.IntegrationTests
+﻿namespace Craftsman.Builders.Tests.FunctionalTests
 {
     using Craftsman.Enums;
     using Craftsman.Exceptions;

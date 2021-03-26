@@ -16,7 +16,7 @@
         {
             try
             {
-                var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, $"CustomWebApplicationFactory.cs", solutionName);
+                var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, $"{Utilities.GetWebHostFactoryName()}.cs", solutionName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -70,33 +70,19 @@ namespace {classPath.ClassNamespace}
     using Microsoft.AspNetCore.Mvc.Testing;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
-    using Respawn;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading.Tasks;
 
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebApplicationFactory<Startup>
     {{
-        // checkpoint for respawn to clear the database when spinning up each time
-        private static Checkpoint checkpoint = new Checkpoint
-        {{
-            
-        }};
-
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {{
             builder.UseEnvironment(""IntegrationTesting"");
 
-            builder.ConfigureServices(async services =>
+            builder.ConfigureServices(services =>
             {{{authRegistration}
                 // Create a new service provider.
                 var provider = services.BuildServiceProvider();
 
-                // Add a database context ({dbContextName}) using an in-memory 
-                // database for testing.
+                // Add a database context ({dbContextName}) using an in-memory database for testing.
                 services.AddDbContext<{dbContextName}>(options =>
                 {{
                     options.UseInMemoryDatabase(""InMemoryDbForTesting"");
@@ -106,8 +92,7 @@ namespace {classPath.ClassNamespace}
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
 
-                // Create a scope to obtain a reference to the database
-                // context (ApplicationDbContext).
+                // Create a scope to obtain a reference to the database context ({dbContextName}).
                 using (var scope = sp.CreateScope())
                 {{
                     var scopedServices = scope.ServiceProvider;
@@ -115,21 +100,8 @@ namespace {classPath.ClassNamespace}
 
                     // Ensure the database is created.
                     db.Database.EnsureCreated();
-
-                    try
-                    {{
-                        await checkpoint.Reset(db.Database.GetDbConnection());
-                    }}
-                    catch
-                    {{
-                    }}
                 }}
             }});
-        }}
-
-        public HttpClient GetAnonymousClient()
-        {{
-            return CreateClient();
         }}
     }}
 }}";

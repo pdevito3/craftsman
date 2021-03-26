@@ -5,6 +5,7 @@
     using Craftsman.Builders.Features;
     using Craftsman.Builders.Seeders;
     using Craftsman.Builders.Tests.Fakes;
+    using Craftsman.Builders.Tests.FunctionalTests;
     using Craftsman.Builders.Tests.IntegrationTests;
     using Craftsman.Models;
     using LibGit2Sharp;
@@ -60,7 +61,10 @@
 
                 ControllerBuilder.CreateController(srcDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies, template.SolutionName);
 
+                // Shared Tests
                 FakesBuilder.CreateFakes(testDirectory, template.SolutionName, entity);
+                
+                // Integration Tests
                 AddCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
                 DeleteCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
                 PatchCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
@@ -68,7 +72,12 @@
                 GetListQueryTests.CreateTests(testDirectory, entity, template.SolutionName);
                 PutCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
 
+                // Functional Tests
                 //HealthCheckTestBuilder.CreateHealthCheckTests(testDirectory, template.SolutionName);
+                CreateEntityTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                DeleteEntityTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                GetEntityRecordTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                GetEntityListTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
             }
 
             // environments
@@ -84,9 +93,12 @@
             );
 
             // test helpers
-            TestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, template.DbContext.Provider, fileSystem);
-            TestBaseBuilder.CreateBase(testDirectory, template.SolutionName, fileSystem);
+            IntegrationTestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, template.DbContext.Provider, fileSystem);
+            IntegrationTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, fileSystem);
             DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, template.SolutionName, template.DbContext.Provider, fileSystem);
+            ApiRoutesBuilder.CreateClass(testDirectory, template.SolutionName, template.Entities, fileSystem);
+            WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, template.SolutionName, template.DbContext.ContextName, template.AddJwtAuthentication);
+            FunctionalTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, template.DbContext.ContextName, fileSystem);
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, template.SolutionName);
