@@ -159,7 +159,11 @@
             var alpha = @$"""alpha""";
             var bravo = @$"""bravo""";
 
-            if (prop.Type == "Guid")
+            if (prop.Type == "string")
+            {
+                // leave variables as is
+            }
+            else if (prop.Type == "Guid")
             {
                 alpha = "Guid.NewGuid()";
                 bravo = "Guid.NewGuid()";
@@ -222,7 +226,11 @@
             var alpha = @$"""alpha""";
             var bravo = @$"""bravo""";
 
-            if (prop.Type == "Guid")
+            if (prop.Type == "string")
+            {
+                // leave variables as is
+            }
+            else if (prop.Type == "Guid")
             {
                 alpha = "Guid.NewGuid()";
                 bravo = "Guid.NewGuid()";
@@ -286,8 +294,12 @@
             var alpha = @$"""alpha""";
             var bravo = @$"""bravo""";
             var bravoFilterVal = "bravo";
-
-            if (prop.Type == "Guid")
+            
+            if (prop.Type == "string")
+            {
+                // leave variables as is
+            }
+            else if (prop.Type == "Guid")
             {
                 alpha = "Guid.NewGuid()";
                 bravo = "Guid.NewGuid()";
