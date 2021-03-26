@@ -93,7 +93,7 @@
             await InsertAsync({fakeEntityVariableName});
 
             // Act
-            var route = ApiRoutes.{entity.Plural}.Create.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+            var route = ApiRoutes.{entity.Plural}.Create;
             var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
             // Assert
@@ -117,7 +117,7 @@
             await InsertAsync({fakeEntityVariableName});
 
             // Act
-            var route = ApiRoutes.{entity.Plural}.Create.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+            var route = ApiRoutes.{entity.Plural}.Create;
             var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
             // Assert
@@ -142,7 +142,7 @@
             await InsertAsync({fakeEntityVariableName});
 
             // Act
-            var route = ApiRoutes.{entity.Plural}.Create.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+            var route = ApiRoutes.{entity.Plural}.Create;
             var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
             // Assert

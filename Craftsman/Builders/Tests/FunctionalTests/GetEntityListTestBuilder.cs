@@ -77,9 +77,7 @@
             var testName = $"Get_{entity.Name}_List_Returns_NoContent";
             testName += hasRestrictedEndpoints ? "_WithAuth" : "";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.GetList }, entity.Name, PolicyType.Scope);
-            var clientAuth = hasRestrictedEndpoints ? @$"
-
-            _client.AddAuth(new[] {scopes});" : null;
+            var clientAuth = hasRestrictedEndpoints ? @$"_client.AddAuth(new[] {scopes});" : null;
 
             return $@"[Test]
         public async Task {testName}()
