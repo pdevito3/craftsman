@@ -122,8 +122,8 @@
                     Filters = request.QueryParameters.Filters
                 }};
 
-                collection = _sieveProcessor.Apply(sieveModel, collection);
-                var dtoCollection = _db.{entity.Plural}{fkIncludes}
+                var appliedCollection = _sieveProcessor.Apply(sieveModel, collection);
+                var dtoCollection = appliedCollection
                     .ProjectTo<{readDto}>(_mapper.ConfigurationProvider);
 
                 return await PagedList<{readDto}>.CreateAsync(dtoCollection,

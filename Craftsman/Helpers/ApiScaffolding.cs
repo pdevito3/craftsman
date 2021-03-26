@@ -65,6 +65,7 @@
                 DeleteCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
                 PatchCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
                 GetRecordQueryTests.CreateTests(testDirectory, entity, template.SolutionName);
+                GetListQueryTests.CreateTests(testDirectory, entity, template.SolutionName);
 
                 //HealthCheckTestBuilder.CreateHealthCheckTests(testDirectory, template.SolutionName);
             }
