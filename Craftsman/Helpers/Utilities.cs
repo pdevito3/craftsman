@@ -182,6 +182,28 @@
             }
         }
 
+        public static void ExecuteProcess(string command, string args, string directory, Dictionary<string,string> envVariables)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = command,
+                    Arguments = args,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    WorkingDirectory = directory
+                }
+            };
+
+            process.StartInfo.EnvironmentVariables[envVariables.Keys.FirstOrDefault()] = envVariables.Values.FirstOrDefault();
+
+            process.Start();
+            process.WaitForExit();
+        }
+
         public static void ExecuteProcess(string command, string args, string directory)
         {
             var process = new Process

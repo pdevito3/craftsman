@@ -10,6 +10,7 @@
     using Craftsman.Models;
     using LibGit2Sharp;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
 
@@ -36,6 +37,22 @@
 
             // add all files based on the given template config
             RunTemplateBuilders(solutionDirectory, srcDirectory, testDirectory, template, fileSystem);
+            RunDbMigration(template, srcDirectory);
+        }
+
+        private static void RunDbMigration(ApiTemplate template, string srcDirectory)
+        {
+            var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, template.SolutionName);
+            var infraProjectClassPath = ClassPathHelper.InfrastructureProjectClassPath(srcDirectory, template.SolutionName);
+
+            Utilities.ExecuteProcess(
+                "dotnet",
+                @$"ef migrations add ""InitialMigration"" --project ""{infraProjectClassPath.FullClassPath}"" --startup-project ""{webApiProjectClassPath.FullClassPath}"" --output-dir Migrations",
+                srcDirectory,
+                new Dictionary<string, string>()
+                {
+                    { "ASPNETCORE_ENVIRONMENT", Guid.NewGuid().ToString() } // guid to not conflict with any given envs
+                });
         }
 
         private static void RunTemplateBuilders(string rootDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem)
