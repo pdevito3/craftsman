@@ -73,11 +73,12 @@
                 PutCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
 
                 // Functional Tests
-                //HealthCheckTestBuilder.CreateHealthCheckTests(testDirectory, template.SolutionName);
                 CreateEntityTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
                 DeleteEntityTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
                 GetEntityRecordTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
                 GetEntityListTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                PatchEntityTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                PutEntityTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
             }
 
             // environments
@@ -92,13 +93,14 @@
                 template.SolutionName
             );
 
-            // test helpers
+            // test helpers and one offs
             IntegrationTestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, template.DbContext.Provider, fileSystem);
             IntegrationTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, fileSystem);
             DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, template.SolutionName, template.DbContext.Provider, fileSystem);
             ApiRoutesBuilder.CreateClass(testDirectory, template.SolutionName, template.Entities, fileSystem);
             WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, template.SolutionName, template.DbContext.ContextName, template.AddJwtAuthentication);
             FunctionalTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, template.DbContext.ContextName, fileSystem);
+            HealthTests.CreateTests(testDirectory, template.SolutionName);
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, template.SolutionName);

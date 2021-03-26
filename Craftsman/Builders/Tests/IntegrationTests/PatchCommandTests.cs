@@ -72,6 +72,9 @@
                 lookupVal = "999999";
             }
 
+            if (myProp == null)
+                return "// no patch tests were created";
+
             return @$"namespace {classPath.ClassNamespace}
 {{
     using {fakerClassPath.ClassNamespace};

@@ -7,16 +7,17 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class CreateEntityTests
+    public class PutEntityTests
     {
         public static void CreateTests(string solutionDirectory, Entity entity, List<Policy> policies, string projectBaseName)
         {
             try
             {
-                var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"Create{entity.Name}Tests.cs", entity.Name, projectBaseName);
+                var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"Update{entity.Name}RecordTests.cs", entity.Name, projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -49,11 +50,11 @@
             var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
-            var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.AddRecord, entity.Name);
+            var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.UpdateRecord, entity.Name);
             var hasRestrictedEndpoints = restrictedPolicies.Count > 0;
             var authOnlyTests = hasRestrictedEndpoints ? $@"
-            {CreateEntityTestUnauthorized(entity)}
-            {CreateEntityTestForbidden(entity)}" : "";
+            {EntityTestUnauthorized(entity)}
+            {EntityTestForbidden(entity)}" : "";
 
             return @$"namespace {classPath.ClassNamespace}
 {{
@@ -66,20 +67,22 @@
 
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
     {{
-        {CreateEntityTest(entity, hasRestrictedEndpoints, policies)}{authOnlyTests}
+        {PutEntityTest(entity, hasRestrictedEndpoints, policies)}{authOnlyTests}
     }}
 }}";
         }
 
-        private static string CreateEntityTest(Entity entity, bool hasRestrictedEndpoints, List<Policy> policies)
+        private static string PutEntityTest(Entity entity, bool hasRestrictedEndpoints, List<Policy> policies)
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
+            var fakeDtoVariableName = $"updated{entity.Name}Dto";
             var pkName = entity.PrimaryKeyProperty.Name;
 
-            var testName = $"Create_{entity.Name}_Returns_Created";
+            var testName = $"Put_{entity.Name}_Returns_NoContent";
             testName += hasRestrictedEndpoints ? "_WithAuth" : "";
-            var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.AddRecord }, entity.Name, PolicyType.Scope);
+            var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdateRecord}, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"
 
             _client.AddAuth(new[] {scopes});" : "";
@@ -88,62 +91,69 @@
         public async Task {testName}()
         {{
             // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();{clientAuth}
+            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+            var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();{clientAuth}
 
             await InsertAsync({fakeEntityVariableName});
 
             // Act
-            var route = ApiRoutes.{entity.Plural}.Create.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
+            var route = ApiRoutes.{entity.Plural}.Put.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+            var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
             // Assert
-            result.StatusCode.Should().Be(201);
+            result.StatusCode.Should().Be(204);
         }}";
         }
 
-        private static string CreateEntityTestUnauthorized(Entity entity)
+        private static string EntityTestUnauthorized(Entity entity)
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
+            var fakeDtoVariableName = $"updated{entity.Name}Dto";
             var pkName = entity.PrimaryKeyProperty.Name;
 
             return $@"
         [Test]
-        public async Task Create_{entity.Name}_Returns_Unauthorized_Without_Valid_Token()
+        public async Task Put_{entity.Name}_Returns_Unauthorized_Without_Valid_Token()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+            var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();
 
             await InsertAsync({fakeEntityVariableName});
 
             // Act
-            var route = ApiRoutes.{entity.Plural}.Create.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
+            var route = ApiRoutes.{entity.Plural}.Put.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+            var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
             // Assert
             result.StatusCode.Should().Be(401);
         }}";
         }
 
-        private static string CreateEntityTestForbidden(Entity entity)
+        private static string EntityTestForbidden(Entity entity)
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
+            var fakeDtoVariableName = $"updated{entity.Name}Dto";
             var pkName = entity.PrimaryKeyProperty.Name;
 
             return $@"
         [Test]
-        public async Task Create_{entity.Name}_Returns_Forbidden_Without_Proper_Scope()
+        public async Task Put_{entity.Name}_Returns_Forbidden_Without_Proper_Scope()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+            var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();
             _client.AddAuth();
 
             await InsertAsync({fakeEntityVariableName});
 
             // Act
-            var route = ApiRoutes.{entity.Plural}.Create.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
+            var route = ApiRoutes.{entity.Plural}.Put.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+            var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
             // Assert
             result.StatusCode.Should().Be(403);
