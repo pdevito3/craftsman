@@ -11,7 +11,7 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class GetEntityRecordTests
+    public class GetEntityRecordTestBuilder
     {
         public static void CreateTests(string solutionDirectory, Entity entity, List<Policy> policies, string projectBaseName)
         {

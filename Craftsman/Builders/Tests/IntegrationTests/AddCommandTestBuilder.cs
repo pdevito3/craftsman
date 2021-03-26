@@ -10,7 +10,7 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class AddCommandTests
+    public class AddCommandTestBuilder
     {
         public static void CreateTests(string solutionDirectory, Entity entity, string projectBaseName)
         {

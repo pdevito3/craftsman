@@ -10,7 +10,7 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class DeleteCommandTests
+    public class DeleteCommandTestBuilder
     {
         public static void CreateTests(string solutionDirectory, Entity entity, string projectBaseName)
         {

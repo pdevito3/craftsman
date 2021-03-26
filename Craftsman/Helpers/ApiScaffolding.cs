@@ -65,20 +65,20 @@
                 FakesBuilder.CreateFakes(testDirectory, template.SolutionName, entity);
                 
                 // Integration Tests
-                AddCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
-                DeleteCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
-                PatchCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
-                GetRecordQueryTests.CreateTests(testDirectory, entity, template.SolutionName);
-                GetListQueryTests.CreateTests(testDirectory, entity, template.SolutionName);
-                PutCommandTests.CreateTests(testDirectory, entity, template.SolutionName);
+                AddCommandTestBuilder.CreateTests(testDirectory, entity, template.SolutionName);
+                DeleteCommandTestBuilder.CreateTests(testDirectory, entity, template.SolutionName);
+                PatchCommandTestBuilder.CreateTests(testDirectory, entity, template.SolutionName);
+                GetRecordQueryTestBuilder.CreateTests(testDirectory, entity, template.SolutionName);
+                GetListQueryTestBuilder.CreateTests(testDirectory, entity, template.SolutionName);
+                PutCommandTestBuilder.CreateTests(testDirectory, entity, template.SolutionName);
 
                 // Functional Tests
-                CreateEntityTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
-                DeleteEntityTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
-                GetEntityRecordTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
-                GetEntityListTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
-                PatchEntityTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
-                PutEntityTests.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                CreateEntityTestBuilder.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                DeleteEntityTestBuilder.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                GetEntityRecordTestBuilder.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                GetEntityListTestBuilder.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                PatchEntityTestBuilder.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+                PutEntityTestBuilder.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
             }
 
             // environments
@@ -100,7 +100,7 @@
             ApiRoutesBuilder.CreateClass(testDirectory, template.SolutionName, template.Entities, fileSystem);
             WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, template.SolutionName, template.DbContext.ContextName, template.AddJwtAuthentication);
             FunctionalTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, template.DbContext.ContextName, fileSystem);
-            HealthTests.CreateTests(testDirectory, template.SolutionName);
+            HealthTestBuilder.CreateTests(testDirectory, template.SolutionName);
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, template.SolutionName);

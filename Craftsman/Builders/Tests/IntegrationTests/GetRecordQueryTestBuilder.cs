@@ -10,7 +10,7 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class GetRecordQueryTests
+    public class GetRecordQueryTestBuilder
     {
         public static void CreateTests(string solutionDirectory, Entity entity, string projectBaseName)
         {

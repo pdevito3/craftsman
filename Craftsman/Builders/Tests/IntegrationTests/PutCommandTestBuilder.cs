@@ -10,13 +10,13 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class PatchCommandTests
+    public class PutCommandTestBuilder
     {
         public static void CreateTests(string solutionDirectory, Entity entity, string projectBaseName)
         {
             try
             {
-                var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"Patch{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
+                var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"Update{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);
@@ -46,10 +46,11 @@
 
         private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, string projectBaseName)
         {
-            var featureName = Utilities.PatchEntityFeatureClassName(entity.Name);
+            var featureName = Utilities.UpdateEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
-            var commandName = Utilities.CommandPatchName(entity.Name);
+            var commandName = Utilities.CommandUpdateName(entity.Name);
             var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
@@ -72,9 +73,6 @@
                 lookupVal = "999999";
             }
 
-            if (myProp == null)
-                return "// no patch tests were created";
-
             return @$"namespace {classPath.ClassNamespace}
 {{
     using {fakerClassPath.ClassNamespace};
@@ -96,21 +94,20 @@
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+            var updated{entity.Name}Dto = new {fakeUpdateDto} {{ }}.Generate();
             await InsertAsync({fakeEntityVariableName});
+
             var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
             var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
-            var patchDoc = new JsonPatchDocument<{updateDto}>();
-            var newValue = {lookupVal};
-            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, newValue);
-
             // Act
-            var command = new {commandName}({lowercaseEntityPk}, patchDoc);
+            var command = new {commandName}({lowercaseEntityPk}, updated{entity.Name}Dto);
             await SendAsync(command);
             var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
 
             // Assert
-            updated{entity.Name}.{myProp.Name}.Should().Be(newValue);
+            updated{entity.Name}.Should().BeEquivalentTo(updated{entity.Name}Dto, options =>
+                options.ExcludingMissingMembers());
         }}
     }}
 }}";

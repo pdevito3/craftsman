@@ -11,7 +11,7 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class HealthTests
+    public class HealthTestBuilder
     {
         public static void CreateTests(string solutionDirectory, string projectBaseName)
         {
