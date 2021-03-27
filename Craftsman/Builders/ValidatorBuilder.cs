@@ -64,8 +64,6 @@
 
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
-
-            GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
 
         public static string GetCreationValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)

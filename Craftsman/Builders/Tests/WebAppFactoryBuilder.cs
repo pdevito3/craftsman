@@ -29,8 +29,6 @@
                     var data = GetWebAppFactoryFileText(classPath, dbContextName, solutionDirectory, solutionName, addJwtAuthentication);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
-
-                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             }
             catch (FileAlreadyExistsException e)
             {

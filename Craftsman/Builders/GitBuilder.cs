@@ -27,8 +27,6 @@
                     data = GetGitIgnoreFileText();
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
-
-                GlobalSingleton.AddCreatedFile(filePath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             }
             catch (FileAlreadyExistsException e)
             {

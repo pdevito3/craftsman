@@ -52,8 +52,6 @@
         {
             try
             {
-                GlobalSingleton instance = GlobalSingleton.GetInstance();
-
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
                 var domainProject = FileParsingHelper.GetTemplateFromFile<DomainProject>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");

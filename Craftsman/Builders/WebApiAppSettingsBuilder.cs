@@ -33,8 +33,6 @@
                     data = GetAppSettingsText(env, dbName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
-
-                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             }
             catch (FileAlreadyExistsException e)
             {
@@ -71,8 +69,6 @@
                     data = GetAppSettingsText();
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
-
-                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             }
             catch (FileAlreadyExistsException e)
             {

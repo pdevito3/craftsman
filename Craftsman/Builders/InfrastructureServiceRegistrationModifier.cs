@@ -52,8 +52,6 @@
             // delete the old file and set the name of the new one to the original name
             File.Delete(classPath.FullClassPath);
             File.Move(tempPath, classPath.FullClassPath);
-
-            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
 
         public static void AddPolicies(string solutionDirectory, List<Policy> policies, string projectBaseName)
@@ -100,8 +98,6 @@
             // delete the old file and set the name of the new one to the original name
             File.Delete(classPath.FullClassPath);
             File.Move(tempPath, classPath.FullClassPath);
-
-            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
 
         private static string GetAuthServicesText(List<Policy> policies)

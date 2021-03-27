@@ -28,8 +28,6 @@
                     data = GetBaseText(classPath.ClassNamespace, provider, projectBaseName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
-
-                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{fileSystem.Path.DirectorySeparatorChar}", ""));
             }
             catch (FileAlreadyExistsException e)
             {

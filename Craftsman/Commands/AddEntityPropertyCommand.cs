@@ -57,8 +57,6 @@
         {
             try
             {
-                GlobalSingleton instance = GlobalSingleton.GetInstance();
-
                 var propList = new List<EntityProperty>() { prop };
                 
                 EntityModifier.AddEntityProperties(solutionDirectory, entityName, propList);

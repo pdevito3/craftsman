@@ -50,8 +50,6 @@ namespace Craftsman.Commands
         {
             try
             {
-                GlobalSingleton instance = GlobalSingleton.GetInstance();
-
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
                 var template = FileParsingHelper.GetTemplateFromFile<ApiTemplate>(filePath);
 
@@ -67,7 +65,6 @@ namespace Craftsman.Commands
                 // add all files based on the given template config
                 RunEntityBuilders(solutionDirectory, template, fileSystem);
 
-                WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
             }
             catch (Exception e)

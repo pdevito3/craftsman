@@ -29,8 +29,6 @@
                     data = GetInfrastructurePersistenceCsProjFileText(solutionDirectory, projectBaseName, dbProvider);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
-
-                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             }
             catch (FileAlreadyExistsException e)
             {

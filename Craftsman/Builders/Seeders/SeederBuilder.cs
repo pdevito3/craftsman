@@ -34,8 +34,6 @@
                         var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, dbContextName, solutionDirectory, projectBaseName);
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
-
-                    GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
                 }
 
                 RegisterAllSeeders(solutionDirectory, entities, dbContextName, projectBaseName);
@@ -83,8 +81,6 @@
             // delete the old file and set the name of the new one to the original name
             File.Delete(classPath.FullClassPath);
             File.Move(tempPath, classPath.FullClassPath);
-
-            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             //WriteWarning($"TODO Need a message for the update of Startup.");
         }
 

@@ -10,6 +10,7 @@
     using System.IO.Abstractions;
     using Autofac;
     using System.Reflection;
+    using Craftsman.Helpers;
 
     class Program
     {

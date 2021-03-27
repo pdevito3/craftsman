@@ -47,8 +47,6 @@
             // delete the old file and set the name of the new one to the original name
             File.Delete(classPath.FullClassPath);
             File.Move(tempPath, classPath.FullClassPath);
-
-            GlobalSingleton.AddUpdatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
         }
     }
 }

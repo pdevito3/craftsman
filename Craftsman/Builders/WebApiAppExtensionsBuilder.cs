@@ -29,8 +29,6 @@
                     data = GetAppExtensionText(classPath.ClassNamespace, solutionDirectory, solutionName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
-
-                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{fileSystem.Path.DirectorySeparatorChar}", ""));
             }
             catch (FileAlreadyExistsException e)
             {

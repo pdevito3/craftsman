@@ -51,8 +51,6 @@
             {
                 var data = GetFakeFileText(classPath.ClassNamespace, objectToFakeClassName, entity, solutionDirectory, solutionName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
-
-                GlobalSingleton.AddCreatedFile(classPath.FullClassPath.Replace($"{solutionDirectory}{Path.DirectorySeparatorChar}", ""));
             }
         }
 

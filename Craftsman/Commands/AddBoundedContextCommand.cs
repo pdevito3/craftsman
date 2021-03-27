@@ -54,15 +54,12 @@
         {
             try
             {
-                GlobalSingleton instance = GlobalSingleton.GetInstance();
-
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
                 var template = FileParsingHelper.GetTemplateFromFile<ApiTemplate>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 
                 ApiScaffolding.ScaffoldApi(buildSolutionDirectory, template, fileSystem, verbosity);
 
-                WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
                 WriteGettingStarted(template.SolutionName);
                 StarGithubRequest();
