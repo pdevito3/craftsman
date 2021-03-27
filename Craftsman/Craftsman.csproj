@@ -27,6 +27,7 @@
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="RestSharp" Version="106.11.7" />
     <PackageReference Include="System.IO.Abstractions" Version="13.2.5" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="13.2.5" />
     <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
