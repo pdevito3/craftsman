@@ -4,7 +4,6 @@
     using Craftsman.CraftsmanOptions;
     using Craftsman.Enums;
     using Craftsman.Models;
-    using Flurl.Http;
     using RestSharp;
     using System;
     using System.Collections.Generic;

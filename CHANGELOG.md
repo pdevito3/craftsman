@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - update auth explanation and environment object docs
   - make sure example files don't include it
 - Added a version checker to make sure you are alerted if out of date
+- Known postgres integration test issue with datetime precision
 
 ## [0.8.2] - 2021-02-25
 
