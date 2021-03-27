@@ -2,10 +2,12 @@
 {
     using CommandLine;
     using Craftsman.CraftsmanOptions;
+    using Craftsman.Enums;
     using Craftsman.Models;
     using System;
     using System.Collections.Generic;
     using System.IO.Abstractions;
+    using System.Linq;
     using static Helpers.ConsoleWriter;
 
     public class ProcessCommand
@@ -22,7 +24,7 @@
                 return;
             }
 
-            if (args[0] == "version" || args[0] == "-v" || args[0] == "--version")
+            if (args[0] == "version" || args[0] == "--version")
             {
                 WriteHelpHeader($"v{typeof(ProcessCommand).Assembly.GetName().Version}");
                 return;
@@ -39,27 +41,35 @@
                 WriteHelpHeader($"This command has been depricated. If you'd like to create a new project, use the `new:domain` command. If you want to add a new bounded context to an existing project, use the `add:bc` command. Run `craftsman list` for a full list of commands.");
             }
 
-            if (args.Length == 2 && (args[0] == "add:bc" || args[0] == "add:boundedcontext"))
+            if (args.Length >= 2 && (args[0] == "add:bc" || args[0] == "add:boundedcontext"))
             {
                 var filePath = args[1];
+                var verbosity = Verbosity.Minimal;
+                Parser.Default.ParseArguments<AddBcOptions>(args)
+                    .WithParsed(options => verbosity = options.Verbosity ? Verbosity.More : Verbosity.Minimal);
+
                 if (filePath == "-h" || filePath == "--help")
                     AddBoundedContextCommand.Help();
                 else
                 {
                     var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:","Users","Paul","Documents","testoutput","LimsLite") : fileSystem.Directory.GetCurrentDirectory();
-                    AddBoundedContextCommand.Run(filePath, solutionDir, fileSystem);
+                    AddBoundedContextCommand.Run(filePath, solutionDir, fileSystem, verbosity);
                 }
             }
 
-            if (args.Length == 2 && (args[0] == "new:domain"))
+            if (args.Length >= 2 && (args[0] == "new:domain"))
             {
                 var filePath = args[1];
+                var verbosity = Verbosity.Minimal;
+                Parser.Default.ParseArguments<NewDomainOptions>(args)
+                    .WithParsed(options => verbosity = options.Verbosity ? Verbosity.More : Verbosity.Minimal);
+
                 if (filePath == "-h" || filePath == "--help")
                     AddBoundedContextCommand.Help();
                 else
                 {
                     var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:", "Users", "Paul", "Documents", "testoutput") : fileSystem.Directory.GetCurrentDirectory();
-                    NewDomainProjectCommand.Run(filePath, solutionDir, fileSystem);
+                    NewDomainProjectCommand.Run(filePath, solutionDir, fileSystem, verbosity);
                 }
             }
 

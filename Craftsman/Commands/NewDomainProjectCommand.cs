@@ -48,7 +48,7 @@
 
         }
 
-        public static void Run(string filePath, string buildSolutionDirectory, IFileSystem fileSystem)
+        public static void Run(string filePath, string buildSolutionDirectory, IFileSystem fileSystem, Verbosity verbosity)
         {
             try
             {
@@ -63,7 +63,7 @@
 
                 foreach (var template in domainProject.BoundedContexts)
                 {
-                    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem);
+                    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity);
                 }
 
                 //final
@@ -72,9 +72,7 @@
                 if (domainProject.AddGit)
                     Utilities.GitSetup(domainDirectory);
 
-                WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your domain project is ready! Build something amazing.");
-                //WriteGettingStarted(template.SolutionName);
                 StarGithubRequest();
             }
             catch (Exception e)

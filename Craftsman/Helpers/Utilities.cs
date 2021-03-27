@@ -13,6 +13,7 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using static Helpers.ConsoleWriter;
 
     public class Utilities
     {
@@ -182,7 +183,7 @@
             }
         }
 
-        public static void ExecuteProcess(string command, string args, string directory, Dictionary<string,string> envVariables)
+        public static void ExecuteProcess(string command, string args, string directory, Dictionary<string,string> envVariables, int killInterval = 15000)
         {
             var process = new Process
             {
@@ -201,7 +202,11 @@
             process.StartInfo.EnvironmentVariables[envVariables.Keys.FirstOrDefault()] = envVariables.Values.FirstOrDefault();
 
             process.Start();
-            process.WaitForExit();
+            if (!process.WaitForExit(killInterval))
+            {
+                process.Kill();
+                WriteHelpText($"Process Killed.");
+            }
         }
 
         public static void ExecuteProcess(string command, string args, string directory)

@@ -50,7 +50,7 @@
 
         }
 
-        public static void Run(string filePath, string buildSolutionDirectory, IFileSystem fileSystem)
+        public static void Run(string filePath, string buildSolutionDirectory, IFileSystem fileSystem, Verbosity verbosity)
         {
             try
             {
@@ -60,7 +60,7 @@
                 var template = FileParsingHelper.GetTemplateFromFile<ApiTemplate>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 
-                ApiScaffolding.ScaffoldApi(buildSolutionDirectory, template, fileSystem);
+                ApiScaffolding.ScaffoldApi(buildSolutionDirectory, template, fileSystem, verbosity);
 
                 WriteFileCreatedUpdatedResponse();
                 WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");

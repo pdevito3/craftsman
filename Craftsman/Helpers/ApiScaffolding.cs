@@ -7,17 +7,22 @@
     using Craftsman.Builders.Tests.Fakes;
     using Craftsman.Builders.Tests.FunctionalTests;
     using Craftsman.Builders.Tests.IntegrationTests;
+    using Craftsman.Enums;
     using Craftsman.Models;
     using LibGit2Sharp;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using static Helpers.ConsoleWriter;
 
     public class ApiScaffolding
     {
-        public static void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template, IFileSystem fileSystem)
+        public static void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)
         {
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"{Environment.NewLine}Creating {template.SolutionName}...");
+
             FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
             FileParsingHelper.RunSolutionNameAssignedGuard(template.SolutionName);
 
@@ -34,10 +39,20 @@
 
             SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
             SolutionBuilder.AddProjects(solutionDirectory, srcDirectory, testDirectory, template.DbContext.Provider, template.SolutionName, template.AddJwtAuthentication, fileSystem);
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"{template.SolutionName} projects were scaffolded successfully.");
 
             // add all files based on the given template config
-            RunTemplateBuilders(solutionDirectory, srcDirectory, testDirectory, template, fileSystem);
+            RunTemplateBuilders(solutionDirectory, srcDirectory, testDirectory, template, fileSystem, verbosity);
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"{template.SolutionName} templates were scaffolded successfully.");
+
             RunDbMigration(template, srcDirectory);
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"{template.SolutionName} migrations are complete.");
+
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"Completed {template.SolutionName}.");
         }
 
         private static void RunDbMigration(ApiTemplate template, string srcDirectory)
@@ -55,10 +70,12 @@
                 });
         }
 
-        private static void RunTemplateBuilders(string rootDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem)
+        private static void RunTemplateBuilders(string rootDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)
         {
             // dbcontext
             DbContextBuilder.CreateDbContext(srcDirectory, template.Entities, template.DbContext.ContextName, template.DbContext.Provider, template.DbContext.DatabaseName, template.SolutionName);
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"{template.SolutionName} db context was scaffolded successfully.");
 
             //entities
             foreach (var entity in template.Entities)
@@ -96,6 +113,9 @@
                 GetEntityListTestBuilder.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
                 PatchEntityTestBuilder.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
                 PutEntityTestBuilder.CreateTests(testDirectory, entity, template.AuthorizationSettings.Policies, template.SolutionName);
+
+                if(verbosity == Verbosity.More)
+                    WriteHelpText($"{template.SolutionName} '{entity.Name}' entity was scaffolded successfully.");
             }
 
             // environments
@@ -109,6 +129,8 @@
                 template.AddJwtAuthentication,
                 template.SolutionName
             );
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"{template.SolutionName} startup environments were scaffolded successfully.");
 
             // test helpers and one offs
             IntegrationTestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, template.DbContext.Provider, fileSystem);
@@ -118,18 +140,31 @@
             WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, template.SolutionName, template.DbContext.ContextName, template.AddJwtAuthentication);
             FunctionalTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, template.DbContext.ContextName, fileSystem);
             HealthTestBuilder.CreateTests(testDirectory, template.SolutionName);
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"{template.SolutionName} testing helpers were scaffolded successfully.");
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, template.SolutionName);
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"{template.SolutionName} seeders were scaffolded successfully.");
 
             //services
             // TODO move the auth stuff to a modifier to make it SOLID so i can add it to an add auth command
             SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.SolutionName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies, template.SolutionName);
 
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"{template.SolutionName} swagger setup was scaffolded successfully.");
+
             if (template.AddJwtAuthentication)
+            {
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, template.SolutionName, template.AuthorizationSettings.Policies);
+                if(verbosity == Verbosity.More)
+                    WriteHelpText($"{template.SolutionName} auth helpers was scaffolded successfully.");
+            }
 
             ReadmeBuilder.CreateBoundedContextReadme(rootDirectory, template.SolutionName, srcDirectory, fileSystem);
+            if(verbosity == Verbosity.More)
+                WriteHelpText($"{template.SolutionName} readme was scaffolded successfully.");
         }
     }
 }

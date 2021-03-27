@@ -19,6 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved 'addGit' property from the api template to the domain template
 - readme will now be generated in the domain directory
 - added a `version` or `-v` command to get the craftsman version
+- an initial db migration will automatically be ran for you on project creation
+  - NEED TO UPDATE MIGRATION DOCS
+  - need to add dotnet-ef and docker as optional prereq if they want migrations (and working integ tests)
+- testing completely revamped
+  - **Unit tests** are meant to confirm that individual operations are working as expected (e.g. PagedList calculations)
+  - **Integration tests** are meant to check that different areas are working together as expected (e.g. our features folder). These tests rebuild from the ground up using NUnit. It will now spin up a real db in docker and run each of your feature tests here
+  - **Functional tests** are meant to check an entire slice of functionality with all the code running together. These are generally more involved to write and maintain, but with this project setup, our controllers are essentially just exposed routes to our feature queries and commands. This means that we have already done the meat of our testing in our integration tests, so these tests will just confirm that we are getting the expected responses from our routes.
+- verbosity option added to new domain and add bc
+- 
 
 ## [0.8.2] - 2021-02-25
 
