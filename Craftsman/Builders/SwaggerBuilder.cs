@@ -286,7 +286,6 @@
         {
             var swaggerAuth = addJwtAuthentication ? $@"
                 config.OAuthClientId(configuration[""JwtSettings:ClientId""]);
-                config.OAuthClientSecret(configuration[""JwtSettings:ClientSecret""]);
                 config.OAuthUsePkce();" : "";
 
            var swaggerText = $@"

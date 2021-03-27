@@ -27,7 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Integration tests** are meant to check that different areas are working together as expected (e.g. our features folder). These tests rebuild from the ground up using NUnit. It will now spin up a real db in docker and run each of your feature tests here
   - **Functional tests** are meant to check an entire slice of functionality with all the code running together. These are generally more involved to write and maintain, but with this project setup, our controllers are essentially just exposed routes to our feature queries and commands. This means that we have already done the meat of our testing in our integration tests, so these tests will just confirm that we are getting the expected responses from our routes.
 - verbosity option added to new domain and add bc
-- 
+- removed `ClientSecret` to promote code+PKCE flow
+  - update auth explanation and environment object docs
+  - make sure example files don't include it
 
 ## [0.8.2] - 2021-02-25
 
