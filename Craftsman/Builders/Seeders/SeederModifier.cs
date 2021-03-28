@@ -15,13 +15,13 @@
 
     public class SeederModifier
     {
-        public static void AddSeeders(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
+        public static void AddSeeders(string srcDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
         {
             try
             {
                 foreach (var entity in entities)
                 {
-                    var classPath = ClassPathHelper.SeederClassPath(solutionDirectory, $"{Utilities.GetSeederName(entity)}.cs", projectBaseName);
+                    var classPath = ClassPathHelper.SeederClassPath(srcDirectory, $"{Utilities.GetSeederName(entity)}.cs", projectBaseName);
 
                     if (!Directory.Exists(classPath.ClassDirectory))
                         Directory.CreateDirectory(classPath.ClassDirectory);
@@ -31,12 +31,12 @@
 
                     using (FileStream fs = File.Create(classPath.FullClassPath))
                     {
-                        var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, dbContextName, solutionDirectory, projectBaseName);
+                        var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, dbContextName, srcDirectory, projectBaseName);
                         fs.Write(Encoding.UTF8.GetBytes(data));
                     }
                 }
 
-                RegisterAllNewSeeders(solutionDirectory, entities, dbContextName);
+                RegisterAllNewSeeders(srcDirectory, entities, dbContextName, projectBaseName);
             }
             catch (FileAlreadyExistsException e)
             {
@@ -50,21 +50,18 @@
             }
         }
 
-        private static void RegisterAllNewSeeders(string solutionDirectory, List<Entity> entities, string dbContextName)
+        private static void RegisterAllNewSeeders(string srcDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
         {
-            //TODO move these to a dictionary to lookup and overwrite if I want
-            var repoTopPath = "WebApi";
+            var classPath = ClassPathHelper.StartupClassPath(srcDirectory, "StartupDevelopment.cs", projectBaseName);
 
-            var entityDir = Path.Combine(solutionDirectory, repoTopPath);
-            if (!Directory.Exists(entityDir))
-                throw new DirectoryNotFoundException($"The `{entityDir}` directory could not be found.");
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
 
-            var pathString = Path.Combine(entityDir, $"StartupDevelopment.cs");
-            if (!File.Exists(pathString))
-                throw new FileNotFoundException($"The `{pathString}` file could not be found.");
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
-            var tempPath = $"{pathString}temp";
-            using (var input = File.OpenText(pathString))
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
             {
                 using (var output = new StreamWriter(tempPath))
                 {
@@ -83,8 +80,8 @@
             }
 
             // delete the old file and set the name of the new one to the original name
-            File.Delete(pathString);
-            File.Move(tempPath, pathString);
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
         }
 
         private static string GetSeederContextText(List<Entity> entities, string dbContextName)

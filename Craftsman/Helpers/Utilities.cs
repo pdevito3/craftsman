@@ -36,6 +36,36 @@
                 return prop;
         }
 
+        public static string SolutionGuard(string solutionDirectory)
+        {
+            var slnName = Directory.GetFiles(solutionDirectory, "*.sln").FirstOrDefault();
+            return Path.GetFileNameWithoutExtension(slnName) ?? throw new SolutionNotFoundException();
+        }
+
+        public static string CreateApiRouteClasses(List<Entity> entities)
+        {
+            var entityRouteClasses = "";
+
+            foreach (var entity in entities)
+            {
+                var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+                var pkName = entity.PrimaryKeyProperty.Name;
+
+                entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}public static class {entity.Plural}
+        {{
+            public const string {pkName} = ""{{{pkName.LowercaseFirstLetter()}}}"";
+            public const string GetList = Base + ""/{lowercaseEntityPluralName}"";
+            public const string GetRecord = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
+            public const string Create = Base + ""/{lowercaseEntityPluralName}"";
+            public const string Delete = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
+            public const string Put = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
+            public const string Patch = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
+        }}";
+            }
+
+            return entityRouteClasses;
+        }
+
         public static string GetRepositoryName(string entityName, bool isInterface)
         {
             return isInterface ? $"I{entityName}Repository" : $"{entityName}Repository";

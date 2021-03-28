@@ -2,7 +2,7 @@
   "profiles": {
     "Craftsman Dev": {
       "commandName": "Project",
-      "commandLineArgs": "new:domain C:\\Users\\Paul\\Documents\\VsaNew.yaml -v",
+      "commandLineArgs": "add:prop -e Patient -n Color -t string",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Dev"
       }

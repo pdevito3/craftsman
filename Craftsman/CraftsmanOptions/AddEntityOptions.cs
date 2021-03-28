@@ -2,7 +2,7 @@
 {
     using CommandLine;
 
-    public class AddBcOptions : IVerbosable
+    public class AddEntityOptions : IVerbosable
     {
 
         [Option('v', Required = false, HelpText = "Show verbose output.")]

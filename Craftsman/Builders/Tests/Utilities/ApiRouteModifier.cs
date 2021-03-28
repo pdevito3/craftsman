@@ -1,4 +1,4 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Tests.Utilities
 {
     using Craftsman.Builders.Dtos;
     using Craftsman.Enums;
@@ -13,11 +13,11 @@
     using System.Text;
     using static Helpers.ConsoleWriter;
 
-    public class EntityModifier
+    public class ApiRouteModifier
     {
-        public static void AddEntityProperties(string solutionDirectory, string entityName, List<EntityProperty> props, string projectBaseName)
+        public static void AddRoutes(string solutionDirectory, List<Entity> entities, string projectBaseName)
         {
-            var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entityName}.cs", projectBaseName);
+            var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "ApiRoutes.cs");
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
@@ -25,6 +25,7 @@
             if (!File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
+            var entityRouteClasses = Utilities.CreateApiRouteClasses(entities);
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
             {
@@ -34,9 +35,9 @@
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
-                        if (line.Contains($"add-on property marker"))
+                        if (line.Contains($"new api route marker"))
                         {
-                            newText += @$"{Environment.NewLine}{Environment.NewLine}{EntityBuilder.EntityPropBuilder(props)}";
+                            newText += entityRouteClasses;
                         }
 
                         output.WriteLine(newText);

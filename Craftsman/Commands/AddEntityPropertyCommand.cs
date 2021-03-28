@@ -58,11 +58,14 @@
             try
             {
                 var propList = new List<EntityProperty>() { prop };
-                
-                EntityModifier.AddEntityProperties(solutionDirectory, entityName, propList);
-                DtoModifier.AddPropertiesToDtos(solutionDirectory, entityName, propList, "EntityBrokenHere");
+                var srcDirectory = Path.Combine(solutionDirectory, "src");
+                var testDirectory = Path.Combine(solutionDirectory, "tests");
+                var projectBaseName = Utilities.SolutionGuard(solutionDirectory);
 
-                WriteHelpHeader($"{Environment.NewLine}The '{prop.Name}' property was successfully added to the '{entityName}' entity and it's associated DTOs. Keep up the good work!");
+                EntityModifier.AddEntityProperties(srcDirectory, entityName, propList, projectBaseName);
+                DtoModifier.AddPropertiesToDtos(srcDirectory, entityName, propList, projectBaseName);
+
+                WriteHelpHeader($"{Environment.NewLine}The '{prop.Name}' property was successfully added to the '{entityName}' entity and its associated DTOs. Keep up the good work!");
             }
             catch (Exception e)
             {

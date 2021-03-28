@@ -48,8 +48,6 @@
             {
                 var filePath = args[1];
                 var verbosity = Verbosity.Minimal;
-                Parser.Default.ParseArguments<AddBcOptions>(args)
-                    .WithParsed(options => verbosity = options.Verbosity ? Verbosity.More : Verbosity.Minimal);
 
                 if (filePath == "-h" || filePath == "--help")
                     AddBoundedContextCommand.Help();
@@ -63,9 +61,7 @@
             if (args.Length >= 2 && (args[0] == "new:domain"))
             {
                 var filePath = args[1];
-                var verbosity = Verbosity.Minimal;
-                Parser.Default.ParseArguments<NewDomainOptions>(args)
-                    .WithParsed(options => verbosity = options.Verbosity ? Verbosity.More : Verbosity.Minimal);
+                var verbosity = GetVerbosityFromArgs<AddBcOptions>(args);
 
                 if (filePath == "-h" || filePath == "--help")
                     AddBoundedContextCommand.Help();
@@ -79,16 +75,24 @@
             if (args.Length == 2 && (args[0] == "add:entity" || args[0] == "add:entities"))
             {
                 var filePath = args[1];
+                var verbosity = GetVerbosityFromArgs<AddEntityOptions>(args);
+
                 if (filePath == "-h" || filePath == "--help")
                     AddEntityCommand.Help();
                 else
                 {
-                    var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:", "Users", "Paul", "Documents", "testoutput", "Lab.Api") : fileSystem.Directory.GetCurrentDirectory();
-                    AddEntityCommand.Run(filePath, solutionDir, fileSystem);
+                    var solutionDir = fileSystem.Directory.GetCurrentDirectory();
+                    if(myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the solution directory.");
+                        solutionDir = Console.ReadLine();
+                    }
+
+                    AddEntityCommand.Run(filePath, solutionDir, fileSystem, verbosity);
                 }
             }
 
-            if (args.Length > 1 && (args[0] == "add:property"))
+            if (args.Length > 1 && (args[0] == "add:property" || args[0] == "add:prop"))
             {
                 if (args[1] == "-h" || args[1] == "--help")
                     AddEntityPropertyCommand.Help();
@@ -110,12 +114,27 @@
                             };
                         });
 
-                    var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:", "Users", "Paul", "Documents", "testoutput") : fileSystem.Directory.GetCurrentDirectory();
+                    var solutionDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the solution directory.");
+                        solutionDir = Console.ReadLine();
+                    }
                     AddEntityPropertyCommand.Run(solutionDir, entityName, newProperty);
                 }
             }
 
             CheckForLatestVersion();
+        }
+
+        private static Verbosity GetVerbosityFromArgs<TOptions>(string[] args)
+            where TOptions : IVerbosable
+        {
+            var verbosity = Verbosity.Minimal;
+            Parser.Default.ParseArguments<TOptions>(args)
+                .WithParsed(options => verbosity = options.Verbosity ? Verbosity.More : Verbosity.Minimal);
+
+            return verbosity;
         }
 
         private static void CheckForLatestVersion()
@@ -147,18 +166,6 @@
             {
                 // fail silently
             }
-        }
-
-
-        private static Version CreateVersion(string semanticVersion)
-        {
-            var prereleaseIndex = semanticVersion.IndexOf("-", StringComparison.Ordinal);
-            if (prereleaseIndex != -1)
-            {
-                semanticVersion = semanticVersion.Substring(0, prereleaseIndex);
-            }
-
-            return new Version(semanticVersion);
         }
     }
 }

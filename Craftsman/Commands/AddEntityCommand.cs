@@ -6,6 +6,7 @@ namespace Craftsman.Commands
     using Craftsman.Builders.Seeders;
     using Craftsman.Builders.Tests.Fakes;
     using Craftsman.Builders.Tests.Utilities;
+    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
@@ -46,24 +47,26 @@ namespace Craftsman.Commands
             WriteHelpText(Environment.NewLine);
         }
 
-        public static void Run(string filePath, string solutionDirectory, IFileSystem fileSystem)
+        public static void Run(string filePath, string solutionDirectory, IFileSystem fileSystem, Verbosity verbosity)
         {
             try
             {
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetTemplateFromFile<ApiTemplate>(filePath);
+                var template = FileParsingHelper.GetTemplateFromFile<AddEntityTemplate>(filePath);
 
-                //var solutionDirectory = Directory.GetCurrentDirectory();
-                //var solutionDirectory = @"C:\Users\Paul\Documents\testoutput\MyApi.Mine";
-                template = SolutionGuard(solutionDirectory, template);
-                template = GetDbContext(solutionDirectory, template);
+                var srcDirectory = Path.Combine(solutionDirectory, "src");
+                var testDirectory = Path.Combine(solutionDirectory, "tests");
+
+                template.SolutionName = Utilities.SolutionGuard(solutionDirectory); // this needs to happen before the projectbasename assignment
+                ProperDirectoryGuard(srcDirectory, testDirectory);
+                template = GetDbContext(srcDirectory, template, template.SolutionName);
 
                 WriteHelpText($"Your template file was parsed successfully.");
 
                 FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
 
                 // add all files based on the given template config
-                RunEntityBuilders(solutionDirectory, template, fileSystem);
+                RunEntityBuilders(srcDirectory, testDirectory, template, fileSystem, verbosity);
 
                 WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
             }
@@ -75,7 +78,8 @@ namespace Craftsman.Commands
                     || e is FileNotFoundException
                     || e is InvalidDbProviderException
                     || e is InvalidFileTypeException
-                    || e is SolutionNotFoundException)
+                    || e is SolutionNotFoundException
+                    || e is InvalidBaseDirectory)
                 {
                     WriteError($"{e.Message}");
                 }
@@ -84,55 +88,38 @@ namespace Craftsman.Commands
             }
         }
 
-        private static void RunEntityBuilders(string solutionDirectory, ApiTemplate template, IFileSystem fileSystem)
+        private static void RunEntityBuilders(string srcDirectory, string testDirectory, AddEntityTemplate template, IFileSystem fileSystem, Verbosity verbosity)
         {
             //entities
-            foreach (var entity in template.Entities)
-            {
-                EntityBuilder.CreateEntity(solutionDirectory, entity, "EntityBrokenHere", fileSystem);
-                DtoBuilder.CreateDtos(solutionDirectory, entity, "EntityBrokenHere");
-
-                ValidatorBuilder.CreateValidators(solutionDirectory, "EntityBrokenHere", entity);
-                ProfileBuilder.CreateProfile(solutionDirectory, entity, "EntityBrokenHere");
-
-                ControllerBuilder.CreateController(solutionDirectory, entity, template.SwaggerConfig.AddSwaggerComments, template.AuthorizationSettings.Policies);
-                InfrastructureServiceRegistrationModifier.AddPolicies(solutionDirectory, template.AuthorizationSettings.Policies, "EntityBrokenHere");
-
-                FakesBuilder.CreateFakes(solutionDirectory, template.SolutionName, entity);
-                //ReadTestBuilder.CreateEntityReadTests(testDirectory, template.SolutionName, entity, template.DbContext.ContextName);
-                //DeleteTestBuilder.DeleteEntityWriteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName);
-                //WriteTestBuilder.CreateEntityWriteTests(testDirectory, entity, template.SolutionName, template.DbContext.ContextName);
-                //GetIntegrationTestBuilder.CreateEntityGetTests(solutionDirectory, template.SolutionName, entity, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
-                //PostIntegrationTestBuilder.CreateEntityWriteTests(solutionDirectory, entity, template.SolutionName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
-                //UpdateIntegrationTestBuilder.CreateEntityUpdateTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
-                //DeleteIntegrationTestBuilder.CreateEntityDeleteTests(solutionDirectory, entity, template.SolutionName, template.DbContext.ContextName, template.AuthorizationSettings.Policies, "EntityBrokenHere");
-            }
+            EntityScaffolding.ScaffoldEntities(srcDirectory,
+                testDirectory,
+                template.SolutionName,
+                template.Entities,
+                template.DbContextName,
+                template.AddSwaggerComments,
+                template.AuthorizationSettings.Policies,
+                fileSystem,
+                verbosity);
 
             //seeders & dbsets
-            SeederModifier.AddSeeders(solutionDirectory, template.Entities, template.DbContext.ContextName, "EntityBrokenHere");
-            DbContextModifier.AddDbSet(solutionDirectory, template.Entities, template.DbContext.ContextName, "EntityBrokenHere");
+            InfrastructureServiceRegistrationModifier.AddPolicies(srcDirectory, template.AuthorizationSettings.Policies, template.SolutionName);
+            SeederModifier.AddSeeders(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
+            DbContextModifier.AddDbSet(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
+            ApiRouteModifier.AddRoutes(testDirectory, template.Entities, template.SolutionName);
         }
 
-        private static string GetSlnFile(string filePath)
+        private static void ProperDirectoryGuard(string srcDirectory, string testDirectory)
         {
-            // make sure i'm in the sln directory -- should i add an accelerate.config.yaml file to the root?
-            return Directory.GetFiles(filePath, "*.sln").FirstOrDefault();
+            if(!Directory.Exists(srcDirectory) || !Directory.Exists(testDirectory))
+                throw new InvalidBaseDirectory();
         }
 
-        private static ApiTemplate SolutionGuard(string solutionDirectory, ApiTemplate template)
+        private static AddEntityTemplate GetDbContext(string solutionDirectory, AddEntityTemplate template, string projectBaseName)
         {
-            var slnName = GetSlnFile(solutionDirectory);
-            template.SolutionName = Path.GetFileNameWithoutExtension(slnName) ?? throw new SolutionNotFoundException();
-
-            return template;
-        }
-
-        private static ApiTemplate GetDbContext(string solutionDirectory, ApiTemplate template)
-        {
-            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"", "EntityBrokenHere");
+            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"", projectBaseName);
             var contextClass = Directory.GetFiles(classPath.FullClassPath, "*.cs").FirstOrDefault();
 
-            template.DbContext.ContextName = Path.GetFileNameWithoutExtension(contextClass);
+            template.DbContextName = Path.GetFileNameWithoutExtension(contextClass);
             return template;
         }
     }

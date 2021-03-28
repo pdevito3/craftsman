@@ -44,32 +44,16 @@
 
         public static string GetBaseText(string classNamespace, List<Entity> entities)
         {
-            var entityRouteClasses = "";
-            foreach(var entity in entities)
-            {
-                var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-                var pkName = entity.PrimaryKeyProperty.Name;
-
-                entityRouteClasses += $@"public static class {entity.Plural}
-        {{
-            public const string {pkName} = ""{{{pkName.LowercaseFirstLetter()}}}"";
-            public const string GetList = Base + ""/{lowercaseEntityPluralName}"";
-            public const string GetRecord = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
-            public const string Create = Base + ""/{lowercaseEntityPluralName}"";
-            public const string Delete = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
-            public const string Put = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
-            public const string Patch = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
-        }}";
-            }
+            var entityRouteClasses = Utilities.CreateApiRouteClasses(entities);
 
             return @$"namespace {classNamespace}
 {{
     public class ApiRoutes
     {{
         public const string Base = ""api"";
-        public const string Health = Base + ""/health"";
+        public const string Health = Base + ""/health"";        {entityRouteClasses}
 
-        {entityRouteClasses}
+        // new api route marker - do not delete
     }}
 }}";
         }
