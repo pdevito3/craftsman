@@ -5,7 +5,7 @@
     using Craftsman.Builders.Features;
     using Craftsman.Builders.Seeders;
     using Craftsman.Builders.Tests.Fakes;
-    using Craftsman.Builders.Tests.IntegrationTests;
+    using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;

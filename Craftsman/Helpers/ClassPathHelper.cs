@@ -8,6 +8,7 @@
 
     public static class ClassPathHelper
     {
+        public const string UnitTestProjectSuffix = "UnitTests";
         public const string SharedTestProjectSuffix = "SharedTestHelpers";
         public const string IntegrationTestProjectSuffix = "IntegrationTests";
         public const string FunctionalTestProjectSuffix = "FunctionalTests";
@@ -25,9 +26,14 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{ApiProjectSuffix}", "Controllers", version), className);
         }
 
-        public static ClassPath TestEntityIntegrationClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        public static ClassPath UnitTestClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "IntegrationTests", entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests"), className);
+        }
+
+        public static ClassPath UnitTestWrapperTestsClassPath(string solutionDirectory, string className, string projectBaseName)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Wrappers"), className);
         }
 
         public static ClassPath WebApiExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
@@ -140,6 +146,11 @@
             return new ClassPath(solutionDirectory, $"{projectBaseName}.{IntegrationTestProjectSuffix}", className);
         }
 
+        public static ClassPath UnitTestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
+        {
+            return new ClassPath(solutionDirectory, $"{projectBaseName}.{UnitTestProjectSuffix}", className);
+        }
+
         public static ClassPath FunctionalTestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, $"{projectBaseName}.{FunctionalTestProjectSuffix}", className);
@@ -188,6 +199,11 @@
         public static ClassPath SharedTestProjectClassPath(string solutionDirectory, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, $"{projectBaseName}.{SharedTestProjectSuffix}", $"{projectBaseName}.{SharedTestProjectSuffix}.csproj");
+        }
+
+        public static ClassPath UnitTestProjectClassPath(string solutionDirectory, string projectBaseName)
+        {
+            return new ClassPath(solutionDirectory, $"{projectBaseName}.{UnitTestProjectSuffix}", $"{projectBaseName}.{UnitTestProjectSuffix}.csproj");
         }
 
         public static ClassPath WebApiProjectClassPath(string solutionDirectory, string projectBaseName)

@@ -14,7 +14,7 @@
         {
             var path = ClassPathHelper.ControllerClassPath("", "ProductName.cs", "Ordering");
 
-            path.ClassDirectory.Should().Be(Path.Combine("Ordering.Api", "Controllers", "v1"));
+            path.ClassDirectory.Should().Be(Path.Combine("Ordering.WebApi", "Controllers", "v1"));
         }
     }
 }

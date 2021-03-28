@@ -2,7 +2,7 @@
 {
     using Craftsman.Builders.Dtos;
     using Craftsman.Builders.Projects;
-    using Craftsman.Builders.Tests.IntegrationTests;
+    using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Helpers;
     using System;
     using System.IO;
@@ -36,6 +36,7 @@
             BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
             BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
             BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
+            BuildUnitTestProject(solutionDirectory, testDirectory, projectBaseName);
         }
 
         private static void BuildCoreProject(string solutionDirectory, string projectDirectory, string projectBaseName, IFileSystem fileSystem)
@@ -126,6 +127,15 @@
             var testProjectClassPath = ClassPathHelper.SharedTestProjectRootClassPath(testDirectory, "", projectBaseName);
 
             SharedTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
+        }
+
+        private static void BuildUnitTestProject(string solutionDirectory, string testDirectory, string projectBaseName)
+        {
+            var solutionFolder = testDirectory.Replace(solutionDirectory, "").Replace(Path.DirectorySeparatorChar.ToString(), "");
+            var testProjectClassPath = ClassPathHelper.UnitTestProjectRootClassPath(testDirectory, "", projectBaseName);
+
+            UnitTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
         }
     }

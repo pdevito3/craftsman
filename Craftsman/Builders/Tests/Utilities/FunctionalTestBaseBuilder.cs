@@ -1,4 +1,4 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Tests.Utilities
 {
     using Craftsman.Exceptions;
     using Craftsman.Helpers;

@@ -7,6 +7,8 @@
     using Craftsman.Builders.Tests.Fakes;
     using Craftsman.Builders.Tests.FunctionalTests;
     using Craftsman.Builders.Tests.IntegrationTests;
+    using Craftsman.Builders.Tests.UnitTests;
+    using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Enums;
     using Craftsman.Models;
     using LibGit2Sharp;
@@ -132,7 +134,8 @@
             if(verbosity == Verbosity.More)
                 WriteHelpText($"{template.SolutionName} startup environments were scaffolded successfully.");
 
-            // test helpers and one offs
+            // unit tests, test utils, and one offs
+            PagedListTestBuilder.CreateTests(testDirectory, template.SolutionName);
             IntegrationTestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, template.DbContext.Provider, fileSystem);
             IntegrationTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, fileSystem);
             DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, template.SolutionName, template.DbContext.Provider, fileSystem);
@@ -141,7 +144,7 @@
             FunctionalTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, template.DbContext.ContextName, fileSystem);
             HealthTestBuilder.CreateTests(testDirectory, template.SolutionName);
             if(verbosity == Verbosity.More)
-                WriteHelpText($"{template.SolutionName} testing helpers were scaffolded successfully.");
+                WriteHelpText($"{template.SolutionName} unit tests and testing utilities were scaffolded successfully.");
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, template.SolutionName);
