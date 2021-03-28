@@ -55,7 +55,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
+    public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{
         [Test]
         public void PagedList_Returns_Accurate_Data_For_Standard_Pagination()
