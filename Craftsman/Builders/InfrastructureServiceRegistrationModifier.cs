@@ -5,6 +5,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using static Helpers.ConsoleWriter;
 
     public class InfrastructureServiceRegistrationModifier
@@ -65,7 +66,8 @@
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var policiesString = "";
-            foreach (var policy in policies)
+            var nonExistantPolicies = GetPoliciesThatDoNotExist(policies, classPath.FullClassPath);
+            foreach (var policy in nonExistantPolicies)
             {
                 policiesString += $@"{Environment.NewLine}{Utilities.PolicyStringBuilder(policy)}";
             }
@@ -122,6 +124,24 @@
             services.AddAuthorization(options =>
             {{{policiesString}
             }});";
+        }
+
+        private static List<Policy> GetPoliciesThatDoNotExist(List<Policy> policies, string existingFileFullClassPath)
+        {
+            var nonExistantPolicies = new List<Policy>();
+            nonExistantPolicies.AddRange(policies);
+
+            var fileText = File.ReadAllText(existingFileFullClassPath);
+
+            foreach (var policy in policies)
+            {
+                if (fileText.Contains(policy.Name) || fileText.Contains(policy.PolicyValue))
+                {
+                    nonExistantPolicies.Remove(policy);
+                }
+            }
+
+            return nonExistantPolicies;
         }
     }
 }
