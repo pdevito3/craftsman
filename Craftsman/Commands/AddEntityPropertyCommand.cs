@@ -23,7 +23,7 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman add:property [options] [arguments]");
+            WriteHelpText(@$"   craftsman add:prop [options] [arguments]");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Arguments:");
@@ -45,11 +45,11 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman add:property --entity Vet --name VetName --type string --filter false --sort true");
-            WriteHelpText(@$"       craftsman add:property -e Vet -n VetName -t string -f false -s true");
-            WriteHelpText(@$"       craftsman add:property -e Vet -n VetName -t string");
-            WriteHelpText(@$"       craftsman add:property -e Sale -n Product -t Product -k ProductId");
-            WriteHelpText(@$"       craftsman add:property -e Vet -n AppointmentDate -t DateTime? -f false -s true");
+            WriteHelpText(@$"       craftsman add:prop --entity Vet --name VetName --type string --filter false --sort true");
+            WriteHelpText(@$"       craftsman add:prop -e Vet -n VetName -t string -f false -s true");
+            WriteHelpText(@$"       craftsman add:prop -e Vet -n VetName -t string");
+            WriteHelpText(@$"       craftsman add:prop -e Sale -n Product -t Product -k ProductId");
+            WriteHelpText(@$"       craftsman add:prop -e Vet -n AppointmentDate -t DateTime? -f false -s true");
             WriteHelpText(Environment.NewLine);
         }
 
