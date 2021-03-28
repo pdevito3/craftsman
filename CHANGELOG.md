@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Add Entity is Broken where I say `EntityBrokenHere`
-  - need to update addentity command to use an add entity template that includes a `ProjectBaseName` that must match the base of the api and the core
 - consolidated projects
 - projects will now have a prefix of the solution name before each project type. for example, the api project with a solution name of `ordering` is `ordering.webapi`
 - added a `new:domain` command to create a ddd based domain with various bounded contexts inside of it. this is recommended for long term maintainability
@@ -33,6 +31,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a version checker to make sure you are alerted if out of date
 - Known postgres integration test issue with datetime precision
 - added an `add:prop` alias
+- proper add entity template added
+  - entities is only required prop. db and solutionname are calculated
+  - auth settings available for policies to add
+- fix: existing auth policies will now be skipped for registration when adding a new entity
+- Added a production app settings by default
+- fixed environment to have production as a reserved word instead of startup to be consistent with dotnet process
+  - will use startup and appsettings.production
+  - normal appsettings will be emtpy, but have all the config keys required to make migrations and builds possible
+- consolidated launchsettings tohave the same setup for all environments as it is just a setting for the IDE and not used for the release package
 
 ## [0.8.2] - 2021-02-25
 

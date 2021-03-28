@@ -40,7 +40,7 @@
             fileSystem.Directory.CreateDirectory(testDirectory);
 
             SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
-            SolutionBuilder.AddProjects(solutionDirectory, srcDirectory, testDirectory, template.DbContext.Provider, template.SolutionName, template.AddJwtAuthentication, fileSystem);
+            SolutionBuilder.AddProjects(solutionDirectory, srcDirectory, testDirectory, template.DbContext.Provider, template.DbContext.ContextName, template.SolutionName, template.AddJwtAuthentication, fileSystem);
             if(verbosity == Verbosity.More)
                 WriteHelpText($"{template.SolutionName} projects were scaffolded successfully.");
 
@@ -49,6 +49,8 @@
             if(verbosity == Verbosity.More)
                 WriteHelpText($"{template.SolutionName} templates were scaffolded successfully.");
 
+            if (verbosity == Verbosity.More)
+                WriteHelpText($"Starting {template.SolutionName} database migrations.");
             RunDbMigration(template, srcDirectory);
             if(verbosity == Verbosity.More)
                 WriteHelpText($"{template.SolutionName} migrations are complete.");
@@ -69,7 +71,9 @@
                 new Dictionary<string, string>()
                 {
                     { "ASPNETCORE_ENVIRONMENT", Guid.NewGuid().ToString() } // guid to not conflict with any given envs
-                });
+                },
+                20000,
+                "Db Migrations timed out and will need to be run manually.");
         }
 
         private static void RunTemplateBuilders(string rootDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)

@@ -42,9 +42,8 @@
 
         private static string GetProfileText(ApiEnvironment env, int port)
         {
-            if (env.EnvironmentName == "Development")
                 return $@"
-    ""{env.ProfileName ?? "Development"}"": {{
+    ""{env.ProfileName ?? env.EnvironmentName ?? "Development"}"": {{
       ""commandName"": ""Project"",
       ""launchBrowser"": true,
       ""launchUrl"": ""swagger"",
@@ -52,21 +51,6 @@
         ""ASPNETCORE_ENVIRONMENT"": ""{env.EnvironmentName}""
       }},
       ""applicationUrl"": ""https://localhost:{port}""
-    }},";
-            else if (env.EnvironmentName == "Startup")
-                return $@"
-    ""{env.ProfileName}"": {{
-      ""commandName"": ""Project"",
-      ""launchBrowser"": false
-    }},";
-            else
-                return $@"
-    ""{env.ProfileName}"": {{
-      ""commandName"": ""Project"",
-      ""launchBrowser"": false,
-      ""environmentVariables"": {{
-        ""ASPNETCORE_ENVIRONMENT"": ""{env.EnvironmentName}""
-      }}
     }},";
         }
     }

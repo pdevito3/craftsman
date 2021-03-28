@@ -14,7 +14,7 @@
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string projectBaseName = "")
+        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbContextName, string projectBaseName = "")
         {
             try
             {
@@ -30,7 +30,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetAppSettingsText(env, dbName);
+                    data = GetAppSettingsText(env, dbContextName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
             }
@@ -46,43 +46,7 @@
             }
         }
 
-        /// <summary>
-        /// this build will only do a skeleton app settings for the initial project build.
-        /// </summary>
-        /// <param name="solutionDirectory"></param>
-        public static void CreateAppSettings(string solutionDirectory, string projectBaseName)
-        {
-            try
-            {
-                var appSettingFilename = "appsettings.json";
-                var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", projectBaseName);
-
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
-
-                if (File.Exists(classPath.FullClassPath))
-                    File.Delete(classPath.FullClassPath);
-
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetAppSettingsText();
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
-        }
-
-        private static string GetAppSettingsText(ApiEnvironment env, string dbName)
+        private static string GetAppSettingsText(ApiEnvironment env, string dbContextName)
         {
             var jwtSettings = GetJwtAuthSettings(env);
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
@@ -95,16 +59,20 @@
 {serilogSettings}{jwtSettings}
 }}
 ";
-        else
-
-            return @$"{{
+            else
+            {
+                // won't build properly if it has an empty string
+                var connectionString = String.IsNullOrEmpty(env.ConnectionString) ? "local" : env.ConnectionString.Replace(@"\", @"\\");
+                return @$"{{
   ""AllowedHosts"": ""*"",
   ""UseInMemoryDatabase"": false,
   ""ConnectionStrings"": {{
-    ""{dbName}"": ""{env.ConnectionString.Replace(@"\",@"\\")}""
+    ""{dbContextName}"": ""{connectionString}""
   }},
+  {serilogSettings}{jwtSettings}
 }}
 ";
+            }
         }
 
         private static string GetJwtAuthSettings(ApiEnvironment env)
@@ -143,21 +111,6 @@
     ""Enrich"": [ ""FromLogContext"", ""WithMachineName"", ""WithProcessId"", ""WithThreadId"" ],
     ""WriteTo"": [{writeTo}]
   }},";
-        }
-
-        private static string GetAppSettingsText()
-        {
-            return @$"{{
-  ""UseInMemoryDatabase"": true,
-  ""Logging"": {{
-    ""LogLevel"": {{
-      ""Default"": ""Information"",
-      ""Microsoft"": ""Warning"",
-      ""Microsoft.Hosting.Lifetime"": ""Information""
-    }}
-  }},
-  ""AllowedHosts"": ""*""
-}}";
         }
     }
 }

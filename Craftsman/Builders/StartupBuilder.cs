@@ -13,7 +13,7 @@
         {
             try
             {
-                var classPath = envName == "Startup" 
+                var classPath = envName == "Production" 
                     ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", projectBaseName) 
                     : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs", projectBaseName);
 
@@ -59,7 +59,7 @@
 
             var dbContextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
 
-            envName = envName == "Startup" ? "" : envName;
+            envName = envName == "Production" ? "" : envName;
             if (envName == "Development")
                 return @$"namespace {classNamespace}
 {{

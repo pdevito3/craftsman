@@ -4,6 +4,7 @@
     using Craftsman.Builders.Projects;
     using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Helpers;
+    using Craftsman.Models;
     using System;
     using System.IO;
     using System.IO.Abstractions;
@@ -27,10 +28,10 @@
             }
         }
 
-        public static void AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, string dbProvider, string projectBaseName, bool addJwtAuth, IFileSystem fileSystem)
+        public static void AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, string dbProvider, string dbContextName, string projectBaseName, bool addJwtAuth, IFileSystem fileSystem)
         {
             // add webapi first so it is default project
-            BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, fileSystem);
+            BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbContextName, fileSystem);
             BuildCoreProject(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
             BuildInfrastructureProject(solutionDirectory, srcDirectory, projectBaseName, dbProvider, fileSystem);
             BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
@@ -75,7 +76,7 @@
             InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(projectDirectory, projectBaseName, fileSystem);
         }
 
-        private static void BuildWebApiProject(string solutionDirectory, string projectDirectory, string projectBaseName, bool useJwtAuth, IFileSystem fileSystem)
+        private static void BuildWebApiProject(string solutionDirectory, string projectDirectory, string projectBaseName, bool useJwtAuth, string dbContextName, IFileSystem fileSystem)
         {
             var solutionFolder = projectDirectory.Replace(solutionDirectory, "").Replace(Path.DirectorySeparatorChar.ToString(), "");
             var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(projectDirectory, projectBaseName);
@@ -91,10 +92,10 @@
             WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(projectDirectory, projectBaseName, fileSystem);
             WebApiAppExtensionsBuilder.CreateWebApiAppExtension(projectDirectory, projectBaseName, fileSystem);
             ErrorHandlerMiddlewareBuilder.CreateErrorHandlerMiddleware(projectDirectory, projectBaseName, fileSystem);
-            WebApiAppSettingsBuilder.CreateAppSettings(projectDirectory, projectBaseName);
+            WebApiAppSettingsBuilder.CreateAppSettings(projectDirectory, new ApiEnvironment(), dbContextName, projectBaseName); // empty environment so i can get a blank with all the right keys. don't care about values as they get overriden by env specific settings
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, projectBaseName, fileSystem);
             ProgramBuilder.CreateWebApiProgram(projectDirectory, projectBaseName, fileSystem);
-            StartupBuilder.CreateWebApiStartup(projectDirectory, "Startup", useJwtAuth, projectBaseName);
+            StartupBuilder.CreateWebApiStartup(projectDirectory, "Production", useJwtAuth, projectBaseName);
         }
 
         private static void BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)

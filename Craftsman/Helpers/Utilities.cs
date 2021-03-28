@@ -93,7 +93,7 @@
 
         public static string GetAppSettingsName(string envName, bool asJson = true)
         {
-            if(envName == "Startup")
+            if(String.IsNullOrEmpty(envName))
                 return asJson ? $"appsettings.json" : $"appsettings";
 
             return asJson ? $"appsettings.{envName}.json" : $"appsettings.{envName}";
@@ -101,7 +101,7 @@
 
         public static string GetStartupName(string envName)
         {
-            return envName == "Startup" ? "Startup" : $"Startup{envName}";
+            return envName == "Production" ? "Startup" : $"Startup{envName}";
         }
 
         public static string GetProfileName(string entityName)
@@ -213,7 +213,7 @@
             }
         }
 
-        public static void ExecuteProcess(string command, string args, string directory, Dictionary<string,string> envVariables, int killInterval = 15000)
+        public static void ExecuteProcess(string command, string args, string directory, Dictionary<string,string> envVariables, int killInterval = 15000, string processKilledMessage = "Process Killed.")
         {
             var process = new Process
             {
@@ -235,7 +235,7 @@
             if (!process.WaitForExit(killInterval))
             {
                 process.Kill();
-                WriteHelpText($"Process Killed.");
+                WriteHelpText(processKilledMessage);
             }
         }
 
@@ -313,11 +313,14 @@
             if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
                 environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{solutionName} (Development)" });
 
+            if (environments.Where(e => e.EnvironmentName == "Production").Count() == 0)
+                environments.Add(new ApiEnvironment { EnvironmentName = "Production", ProfileName = $"{solutionName} (Production)" });
+
             var sortedEnvironments = environments.OrderBy(e => e.EnvironmentName == "Development" ? 1 : 0).ToList(); // sets dev as default profile
             foreach (var env in sortedEnvironments)
             {
                 // default startup is already built in cleanup phase
-                if (env.EnvironmentName != "Startup")
+                if (env.EnvironmentName != "Production")
                     StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth, projectBaseName);
 
                 WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, projectBaseName);
