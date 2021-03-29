@@ -111,7 +111,7 @@
             }
 
             return $@"
-            if(env.EnvironmentName != ""IntegrationTesting"")
+            if(env.EnvironmentName != ""FunctionalTesting"")
             {{
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>

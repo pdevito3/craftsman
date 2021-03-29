@@ -332,8 +332,8 @@
             }
 
             // add an integration testing env to make sure that an in memory database is used
-            var integEnv = new ApiEnvironment() { EnvironmentName = "IntegrationTesting" };
-            WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, integEnv, "", projectBaseName);
+            var functionalEnv = new ApiEnvironment() { EnvironmentName = "FunctionalTesting" };
+            WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, functionalEnv, "", projectBaseName);
         }
 
         public static List<Policy> GetEndpointPolicies(List<Policy> policies, Endpoint endpoint, string entityName)

@@ -73,7 +73,7 @@ namespace {classPath.ClassNamespace}
     {{
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {{
-            builder.UseEnvironment(""IntegrationTesting"");
+            builder.UseEnvironment(""FunctionalTesting"");
 
             builder.ConfigureServices(services =>
             {{{authRegistration}
