@@ -96,8 +96,7 @@
             services.AddWebApiServices();
             services.AddHealthChecks();
 
-            #region Dynamic Services
-            #endregion
+            // Dynamic Services
         }}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -122,8 +121,7 @@
                 endpoints.MapControllers();
             }});
 
-            #region Dynamic App
-            #endregion
+            // Dynamic App
         }}
     }}
 }}";
@@ -162,8 +160,7 @@
             services.AddWebApiServices();
             services.AddHealthChecks();
 
-            #region Dynamic Services
-            #endregion
+            // Dynamic Services
         }}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -189,8 +186,7 @@
                 endpoints.MapControllers();
             }});
 
-            #region Dynamic App
-            #endregion
+            // Dynamic App
         }}
     }}
 }}";

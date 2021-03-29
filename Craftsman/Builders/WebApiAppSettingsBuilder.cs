@@ -69,7 +69,7 @@
   ""ConnectionStrings"": {{
     ""{dbContextName}"": ""{connectionString}""
   }},
-  {serilogSettings}{jwtSettings}
+{serilogSettings}{jwtSettings}
 }}
 ";
             }

@@ -44,11 +44,11 @@
                         while (null != (line = input.ReadLine()))
                         {
                             var newText = $"{line}";
-                            if (line.Contains("#region Dynamic Services"))
+                            if (line.Contains("Dynamic Services"))
                             {
                                 newText += $"{Environment.NewLine}            services.AddSwaggerExtension(_config);";
                             }
-                            else if (line.Contains("#region Dynamic App"))
+                            else if (line.Contains("Dynamic App"))
                             {
                                 newText += $"{Environment.NewLine}            app.UseSwaggerExtension(_config);";
                             }
