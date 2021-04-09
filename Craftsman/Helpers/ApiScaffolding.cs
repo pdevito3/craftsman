@@ -111,7 +111,7 @@
             // unit tests, test utils, and one offs
             PagedListTestBuilder.CreateTests(testDirectory, template.SolutionName);
             IntegrationTestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, template.DbContext.Provider, fileSystem);
-            IntegrationTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, fileSystem);
+            IntegrationTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, template.DbContext.Provider, fileSystem);
             DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, template.SolutionName, template.DbContext.Provider, fileSystem);
             ApiRoutesBuilder.CreateClass(testDirectory, template.SolutionName, template.Entities, fileSystem);
             WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, template.SolutionName, template.DbContext.ContextName, template.AddJwtAuthentication);
