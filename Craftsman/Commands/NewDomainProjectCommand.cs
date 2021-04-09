@@ -34,7 +34,7 @@
             WriteHelpText(@$"   craftsman new:domain [options] <filepath>{Environment.NewLine}");
 
             WriteHelpHeader(@$"Arguments:");
-            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that describes your web API using a proper Wrapt format.");
+            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that describes your domain using a proper Wrapt format.");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Options:");

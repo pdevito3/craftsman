@@ -50,18 +50,20 @@
 
         }
 
-        public static void Run(string filePath, string buildSolutionDirectory, IFileSystem fileSystem, Verbosity verbosity)
+        public static void Run(string filePath, string domainDirectory, IFileSystem fileSystem, Verbosity verbosity)
         {
             try
             {
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetTemplateFromFile<ApiTemplate>(filePath);
+                var boundedContexts = FileParsingHelper.GetTemplateFromFile<BoundedContextsTemplate>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 
-                ApiScaffolding.ScaffoldApi(buildSolutionDirectory, template, fileSystem, verbosity);
+                foreach (var template in boundedContexts.BoundedContexts)
+                {
+                    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity);
+                }
 
-                WriteHelpHeader($"{Environment.NewLine}Your API is ready! Build something amazing.");
-                WriteGettingStarted(template.SolutionName);
+                WriteHelpHeader($"{Environment.NewLine}Your bounded contexts have been successfully added. Keep up the good work!");
                 StarGithubRequest();
             }
             catch (Exception e)

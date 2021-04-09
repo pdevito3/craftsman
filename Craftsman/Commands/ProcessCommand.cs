@@ -47,14 +47,19 @@
             if (args.Length >= 2 && (args[0] == "add:bc" || args[0] == "add:boundedcontext"))
             {
                 var filePath = args[1];
-                var verbosity = Verbosity.Minimal;
+                var verbosity = GetVerbosityFromArgs<AddBcOptions>(args);
 
                 if (filePath == "-h" || filePath == "--help")
                     AddBoundedContextCommand.Help();
                 else
                 {
-                    var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:", "Users", "Paul", "Documents", "testoutput", "LimsLite") : fileSystem.Directory.GetCurrentDirectory();
-                    AddBoundedContextCommand.Run(filePath, solutionDir, fileSystem, verbosity);
+                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the root directory.");
+                        rootDir = Console.ReadLine();
+                    }
+                    AddBoundedContextCommand.Run(filePath, rootDir, fileSystem, verbosity);
                 }
             }
 
@@ -67,8 +72,13 @@
                     AddBoundedContextCommand.Help();
                 else
                 {
-                    var solutionDir = myEnv == "Dev" ? fileSystem.Path.Combine(@"C:", "Users", "Paul", "Documents", "testoutput") : fileSystem.Directory.GetCurrentDirectory();
-                    NewDomainProjectCommand.Run(filePath, solutionDir, fileSystem, verbosity);
+                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the root directory.");
+                        rootDir = Console.ReadLine();
+                    }
+                    NewDomainProjectCommand.Run(filePath, rootDir, fileSystem, verbosity);
                 }
             }
 
