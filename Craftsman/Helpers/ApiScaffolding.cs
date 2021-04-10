@@ -136,7 +136,7 @@
             {
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, template.SolutionName, template.AuthorizationSettings.Policies);
                 if (verbosity == Verbosity.More)
-                    WriteHelpText($"{template.SolutionName} auth helpers was scaffolded successfully.");
+                    WriteHelpText($"{template.SolutionName} auth helpers were scaffolded successfully.");
             }
 
             ReadmeBuilder.CreateBoundedContextReadme(rootDirectory, template.SolutionName, srcDirectory, fileSystem);

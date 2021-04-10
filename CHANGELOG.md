@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - normal appsettings will be emtpy, but have all the config keys required to make migrations and builds possible
 - consolidated launchsettings tohave the same setup for all environments as it is just a setting for the IDE and not used for the release package
 - changed the startup marker for dynamic services to a comment instead of a region
+- Foreign keys will no longer be automatically included in features or DTOs for better performance
 
 ## [0.8.2] - 2021-02-25
 
