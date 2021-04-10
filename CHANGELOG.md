@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - None yet!
 
+## [0.9.1] - 2021-04-10
+
+### Fixed
+
+- Db context will now be used instead of name in api scaffolding
+- Test utilities in functional tests will now be added when not using auth
+
 ## [0.9.0] - 2021-04-10
 
 ### Added
