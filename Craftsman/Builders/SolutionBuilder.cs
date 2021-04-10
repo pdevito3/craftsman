@@ -114,12 +114,6 @@
 
             FunctionalTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName, addJwtAuth);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
-
-            if (addJwtAuth)
-            {
-                Directory.CreateDirectory(ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "").ClassDirectory);
-                HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
-            }
         }
 
         private static void BuildSharedTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)

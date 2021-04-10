@@ -71,7 +71,7 @@
                 srcDirectory,
                 new Dictionary<string, string>()
                 {
-                    { "ASPNETCORE_ENVIRONMENT", Guid.NewGuid().ToString() } // guid to not conflict with any given envs
+                    { "ASPNETCORE_ENVIRONMENT", "Development" } // guid to not conflict with any given envs
                 },
                 20000,
                 "Db Migrations timed out and will need to be run manually.");
@@ -89,7 +89,7 @@
                 testDirectory,
                 template.SolutionName,
                 template.Entities,
-                template.DbContext.DatabaseName,
+                template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
                 template.AuthorizationSettings.Policies,
                 fileSystem, 
@@ -118,6 +118,8 @@
             WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, template.SolutionName, template.DbContext.ContextName, template.AddJwtAuthentication);
             FunctionalTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, template.DbContext.ContextName, fileSystem);
             HealthTestBuilder.CreateTests(testDirectory, template.SolutionName);
+            HttpClientExtensionsBuilder.Create(testDirectory, template.SolutionName);
+
             if (verbosity == Verbosity.More)
                 WriteHelpText($"{template.SolutionName} unit tests and testing utilities were scaffolded successfully.");
 
