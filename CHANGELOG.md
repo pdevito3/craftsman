@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - None yet!
 
+## [0.9.2] - 2021-04-10
+
+### Fixed
+
+- Lingering dbcontext and dbname mix up
+
 ## [0.9.1] - 2021-04-10
 
 ### Fixed
