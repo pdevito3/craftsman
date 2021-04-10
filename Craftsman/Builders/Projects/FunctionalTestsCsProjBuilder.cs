@@ -49,9 +49,6 @@
             var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
             var sharedTestClassPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
 
-            var authPackages = addJwtAuth ? @$"
-    <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""3.1.0"" />" : "";
-
             return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>
@@ -72,7 +69,8 @@
     <PackageReference Include=""NUnit"" Version=""3.12.0"" />
     <PackageReference Include=""NUnit3TestAdapter"" Version=""3.16.1"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""16.8.3"" />
-    <PackageReference Include=""Respawn"" Version=""3.3.0"" />{authPackages}
+    <PackageReference Include=""Respawn"" Version=""3.3.0"" />
+    <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""3.1.0"" />
   </ItemGroup>
 
   <ItemGroup>
