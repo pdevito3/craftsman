@@ -27,6 +27,7 @@
 
             FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
             FileParsingHelper.RunSolutionNameAssignedGuard(template.SolutionName);
+            FileParsingHelper.SolutionNameDoesNotEqualEntityGuard(template.SolutionName, template.Entities);
 
             // scaffold projects
             // add an accelerate.config.yaml file to the root?

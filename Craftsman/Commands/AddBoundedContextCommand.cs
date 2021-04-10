@@ -73,7 +73,8 @@
                     || e is InvalidSolutionNameException
                     || e is FileNotFoundException
                     || e is InvalidDbProviderException
-                    || e is InvalidFileTypeException)
+                    || e is InvalidFileTypeException
+                    || e is SolutiuonNameEntityMatchException)
                 {
                     WriteError($"{e.Message}");
                 }

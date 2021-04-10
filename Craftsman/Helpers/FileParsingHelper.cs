@@ -70,5 +70,13 @@
             if (solutionName == null || solutionName.Length <= 0)
                 throw new InvalidSolutionNameException();
         }
+
+        public static void SolutionNameDoesNotEqualEntityGuard(string solutionName, List<Entity> entities)
+        {
+            if(entities.Where(e => e.Name == solutionName).ToList().Count > 0 
+                || entities.Where(e => e.Plural == solutionName).ToList().Count > 0
+            )
+                throw new SolutiuonNameEntityMatchException();
+        }
     }
 }
