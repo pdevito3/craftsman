@@ -292,10 +292,10 @@
         /// <summary>
         /// Deletes an existing {entity.Name} record.
         /// </summary>
-        /// <response code=""201"">{entity.Name} deleted.</response>
+        /// <response code=""204"">{entity.Name} deleted.</response>
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
-        [ProducesResponseType(201)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
@@ -311,10 +311,10 @@
         /// <summary>
         /// Updates specific properties on an existing {entity.Name}.
         /// </summary>
-        /// <response code=""201"">{entity.Name} updated.</response>
+        /// <response code=""204"">{entity.Name} updated.</response>
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
-        [ProducesResponseType(201)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
@@ -330,10 +330,10 @@
         /// <summary>
         /// Updates an entire existing {entity.Name}.
         /// </summary>
-        /// <response code=""201"">{entity.Name} updated.</response>
+        /// <response code=""204"">{entity.Name} updated.</response>
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
-        [ProducesResponseType(201)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
