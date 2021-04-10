@@ -14,7 +14,7 @@
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbContextName, string projectBaseName = "")
+        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string projectBaseName)
         {
             try
             {
@@ -30,7 +30,7 @@
                 using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetAppSettingsText(env, dbContextName);
+                    data = GetAppSettingsText(env, dbName);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
             }
@@ -46,7 +46,7 @@
             }
         }
 
-        private static string GetAppSettingsText(ApiEnvironment env, string dbContextName)
+        private static string GetAppSettingsText(ApiEnvironment env, string dbName)
         {
             var jwtSettings = GetJwtAuthSettings(env);
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
@@ -67,7 +67,7 @@
   ""AllowedHosts"": ""*"",
   ""UseInMemoryDatabase"": false,
   ""ConnectionStrings"": {{
-    ""{dbContextName}"": ""{connectionString}""
+    ""{dbName}"": ""{connectionString}""
   }},
 {serilogSettings}{jwtSettings}
 }}
