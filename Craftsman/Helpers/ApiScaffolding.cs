@@ -89,7 +89,7 @@
                 testDirectory,
                 template.SolutionName,
                 template.Entities,
-                template.DbContext.DatabaseName,
+                template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
                 template.AuthorizationSettings.Policies,
                 fileSystem, 
