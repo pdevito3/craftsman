@@ -51,8 +51,6 @@
             var paramsDto = Utilities.GetDtoName(entity.Name, Dto.ReadParamaters);
             var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
 
-            var fkIncludes = Utilities.GetForeignKeyIncludes(entity);
-
             var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var exceptionsClassPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
@@ -111,7 +109,7 @@
                 }}
 
                 // include marker -- to accommodate adding includes with craftsman commands, the next line must stay as `var result = await _db.{entity.Plural}`. -- do not delete this comment
-                var collection = _db.{entity.Plural}{fkIncludes}
+                var collection = _db.{entity.Plural}
                     as IQueryable<{entity.Name}>;
 
                 var sieveModel = new SieveModel

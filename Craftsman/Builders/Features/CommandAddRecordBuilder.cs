@@ -57,8 +57,6 @@
             var commandProp = $"{entityName}ToAdd";
             var newEntityProp = $"{entityNameLowercase}ToAdd";
 
-            var fkIncludes = Utilities.GetForeignKeyIncludes(entity);
-
             var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var exceptionsClassPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
@@ -120,7 +118,7 @@
                 if (saveSuccessful)
                 {{
                     // include marker -- to accommodate adding includes with craftsman commands, the next line must stay as `var result = await _db.{entity.Plural}`. -- do not delete this comment
-                    return await _db.{entity.Plural}{fkIncludes}
+                    return await _db.{entity.Plural}
                         .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
                         .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName});
                 }}

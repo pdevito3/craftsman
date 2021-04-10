@@ -28,26 +28,17 @@
         public static string GetDtoText(ClassPath dtoClassPath, Entity entity, Dto dto, string projectBaseName)
         {
             var propString = dto == Dto.Creation || dto == Dto.Update ? "" : DtoPropBuilder(entity.Properties, dto);
-            var fkUsingStatements = "";
             var abstractString = dto == Dto.Manipulation ? $"abstract" : "";
 
             var inheritanceString = "";
             if(dto == Dto.Creation || dto == Dto.Update)
                 inheritanceString = $": {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}";
 
-            if (dto == Dto.Read)
-            {
-                foreach(var prop in entity.Properties.Where(p => p.IsForeignKey))
-                {
-                    fkUsingStatements += GetForeignKeyUsingStatements(dtoClassPath, fkUsingStatements, prop, dto, projectBaseName);
-                }
-            }
-
             return @$"namespace {dtoClassPath.ClassNamespace}
 {{
     using System;
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;{fkUsingStatements}
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public {abstractString} class {Utilities.GetDtoName(entity.Name, dto)} {inheritanceString}
     {{
@@ -77,17 +68,7 @@
                     continue;
 
                 string newLine = eachProp == props.Count - 1 ? "" : Environment.NewLine;
-
-                if (props[eachProp].IsForeignKey)
-                {
-                    if(dto == Dto.Read)
-                    {
-                        var dtoName = Utilities.GetDtoName(props[eachProp].Type, Dto.Read);
-                        propString += $@"        public {dtoName} {props[eachProp].Name} {{ get; set; }}{newLine}";
-                    }                    
-                }
-                else
-                    propString += $@"        public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
+                propString += $@"        public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
             }
 
             return propString;

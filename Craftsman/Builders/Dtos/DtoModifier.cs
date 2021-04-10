@@ -38,16 +38,6 @@
                 using (var output = new StreamWriter(tempPath))
                 {
                     string line;
-                    var fkUsingStatements = "";
-
-                    if (dto == Dto.Read)
-                    { 
-                        foreach (var prop in props)
-                        {
-                            if(prop.IsForeignKey)
-                                fkUsingStatements += DtoFileTextGenerator.GetForeignKeyUsingStatements(classPath, fkUsingStatements, prop, dto, projectBaseName);
-                        }
-                    }
 
                     while (null != (line = input.ReadLine()))
                     {
@@ -55,10 +45,6 @@
                         if (line.Contains($"add-on property marker"))
                         {
                             newText += @$"{Environment.NewLine}{Environment.NewLine}{DtoFileTextGenerator.DtoPropBuilder(props, dto)}";
-                        }
-                        if (line.Contains("using System;"))
-                        {
-                            newText += fkUsingStatements;
                         }
 
                         output.WriteLine(newText);
