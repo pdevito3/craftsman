@@ -7,43 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- consolidated projects
-- projects will now have a prefix of the solution name before each project type. for example, the api project with a solution name of `ordering` is `ordering.webapi`
-- added a `new:domain` command to create a ddd based domain with various bounded contexts inside of it. this is recommended for long term maintainability
-- removed `micro` command to consolidate and reduce complexity. if you still want to build a microservice, you can build a domain and deploy each bounded context as a microservice
-  - Gateways were removed though and will be added back in with better integration in a future release
-- removed the `new:api` command to focus on the DDD command
-- added the `add:bc` command which will add a new bounded context to your ddd project
+- None yet!
+
+## [0.9.0] - 2021-04-10
+
+### Added
+
+- Added a new vertical slice architecture
+  - Projects have been consolidated and will now have a prefix of the solution name before each project type. For example, the api project with a solution name of `ordering` is `ordering.webapi`
+- Added a `new:domain` command to create a ddd based domain with various bounded contexts inside of it. this is recommended for long term maintainability
+- Added the `add:bc` command which will add a new bounded context to your ddd project
+- Testing completely rebuilt from the ground up. Now has unit, integration, and functional tests. Integration and Functional Tests can spin up their own docker db on their own to run against a real database.
 - Moved 'addGit' property from the api template to the domain template
-- readme will now be generated in the domain directory
-- added a `version` or `-v` command to get the craftsman version
-- an initial db migration will automatically be ran for you on project creation
-  - NEED TO UPDATE MIGRATION DOCS
-  - need to add dotnet-ef and docker as optional prereq if they want migrations (and working integ tests)
-- testing completely revamped
-  - **Unit tests** are meant to confirm that individual operations are working as expected (e.g. PagedList calculations)
-  - **Integration tests** are meant to check that different areas are working together as expected (e.g. our features folder). These tests rebuild from the ground up using NUnit. It will now spin up a real db in docker and run each of your feature tests here
-  - **Functional tests** are meant to check an entire slice of functionality with all the code running together. These are generally more involved to write and maintain, but with this project setup, our controllers are essentially just exposed routes to our feature queries and commands. This means that we have already done the meat of our testing in our integration tests, so these tests will just confirm that we are getting the expected responses from our routes.
-- verbosity option added to new domain and add bc
-- removed `ClientSecret` to promote code+PKCE flow
-  - update auth explanation and environment object docs
-  - make sure example files don't include it
+- Added a `version` or `-v` command to get the craftsman version
+- Added an initial db migration to run automatically on project creation
+- Added verbosity option to new domain and add bc
 - Added a version checker to make sure you are alerted if out of date
-- Known postgres integration test issue with datetime precision
-- added an `add:prop` alias
-- proper add entity template added
-  - entities is only required prop. db and solutionname are calculated
-  - auth settings available for policies to add
-- fix: existing auth policies will now be skipped for registration when adding a new entity
+- Added an `add:prop` alias
+- Added explicit add entity template with auth policies available to add
 - Added a production app settings by default
-- fixed environment to have production as a reserved word instead of startup to be consistent with dotnet process
-  - will use startup and appsettings.production
-  - normal appsettings will be emtpy, but have all the config keys required to make migrations and builds possible
-- consolidated launchsettings tohave the same setup for all environments as it is just a setting for the IDE and not used for the release package
-- changed the startup marker for dynamic services to a comment instead of a region
-- Foreign keys will no longer be automatically included in features or DTOs for better performance
+
+### Changed
+
+- Changed the startup marker for dynamic services to a comment instead of a region
+- Readme will now be generated in the domain directory
+- Updated environment to have production as a reserved word instead of startup to be consistent with dotnet process
+  - Will use startup and appsettings.production
+  - Normal appsettings will be empty, but have all the config keys required to make migrations and builds possible
 - Updated the default Cors policy name
-- fixed documented response codes for delete, put, and patch from 201 > 204
+- Consolidated launchsettings to have the same setup for all environments as it is just a setting for the IDE and not used for the release package
+
+### Removed
+
+- Removed `micro` command to consolidate and reduce complexity. if you still want to build a microservice, you can build a domain and deploy each bounded context as a microservice
+  - Gateways were removed and may be added back with better integration in a future release
+- Removed the `new:api` command to focus on the DDD driven style
+- Removed `ClientSecret` to promote code+PKCE flow
+
+### Fixed
+
+- Existing auth policies will now be skipped for registration when adding a new entity
+- Fixed documented response codes for delete, put, and patch from 201 > 204
+- Foreign keys will no longer be automatically included in features or DTOs for better performance (#2)
 
 ## [0.8.2] - 2021-02-25
 
