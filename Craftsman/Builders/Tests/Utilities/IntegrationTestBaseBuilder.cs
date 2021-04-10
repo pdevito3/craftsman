@@ -52,7 +52,8 @@
               options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTime>()
             );
             AssertionOptions.AssertEquivalencyUsing(options =>
-              options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTimeOffset>()"
+              options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTimeOffset>()
+            );"
                 : null;
 
             return @$"namespace {classNamespace}
@@ -69,7 +70,6 @@
         public async Task TestSetUp()
         {{
             await ResetState();{equivalency}
-            );
         }}
     }}
 }}";
