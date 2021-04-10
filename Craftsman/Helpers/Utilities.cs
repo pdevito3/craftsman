@@ -302,7 +302,7 @@
         public static void AddStartupEnvironmentsWithServices(
             string solutionDirectory,
             string solutionName,
-            string databaseName,
+            string dbName,
             List<ApiEnvironment> environments,
             SwaggerConfig swaggerConfig,
             int port,
@@ -323,7 +323,7 @@
                 if (env.EnvironmentName != "Production")
                     StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth, projectBaseName);
 
-                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, databaseName, projectBaseName);
+                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, dbName, projectBaseName);
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, projectBaseName);
 
                 //services

@@ -10,7 +10,7 @@
 
     public class IntegrationTestFixtureBuilder
     {
-        public static void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, string provider, IFileSystem fileSystem)
+        public static void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, string dbName, string provider, IFileSystem fileSystem)
         {
             try
             {
@@ -25,7 +25,7 @@
                 using (var fs = fileSystem.File.Create(classPath.FullClassPath))
                 {
                     var data = "";
-                    data = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, provider);
+                    data = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, dbName, provider);
                     fs.Write(Encoding.UTF8.GetBytes(data));
                 }
             }
@@ -41,7 +41,7 @@
             }
         }
 
-        public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName, string provider)
+        public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName, string dbName, string provider)
         {
             var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
@@ -65,12 +65,12 @@
             }};";
 
             var resetString = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
-                ? $@"using (var conn = new NpgsqlConnection(_configuration.GetConnectionString(""{dbContextName}"")))
+                ? $@"using (var conn = new NpgsqlConnection(_configuration.GetConnectionString(""{dbName}"")))
             {{
                 await conn.OpenAsync();
                 await _checkpoint.Reset(conn);
             }}"
-                : $@"await _checkpoint.Reset(_configuration.GetConnectionString(""{dbContextName}""));";
+                : $@"await _checkpoint.Reset(_configuration.GetConnectionString(""{dbName}""));";
 
             return @$"namespace {classNamespace}
 {{
@@ -114,7 +114,7 @@
                 .AddInMemoryCollection(new Dictionary<string, string>
                     {{
                         {{ ""UseInMemoryDatabase"", ""false"" }},
-                        {{ ""ConnectionStrings:{dbContextName}"", dockerConnectionString }}
+                        {{ ""ConnectionStrings:{dbName}"", dockerConnectionString }}
                     }})
                 .AddEnvironmentVariables();
 

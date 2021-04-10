@@ -41,7 +41,7 @@
             fileSystem.Directory.CreateDirectory(testDirectory);
 
             SolutionBuilder.BuildSolution(solutionDirectory, template.SolutionName, fileSystem);
-            SolutionBuilder.AddProjects(solutionDirectory, srcDirectory, testDirectory, template.DbContext.Provider, template.DbContext.ContextName, template.SolutionName, template.AddJwtAuthentication, fileSystem);
+            SolutionBuilder.AddProjects(solutionDirectory, srcDirectory, testDirectory, template.DbContext.Provider, template.DbContext.DatabaseName, template.SolutionName, template.AddJwtAuthentication, fileSystem);
             if(verbosity == Verbosity.More)
                 WriteHelpText($"{template.SolutionName} projects were scaffolded successfully.");
 
@@ -71,7 +71,7 @@
                 srcDirectory,
                 new Dictionary<string, string>()
                 {
-                    { "ASPNETCORE_ENVIRONMENT", "Development" } // guid to not conflict with any given envs
+                    { "ASPNETCORE_ENVIRONMENT", Guid.NewGuid().ToString() } // guid to not conflict with any given envs
                 },
                 20000,
                 "Db Migrations timed out and will need to be run manually.");
@@ -111,7 +111,7 @@
 
             // unit tests, test utils, and one offs
             PagedListTestBuilder.CreateTests(testDirectory, template.SolutionName);
-            IntegrationTestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, template.DbContext.Provider, fileSystem);
+            IntegrationTestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, template.DbContext.DatabaseName, template.DbContext.Provider, fileSystem);
             IntegrationTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, template.DbContext.Provider, fileSystem);
             DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, template.SolutionName, template.DbContext.Provider, fileSystem);
             ApiRoutesBuilder.CreateClass(testDirectory, template.SolutionName, template.Entities, fileSystem);
