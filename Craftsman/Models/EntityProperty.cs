@@ -44,13 +44,7 @@ namespace Craftsman.Models
         /// </summary>
         public bool CanManipulate
         {
-            get 
-            {
-                if (IsPrimaryKey)
-                    return false;
-                else
-                    return true;
-            }
+            get => !IsPrimaryKey;
             set => _canManipulate = value;
         }
 
