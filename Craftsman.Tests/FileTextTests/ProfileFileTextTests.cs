@@ -19,13 +19,13 @@
             var entity = new FakeEntity().Generate();
             entity.Name = "Product";
 
-            var fileText = ProfileBuilder.GetProfileFileText(classNamespace, entity, "", "");
+            var fileText = ProfileBuilder.GetProfileFileText(classNamespace, entity, "", "MyBc");
 
             var expectedText = @"namespace Application.Mappings
 {
-    using Application.Dtos.Product;
+    using MyBc.Core.Dtos.Product;
     using AutoMapper;
-    using Domain.Entities;
+    using MyBc.Core.Entities;
 
     public class ProductProfile : Profile
     {

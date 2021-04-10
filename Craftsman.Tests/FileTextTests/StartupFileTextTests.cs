@@ -13,22 +13,20 @@
     public class StartupFileTextTests
     {
         [Fact]
-        public void GetStartupText_Devlopment_env_returns_expected_text()
+        public void GetStartupText_Development_env_returns_expected_text()
         {
-            var fileText = StartupBuilder.GetStartupText("", "WebApi", "Development", false);
+            var fileText = StartupBuilder.GetStartupText("", "WebApi", "Development", false, "MyBc");
 
             var expectedText = @$"namespace WebApi
 {{
-    using Application;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Infrastructure.Persistence;
-    using Infrastructure.Shared;
-    using Infrastructure.Persistence.Seeders;
-    using Infrastructure.Persistence.Contexts;
-    using WebApi.Extensions;
+    using MyBc.Infrastructure;
+    using MyBc.Infrastructure.Seeders;
+    using MyBc.Infrastructure.Contexts;
+    using MyBc.WebApi.Extensions;
     using Serilog;
 
     public class StartupDevelopment
@@ -46,13 +44,12 @@
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {{
-            services.AddCorsService(""MyCorsPolicy"");
-            services.AddApplicationLayer();
-            services.AddPersistenceInfrastructure(_config);
-            services.AddSharedInfrastructure(_config);
+            services.AddCorsService(""MyBcCorsPolicy"");
+            services.AddInfrastructure(_config, _env);
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
+            services.AddWebApiServices();
             services.AddHealthChecks();
 
             // Dynamic Services
@@ -68,7 +65,7 @@
             #region Entity Context Region - Do Not Delete
             #endregion
 
-            app.UseCors(""MyCorsPolicy"");
+            app.UseCors(""MyBcCorsPolicy"");
 
             app.UseSerilogRequestLogging();
             app.UseRouting();
@@ -95,26 +92,25 @@
         [InlineData("Local")]
         public void GetStartupText_NonDevlopment_env_returns_expected_text(string env)
         {
-            var fileText = StartupBuilder.GetStartupText("", "WebApi", env, false);
+            var fileText = StartupBuilder.GetStartupText("", "WebApi", env, false, "MyBc");
+            var suffix = env == "Production" ? "" : env;
 
             var expectedText = @$"namespace WebApi
 {{
-    using Application;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Infrastructure.Persistence;
-    using Infrastructure.Shared;
-    using WebApi.Extensions;
+    using MyBc.Infrastructure;
+    using MyBc.WebApi.Extensions;
     using Serilog;
 
-    public class Startup{env}
+    public class Startup{suffix}
     {{
         public IConfiguration _config {{ get; }}
         public IWebHostEnvironment _env {{ get; }}
 
-        public Startup{env}(IConfiguration configuration, IWebHostEnvironment env)
+        public Startup{suffix}(IConfiguration configuration, IWebHostEnvironment env)
         {{
             _config = configuration;
             _env = env;
@@ -124,13 +120,12 @@
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {{
-            services.AddCorsService(""MyCorsPolicy"");
-            services.AddApplicationLayer();
-            services.AddPersistenceInfrastructure(_config);
-            services.AddSharedInfrastructure(_config);
+            services.AddCorsService(""MyBcCorsPolicy"");
+            services.AddInfrastructure(_config, _env);
             services.AddControllers()
                 .AddNewtonsoftJson();
             services.AddApiVersioningExtension();
+            services.AddWebApiServices();
             services.AddHealthChecks();
 
             // Dynamic Services
@@ -147,7 +142,7 @@
             // A slightly less secure option would be to redirect http to 400, 505, etc.
             app.UseHttpsRedirection();
             
-            app.UseCors(""MyCorsPolicy"");
+            app.UseCors(""MyBcCorsPolicy"");
 
             app.UseSerilogRequestLogging();
             app.UseRouting();

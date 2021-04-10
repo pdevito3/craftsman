@@ -42,7 +42,7 @@
             }
         }
 
-        public static string GetStartupText(string solutionDirectory, string classNamespace, string envName, bool useJwtAuth, string projectBaseName = "")
+        public static string GetStartupText(string solutionDirectory, string classNamespace, string envName, bool useJwtAuth, string projectBaseName)
         {
             var appAuth = "";
             var apiExtensionsClassPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, "", projectBaseName);
@@ -58,6 +58,7 @@
             }
 
             var dbContextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
+            var corsName = $"{projectBaseName}CorsPolicy";
 
             envName = envName == "Production" ? "" : envName;
             if (envName == "Development")
@@ -88,7 +89,7 @@
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {{
-            services.AddCorsService(""MyCorsPolicy"");
+            services.AddCorsService(""{corsName}"");
             services.AddInfrastructure(_config, _env);
             services.AddControllers()
                 .AddNewtonsoftJson();
@@ -109,7 +110,7 @@
             #region Entity Context Region - Do Not Delete
             #endregion
 
-            app.UseCors(""MyCorsPolicy"");
+            app.UseCors(""{corsName}"");
 
             app.UseSerilogRequestLogging();
             app.UseRouting();{appAuth}
@@ -152,7 +153,7 @@
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {{
-            services.AddCorsService(""MyCorsPolicy"");
+            services.AddCorsService(""{corsName}"");
             services.AddInfrastructure(_config, _env);
             services.AddControllers()
                 .AddNewtonsoftJson();
@@ -174,7 +175,7 @@
             // A slightly less secure option would be to redirect http to 400, 505, etc.
             app.UseHttpsRedirection();
             
-            app.UseCors(""MyCorsPolicy"");
+            app.UseCors(""{corsName}"");
 
             app.UseSerilogRequestLogging();
             app.UseRouting();{appAuth}
