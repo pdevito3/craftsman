@@ -24,24 +24,22 @@
             if (args.Length == 0)
             {
                 ListCommand.Run();
+                CheckForLatestVersion();
                 return;
             }
 
             if (args[0] == "version" || args[0] == "--version")
             {
-                WriteHelpHeader($"v{typeof(ProcessCommand).Assembly.GetName().Version}");
+                WriteHelpHeader($"v{GetInstalledCraftsmanVersion()}");
+                CheckForLatestVersion();
                 return;
             }
 
             if (args[0] == "list" || args[0] == "-h" || args[0] == "--help")
             {
                 ListCommand.Run();
+                CheckForLatestVersion();
                 return;
-            }
-
-            if (args.Length == 2 && (args[0] == "new:api"))
-            {
-                WriteHelpHeader($"This command has been depricated. If you'd like to create a new project, use the `new:domain` command. If you want to add a new bounded context to an existing project, use the `add:bc` command. Run `craftsman list` for a full list of commands.");
             }
 
             if (args.Length >= 2 && (args[0] == "add:bc" || args[0] == "add:boundedcontext"))
@@ -53,6 +51,8 @@
                     AddBoundedContextCommand.Help();
                 else
                 {
+                    CheckForLatestVersion();
+
                     var rootDir = fileSystem.Directory.GetCurrentDirectory();
                     if (myEnv == "Dev")
                     {
@@ -72,6 +72,8 @@
                     AddBoundedContextCommand.Help();
                 else
                 {
+                    CheckForLatestVersion();
+
                     var rootDir = fileSystem.Directory.GetCurrentDirectory();
                     if (myEnv == "Dev")
                     {
@@ -91,6 +93,8 @@
                     AddEntityCommand.Help();
                 else
                 {
+                    CheckForLatestVersion();
+
                     var solutionDir = fileSystem.Directory.GetCurrentDirectory();
                     if(myEnv == "Dev")
                     {
@@ -108,6 +112,8 @@
                     AddEntityPropertyCommand.Help();
                 else
                 {
+                    CheckForLatestVersion();
+
                     var entityName = "";
                     var newProperty = new EntityProperty();
                     Parser.Default.ParseArguments<AddPropertyOptions>(args)
@@ -133,8 +139,6 @@
                     AddEntityPropertyCommand.Run(solutionDir, entityName, newProperty);
                 }
             }
-
-            CheckForLatestVersion();
         }
 
         private static Verbosity GetVerbosityFromArgs<TOptions>(string[] args)
@@ -151,8 +155,7 @@
         {
             try
             {
-                var installedVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                installedVersion = installedVersion[0..^2]; // equivalent to installedVersion.Substring(0, installedVersion.Length - 2);
+                var installedVersion = GetInstalledCraftsmanVersion();
 
                 // not sure if/how to account for prerelease yet -- seems like with other repos, the logic github currently uses will redirect to the latest current
                 //var isPrelease = installedVersion.IndexOf("-", StringComparison.Ordinal) > -1;
@@ -169,13 +172,21 @@
                         latestVersion = latestVersion[1..]; // remove the 'v' prefix. equivalent to `latest.Substring(1, latest.Length - 1)`
 
                     if (installedVersion != latestVersion)
-                        WriteHelpHeader(@$"This Craftsman version '{installedVersion}' is older than that of the runtime '{latestVersion}'. Update the tools for the latest features and bug fixes (`dotnet tool update -g craftsman`).");
+                        WriteHelpHeader(@$"{Environment.NewLine}This Craftsman version '{installedVersion}' is older than that of the runtime '{latestVersion}'. Update the tools for the latest features and bug fixes (`dotnet tool update -g craftsman`).{Environment.NewLine}");
                 //}
             }
             catch (Exception)
             {
                 // fail silently
             }
+        }
+
+        private static string GetInstalledCraftsmanVersion()
+        {
+            var installedVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            installedVersion = installedVersion[0..^2]; // equivalent to installedVersion.Substring(0, installedVersion.Length - 2);
+
+            return installedVersion;
         }
     }
 }
