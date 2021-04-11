@@ -31,7 +31,6 @@
     public class Product
     {{
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Required]
         [Sieve(CanFilter = true, CanSort = false)]
         public int ProductId {{ get; set; }}
@@ -69,7 +68,6 @@
     public class Product
     {{
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Required]
         [Sieve(CanFilter = true, CanSort = false)]
         public int ProductId {{ get; set; }}
@@ -107,7 +105,6 @@
     public class Product
     {{
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Required]
         [Sieve(CanFilter = true, CanSort = false)]
         public int ProductId {{ get; set; }}

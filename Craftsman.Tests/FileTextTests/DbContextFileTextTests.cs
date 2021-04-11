@@ -37,7 +37,12 @@
 
         #region DbSet Region - Do Not Delete
         public DbSet<Product> Products {{ get; set; }}
-        #endregion
+        #endregion        
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {{
+            modelBuilder.Entity<Product>().Property(p => p.ProductId).ValueGeneratedNever();
+        }}
     }}
 }}";
 
