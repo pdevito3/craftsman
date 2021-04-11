@@ -26,5 +26,14 @@
             // Return char and concat substring.
             return char.ToLower(value[0]) + value.Substring(1);
         }
+
+        public static string RemoveLastNewLine(this string input)
+        {
+            int index = input.LastIndexOf(Environment.NewLine);
+            if (index >= 0)
+                input = input.Substring(0, index) + input.Substring(index + Environment.NewLine.Length);
+
+            return input;
+        }
     }
 }
