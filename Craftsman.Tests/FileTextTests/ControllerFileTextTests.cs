@@ -433,10 +433,10 @@
         /// <summary>
         /// Deletes an existing Product record.
         /// </summary>
-        /// <response code=""201"">Product deleted.</response>
+        /// <response code=""204"">Product deleted.</response>
         /// <response code=""400"">Product has missing/invalid values.</response>
         /// <response code=""500"">There was an error on the server while creating the Product.</response>
-        [ProducesResponseType(201)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         [ProducesResponseType(500)]
         [Produces(""application/json"")]
@@ -453,10 +453,10 @@
         /// <summary>
         /// Updates an entire existing Product.
         /// </summary>
-        /// <response code=""201"">Product updated.</response>
+        /// <response code=""204"">Product updated.</response>
         /// <response code=""400"">Product has missing/invalid values.</response>
         /// <response code=""500"">There was an error on the server while creating the Product.</response>
-        [ProducesResponseType(201)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         [ProducesResponseType(500)]
         [Produces(""application/json"")]
@@ -473,10 +473,10 @@
         /// <summary>
         /// Updates specific properties on an existing Product.
         /// </summary>
-        /// <response code=""201"">Product updated.</response>
+        /// <response code=""204"">Product updated.</response>
         /// <response code=""400"">Product has missing/invalid values.</response>
         /// <response code=""500"">There was an error on the server while creating the Product.</response>
-        [ProducesResponseType(201)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         [ProducesResponseType(500)]
         [Consumes(""application/json"")]
