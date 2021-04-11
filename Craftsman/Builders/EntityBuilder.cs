@@ -100,7 +100,6 @@
             if (entityProperty.IsPrimaryKey)
             {
                 attributeString += @$"        [Key]{Environment.NewLine}";
-                attributeString += @$"        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]{Environment.NewLine}";
             }
             if (entityProperty.IsRequired)
                 attributeString += @$"        [Required]{Environment.NewLine}";

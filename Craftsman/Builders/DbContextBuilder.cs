@@ -51,6 +51,10 @@
         public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
         {
             var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+            var modelBuilderPKNotGenerated = "";
+            entities.ForEach(entity => modelBuilderPKNotGenerated += @$"            modelBuilder.Entity<{entity.Name}>().Property(p => p.{entity.PrimaryKeyProperty.Name}).ValueGeneratedNever();{Environment.NewLine}");
+            modelBuilderPKNotGenerated = modelBuilderPKNotGenerated.RemoveLastNewLine();
+
             return @$"namespace {classNamespace}
 {{
     using {entitiesClassPath.ClassNamespace};
@@ -68,7 +72,12 @@
 
         #region DbSet Region - Do Not Delete
 {GetDbSetText(entities)}
-        #endregion
+        #endregion        
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {{
+{modelBuilderPKNotGenerated}
+        }}
     }}
 }}";
         }
