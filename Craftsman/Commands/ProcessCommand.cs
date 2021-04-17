@@ -5,6 +5,7 @@
     using Craftsman.Enums;
     using Craftsman.Models;
     using RestSharp;
+    using Spectre.Console;
     using System;
     using System.Collections.Generic;
     using System.IO.Abstractions;
@@ -30,7 +31,7 @@
 
             if (args[0] == "version" || args[0] == "--version")
             {
-                WriteHelpHeader($"v{GetInstalledCraftsmanVersion()}");
+                AnsiConsole.Markup($"[khaki1]v{GetInstalledCraftsmanVersion()}[/]");
                 CheckForLatestVersion();
                 return;
             }
@@ -96,7 +97,7 @@
                     CheckForLatestVersion();
 
                     var solutionDir = fileSystem.Directory.GetCurrentDirectory();
-                    if(myEnv == "Dev")
+                    if (myEnv == "Dev")
                     {
                         Console.WriteLine("Enter the solution directory.");
                         solutionDir = Console.ReadLine();
@@ -162,17 +163,17 @@
 
                 //if (!isPrelease)
                 //{
-                    var client = new RestClient("https://github.com/pdevito3/craftsman/releases/latest");
-                    var request = new RestRequest() { Method = Method.GET };
-                    request.AddHeader("Accept", "text/html");
-                    var todos = client.Execute(request);
+                var client = new RestClient("https://github.com/pdevito3/craftsman/releases/latest");
+                var request = new RestRequest() { Method = Method.GET };
+                request.AddHeader("Accept", "text/html");
+                var todos = client.Execute(request);
 
-                    var latestVersion = todos.ResponseUri.Segments.LastOrDefault().ToString();
-                    if(latestVersion.FirstOrDefault() == 'v')
-                        latestVersion = latestVersion[1..]; // remove the 'v' prefix. equivalent to `latest.Substring(1, latest.Length - 1)`
+                var latestVersion = todos.ResponseUri.Segments.LastOrDefault().ToString();
+                if (latestVersion.FirstOrDefault() == 'v')
+                    latestVersion = latestVersion[1..]; // remove the 'v' prefix. equivalent to `latest.Substring(1, latest.Length - 1)`
 
-                    if (installedVersion != latestVersion)
-                        WriteHelpHeader(@$"{Environment.NewLine}This Craftsman version '{installedVersion}' is older than that of the runtime '{latestVersion}'. Update the tools for the latest features and bug fixes (`dotnet tool update -g craftsman`).{Environment.NewLine}");
+                if (installedVersion != latestVersion)
+                    WriteHelpHeader(@$"{Environment.NewLine}This Craftsman version '{installedVersion}' is older than that of the runtime '{latestVersion}'. Update the tools for the latest features and bug fixes (`dotnet tool update -g craftsman`).{Environment.NewLine}");
                 //}
             }
             catch (Exception)

@@ -13,6 +13,7 @@
     using System.IO;
     using System.Linq;
     using static Helpers.ConsoleWriter;
+    using Spectre.Console;
 
     public static class AddEntityPropertyCommand
     {
@@ -27,15 +28,15 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Arguments:");
-            WriteHelpText(@$"   -e, -entity        Required. Text. Name of the entity to add the property. 
-                      Must match the name of the entity file (e.g. `Vet.cs` should 
+            WriteHelpText(@$"   -e, -entity        Required. Text. Name of the entity to add the property.
+                      Must match the name of the entity file (e.g. `Vet.cs` should
                       be `Vet`)");
             WriteHelpText(@$"   -n, -name          Required. Text. Name of the property to add");
             WriteHelpText(@$"   -t, -type          Required. Text. Data type of the property to add");
             WriteHelpText(@$"   -f, -filter        Optional. Boolean. Determines if the property is filterable");
             WriteHelpText(@$"   -s, -sort          Optional. Boolean. Determines if the property is sortable");
-            WriteHelpText(@$"   -k, -foreignkey    Optional. Text. When adding an object linked by a foreign 
-                      key, use this field to enter the name of the property that 
+            WriteHelpText(@$"   -k, -foreignkey    Optional. Text. When adding an object linked by a foreign
+                      key, use this field to enter the name of the property that
                       acts as the foreign key");
 
             // add new line back in if adding something with only one line of text after foreign key above
@@ -69,18 +70,22 @@
             }
             catch (Exception e)
             {
-                if (e is FileAlreadyExistsException
-                    || e is DirectoryAlreadyExistsException
-                    || e is InvalidSolutionNameException
-                    || e is FileNotFoundException
-                    || e is InvalidDbProviderException
-                    || e is InvalidFileTypeException
-                    || e is SolutionNotFoundException)
+                AnsiConsole.WriteException(e, new ExceptionSettings
                 {
-                    WriteError($"{e.Message}");
-                }
-                else
-                    WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
+                    Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
+                    Style = new ExceptionStyle
+                    {
+                        Exception = new Style().Foreground(Color.Grey),
+                        Message = new Style().Foreground(Color.White),
+                        NonEmphasized = new Style().Foreground(Color.Cornsilk1),
+                        Parenthesis = new Style().Foreground(Color.Cornsilk1),
+                        Method = new Style().Foreground(Color.Red),
+                        ParameterName = new Style().Foreground(Color.Cornsilk1),
+                        ParameterType = new Style().Foreground(Color.Red),
+                        Path = new Style().Foreground(Color.Red),
+                        LineNumber = new Style().Foreground(Color.Cornsilk1),
+                    }
+                });
             }
         }
     }

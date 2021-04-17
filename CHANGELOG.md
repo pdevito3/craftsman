@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Added SpectreConsole for a better CLI experience
 - Fixed double error messages
 
 ## [0.9.3] - 2021-04-10
