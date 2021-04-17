@@ -12,32 +12,19 @@
     {
         public static void CreateClass(string solutionDirectory, string projectBaseName, string provider, IFileSystem fileSystem)
         {
-            try
-            {
-                var classPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "DockerDatabaseUtilities.cs");
+            var classPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "DockerDatabaseUtilities.cs");
 
-                if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                    fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (fileSystem.File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetBaseText(classPath.ClassNamespace, provider, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetBaseText(classPath.ClassNamespace, provider, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -51,7 +38,7 @@
                 : $@"""ACCEPT_EULA=Y"",
                             $""SA_PASSWORD={{DB_PASSWORD}}""";
 
-            var constants = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider 
+            var constants = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? @$"public const string DB_PASSWORD = ""#testingDockerPassword#"";
         public const string DB_USER = ""postgres"";
         public const string DB_NAME = ""{projectBaseName}"";
@@ -207,8 +194,8 @@ namespace {classNamespace}
             foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(DB_CONTAINER_NAME))))
             {{
                 // Stopping all test containers that are older than 24 hours
-                var expiration = hoursTillExpiration > 0 
-                    ? hoursTillExpiration * -1 
+                var expiration = hoursTillExpiration > 0
+                    ? hoursTillExpiration * -1
                     : hoursTillExpiration;
                 if (runningContainer.Created < DateTime.UtcNow.AddHours(expiration))
                 {{

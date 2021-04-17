@@ -11,32 +11,18 @@
 
     public class GitBuilder
     {
-
         public static void CreateGitIgnore(string solutionDirectory)
         {
-            try
-            {
-                var filePath = Path.Combine(solutionDirectory, ".gitignore");
+            var filePath = Path.Combine(solutionDirectory, ".gitignore");
 
-                if (File.Exists(filePath))
-                    throw new FileAlreadyExistsException(filePath);
+            if (File.Exists(filePath))
+                throw new FileAlreadyExistsException(filePath);
 
-                using (FileStream fs = File.Create(filePath))
-                {
-                    var data = "";
-                    data = GetGitIgnoreFileText();
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(filePath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetGitIgnoreFileText();
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 

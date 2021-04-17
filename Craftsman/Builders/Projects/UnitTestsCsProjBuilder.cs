@@ -13,32 +13,19 @@
     {
         public static void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
         {
-            try
-            {
-                var classPath = ClassPathHelper.UnitTestProjectClassPath(solutionDirectory, projectBaseName);
+            var classPath = ClassPathHelper.UnitTestProjectClassPath(solutionDirectory, projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetTestsCsProjFileText(solutionDirectory, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetTestsCsProjFileText(solutionDirectory, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 

@@ -12,32 +12,19 @@
     {
         public static void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, string dbName, string provider, IFileSystem fileSystem)
         {
-            try
-            {
-                var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestFixture.cs", projectBaseName);
+            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestFixture.cs", projectBaseName);
 
-                if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                    fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (fileSystem.File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, dbName, provider);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, dbName, provider);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -141,7 +128,7 @@
             using var scope = _scopeFactory.CreateScope();
 
             var context = scope.ServiceProvider.GetService<{dbContextName}>();
-            
+
             context.Database.Migrate();
         }}
 

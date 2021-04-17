@@ -16,33 +16,20 @@
         /// </summary>
         public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string projectBaseName)
         {
-            try
-            {
-                var appSettingFilename = Utilities.GetAppSettingsName(env.EnvironmentName);
-                var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", projectBaseName);
+            var appSettingFilename = Utilities.GetAppSettingsName(env.EnvironmentName);
+            var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    File.Delete(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                File.Delete(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetAppSettingsText(env, dbName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetAppSettingsText(env, dbName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -51,7 +38,7 @@
             var jwtSettings = GetJwtAuthSettings(env);
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
 
-            if(env.EnvironmentName == "Development" || env.EnvironmentName == "FunctionalTesting")
+            if (env.EnvironmentName == "Development" || env.EnvironmentName == "FunctionalTesting")
 
                 return @$"{{
   ""AllowedHosts"": ""*"",

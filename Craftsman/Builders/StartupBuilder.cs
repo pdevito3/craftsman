@@ -11,34 +11,21 @@
     {
         public static void CreateWebApiStartup(string solutionDirectory, string envName, bool useJwtAuth, string projectBaseName = "")
         {
-            try
-            {
-                var classPath = envName == "Production" 
-                    ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", projectBaseName) 
-                    : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs", projectBaseName);
+            var classPath = envName == "Production"
+                ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", projectBaseName)
+                : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs", projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetStartupText(solutionDirectory, classPath.ClassNamespace, envName, useJwtAuth, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetStartupText(solutionDirectory, classPath.ClassNamespace, envName, useJwtAuth, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -107,14 +94,11 @@
 
             app.UseHttpsRedirection();
 
-            #region Entity Context Region - Do Not Delete
-            #endregion
-
             app.UseCors(""{corsName}"");
 
             app.UseSerilogRequestLogging();
             app.UseRouting();{appAuth}
-            
+
             app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>
             {{
@@ -126,9 +110,9 @@
         }}
     }}
 }}";
-        else
+            else
 
-            return @$"namespace {classNamespace}
+                return @$"namespace {classNamespace}
 {{
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -170,16 +154,16 @@
             app.UseExceptionHandler(""/Error"");
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
-            
-            // For elevated security, it is recommended to remove this middleware and set your server to only listen on https. 
+
+            // For elevated security, it is recommended to remove this middleware and set your server to only listen on https.
             // A slightly less secure option would be to redirect http to 400, 505, etc.
             app.UseHttpsRedirection();
-            
+
             app.UseCors(""{corsName}"");
 
             app.UseSerilogRequestLogging();
             app.UseRouting();{appAuth}
-            
+
             app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>
             {{

@@ -14,29 +14,16 @@
     {
         public static void CreateFakes(string solutionDirectory, string solutionName, Entity entity)
         {
-            try
-            {
-                // ****this class path will have an invalid FullClassPath. just need the directory
-                var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, $"", entity.Name, solutionName);
+            // ****this class path will have an invalid FullClassPath. just need the directory
+            var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, $"", entity.Name, solutionName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                CreateFakerFile(solutionDirectory, entity.Name, entity, solutionName);
-                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name,Dto.Creation), entity, solutionName);
-                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Read), entity, solutionName);
-                CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Update), entity, solutionName);
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
+            CreateFakerFile(solutionDirectory, entity.Name, entity, solutionName);
+            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Creation), entity, solutionName);
+            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Read), entity, solutionName);
+            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Update), entity, solutionName);
         }
 
         private static void CreateFakerFile(string solutionDirectory, string objectToFakeClassName, Entity entity, string solutionName)
@@ -73,7 +60,7 @@
         {{
             // if you want default values on any of your properties (e.g. an int between a certain range or a date always in the past), you can add `RuleFor` lines describing those defaults
             //RuleFor({entity.Lambda} => {entity.Lambda}.ExampleIntProperty, {entity.Lambda} => {entity.Lambda}.Random.Number(50, 100000));
-            //RuleFor({entity.Lambda} => {entity.Lambda}.ExampleDateProperty, {entity.Lambda} => {entity.Lambda}.Date.Past()); 
+            //RuleFor({entity.Lambda} => {entity.Lambda}.ExampleDateProperty, {entity.Lambda} => {entity.Lambda}.Date.Past());
         }}
     }}
 }}";

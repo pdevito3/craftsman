@@ -15,31 +15,18 @@
     {
         public static void CreateController(string solutionDirectory, Entity entity, bool AddSwaggerComments, List<Policy> policies, string projectBaseName = "")
         {
-            try
-            {
-                var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName, "v1");
+            var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName, "v1");
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = GetControllerFileText(classPath.ClassNamespace, entity, AddSwaggerComments, policies, solutionDirectory, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = GetControllerFileText(classPath.ClassNamespace, entity, AddSwaggerComments, policies, solutionDirectory, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -348,7 +335,7 @@
             foreach (var result in results)
             {
                 if (result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
-                    //|| result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Claim))
+                //|| result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Claim))
                 {
                     authorizations += $@"{Environment.NewLine}        [Authorize(Policy = ""{result.Name}"")]";
                 }
@@ -367,7 +354,7 @@
             if (hasAuthentications)
             {
                 authResponses = $@"
-        [ProducesResponseType(401)] 
+        [ProducesResponseType(401)]
         [ProducesResponseType(403)]";
             }
 
@@ -385,7 +372,6 @@
             }
 
             return authResponseComments;
-
         }
     }
 }

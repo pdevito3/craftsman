@@ -11,32 +11,19 @@
     {
         public static void CreateResponse(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            try
-            {
-                var classPath = ClassPathHelper.WrappersClassPath(solutionDirectory, $"Response.cs", projectBaseName);
+            var classPath = ClassPathHelper.WrappersClassPath(solutionDirectory, $"Response.cs", projectBaseName);
 
-                if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                    fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (fileSystem.File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetResponseText(classPath.ClassNamespace);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetResponseText(classPath.ClassNamespace);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 

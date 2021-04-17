@@ -17,37 +17,24 @@
     {
         public static void AddSeeders(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
         {
-            try
+            foreach (var entity in entities)
             {
-                foreach (var entity in entities)
+                var classPath = ClassPathHelper.SeederClassPath(solutionDirectory, $"{Utilities.GetSeederName(entity)}.cs", projectBaseName);
+
+                if (!Directory.Exists(classPath.ClassDirectory))
+                    Directory.CreateDirectory(classPath.ClassDirectory);
+
+                if (File.Exists(classPath.FullClassPath))
+                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+                using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var classPath = ClassPathHelper.SeederClassPath(solutionDirectory, $"{Utilities.GetSeederName(entity)}.cs", projectBaseName);
-
-                    if (!Directory.Exists(classPath.ClassDirectory))
-                        Directory.CreateDirectory(classPath.ClassDirectory);
-
-                    if (File.Exists(classPath.FullClassPath))
-                        throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-                    using (FileStream fs = File.Create(classPath.FullClassPath))
-                    {
-                        var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, dbContextName, solutionDirectory, projectBaseName);
-                        fs.Write(Encoding.UTF8.GetBytes(data));
-                    }
+                    var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, dbContextName, solutionDirectory, projectBaseName);
+                    fs.Write(Encoding.UTF8.GetBytes(data));
                 }
+            }
 
-                RegisterAllSeeders(solutionDirectory, entities, dbContextName, projectBaseName);
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
+            RegisterAllSeeders(solutionDirectory, entities, dbContextName, projectBaseName);
         }
 
         private static void RegisterAllSeeders(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
@@ -98,8 +85,9 @@
                     context.Database.EnsureCreated();
 
                     #region {dbContextName} Seeder Region - Do Not Delete
+
                     {seeders}
-                    #endregion
+                    #endregion {dbContextName} Seeder Region - Do Not Delete
                 }}
 ";
         }
