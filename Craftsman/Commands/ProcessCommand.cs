@@ -46,13 +46,13 @@
             if (args.Length >= 2 && (args[0] == "add:bc" || args[0] == "add:boundedcontext"))
             {
                 var filePath = args[1];
-                var verbosity = GetVerbosityFromArgs<AddBcOptions>(args);
 
                 if (filePath == "-h" || filePath == "--help")
                     AddBoundedContextCommand.Help();
                 else
                 {
                     CheckForLatestVersion();
+                    var verbosity = GetVerbosityFromArgs<AddBcOptions>(args);
 
                     var rootDir = fileSystem.Directory.GetCurrentDirectory();
                     if (myEnv == "Dev")
@@ -67,13 +67,13 @@
             if (args.Length >= 2 && (args[0] == "new:domain"))
             {
                 var filePath = args[1];
-                var verbosity = GetVerbosityFromArgs<AddBcOptions>(args);
 
                 if (filePath == "-h" || filePath == "--help")
-                    AddBoundedContextCommand.Help();
+                    NewDomainProjectCommand.Help();
                 else
                 {
                     CheckForLatestVersion();
+                    var verbosity = GetVerbosityFromArgs<NewDomainOptions>(args);
 
                     var rootDir = fileSystem.Directory.GetCurrentDirectory();
                     if (myEnv == "Dev")
@@ -88,13 +88,13 @@
             if (args.Length == 2 && (args[0] == "add:entity" || args[0] == "add:entities"))
             {
                 var filePath = args[1];
-                var verbosity = GetVerbosityFromArgs<AddEntityOptions>(args);
 
                 if (filePath == "-h" || filePath == "--help")
                     AddEntityCommand.Help();
                 else
                 {
                     CheckForLatestVersion();
+                    var verbosity = GetVerbosityFromArgs<AddEntityOptions>(args);
 
                     var solutionDir = fileSystem.Directory.GetCurrentDirectory();
                     if (myEnv == "Dev")
