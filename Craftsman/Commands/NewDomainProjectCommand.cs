@@ -21,6 +21,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using System.Threading.Tasks;
     using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
 
@@ -59,10 +60,10 @@
                 var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
                 fileSystem.Directory.CreateDirectory(domainDirectory);
 
-                foreach (var template in domainProject.BoundedContexts)
+                Parallel.ForEach(domainProject.BoundedContexts, (template) =>
                 {
                     ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity);
-                }
+                });
 
                 //final
                 ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
