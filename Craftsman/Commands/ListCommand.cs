@@ -17,7 +17,7 @@
             WriteHelpHeader(@$"    assistance");
             WriteHelpText(@$"      list                List commands");
             WriteHelpText(@$"      version, --version  Display the current Craftsman version.");
-            WriteHelpText(@$"      help                Display help for a command");
+            WriteHelpText(@$"      -h, --help          Display help for a command");
 
             WriteHelpHeader(@$"{Environment.NewLine}    add");
             WriteHelpText(@$"      add:bc              Add an API to your DDD project.");
@@ -35,7 +35,6 @@
             WriteHelpText(@$"   craftsman new:domain -h");
             WriteHelpText(@$"   craftsman add:entity -h");
             WriteHelpText(@$"   craftsman add:property -h");
-
         }
     }
 }

@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added SpectreConsole for a better CLI experience
 - Fixed double error messages
 - Added parallel processing for each bounded context
-- Fixed incorrect help message for `new:domain` command
+- Fixed incorrect help message for `new:domain` command (#24)
+- Fixed help text on `list` command
 
 ## [0.9.3] - 2021-04-10
 
