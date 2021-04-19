@@ -13,32 +13,19 @@
     {
         public static void CreateProfile(string solutionDirectory, Entity entity, string projectBaseName)
         {
-            try
-            {
-                var classPath = ClassPathHelper.ProfileClassPath(solutionDirectory, $"{Utilities.GetProfileName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            var classPath = ClassPathHelper.ProfileClassPath(solutionDirectory, $"{Utilities.GetProfileName(entity.Name)}.cs", entity.Plural, projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetProfileFileText(classPath.ClassNamespace, entity, solutionDirectory, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetProfileFileText(classPath.ClassNamespace, entity, solutionDirectory, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -58,7 +45,7 @@
         public {Utilities.GetProfileName(entity.Name)}()
         {{
             //createmap<to this, from this>
-            CreateMap<{entity.Name}, {Utilities.GetDtoName(entity.Name,Dto.Read)}>()
+            CreateMap<{entity.Name}, {Utilities.GetDtoName(entity.Name, Dto.Read)}>()
                 .ReverseMap();
             CreateMap<{Utilities.GetDtoName(entity.Name, Dto.Creation)}, {entity.Name}>();
             CreateMap<{Utilities.GetDtoName(entity.Name, Dto.Update)}, {entity.Name}>()

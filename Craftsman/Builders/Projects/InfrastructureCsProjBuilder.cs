@@ -13,32 +13,19 @@
     {
         public static void CreateInfrastructurePersistenceCsProj(string solutionDirectory, string projectBaseName, string dbProvider)
         {
-            try
-            {
-                var classPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
+            var classPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetInfrastructurePersistenceCsProjFileText(solutionDirectory, projectBaseName, dbProvider);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetInfrastructurePersistenceCsProjFileText(solutionDirectory, projectBaseName, dbProvider);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 

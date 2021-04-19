@@ -13,6 +13,7 @@
     using FluentAssertions.Common;
     using LibGit2Sharp;
     using Newtonsoft.Json;
+    using Spectre.Console;
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -43,10 +44,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman new:domain C:\fullpath\domain.yaml");
-            WriteHelpText(@$"       craftsman new:domain C:\fullpath\domain.yml");
-            WriteHelpText(@$"       craftsman new:domain C:\fullpath\domain.json{Environment.NewLine}");
-
+            WriteHelpText(@$"   craftsman new:domain C:\fullpath\domain.yaml");
+            WriteHelpText(@$"   craftsman new:domain C:\fullpath\domain.yml");
+            WriteHelpText(@$"   craftsman new:domain C:\fullpath\domain.json{Environment.NewLine}");
         }
 
         public static void Run(string filePath, string buildSolutionDirectory, IFileSystem fileSystem, Verbosity verbosity)
@@ -55,7 +55,7 @@
             {
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
                 var domainProject = FileParsingHelper.GetTemplateFromFile<DomainProject>(filePath);
-                WriteHelpText($"Your template file was parsed successfully.");
+                WriteLogMessage($"Your template file was parsed successfully");
 
                 var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
                 fileSystem.Directory.CreateDirectory(domainDirectory);
@@ -71,7 +71,7 @@
                 if (domainProject.AddGit)
                     Utilities.GitSetup(domainDirectory);
 
-                WriteHelpHeader($"{Environment.NewLine}Your domain project is ready! Build something amazing.");
+                AnsiConsole.MarkupLine($"{Environment.NewLine}[bold yellow1]Your domain project is ready! Build something amazing. [/]");
                 StarGithubRequest();
             }
             catch (Exception e)
@@ -87,7 +87,24 @@
                     WriteError($"{e.Message}");
                 }
                 else
-                    WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
+                {
+                    AnsiConsole.WriteException(e, new ExceptionSettings
+                    {
+                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
+                        Style = new ExceptionStyle
+                        {
+                            Exception = new Style().Foreground(Color.Grey),
+                            Message = new Style().Foreground(Color.White),
+                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
+                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
+                            Method = new Style().Foreground(Color.Red),
+                            ParameterName = new Style().Foreground(Color.Cornsilk1),
+                            ParameterType = new Style().Foreground(Color.Red),
+                            Path = new Style().Foreground(Color.Red),
+                            LineNumber = new Style().Foreground(Color.Cornsilk1),
+                        }
+                    });
+                }
             }
         }
     }

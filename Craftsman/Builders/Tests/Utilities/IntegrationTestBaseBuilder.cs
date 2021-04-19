@@ -12,32 +12,19 @@
     {
         public static void CreateBase(string solutionDirectory, string projectBaseName, string provider, IFileSystem fileSystem)
         {
-            try
-            {
-                var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestBase.cs", projectBaseName);
+            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestBase.cs", projectBaseName);
 
-                if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                    fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (fileSystem.File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetBaseText(classPath.ClassNamespace, provider);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetBaseText(classPath.ClassNamespace, provider);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -46,7 +33,7 @@
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var equivalency = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"
-            
+
             // close to equivalency required to reconcile precision differences between EF and Postgres
             AssertionOptions.AssertEquivalencyUsing(options =>
               options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTime>()

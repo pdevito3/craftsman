@@ -16,28 +16,15 @@
     {
         public static void CreateValidators(string solutionDirectory, string projectBaseName, Entity entity)
         {
-            try
-            {
-                BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Manipulation);
+            BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Manipulation);
 
-                // not building the creation and update ones anymore to KISS. Mainipulation can server as 
-                // shared validation. If there is shared validation required for just updates or just adds
-                // then they can copy manipulation and make it themselves. I think this will be a rarity 
-                // enough that we can feel comfortable with this. even manip is possibly sharing prematurely
+            // not building the creation and update ones anymore to KISS. Mainipulation can server as
+            // shared validation. If there is shared validation required for just updates or just adds
+            // then they can copy manipulation and make it themselves. I think this will be a rarity
+            // enough that we can feel comfortable with this. even manip is possibly sharing prematurely
 
-                //BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Creation);
-                //BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Update);
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
+            //BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Creation);
+            //BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Update);
         }
 
         private static void BuildValidatorClass(string solutionDirectory, string projectBaseName, Entity entity, Validator validator)

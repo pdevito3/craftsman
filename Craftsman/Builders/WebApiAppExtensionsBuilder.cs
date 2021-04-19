@@ -13,32 +13,19 @@
     {
         public static void CreateWebApiAppExtension(string solutionDirectory, string solutionName, IFileSystem fileSystem)
         {
-            try
-            {
-                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"AppExtensions.cs", solutionName);
+            var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"AppExtensions.cs", solutionName);
 
-                if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                    fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (fileSystem.File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetAppExtensionText(classPath.ClassNamespace, solutionDirectory, solutionName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetAppExtensionText(classPath.ClassNamespace, solutionDirectory, solutionName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 

@@ -19,7 +19,7 @@
                 fileSystem.Directory.CreateDirectory(solutionDirectory);
                 Utilities.ExecuteProcess("dotnet", @$"new sln -n {solutionName}", solutionDirectory);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 WriteError(e.Message);
                 throw;

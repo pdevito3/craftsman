@@ -22,6 +22,7 @@
     using System.Linq;
     using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
+    using Spectre.Console;
 
     public static class AddBoundedContextCommand
     {
@@ -44,10 +45,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.yaml");
-            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.yml");
-            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.json{Environment.NewLine}");
-
+            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.yaml");
+            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.yml");
+            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.json{Environment.NewLine}");
         }
 
         public static void Run(string filePath, string domainDirectory, IFileSystem fileSystem, Verbosity verbosity)
@@ -68,18 +68,22 @@
             }
             catch (Exception e)
             {
-                if (e is FileAlreadyExistsException
-                    || e is DirectoryAlreadyExistsException
-                    || e is InvalidSolutionNameException
-                    || e is FileNotFoundException
-                    || e is InvalidDbProviderException
-                    || e is InvalidFileTypeException
-                    || e is SolutiuonNameEntityMatchException)
+                AnsiConsole.WriteException(e, new ExceptionSettings
                 {
-                    WriteError($"{e.Message}");
-                }
-                else
-                    WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
+                    Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
+                    Style = new ExceptionStyle
+                    {
+                        Exception = new Style().Foreground(Color.Grey),
+                        Message = new Style().Foreground(Color.White),
+                        NonEmphasized = new Style().Foreground(Color.Cornsilk1),
+                        Parenthesis = new Style().Foreground(Color.Cornsilk1),
+                        Method = new Style().Foreground(Color.Red),
+                        ParameterName = new Style().Foreground(Color.Cornsilk1),
+                        ParameterType = new Style().Foreground(Color.Red),
+                        Path = new Style().Foreground(Color.Red),
+                        LineNumber = new Style().Foreground(Color.Cornsilk1),
+                    }
+                });
             }
         }
     }

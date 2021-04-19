@@ -18,34 +18,21 @@
     {
         public static void CreateDbContext(string solutionDirectory, List<Entity> entities, string dbContextName, string dbProvider, string dbName, string projectBaseName)
         {
-            try
+            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs", projectBaseName);
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
+
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs", projectBaseName);
-
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
-
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = GetContextFileText(classPath.ClassNamespace, entities,dbContextName, solutionDirectory, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-
-                RegisterContext(solutionDirectory, dbProvider, dbContextName, dbName, projectBaseName);
+                var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, solutionDirectory, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
+
+            RegisterContext(solutionDirectory, dbProvider, dbContextName, dbName, projectBaseName);
         }
 
         public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
@@ -66,13 +53,16 @@
     public class {dbContextName} : DbContext
     {{
         public {dbContextName}(
-            DbContextOptions<{dbContextName}> options) : base(options) 
+            DbContextOptions<{dbContextName}> options) : base(options)
         {{
         }}
 
         #region DbSet Region - Do Not Delete
+
 {GetDbSetText(entities)}
-        #endregion        
+        #endregion DbSet Region - Do Not Delete
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {{
@@ -86,7 +76,7 @@
         {
             var dbSetText = "";
 
-            foreach(var entity in entities)
+            foreach (var entity in entities)
             {
                 var newLine = entity == entities.LastOrDefault() ? "" : $"{Environment.NewLine}";
                 dbSetText += @$"        public DbSet<{entity.Name}> {entity.Plural} {{ get; set; }}{newLine}";
@@ -119,11 +109,11 @@
                         var newText = $"{line}";
                         if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                         {
-                            newText += @$"          
+                            newText += @$"
             if (configuration.GetValue<bool>(""UseInMemoryDatabase""))
             {{
                 services.AddDbContext<{dbContextName}>(options =>
-                    options.UseInMemoryDatabase($""{dbName?? dbContextName}""));
+                    options.UseInMemoryDatabase($""{dbName ?? dbContextName}""));
             }}
             else
             {{
@@ -177,7 +167,7 @@
                 return "UseNpgsql";
             //else if (Enum.GetName(typeof(DbProvider), DbProvider.MySql) == provider)
             //    return "UseMySql";
-            
+
             return "UseSqlServer";
         }
 
@@ -203,15 +193,16 @@
         public {dbContextName}(
             DbContextOptions<{dbContextName}> options,
             ICurrentUserService currentUserService,
-            IDateTimeService dateTimeService) : base(options) 
+            IDateTimeService dateTimeService) : base(options)
         {{
             _currentUserService = currentUserService;
             _dateTimeService = dateTimeService;
         }}
 
         #region DbSet Region - Do Not Delete
+
 {GetDbSetText(entities)}
-        #endregion
+        #endregion DbSet Region - Do Not Delete
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {{
