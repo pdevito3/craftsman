@@ -46,11 +46,11 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman add:prop --entity Vet --name VetName --type string --filter false --sort true");
-            WriteHelpText(@$"       craftsman add:prop -e Vet -n VetName -t string -f false -s true");
-            WriteHelpText(@$"       craftsman add:prop -e Vet -n VetName -t string");
-            WriteHelpText(@$"       craftsman add:prop -e Sale -n Product -t Product -k ProductId");
-            WriteHelpText(@$"       craftsman add:prop -e Vet -n AppointmentDate -t DateTime? -f false -s true");
+            WriteHelpText(@$"   craftsman add:prop --entity Vet --name VetName --type string --filter false --sort true");
+            WriteHelpText(@$"   craftsman add:prop -e Vet -n VetName -t string -f false -s true");
+            WriteHelpText(@$"   craftsman add:prop -e Vet -n VetName -t string");
+            WriteHelpText(@$"   craftsman add:prop -e Sale -n Product -t Product -k ProductId");
+            WriteHelpText(@$"   craftsman add:prop -e Vet -n AppointmentDate -t DateTime? -f false -s true");
             WriteHelpText(Environment.NewLine);
         }
 

@@ -8,20 +8,21 @@
     using Craftsman.Builders.Tests.IntegrationTests;
     using Craftsman.Enums;
     using Craftsman.Models;
+    using Spectre.Console;
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using static Helpers.ConsoleWriter;
 
     public class EntityScaffolding
     {
-        public static void ScaffoldEntities(string srcDirectory, 
-            string testDirectory, 
+        public static void ScaffoldEntities(string srcDirectory,
+            string testDirectory,
             string projectBaseName,
             List<Entity> entities,
             string dbContextName,
             bool addSwaggerComments,
             List<Policy> policies,
-            IFileSystem fileSystem, 
+            IFileSystem fileSystem,
             Verbosity verbosity)
         {
             foreach (var entity in entities)

@@ -41,9 +41,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman add:entities C:\fullpath\newentity.yaml");
-            WriteHelpText(@$"       craftsman add:entities C:\fullpath\newentity.yml");
-            WriteHelpText(@$"       craftsman add:entities C:\fullpath\newentity.json");
+            WriteHelpText(@$"   craftsman add:entities C:\fullpath\newentity.yaml");
+            WriteHelpText(@$"   craftsman add:entities C:\fullpath\newentity.yml");
+            WriteHelpText(@$"   craftsman add:entities C:\fullpath\newentity.json");
             WriteHelpText(Environment.NewLine);
         }
 

@@ -45,9 +45,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.yaml");
-            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.yml");
-            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.json{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.yaml");
+            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.yml");
+            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.json{Environment.NewLine}");
         }
 
         public static void Run(string filePath, string domainDirectory, IFileSystem fileSystem, Verbosity verbosity)

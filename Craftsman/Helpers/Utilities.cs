@@ -93,7 +93,7 @@
 
         public static string GetAppSettingsName(string envName, bool asJson = true)
         {
-            if(String.IsNullOrEmpty(envName))
+            if (String.IsNullOrEmpty(envName))
                 return asJson ? $"appsettings.json" : $"appsettings";
 
             return asJson ? $"appsettings.{envName}.json" : $"appsettings.{envName}";
@@ -185,14 +185,19 @@
             {
                 case Dto.Manipulation:
                     return $"{entityName}ForManipulationDto";
+
                 case Dto.Creation:
                     return $"{entityName}ForCreationDto";
+
                 case Dto.Update:
                     return $"{entityName}ForUpdateDto";
+
                 case Dto.Read:
                     return $"{entityName}Dto";
+
                 case Dto.ReadParamaters:
                     return $"{entityName}ParametersDto";
+
                 default:
                     throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Dto), dto)}");
             }
@@ -204,16 +209,19 @@
             {
                 case Validator.Manipulation:
                     return $"{entityName}ForManipulationDtoValidator";
+
                 case Validator.Creation:
                     return $"{entityName}ForCreationDtoValidator";
+
                 case Validator.Update:
                     return $"{entityName}ForUpdateDtoValidator";
+
                 default:
                     throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Validator), validator)}");
             }
         }
 
-        public static void ExecuteProcess(string command, string args, string directory, Dictionary<string,string> envVariables, int killInterval = 15000, string processKilledMessage = "Process Killed.")
+        public static bool ExecuteProcess(string command, string args, string directory, Dictionary<string, string> envVariables, int killInterval = 15000, string processKilledMessage = "Process Killed.")
         {
             var process = new Process
             {
@@ -235,8 +243,10 @@
             if (!process.WaitForExit(killInterval))
             {
                 process.Kill();
-                WriteHelpText(processKilledMessage);
+                WriteWarning(processKilledMessage);
+                return false;
             }
+            return true;
         }
 
         public static void ExecuteProcess(string command, string args, string directory)
@@ -269,25 +279,25 @@
             if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
             {
                 // ex: options.AddPolicy("CanRead", policy => policy.RequireClaim("scope", "detailedrecipes.read"));
-                return $@"                options.AddPolicy(""{policy.Name}"", 
+                return $@"                options.AddPolicy(""{policy.Name}"",
                     policy => policy.RequireClaim(""scope"", ""{policy.PolicyValue}""));";
             }
             //else if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Role))
             //{
             //    // ex: options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Administrator"));
-            //    return $@"                options.AddPolicy(""{policy.Name}"", 
+            //    return $@"                options.AddPolicy(""{policy.Name}"",
             //        policy => policy.RequireRole(""{policy.PolicyValue}""));";
             //}
 
             // claim ex: options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
-            return $@"                options.AddPolicy(""{policy.Name}"", 
+            return $@"                options.AddPolicy(""{policy.Name}"",
                     policy => policy.RequireClaim(""{policy.PolicyValue}""));";
         }
 
         public static string BuildTestAuthorizationString(List<Policy> policies, List<Endpoint> endpoints, string entityName, PolicyType policyType)
         {
             var endpointStrings = new List<string>();
-            foreach(var endpoint in endpoints)
+            foreach (var endpoint in endpoints)
             {
                 endpointStrings.Add(Enum.GetName(typeof(Endpoint), endpoint));
             }
@@ -295,7 +305,7 @@
             var results = policies
                 .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == entityName)
                     && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Intersect(endpointStrings).Any()));
-            
+
             return "{\"" + string.Join("\", \"", results.Select(r => r.PolicyValue)) + "\"}";
         }
 
@@ -354,8 +364,6 @@
 
             return fkIncludes;
         }
-
-
 
         public static void GitSetup(string solutionDirectory)
         {

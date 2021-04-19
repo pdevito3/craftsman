@@ -31,7 +31,7 @@
 
             if (args[0] == "version" || args[0] == "--version")
             {
-                AnsiConsole.Markup($"[khaki1]v{GetInstalledCraftsmanVersion()}[/]");
+                WriteInfo($"v{GetInstalledCraftsmanVersion()}");
                 CheckForLatestVersion();
                 return;
             }
@@ -46,7 +46,6 @@
             if (args.Length >= 2 && (args[0] == "add:bc" || args[0] == "add:boundedcontext"))
             {
                 var filePath = args[1];
-
                 if (filePath == "-h" || filePath == "--help")
                     AddBoundedContextCommand.Help();
                 else
@@ -67,7 +66,6 @@
             if (args.Length >= 2 && (args[0] == "new:domain"))
             {
                 var filePath = args[1];
-
                 if (filePath == "-h" || filePath == "--help")
                     NewDomainProjectCommand.Help();
                 else
@@ -88,7 +86,6 @@
             if (args.Length == 2 && (args[0] == "add:entity" || args[0] == "add:entities"))
             {
                 var filePath = args[1];
-
                 if (filePath == "-h" || filePath == "--help")
                     AddEntityCommand.Help();
                 else
