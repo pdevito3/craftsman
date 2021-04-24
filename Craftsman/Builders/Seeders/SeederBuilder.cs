@@ -84,8 +84,7 @@
                     context.Database.EnsureCreated();
 
                     // {dbContextName} Seeders
-
-                    {seeders}
+{seeders.RemoveLastNewLine()}
                 }}
 ";
         }
