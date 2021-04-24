@@ -34,22 +34,28 @@
     using Autofac.Extensions.DependencyInjection;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Serilog;
     using System;
     using System.IO;
     using System.Reflection;
+    using System.Threading.Tasks;
 
     public class Program
     {{
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {{
-            var myEnv = Environment.GetEnvironmentVariable(""ASPNETCORE_ENVIRONMENT"");
-            var appSettings = myEnv == null ? $""appsettings.json"" : $""appsettings.{{myEnv}}.json"";
+            var host = CreateHostBuilder(args).Build();
 
-            //Read Configuration from appSettings
+            using var scope = host.Services.CreateScope();
+
+            //Read configuration from appSettings
+            var services = scope.ServiceProvider;
+            var hostEnvironment = services.GetService<IWebHostEnvironment>();
             var config = new ConfigurationBuilder()
-                .AddJsonFile(appSettings)
+                .AddJsonFile(""appsettings.json"")
+                .AddJsonFile($""appsettings.{{hostEnvironment.EnvironmentName}}.json"", true)
                 .Build();
 
             //Initialize Logger
@@ -60,9 +66,7 @@
             try
             {{
                 Log.Information(""Starting application"");
-                CreateHostBuilder(args)
-                    .Build()
-                    .Run();
+                await host.RunAsync();
             }}
             catch (Exception e)
             {{

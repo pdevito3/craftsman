@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed incorrect help message for `new:domain` command (#24)
 - Fixed help text on `list` command
 - Changed the seeder regions in `StartupDevelopment.cs` to comments
+- Cleaned up the Logger settings in `Program.cs`
+- Updated `Program.cs` to async
 
 ## [0.9.3] - 2021-04-10
 
