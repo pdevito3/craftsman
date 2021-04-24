@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added parallel processing for each bounded context
 - Fixed incorrect help message for `new:domain` command (#24)
 - Fixed help text on `list` command
+- Removed verbosity effectiveness from `new:domain`
+  - also do this in other commands?
 - Changed the seeder regions in `StartupDevelopment.cs` to comments
 - Cleaned up the Logger settings in `Program.cs`
 - Updated `Program.cs` to async
