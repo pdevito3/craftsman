@@ -94,6 +94,8 @@
 
             app.UseHttpsRedirection();
 
+            // Entity Context - Do Not Delete
+
             app.UseCors(""{corsName}"");
 
             app.UseSerilogRequestLogging();

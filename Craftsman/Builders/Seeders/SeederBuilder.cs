@@ -55,7 +55,7 @@
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
-                        if (line.Contains("#region Entity Context Region"))
+                        if (line.Contains("Entity Context - Do Not Delete"))
                         {
                             newText += @$"{Environment.NewLine}{GetSeederContextText(entities, dbContextName)}";
                         }
@@ -68,7 +68,6 @@
             // delete the old file and set the name of the new one to the original name
             File.Delete(classPath.FullClassPath);
             File.Move(tempPath, classPath.FullClassPath);
-            //WriteWarning($"TODO Need a message for the update of Startup.");
         }
 
         private static string GetSeederContextText(List<Entity> entities, string dbContextName)
@@ -84,10 +83,9 @@
                 {{
                     context.Database.EnsureCreated();
 
-                    #region {dbContextName} Seeder Region - Do Not Delete
+                    // {dbContextName} Seeders
 
                     {seeders}
-                    #endregion {dbContextName} Seeder Region - Do Not Delete
                 }}
 ";
         }

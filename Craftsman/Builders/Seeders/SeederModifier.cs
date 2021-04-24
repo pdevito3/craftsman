@@ -56,7 +56,7 @@
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
-                        if (line.Contains($"#region {dbContextName} Seeder Region"))
+                        if (line.Contains($"// {dbContextName} Seeders"))
                         {
                             newText += @$"{Environment.NewLine}{GetSeederContextText(entities, dbContextName)}";
                         }
