@@ -61,10 +61,10 @@
                 fileSystem.Directory.CreateDirectory(domainDirectory);
                 SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
 
-                Parallel.ForEach(domainProject.BoundedContexts, (template) =>
-                {
-                    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity);
-                });
+                //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
+                //    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity));
+                foreach (var bc in domainProject.BoundedContexts)
+                    ApiScaffolding.ScaffoldApi(domainDirectory, bc, fileSystem, verbosity);
 
                 //final
                 ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
