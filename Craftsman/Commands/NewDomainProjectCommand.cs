@@ -59,6 +59,7 @@
 
                 var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
                 fileSystem.Directory.CreateDirectory(domainDirectory);
+                SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
 
                 Parallel.ForEach(domainProject.BoundedContexts, (template) =>
                 {

@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed the seeder regions in `StartupDevelopment.cs` to comments
 - Cleaned up the Logger settings in `Program.cs`
 - Updated `Program.cs` to async
+- Changed the `new:domain` output to a single solution with directories for each bounded context for easier management
 
 ## [0.9.3] - 2021-04-10
 

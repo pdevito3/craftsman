@@ -34,20 +34,19 @@
                     FileParsingHelper.SolutionNameDoesNotEqualEntityGuard(solutionName, template.Entities);
 
                     // add an accelerate.config.yaml file to the root?
-                    var solutionDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{solutionName}";
-                    var srcDirectory = Path.Combine(solutionDirectory, "src");
-                    var testDirectory = Path.Combine(solutionDirectory, "tests");
+                    var bcDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{solutionName}";
+                    var srcDirectory = Path.Combine(bcDirectory, "src");
+                    var testDirectory = Path.Combine(bcDirectory, "tests");
                     fileSystem.Directory.CreateDirectory(srcDirectory);
                     fileSystem.Directory.CreateDirectory(testDirectory);
 
                     ctx.Spinner(Spinner.Known.BouncingBar);
                     ctx.Status($"[bold blue]Building {solutionName} Projects [/]");
-                    SolutionBuilder.BuildSolution(solutionDirectory, solutionName, fileSystem);
-                    SolutionBuilder.AddProjects(solutionDirectory, srcDirectory, testDirectory, template.DbContext.Provider, template.DbContext.DatabaseName, solutionName, template.AddJwtAuthentication, fileSystem);
+                    SolutionBuilder.AddProjects(buildSolutionDirectory, srcDirectory, testDirectory, template.DbContext.Provider, template.DbContext.DatabaseName, solutionName, template.AddJwtAuthentication, fileSystem);
 
                     // add all files based on the given template config
                     ctx.Status($"[bold blue]Scaffolding Files for {solutionName} [/]");
-                    RunTemplateBuilders(solutionDirectory, srcDirectory, testDirectory, template, fileSystem, verbosity);
+                    RunTemplateBuilders(bcDirectory, srcDirectory, testDirectory, template, fileSystem, verbosity);
                     WriteLogMessage($"File scaffolding for {template.SolutionName} was successful");
 
                     ctx.Spinner(Spinner.Known.Moon);
