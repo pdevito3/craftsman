@@ -55,6 +55,8 @@
             try
             {
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
+                Utilities.SolutionGuard(domainDirectory);
+
                 var boundedContexts = FileParsingHelper.GetTemplateFromFile<BoundedContextsTemplate>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 

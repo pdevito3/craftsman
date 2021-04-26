@@ -42,6 +42,12 @@
             return Path.GetFileNameWithoutExtension(slnName) ?? throw new SolutionNotFoundException();
         }
 
+        public static void IsBoundedContextDirectoryGuard(string srcDirectory, string testDirectory)
+        {
+            if (!Directory.Exists(srcDirectory) || !Directory.Exists(testDirectory))
+                throw new IsNotBoundedContextDirectory();
+        }
+
         public static string CreateApiRouteClasses(List<Entity> entities)
         {
             var entityRouteClasses = "";

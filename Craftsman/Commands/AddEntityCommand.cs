@@ -57,9 +57,10 @@
                 var srcDirectory = Path.Combine(solutionDirectory, "src");
                 var testDirectory = Path.Combine(solutionDirectory, "tests");
 
-                template.SolutionName = Utilities.SolutionGuard(solutionDirectory); // this needs to happen before the projectbasename assignment
-                ProperDirectoryGuard(srcDirectory, testDirectory);
-                template = GetDbContext(srcDirectory, template, template.SolutionName);
+                Utilities.IsBoundedContextDirectoryGuard(srcDirectory, testDirectory);
+                var projectBaseName = Directory.GetParent(srcDirectory).Name;
+                template = GetDbContext(srcDirectory, template, projectBaseName);
+                template.SolutionName = projectBaseName;
 
                 WriteHelpText($"Your template file was parsed successfully.");
 
@@ -72,22 +73,29 @@
             }
             catch (Exception e)
             {
-                AnsiConsole.WriteException(e, new ExceptionSettings
+                if (e is IsNotBoundedContextDirectory)
                 {
-                    Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
-                    Style = new ExceptionStyle
+                    WriteError($"{e.Message}");
+                }
+                else
+                {
+                    AnsiConsole.WriteException(e, new ExceptionSettings
                     {
-                        Exception = new Style().Foreground(Color.Grey),
-                        Message = new Style().Foreground(Color.White),
-                        NonEmphasized = new Style().Foreground(Color.Cornsilk1),
-                        Parenthesis = new Style().Foreground(Color.Cornsilk1),
-                        Method = new Style().Foreground(Color.Red),
-                        ParameterName = new Style().Foreground(Color.Cornsilk1),
-                        ParameterType = new Style().Foreground(Color.Red),
-                        Path = new Style().Foreground(Color.Red),
-                        LineNumber = new Style().Foreground(Color.Cornsilk1),
-                    }
-                });
+                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
+                        Style = new ExceptionStyle
+                        {
+                            Exception = new Style().Foreground(Color.Grey),
+                            Message = new Style().Foreground(Color.White),
+                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
+                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
+                            Method = new Style().Foreground(Color.Red),
+                            ParameterName = new Style().Foreground(Color.Cornsilk1),
+                            ParameterType = new Style().Foreground(Color.Red),
+                            Path = new Style().Foreground(Color.Red),
+                            LineNumber = new Style().Foreground(Color.Cornsilk1),
+                        }
+                    });
+                }
             }
         }
 
@@ -109,12 +117,6 @@
             SeederModifier.AddSeeders(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
             DbContextModifier.AddDbSet(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
             ApiRouteModifier.AddRoutes(testDirectory, template.Entities, template.SolutionName);
-        }
-
-        private static void ProperDirectoryGuard(string srcDirectory, string testDirectory)
-        {
-            if (!Directory.Exists(srcDirectory) || !Directory.Exists(testDirectory))
-                throw new InvalidBaseDirectory();
         }
 
         private static AddEntityTemplate GetDbContext(string solutionDirectory, AddEntityTemplate template, string projectBaseName)

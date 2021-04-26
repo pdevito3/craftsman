@@ -61,7 +61,8 @@
                 var propList = new List<EntityProperty>() { prop };
                 var srcDirectory = Path.Combine(solutionDirectory, "src");
                 var testDirectory = Path.Combine(solutionDirectory, "tests");
-                var projectBaseName = Utilities.SolutionGuard(solutionDirectory);
+                Utilities.IsBoundedContextDirectoryGuard(srcDirectory, testDirectory);
+                var projectBaseName = Directory.GetParent(srcDirectory).Name;
 
                 EntityModifier.AddEntityProperties(srcDirectory, entityName, propList, projectBaseName);
                 DtoModifier.AddPropertiesToDtos(srcDirectory, entityName, propList, projectBaseName);
@@ -70,22 +71,29 @@
             }
             catch (Exception e)
             {
-                AnsiConsole.WriteException(e, new ExceptionSettings
+                if (e is IsNotBoundedContextDirectory)
                 {
-                    Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
-                    Style = new ExceptionStyle
+                    WriteError($"{e.Message}");
+                }
+                else
+                {
+                    AnsiConsole.WriteException(e, new ExceptionSettings
                     {
-                        Exception = new Style().Foreground(Color.Grey),
-                        Message = new Style().Foreground(Color.White),
-                        NonEmphasized = new Style().Foreground(Color.Cornsilk1),
-                        Parenthesis = new Style().Foreground(Color.Cornsilk1),
-                        Method = new Style().Foreground(Color.Red),
-                        ParameterName = new Style().Foreground(Color.Cornsilk1),
-                        ParameterType = new Style().Foreground(Color.Red),
-                        Path = new Style().Foreground(Color.Red),
-                        LineNumber = new Style().Foreground(Color.Cornsilk1),
-                    }
-                });
+                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
+                        Style = new ExceptionStyle
+                        {
+                            Exception = new Style().Foreground(Color.Grey),
+                            Message = new Style().Foreground(Color.White),
+                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
+                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
+                            Method = new Style().Foreground(Color.Red),
+                            ParameterName = new Style().Foreground(Color.Cornsilk1),
+                            ParameterType = new Style().Foreground(Color.Red),
+                            Path = new Style().Foreground(Color.Red),
+                            LineNumber = new Style().Foreground(Color.Cornsilk1),
+                        }
+                    });
+                }
             }
         }
     }

@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cleaned up the Logger settings in `Program.cs`
 - Updated `Program.cs` to async
 - Changed the `new:domain` output to a single solution with directories for each bounded context for easier management
+- Updated `add:entity` and `add:prop` to now be called from the BC directory
+  - UPDATE WRAPT DOCS FOR THIS
 
 ## [0.9.3] - 2021-04-10
 
