@@ -87,7 +87,7 @@
     [ApiController]
     [Route(""{endpointBase}"")]
     [ApiVersion(""1.0"")]
-    public class {entityNamePlural}Controller: Controller
+    public class {entityNamePlural}Controller: ControllerBase
     {{
         private readonly IMediator _mediator;
 

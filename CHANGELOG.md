@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed the `new:domain` output to a single solution with directories for each bounded context for easier management
 - Updated `add:entity` and `add:prop` to now be called from the BC directory
   - UPDATE WRAPT DOCS FOR THIS
+- Fixed controllers to inherit from `ControllerBase` instead of `Controller`. fixes (#26)
 
 ## [0.9.3] - 2021-04-10
 
