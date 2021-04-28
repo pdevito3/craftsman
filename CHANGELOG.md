@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `add:entity` and `add:prop` to now be called from the BC directory
   - UPDATE WRAPT DOCS FOR THIS
 - Fixed controllers to inherit from `ControllerBase` instead of `Controller`. fixes (#26)
+- No extra space in the class in the dto classes when not abstract and trailing new line
+- If using a guid for a PK, it will be added to the creation dto (not manipulation or update) -- fixes #28
+- Guid PKs will have a default value of `Guid.NewGuid()` in their creation dto -- fixes #28
 
 ## [0.9.3] - 2021-04-10
 
