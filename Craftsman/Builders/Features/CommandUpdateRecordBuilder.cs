@@ -99,7 +99,7 @@
 
             public async Task<bool> Handle({updateCommandName} request, CancellationToken cancellationToken)
             {{
-                // add logger (and a try catch with logger so i can cap the unexpected info)........ unless this happens in my logger decorator that i am going to add?
+                // add logger or use decorator
 
                 var recordToUpdate = await _db.{entity.Plural}
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});

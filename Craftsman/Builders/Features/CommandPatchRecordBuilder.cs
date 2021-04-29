@@ -100,7 +100,7 @@
 
             public async Task<bool> Handle({patchCommandName} request, CancellationToken cancellationToken)
             {{
-                // add logger (and a try catch with logger so i can cap the unexpected info)........ unless this happens in my logger decorator that i am going to add?
+                // add logger or use decorator
                 if (request.PatchDoc == null)
                 {{
                     // log error
