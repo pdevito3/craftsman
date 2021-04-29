@@ -32,6 +32,8 @@
 
         public static string GetControllerFileText(string classNamespace, Entity entity, bool AddSwaggerComments, List<Policy> policies, string solutionDirectory, string projectBaseName)
         {
+            // TODO create an attribute factory that can order them how i want and work more dynamically
+
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var entityNamePlural = entity.Plural;
@@ -59,6 +61,7 @@
             var updatePartialAuthorizations = BuildAuthorizations(policies, Endpoint.UpdatePartial, entity.Name);
             var deleteRecordAuthorizations = BuildAuthorizations(policies, Endpoint.DeleteRecord, entity.Name);
             var idParam = $@"{lowercaseEntityVariable}Id";
+            var hasConflictCode = entity.PrimaryKeyProperty.Type.IsGuidPropertyType();
 
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
@@ -136,7 +139,7 @@
             var response = new {singleResponse}(queryResponse);
             return Ok(response);
         }}
-        {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0)}{addRecordAuthorizations}
+        {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0, hasConflictCode)}{addRecordAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpPost]
@@ -251,19 +254,21 @@
             return "";
         }
 
-        private static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
+        private static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications, bool hasGuidPk)
         {
             var authResponses = GetAuthResponses(hasAuthentications);
             var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+            var conflictResponses = GetConflictResponses(hasGuidPk);
+            var conflictCommentResponses = GetConflictCommentResponses(hasGuidPk);
             if (buildComments)
                 return $@"
         /// <summary>
         /// Creates a new {entity.Name} record.
         /// </summary>
-        /// <response code=""201"">{entity.Name} created.</response>
+        /// <response code=""201"">{entity.Name} created.</response>{conflictCommentResponses}
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
-        [ProducesResponseType(typeof({singleResponse}), 201)]
+        [ProducesResponseType(typeof({singleResponse}), 201)]{conflictResponses}
         [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
@@ -361,6 +366,18 @@
             return authResponses;
         }
 
+        private static string GetConflictResponses(bool hasConflictResponse)
+        {
+            var conflictResponses = "";
+            if (hasConflictResponse)
+            {
+                conflictResponses = $@"
+        [ProducesResponseType(309)]";
+            }
+
+            return conflictResponses;
+        }
+
         private static string GetAuthCommentResponses(bool hasAuthentications)
         {
             var authResponseComments = "";
@@ -372,6 +389,18 @@
             }
 
             return authResponseComments;
+        }
+
+        private static string GetConflictCommentResponses(bool hasConflictResponse)
+        {
+            var responseComments = "";
+            if (hasConflictResponse)
+            {
+                responseComments = $@"
+        /// <response code=""309"">A record already exists with this primary key.</response>";
+            }
+
+            return responseComments;
         }
     }
 }

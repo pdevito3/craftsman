@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No extra space in the class in the dto classes when not abstract and trailing new line
 - If using a guid for a PK, it will be added to the creation dto (not manipulation or update) -- fixes #28
 - Guid PKs will have a default value of `Guid.NewGuid()` in their creation dto -- fixes #28
+- PK already exists guard will be performed when adding a new entity and throw a 309 conflict via a new conflict exception if a record already exists with that guid.
+  - **Add an integ test for this**
 
 ## [0.9.3] - 2021-04-10
 

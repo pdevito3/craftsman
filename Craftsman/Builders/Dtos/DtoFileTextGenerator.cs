@@ -32,7 +32,7 @@
             if (dto == Dto.Creation)
             {
                 propString = "";
-                if (entity.PrimaryKeyProperty.Type.Equals("guid", StringComparison.InvariantCultureIgnoreCase))
+                if (entity.PrimaryKeyProperty.Type.IsGuidPropertyType())
                     propString = DtoPropBuilder(new List<EntityProperty>() { entity.PrimaryKeyProperty }, dto);
             }
             else if (dto == Dto.Update)
@@ -76,7 +76,7 @@
             {
                 if (!props[eachProp].CanManipulate && dto == Dto.Manipulation)
                     continue;
-                var guidDefault = dto == Dto.Creation && props[eachProp].Type.Equals("guid", StringComparison.InvariantCultureIgnoreCase)
+                var guidDefault = dto == Dto.Creation && props[eachProp].Type.IsGuidPropertyType()
                     ? " = Guid.NewGuid();"
                     : "";
 
