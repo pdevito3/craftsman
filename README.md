@@ -31,6 +31,8 @@ For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wra
 
 🚧 More scaffolded test coverage
 
+🚧 Refactor error handling pipeline
+
 🚧 Auditable Entities
 
 🚧 Current user capture
