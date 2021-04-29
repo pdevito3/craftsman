@@ -85,7 +85,6 @@
             {{
                 // add logger (and a try catch with logger so i can cap the unexpected info)........ unless this happens in my logger decorator that i am going to add?
 
-                // include marker -- to accommodate adding includes with craftsman commands, the next line must stay as `var result = await _db.{entity.Plural}`. -- do not delete this comment
                 var result = await _db.{entity.Plural}
                     .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});

@@ -111,7 +111,6 @@
 
                 if (saveSuccessful)
                 {{
-                    // include marker -- to accommodate adding includes with craftsman commands, the next line must stay as `var result = await _db.{entity.Plural}`. -- do not delete this comment
                     return await _db.{entity.Plural}
                         .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
                         .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName});

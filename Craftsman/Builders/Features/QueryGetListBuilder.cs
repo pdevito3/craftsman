@@ -95,7 +95,6 @@
                     throw new ApiException(""Invalid query parameters."");
                 }}
 
-                // include marker -- to accommodate adding includes with craftsman commands, the next line must stay as `var result = await _db.{entity.Plural}`. -- do not delete this comment
                 var collection = _db.{entity.Plural}
                     as IQueryable<{entity.Name}>;
 
