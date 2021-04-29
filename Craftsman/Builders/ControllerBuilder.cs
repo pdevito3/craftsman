@@ -265,11 +265,11 @@
         /// <summary>
         /// Creates a new {entity.Name} record.
         /// </summary>
-        /// <response code=""201"">{entity.Name} created.</response>{conflictCommentResponses}
-        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
+        /// <response code=""201"">{entity.Name} created.</response>
+        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}{conflictCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
-        [ProducesResponseType(typeof({singleResponse}), 201)]{conflictResponses}
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
+        [ProducesResponseType(typeof({singleResponse}), 201)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}{conflictResponses}
         [ProducesResponseType(500)]";
 
             return "";
@@ -372,7 +372,7 @@
             if (hasConflictResponse)
             {
                 conflictResponses = $@"
-        [ProducesResponseType(309)]";
+        [ProducesResponseType(409)]";
             }
 
             return conflictResponses;
@@ -397,7 +397,7 @@
             if (hasConflictResponse)
             {
                 responseComments = $@"
-        /// <response code=""309"">A record already exists with this primary key.</response>";
+        /// <response code=""409"">A record already exists with this primary key.</response>";
             }
 
             return responseComments;
