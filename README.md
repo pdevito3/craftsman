@@ -13,6 +13,28 @@ Craftsman is the workhorse behind the [Wrapt](https://wrapt.dev) framework and p
 
 For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wrapt.dev).
 
+## Upcoming Features in v0.10.x
+
+✅ [Spectre.Console](https://spectreconsole.net/) CLI updates
+
+✅ All Bounded Contexts will be in one solution
+
+✅ Logger and appsetting registration clean up
+
+✅ Better Guid primary key support
+
+✅ Lots of cleanup 🧹 and 🐛 squashing
+
+🚧 Event Driven Architecture (EDA) scaffolding commands
+
+🚧 Pipeline Decorators
+
+🚧 More scaffolded test coverage
+
+🚧 Auditable Entities
+
+🚧 Current user capture
+
 ## Support
 
 If Wrapt and Craftsman are saving you time and helping your projects, consider [sponsoring me on Github](https://github.com/sponsors/pdevito3) to support ongoing Wrapt development and make it even better!
