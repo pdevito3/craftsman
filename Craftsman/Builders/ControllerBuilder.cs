@@ -35,6 +35,7 @@
             // TODO create an attribute factory that can order them how i want and work more dynamically
 
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
+            var lowercasePrimaryKey = entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var entityNamePlural = entity.Plural;
             var readDto = Utilities.GetDtoName(entityName, Dto.Read);
@@ -60,7 +61,6 @@
             var updateRecordAuthorizations = BuildAuthorizations(policies, Endpoint.UpdateRecord, entity.Name);
             var updatePartialAuthorizations = BuildAuthorizations(policies, Endpoint.UpdatePartial, entity.Name);
             var deleteRecordAuthorizations = BuildAuthorizations(policies, Endpoint.DeleteRecord, entity.Name);
-            var idParam = $@"{lowercaseEntityVariable}Id";
             var hasConflictCode = entity.PrimaryKeyProperty.Type.IsGuidPropertyType();
 
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
@@ -129,11 +129,11 @@
         }}
         {GetSwaggerComments_GetRecord(entity, AddSwaggerComments, singleResponse, getRecordAuthorizations.Length > 0)}{getRecordAuthorizations}
         [Produces(""application/json"")]
-        [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""{getRecordEndpointName}"")]
-        public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {idParam})
+        [HttpGet(""{{{lowercasePrimaryKey}}}"", Name = ""{getRecordEndpointName}"")]
+        public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercasePrimaryKey})
         {{
             // add error handling
-            var query = new {queryRecordMethodName}({idParam});
+            var query = new {queryRecordMethodName}({lowercasePrimaryKey});
             var queryResponse = await _mediator.Send(query);
 
             var response = new {singleResponse}(queryResponse);
@@ -156,22 +156,22 @@
         }}
         {GetSwaggerComments_DeleteRecord(entity, AddSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
         [Produces(""application/json"")]
-        [HttpDelete(""{{{idParam}}}"")]
-        public async Task<ActionResult> Delete{entityName}({pkPropertyType} {idParam})
+        [HttpDelete(""{{{lowercasePrimaryKey}}}"")]
+        public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercasePrimaryKey})
         {{
             // add error handling
-            var command = new {deleteRecordCommandMethodName}({idParam});
+            var command = new {deleteRecordCommandMethodName}({lowercasePrimaryKey});
             await _mediator.Send(command);
 
             return NoContent();
         }}
         {GetSwaggerComments_PutRecord(entity, AddSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
         [Produces(""application/json"")]
-        [HttpPut(""{{{idParam}}}"")]
-        public async Task<IActionResult> Update{entityName}({pkPropertyType} {idParam}, {updateDto} {lowercaseEntityVariable})
+        [HttpPut(""{{{lowercasePrimaryKey}}}"")]
+        public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercasePrimaryKey}, {updateDto} {lowercaseEntityVariable})
         {{
             // add error handling
-            var command = new {updateRecordCommandMethodName}({idParam}, {lowercaseEntityVariable});
+            var command = new {updateRecordCommandMethodName}({lowercasePrimaryKey}, {lowercaseEntityVariable});
             await _mediator.Send(command);
 
             return NoContent();
@@ -179,11 +179,11 @@
         {GetSwaggerComments_PatchRecord(entity, AddSwaggerComments, updatePartialAuthorizations.Length > 0)}{updatePartialAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
-        [HttpPatch(""{{{idParam}}}"")]
-        public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {idParam}, JsonPatchDocument<{updateDto}> patchDoc)
+        [HttpPatch(""{{{lowercasePrimaryKey}}}"")]
+        public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {lowercasePrimaryKey}, JsonPatchDocument<{updateDto}> patchDoc)
         {{
             // add error handling
-            var command = new {patchRecordCommandMethodName}({idParam}, patchDoc);
+            var command = new {patchRecordCommandMethodName}({lowercasePrimaryKey}, patchDoc);
             await _mediator.Send(command);
 
             return NoContent();
