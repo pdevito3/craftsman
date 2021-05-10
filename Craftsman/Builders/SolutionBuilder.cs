@@ -89,6 +89,8 @@
             Directory.CreateDirectory(ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
 
+            WebApiServiceExtensionsBuilder.CreateApiVersioningServiceExtension(srcDirectory, projectBaseName, fileSystem);
+            WebApiServiceExtensionsBuilder.CreateCorsServiceExtension(srcDirectory, projectBaseName, fileSystem);
             WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(srcDirectory, projectBaseName, fileSystem);
             WebApiAppExtensionsBuilder.CreateErrorHandlerWebApiAppExtension(srcDirectory, projectBaseName, fileSystem);
             ErrorHandlerMiddlewareBuilder.CreateErrorHandlerMiddleware(srcDirectory, projectBaseName, fileSystem);

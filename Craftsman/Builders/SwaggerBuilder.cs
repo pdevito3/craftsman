@@ -17,7 +17,7 @@
         {
             if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
             {
-                AddSwaggerServiceExtension(solutionDirectory, swaggerConfig, addJwtAuthentication, policies, projectBaseName);
+                AddSwaggerServiceExtension(solutionDirectory, projectBaseName, swaggerConfig, solutionName, addJwtAuthentication, policies, fileSystem);
                 WebApiAppExtensionsBuilder.CreateSwaggerWebApiAppExtension(solutionDirectory, swaggerConfig, addJwtAuthentication, projectBaseName, fileSystem);
                 UpdateWebApiCsProjSwaggerSettings(solutionDirectory, projectBaseName);
             }
@@ -61,38 +61,45 @@
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        private static void AddSwaggerServiceExtension(string solutionDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication, List<Policy> policies, string projectBaseName)
+        public static void AddSwaggerServiceExtension(string solutionDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"ServiceExtensions.cs", projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"SwaggerServiceExtension.cs", projectBaseName);
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-            if (!File.Exists(classPath.FullClassPath))
-                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-            var tempPath = $"{classPath.FullClassPath}temp";
-            using (var input = File.OpenText(classPath.FullClassPath))
+            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
-                using (var output = new StreamWriter(tempPath))
-                {
-                    string line;
-                    while (null != (line = input.ReadLine()))
-                    {
-                        var newText = $"{line}";
-                        if (line.Contains("// Swagger Marker - Do Not Delete"))
-                        {
-                            newText += GetSwaggerServiceExtensionText(swaggerConfig, projectBaseName, addJwtAuthentication, policies);
-                        }
-
-                        output.WriteLine(newText);
-                    }
-                }
+                var data = "";
+                data = GetSwaggerServiceExtensionText(classPath.ClassNamespace, swaggerConfig, solutionName, addJwtAuthentication, policies);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
+        }
 
-            // delete the old file and set the name of the new one to the original name
-            File.Delete(classPath.FullClassPath);
-            File.Move(tempPath, classPath.FullClassPath);
+        public static string GetSwaggerServiceExtensionText(string classNamespace, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies)
+        {
+            return @$"namespace {classNamespace}
+{{
+    using AutoMapper;
+    using FluentValidation.AspNetCore;
+    using MediatR;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.OpenApi.Models;
+    using System;
+    using System.IO;
+    using System.Collections.Generic;
+    using System.Reflection;
+
+    public static class SwaggerServiceExtension
+    {{
+        {GetSwaggerServiceExtensionText(swaggerConfig, solutionName, addJwtAuthentication, policies)}
+    }}
+}}";
         }
 
         private static string GetSwaggerServiceExtensionText(SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies)
@@ -151,8 +158,7 @@
 
                 config.IncludeXmlComments(string.Format(@$""{{AppDomain.CurrentDomain.BaseDirectory}}{{Path.DirectorySeparatorChar}}{solutionName}.WebApi.xml""));";
 
-            var swaggerText = $@"
-        public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
+            var swaggerText = $@"public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
         {{
             services.AddSwaggerGen(config =>
             {{
