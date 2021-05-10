@@ -86,11 +86,11 @@
 
             // base folders
             Directory.CreateDirectory(ClassPathHelper.ControllerClassPath(srcDirectory, "", projectBaseName, "v1").ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.WebApiExtensionsClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
 
             WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(srcDirectory, projectBaseName, fileSystem);
-            WebApiAppExtensionsBuilder.CreateWebApiAppExtension(srcDirectory, projectBaseName, fileSystem);
+            WebApiAppExtensionsBuilder.CreateErrorHandlerWebApiAppExtension(srcDirectory, projectBaseName, fileSystem);
             ErrorHandlerMiddlewareBuilder.CreateErrorHandlerMiddleware(srcDirectory, projectBaseName, fileSystem);
             WebApiAppSettingsBuilder.CreateAppSettings(srcDirectory, new ApiEnvironment(), dbName, projectBaseName); // empty environment so i can get a blank with all the right keys. don't care about values as they get overriden by env specific settings
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, fileSystem);

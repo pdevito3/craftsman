@@ -32,7 +32,8 @@
         public static string GetStartupText(string solutionDirectory, string classNamespace, string envName, bool useJwtAuth, string projectBaseName)
         {
             var appAuth = "";
-            var apiExtensionsClassPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, "", projectBaseName);
+            var apiServiceExtensionsClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, "", projectBaseName);
+            var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(solutionDirectory, "", projectBaseName);
             var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
             var seederClassPath = ClassPathHelper.SeederClassPath(solutionDirectory, "", projectBaseName);
 
@@ -58,7 +59,8 @@
     using {infraClassPath.ClassNamespace};
     using {seederClassPath.ClassNamespace};
     using {dbContextClassPath.ClassNamespace};
-    using {apiExtensionsClassPath.ClassNamespace};
+    using {apiServiceExtensionsClassPath.ClassNamespace};
+    using {apiAppExtensionsClassPath.ClassNamespace};
     using Serilog;
 
     public class Startup{envName}
@@ -121,7 +123,8 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using {infraClassPath.ClassNamespace};
-    using {apiExtensionsClassPath.ClassNamespace};
+    using {apiServiceExtensionsClassPath.ClassNamespace};
+    using {apiAppExtensionsClassPath.ClassNamespace};
     using Serilog;
 
     public class Startup{envName}

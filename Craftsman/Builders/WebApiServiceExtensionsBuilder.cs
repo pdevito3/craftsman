@@ -13,7 +13,7 @@
     {
         public static void CreateWebApiServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"ServiceExtensions.cs", projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"ServiceExtensions.cs", projectBaseName);
 
             if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                 fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

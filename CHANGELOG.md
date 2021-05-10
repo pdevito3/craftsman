@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `ProducesResponseType` in controllers to generic `Response` type where applicable
 - Removed legacy comment for include statement marker
 - Fixed issue where POST would throw 500 when primary key != EntityNameId (e.g. PK of ReportId would break for an entity of ReportRequest) - fixes #30
+- Moved App Registrations to separate files
 
 ## [0.9.3] - 2021-04-10
 

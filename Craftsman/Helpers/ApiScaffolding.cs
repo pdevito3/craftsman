@@ -117,7 +117,7 @@
 
             //services
             // TODO move the auth stuff to a modifier to make it SOLID so i can add it to an add auth command
-            SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.SolutionName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies, template.SolutionName);
+            SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.SolutionName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies, template.SolutionName, fileSystem);
 
             if (template.AddJwtAuthentication)
             {

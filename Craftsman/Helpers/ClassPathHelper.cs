@@ -36,9 +36,14 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Wrappers"), className);
         }
 
-        public static ClassPath WebApiExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath WebApiServiceExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{ApiProjectSuffix}", "Extensions"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{ApiProjectSuffix}", "Extensions", "Services"), className);
+        }
+
+        public static ClassPath WebApiApplicationExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{ApiProjectSuffix}", "Extensions", "Application"), className);
         }
 
         public static ClassPath IntegrationTestUtilitiesClassPath(string projectDirectory, string projectBaseName, string className)
@@ -73,7 +78,7 @@
 
         public static ClassPath FeatureTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}","FeatureTests",entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "FeatureTests", entityName), className);
         }
 
         public static ClassPath FunctionalTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
@@ -83,7 +88,7 @@
 
         public static ClassPath TestFakesClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{SharedTestProjectSuffix}","Fakes",entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{SharedTestProjectSuffix}", "Fakes", entityName), className);
         }
 
         public static ClassPath EntityClassPath(string solutionDirectory, string className, string projectBaseName)
@@ -163,7 +168,7 @@
 
         public static ClassPath DtoClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{CoreProjectSuffix}", "Dtos",entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{CoreProjectSuffix}", "Dtos", entityName), className);
         }
 
         public static ClassPath SharedDtoClassPath(string solutionDirectory, string className, string projectBaseName)
