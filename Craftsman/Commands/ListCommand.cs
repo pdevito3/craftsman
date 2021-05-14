@@ -21,18 +21,20 @@
 
             WriteHelpHeader(@$"{Environment.NewLine}    add");
             WriteHelpText(@$"      add:bc              Add an API to your DDD project.");
-            WriteHelpText(@$"      add:entity          Add a new entity to your API.");
-            WriteHelpText(@$"      add:prop            Add a new property to an entity in your API.");
+            WriteHelpText(@$"      add:bus             Add a message bus to a web api.");
+            WriteHelpText(@$"      add:entity          Add a new entity to a web api.");
+            WriteHelpText(@$"      add:prop            Add a new property to an entity in a web api.");
 
             WriteHelpHeader(@$"{Environment.NewLine}    new");
-            WriteHelpText(@$"      new:domain          Create a new DDD based Project");
+            WriteHelpText(@$"      new:domain          Create a new DDD based project");
 
             WriteHelpHeader(@$"{Environment.NewLine}Options:");
             WriteHelpText(@$"   -h, --help          Display this help message");
 
             WriteHelpHeader(@$"{Environment.NewLine}Example Help Options:");
-            WriteHelpText(@$"   craftsman new:api -h");
             WriteHelpText(@$"   craftsman new:domain -h");
+            WriteHelpText(@$"   craftsman add:bc -h");
+            WriteHelpText(@$"   craftsman add:bus -h");
             WriteHelpText(@$"   craftsman add:entity -h");
             WriteHelpText(@$"   craftsman add:property -h");
         }

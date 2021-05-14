@@ -137,6 +137,29 @@
                     AddEntityPropertyCommand.Run(solutionDir, entityName, newProperty);
                 }
             }
+
+            if ((args[0] == "add:bus"))
+            {
+                var filePath = "";
+                if (args.Length >= 2)
+                    filePath = args[1];
+
+                if (filePath == "-h" || filePath == "--help")
+                    AddBusCommand.Help();
+                else
+                {
+                    CheckForLatestVersion();
+
+                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the root directory.");
+                        rootDir = Console.ReadLine();
+                    }
+
+                    AddBusCommand.Run(filePath, rootDir, fileSystem);
+                }
+            }
         }
 
         private static Verbosity GetVerbosityFromArgs<TOptions>(string[] args)

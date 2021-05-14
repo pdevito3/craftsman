@@ -36,6 +36,13 @@
                 return prop;
         }
 
+        public static ClassPath GetStartupClassPath(string envName, string solutionDirectory, string projectBaseName)
+        {
+            return envName == "Production"
+                ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", projectBaseName)
+                : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs", projectBaseName);
+        }
+
         public static string SolutionGuard(string solutionDirectory)
         {
             var slnName = Directory.GetFiles(solutionDirectory, "*.sln").FirstOrDefault();
@@ -46,6 +53,12 @@
         {
             if (!Directory.Exists(srcDirectory) || !Directory.Exists(testDirectory))
                 throw new IsNotBoundedContextDirectory();
+        }
+
+        public static void IsSolutionDirectoryGuard(string proposedDirectory)
+        {
+            if (!Directory.EnumerateFiles(proposedDirectory, "*.sln").Any())
+                throw new SolutionNotFoundException();
         }
 
         public static string CreateApiRouteClasses(List<Entity> entities)
@@ -113,6 +126,11 @@
         public static string GetProfileName(string entityName)
         {
             return $"{entityName}Profile";
+        }
+
+        public static string GetBaseMessageName()
+        {
+            return $"IBaseMessage";
         }
 
         public static string GetIntegrationTestFixtureName()
@@ -383,6 +401,82 @@
 
             var author = new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
             repo.Commit("Initial Commit", author, author);
+        }
+
+        public static void AddPackages(ClassPath classPath, Dictionary<string, string> packagesToAdd)
+        {
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
+            {
+                using var output = new StreamWriter(tempPath);
+                string line;
+                var packagesAdded = false;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"PackageReference") && !packagesAdded)
+                    {
+                        newText += @$"{ProjectReferencePackagesString(packagesToAdd)}";
+                        packagesAdded = true;
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+
+            // delete the old file and set the name of the new one to the original name
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
+        }
+
+        private static string ProjectReferencePackagesString(Dictionary<string, string> packagesToAdd)
+        {
+            var packageString = "";
+            foreach (var package in packagesToAdd)
+            {
+                packageString += $@"{Environment.NewLine}    <PackageReference Include=""{package.Key}"" Version=""{package.Value}"" />";
+            }
+
+            return packageString;
+        }
+
+        public static void AddProjectReference(ClassPath classPath, string relativeProjectPath)
+        {
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
+            {
+                using var output = new StreamWriter(tempPath);
+                string line;
+                var projectAdded = false;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"ProjectReference") && !projectAdded)
+                    {
+                        newText += @$"
+    <ProjectReference Include=""{relativeProjectPath}"" />";
+                        projectAdded = true;
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+
+            // delete the old file and set the name of the new one to the original name
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
         }
     }
 }

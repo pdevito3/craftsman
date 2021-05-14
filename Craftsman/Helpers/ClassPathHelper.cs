@@ -15,10 +15,16 @@
         public const string ApiProjectSuffix = "WebApi";
         public const string InfraProjectSuffix = "Infrastructure";
         public const string CoreProjectSuffix = "Core";
+        public const string MessagesProjName = "Messages";
 
         public static ClassPath SolutionClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "", className);
+        }
+
+        public static ClassPath BaseMessageClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, MessagesProjName, className);
         }
 
         public static ClassPath ControllerClassPath(string solutionDirectory, string className, string projectBaseName, string version = "v1")
@@ -156,6 +162,11 @@
             return new ClassPath(solutionDirectory, $"{projectBaseName}.{UnitTestProjectSuffix}", className);
         }
 
+        public static ClassPath MessagesProjectRootClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, MessagesProjName, className);
+        }
+
         public static ClassPath FunctionalTestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, $"{projectBaseName}.{FunctionalTestProjectSuffix}", className);
@@ -211,9 +222,14 @@
             return new ClassPath(solutionDirectory, $"{projectBaseName}.{UnitTestProjectSuffix}", $"{projectBaseName}.{UnitTestProjectSuffix}.csproj");
         }
 
-        public static ClassPath WebApiProjectClassPath(string solutionDirectory, string projectBaseName)
+        public static ClassPath MessagesProjectClassPath(string solutionDirectory)
         {
-            return new ClassPath(solutionDirectory, $"{projectBaseName}.{ApiProjectSuffix}", $"{projectBaseName}.{ApiProjectSuffix}.csproj");
+            return new ClassPath(solutionDirectory, MessagesProjName, $"{MessagesProjName}.csproj");
+        }
+
+        public static ClassPath WebApiProjectClassPath(string projectDirectory, string projectBaseName)
+        {
+            return new ClassPath(projectDirectory, $"{projectBaseName}.{ApiProjectSuffix}", $"{projectBaseName}.{ApiProjectSuffix}.csproj");
         }
     }
 }

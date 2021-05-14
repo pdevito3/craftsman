@@ -29,6 +29,24 @@
             }
         }
 
+        public static void CreateMassTransitServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"MassTransitServiceExtension.cs", projectBaseName);
+
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
+            {
+                var data = "";
+                data = GetMassTransitServiceExtensionText(classPath.ClassNamespace);
+                fs.Write(Encoding.UTF8.GetBytes(data));
+            }
+        }
+
         public static void CreateWebApiServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"WebApiServiceExtension.cs", projectBaseName);
@@ -156,6 +174,41 @@
             services.AddMvc()
                 .AddFluentValidation(cfg => {{ cfg.RegisterValidatorsFromAssemblyContaining<Startup>(); }});
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        }}
+    }}
+}}";
+        }
+
+        public static string GetMassTransitServiceExtensionText(string classNamespace)
+        {
+            return @$"namespace {classNamespace}
+{{
+    using MassTransit;
+    using Messages;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using RabbitMQ.Client;
+
+    public static class MassTransitServiceExtension
+    {{
+        public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration)
+        {{
+            services.AddMassTransit(mt =>
+            {{
+                mt.UsingRabbitMq((context, cfg) =>
+                {{
+                    cfg.Host(configuration[""RMQ:Host""], configuration[""RMQ:VirtualHost""], h =>
+                    {{
+                        h.Username(configuration[""RMQ:Username""]);
+                        h.Password(configuration[""RMQ:Password""]);
+                    }});
+
+                    // Producers -- Do Not Delete This Comment
+
+                    // Consumers -- Do Not Delete This Comment
+                }});
+            }});
+            services.AddMassTransitHostedService();
         }}
     }}
 }}";

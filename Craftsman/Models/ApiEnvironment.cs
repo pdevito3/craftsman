@@ -7,7 +7,8 @@
     {
         private string _environmentName;
 
-        public string EnvironmentName {
+        public string EnvironmentName
+        {
             get => _environmentName;
             set
             {
@@ -25,11 +26,13 @@
         public string Authority { get; set; }
 
         public string Audience { get; set; }
-        
+
         public string AuthorizationUrl { get; set; }
 
         public string TokenUrl { get; set; }
 
         public string ClientId { get; set; }
+
+        public BrokerSettings BrokerSettings { get; set; } = new BrokerSettings();
     }
 }

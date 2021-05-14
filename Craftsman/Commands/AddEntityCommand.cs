@@ -22,9 +22,7 @@
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   This command can add one or more new entities to your Wrapt project using a formatted
-   yaml or json file. The input file uses a simplified format from the `new:api` command that only
-   requires a list of one or more entities.{Environment.NewLine}");
+            WriteHelpText(@$"   This command can add one or more new entities to your Wrapt project using a formatted yaml or json file.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
             WriteHelpText(@$"   craftsman add:entity [options] <filepath>");

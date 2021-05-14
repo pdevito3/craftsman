@@ -9,11 +9,9 @@
 
     public class StartupBuilder
     {
-        public static void CreateWebApiStartup(string solutionDirectory, string envName, bool useJwtAuth, string projectBaseName = "")
+        public static void CreateWebApiStartup(string solutionDirectory, string envName, bool useJwtAuth, string projectBaseName)
         {
-            var classPath = envName == "Production"
-                ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", projectBaseName)
-                : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs", projectBaseName);
+            var classPath = Utilities.GetStartupClassPath(envName, solutionDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);

@@ -71,7 +71,7 @@
     ""AuthorizationUrl"": ""{env.AuthorizationUrl}"",
     ""TokenUrl"": ""{env.TokenUrl}"",
     ""ClientId"": ""{env.ClientId}""
-  }},";
+  }}";
         }
 
         private static string GetSerilogSettings(string envName)
@@ -97,7 +97,7 @@
     }},
     ""Enrich"": [ ""FromLogContext"", ""WithMachineName"", ""WithProcessId"", ""WithThreadId"" ],
     ""WriteTo"": [{writeTo}]
-  }},";
+  }}";
         }
     }
 }

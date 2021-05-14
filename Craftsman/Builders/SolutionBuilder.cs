@@ -135,13 +135,23 @@
             UnitTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
         }
+
+        public static void BuildMessagesProject(string solutionDirectory, string messagesDirectory)
+        {
+            var messageProjectClassPath = ClassPathHelper.MessagesProjectRootClassPath(solutionDirectory, "");
+
+            MessagesCsProjBuilder.CreateMessagesCsProj(solutionDirectory);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""{messageProjectClassPath.FullClassPath}""", solutionDirectory);
+        }
     }
 
     public static class Extensions
     {
         public static string GetSolutionFolder(this string projectDir, string solutionDir)
         {
-            return projectDir.Replace(solutionDir, "").Substring(1);
+            var folder = projectDir.Replace(solutionDir, "");
+
+            return folder.Length > 0 ? folder.Substring(1) : folder;
         }
     }
 }
