@@ -52,6 +52,16 @@ namespace Craftsman.Models
                 .Count > 0;
         }
 
+        /// <summary>
+        /// The message broker to be applied to the message bus (if used). just a string here and will be transformed when mapped to `Bus` Broker prop
+        /// </summary>
+        public string Broker { get; set; }
+
+        /// <summary>
+        /// Will trigger the add service bus method and add it to the solution
+        /// </summary>
+        public bool AddBus { get; set; }
+
         public AuthorizationSettings AuthorizationSettings { get; set; } = new AuthorizationSettings();
     }
 }

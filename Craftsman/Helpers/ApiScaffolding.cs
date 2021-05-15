@@ -9,6 +9,7 @@
     using Craftsman.Builders.Tests.IntegrationTests;
     using Craftsman.Builders.Tests.UnitTests;
     using Craftsman.Builders.Tests.Utilities;
+    using Craftsman.Commands;
     using Craftsman.Enums;
     using Craftsman.Models;
     using LibGit2Sharp;
@@ -122,6 +123,17 @@
             if (template.AddJwtAuthentication)
             {
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, template.SolutionName, template.AuthorizationSettings.Policies);
+            }
+
+            if (template.AddBus)
+            {
+                var solutionDirectory = Directory.GetParent(rootDirectory).FullName;
+                Utilities.IsSolutionDirectoryGuard(solutionDirectory);
+
+                var busTemplate = new Bus();
+                busTemplate.SolutionName = template.SolutionName;
+                busTemplate.Environments = template.Environments;
+                AddBusCommand.AddBus(busTemplate, srcDirectory, template.SolutionName, solutionDirectory, fileSystem);
             }
 
             ReadmeBuilder.CreateBoundedContextReadme(rootDirectory, template.SolutionName, srcDirectory, fileSystem);

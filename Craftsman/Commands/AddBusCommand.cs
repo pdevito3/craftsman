@@ -65,27 +65,7 @@
                 // get solution dir
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-                var messagesDirectory = Path.Combine(solutionDirectory, "Messages");
-
-                var massTransitPackages = new Dictionary<string, string>{
-                    { "MassTransit", "7.1.8" },
-                    { "MassTransit.AspNetCore", "7.1.8" },
-                    { "MassTransit.Extensions.DependencyInjection", "7.1.8" },
-                    { "MassTransit.RabbitMQ", "7.1.8" }
-                };
-                var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
-                Utilities.AddPackages(webApiClassPath, massTransitPackages);
-
-                WebApiServiceExtensionsBuilder.CreateMassTransitServiceExtension(srcDirectory, projectBaseName, fileSystem);
-                foreach (var env in template.Environments)
-                {
-                    WebApiAppSettingsModifier.AddRmq(srcDirectory, env, projectBaseName, fileSystem);
-                    StartupModifier.RegisterMassTransitService(srcDirectory, env.EnvironmentName, projectBaseName);
-                }
-
-                SolutionBuilder.BuildMessagesProject(solutionDirectory, messagesDirectory);
-                BaseMessageBuilder.CreateBaseMessage(solutionDirectory);
-                Utilities.AddProjectReference(webApiClassPath, @"..\..\..\Messages\Messages.csproj");
+                AddBus(template, srcDirectory, projectBaseName, solutionDirectory, fileSystem);
 
                 WriteHelpHeader($"{Environment.NewLine}Your event bus has been successfully added. Keep up the good work!");
             }
@@ -115,6 +95,31 @@
                     });
                 }
             }
+        }
+
+        public static void AddBus(Bus template, string srcDirectory, string projectBaseName, string solutionDirectory, IFileSystem fileSystem)
+        {
+            var messagesDirectory = Path.Combine(solutionDirectory, "Messages");
+
+            var massTransitPackages = new Dictionary<string, string>{
+                    { "MassTransit", "7.1.8" },
+                    { "MassTransit.AspNetCore", "7.1.8" },
+                    { "MassTransit.Extensions.DependencyInjection", "7.1.8" },
+                    { "MassTransit.RabbitMQ", "7.1.8" }
+                };
+            var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
+            Utilities.AddPackages(webApiClassPath, massTransitPackages);
+
+            WebApiServiceExtensionsBuilder.CreateMassTransitServiceExtension(srcDirectory, projectBaseName, fileSystem);
+            foreach (var env in template.Environments)
+            {
+                WebApiAppSettingsModifier.AddRmq(srcDirectory, env, projectBaseName, fileSystem);
+                StartupModifier.RegisterMassTransitService(srcDirectory, env.EnvironmentName, projectBaseName);
+            }
+
+            SolutionBuilder.BuildMessagesProject(solutionDirectory, messagesDirectory);
+            BaseMessageBuilder.CreateBaseMessage(solutionDirectory);
+            Utilities.AddProjectReference(webApiClassPath, @"..\..\..\Messages\Messages.csproj");
         }
     }
 }

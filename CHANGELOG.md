@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved App Registrations to separate files
 - Moved Service Registrations to separate files
 - Added `add:bus` command
+- Added `AddBus` and `Broker` props to BC template
 
 ## [0.9.3] - 2021-04-10
 
