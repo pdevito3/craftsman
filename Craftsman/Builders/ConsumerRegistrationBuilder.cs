@@ -27,7 +27,7 @@
                 // a replicated queue to provide high availability and data safety. available in RMQ 3.8+
                 re.SetQuorumQueue();" : "";
 
-            var lazyText = consumer.IsQuorum ? $@"
+            var lazyText = consumer.IsLazy ? $@"
 
                 // enables a lazy queue for more stable cluster with better predictive performance.
                 // Please note that you should disable lazy queues if you require really high performance, if the queues are always short, or if you have set a max-length policy.
