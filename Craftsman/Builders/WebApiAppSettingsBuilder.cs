@@ -64,7 +64,7 @@
 
         private static string GetJwtAuthSettings(ApiEnvironment env)
         {
-            return $@"
+            return $@",
   ""JwtSettings"": {{
     ""Audience"": ""{env.Audience}"",
     ""Authority"": ""{env.Authority}"",
