@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed default value for strings on entities to use quotes
 - Added `add:bus` command
 - Added `AddBus` and `Broker` props to BC template
+- Added `add:message` command
 
 ## [0.9.3] - 2021-04-10
 

@@ -160,6 +160,26 @@
                     AddBusCommand.Run(filePath, rootDir, fileSystem);
                 }
             }
+
+            if ((args[0] == "add:message"))
+            {
+                var filePath = args[1];
+                if (filePath == "-h" || filePath == "--help")
+                    AddMessageCommand.Help();
+                else
+                {
+                    CheckForLatestVersion();
+
+                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the root directory.");
+                        rootDir = Console.ReadLine();
+                    }
+
+                    AddMessageCommand.Run(filePath, rootDir, fileSystem);
+                }
+            }
         }
 
         private static Verbosity GetVerbosityFromArgs<TOptions>(string[] args)

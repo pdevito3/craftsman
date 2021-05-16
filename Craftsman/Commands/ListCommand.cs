@@ -23,6 +23,7 @@
             WriteHelpText(@$"      add:bc              Add an API to your DDD project.");
             WriteHelpText(@$"      add:bus             Add a message bus to a web api.");
             WriteHelpText(@$"      add:entity          Add a new entity to a web api.");
+            WriteHelpText(@$"      add:message         Add a new eventing message.");
             WriteHelpText(@$"      add:prop            Add a new property to an entity in a web api.");
 
             WriteHelpHeader(@$"{Environment.NewLine}    new");
@@ -36,6 +37,7 @@
             WriteHelpText(@$"   craftsman add:bc -h");
             WriteHelpText(@$"   craftsman add:bus -h");
             WriteHelpText(@$"   craftsman add:entity -h");
+            WriteHelpText(@$"   craftsman add:message -h");
             WriteHelpText(@$"   craftsman add:property -h");
         }
     }
