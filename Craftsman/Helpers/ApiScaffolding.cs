@@ -76,13 +76,15 @@
 
         private static void RunTemplateBuilders(string rootDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)
         {
+            var projectBaseName = template.SolutionName;
+
             // dbcontext
-            DbContextBuilder.CreateDbContext(srcDirectory, template.Entities, template.DbContext.ContextName, template.DbContext.Provider, template.DbContext.DatabaseName, template.SolutionName);
+            DbContextBuilder.CreateDbContext(srcDirectory, template.Entities, template.DbContext.ContextName, template.DbContext.Provider, template.DbContext.DatabaseName, projectBaseName);
 
             //entities
             EntityScaffolding.ScaffoldEntities(srcDirectory,
                 testDirectory,
-                template.SolutionName,
+                projectBaseName,
                 template.Entities,
                 template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
@@ -93,47 +95,44 @@
             // environments
             Utilities.AddStartupEnvironmentsWithServices(
                 srcDirectory,
-                template.SolutionName,
+                projectBaseName,
                 template.DbContext.DatabaseName,
                 template.Environments,
                 template.SwaggerConfig,
                 template.Port,
                 template.AddJwtAuthentication,
-                template.SolutionName
+                projectBaseName
             );
 
             // unit tests, test utils, and one offs
-            PagedListTestBuilder.CreateTests(testDirectory, template.SolutionName);
-            IntegrationTestFixtureBuilder.CreateFixture(testDirectory, template.SolutionName, template.DbContext.ContextName, template.DbContext.DatabaseName, template.DbContext.Provider, fileSystem);
-            IntegrationTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, template.DbContext.Provider, fileSystem);
-            DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, template.SolutionName, template.DbContext.Provider, fileSystem);
-            ApiRoutesBuilder.CreateClass(testDirectory, template.SolutionName, template.Entities, fileSystem);
-            WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, template.SolutionName, template.DbContext.ContextName, template.AddJwtAuthentication);
-            FunctionalTestBaseBuilder.CreateBase(testDirectory, template.SolutionName, template.DbContext.ContextName, fileSystem);
-            HealthTestBuilder.CreateTests(testDirectory, template.SolutionName);
-            HttpClientExtensionsBuilder.Create(testDirectory, template.SolutionName);
+            PagedListTestBuilder.CreateTests(testDirectory, projectBaseName);
+            IntegrationTestFixtureBuilder.CreateFixture(testDirectory, projectBaseName, template.DbContext.ContextName, template.DbContext.DatabaseName, template.DbContext.Provider, fileSystem);
+            IntegrationTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
+            DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
+            ApiRoutesBuilder.CreateClass(testDirectory, projectBaseName, template.Entities, fileSystem);
+            WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
+            FunctionalTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
+            HealthTestBuilder.CreateTests(testDirectory, projectBaseName);
+            HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
 
             //seeders
-            SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, template.SolutionName);
+            SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, projectBaseName);
 
             //services
             // TODO move the auth stuff to a modifier to make it SOLID so i can add it to an add auth command
-            SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.SolutionName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies, template.SolutionName, fileSystem);
+            SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, projectBaseName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies, projectBaseName, fileSystem);
 
             if (template.AddJwtAuthentication)
             {
-                InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, template.SolutionName, template.AuthorizationSettings.Policies);
+                InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName, template.AuthorizationSettings.Policies);
             }
 
-            if (template.AddBus)
+            if (template.Bus.AddBus)
             {
                 var solutionDirectory = Directory.GetParent(rootDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
 
-                var busTemplate = new Bus();
-                busTemplate.SolutionName = template.SolutionName;
-                busTemplate.Environments = template.Environments;
-                AddBusCommand.AddBus(busTemplate, srcDirectory, template.SolutionName, solutionDirectory, fileSystem);
+                AddBusCommand.AddBus(template.Bus, srcDirectory, projectBaseName, solutionDirectory, fileSystem);
             }
 
             ReadmeBuilder.CreateBoundedContextReadme(rootDirectory, template.SolutionName, srcDirectory, fileSystem);

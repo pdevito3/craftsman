@@ -60,7 +60,7 @@
 
                 Utilities.IsBoundedContextDirectoryGuard(srcDirectory, testDirectory);
                 var projectBaseName = Directory.GetParent(srcDirectory).Name;
-                template.SolutionName = projectBaseName;
+                template.ProjectBaseName = projectBaseName;
 
                 // get solution dir
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
