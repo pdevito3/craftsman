@@ -60,7 +60,7 @@
                 // get solution dir
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-                AddConsumers(template, projectBaseName, srcDirectory);
+                AddConsumers(template.Consumers, projectBaseName, srcDirectory);
 
                 WriteHelpHeader($"{Environment.NewLine}Your event bus has been successfully added. Keep up the good work!");
             }
@@ -92,9 +92,9 @@
             }
         }
 
-        public static void AddConsumers(ConsumerTemplate template, string projectBaseName, string srcDirectory)
+        public static void AddConsumers(List<Consumer> consumers, string projectBaseName, string srcDirectory)
         {
-            template.Consumers.ForEach(consumer =>
+            consumers.ForEach(consumer =>
             {
                 // create consumer registration
                 ConsumerRegistrationBuilder.CreateConsumerRegistration(srcDirectory, consumer, projectBaseName);

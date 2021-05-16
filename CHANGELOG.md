@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved Service Registrations to separate files
 - Fixed default value for strings on entities to use quotes
 - Added `add:bus` command
-- Added `AddBus` and `Broker` props to BC template
+- Added Bus, Messages, and Consumers props to BC template
 - Added `add:message` command
 - Updated entity name and entity prop names first letter to always be capitalized
 - Added `register:consumer` command

@@ -11,7 +11,7 @@ namespace Craftsman.Models
     /// </summary>
     public class ApiTemplate
     {
-        private Bus _bus;
+        private Bus _bus = new();
 
         /// <summary>
         /// The name of the solution you want to build
@@ -54,6 +54,9 @@ namespace Craftsman.Models
                 .Count > 0;
         }
 
+        /// <summary>
+        /// Message bus information for the bounded context. **Environment will be overriden by the BC environment and should be set there**
+        /// </summary>
         public Bus Bus
         {
             get
@@ -63,6 +66,16 @@ namespace Craftsman.Models
             }
             set => _bus = value;
         }
+
+        /// <summary>
+        /// A list of eventing consumers to be added to the BC
+        /// </summary>
+        public List<Consumer> Consumers { get; set; } = new List<Consumer>();
+
+        /// <summary>
+        /// A list of eventing messages to be added to the BC
+        /// </summary>
+        public List<Message> Messages { get; set; } = new List<Message>();
 
         public AuthorizationSettings AuthorizationSettings { get; set; } = new AuthorizationSettings();
     }

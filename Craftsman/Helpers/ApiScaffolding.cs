@@ -74,9 +74,13 @@
                 $"{Emoji.Known.Warning} {template.SolutionName} Database Migrations timed out and will need to be run manually");
         }
 
-        private static void RunTemplateBuilders(string rootDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)
+        private static void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)
         {
             var projectBaseName = template.SolutionName;
+
+            // get solution dir from bcDir
+            var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
+            Utilities.IsSolutionDirectoryGuard(solutionDirectory);
 
             // dbcontext
             DbContextBuilder.CreateDbContext(srcDirectory, template.Entities, template.DbContext.ContextName, template.DbContext.Provider, template.DbContext.DatabaseName, projectBaseName);
@@ -128,14 +132,15 @@
             }
 
             if (template.Bus.AddBus)
-            {
-                var solutionDirectory = Directory.GetParent(rootDirectory).FullName;
-                Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-
                 AddBusCommand.AddBus(template.Bus, srcDirectory, projectBaseName, solutionDirectory, fileSystem);
-            }
 
-            ReadmeBuilder.CreateBoundedContextReadme(rootDirectory, template.SolutionName, srcDirectory, fileSystem);
+            if (template.Consumers.Count > 0)
+                RegisterConsumerCommand.AddConsumers(template.Consumers, projectBaseName, srcDirectory);
+
+            if (template.Messages.Count > 0)
+                AddMessageCommand.AddMessages(solutionDirectory, fileSystem, template.Messages);
+
+            ReadmeBuilder.CreateBoundedContextReadme(boundedContextDirectory, template.SolutionName, srcDirectory, fileSystem);
         }
     }
 }

@@ -52,7 +52,7 @@
 
                 // get solution dir
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-                template.Messages.ForEach(message => MessageBuilder.CreateMessage(solutionDirectory, message, fileSystem));
+                AddMessages(solutionDirectory, fileSystem, template.Messages);
 
                 WriteHelpHeader($"{Environment.NewLine}Your messages have been successfully added. Keep up the good work!");
             }
@@ -82,6 +82,11 @@
                     });
                 }
             }
+        }
+
+        public static void AddMessages(string solutionDirectory, IFileSystem fileSystem, List<Message> messages)
+        {
+            messages.ForEach(message => MessageBuilder.CreateMessage(solutionDirectory, message, fileSystem));
         }
     }
 }
