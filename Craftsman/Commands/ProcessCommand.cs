@@ -180,6 +180,26 @@
                     AddMessageCommand.Run(filePath, rootDir, fileSystem);
                 }
             }
+
+            if ((args[0] == "register:consumer"))
+            {
+                var filePath = args[1];
+                if (filePath == "-h" || filePath == "--help")
+                    RegisterConsumerCommand.Help();
+                else
+                {
+                    CheckForLatestVersion();
+
+                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the root directory.");
+                        rootDir = Console.ReadLine();
+                    }
+
+                    RegisterConsumerCommand.Run(filePath, rootDir, fileSystem);
+                }
+            }
         }
 
         private static Verbosity GetVerbosityFromArgs<TOptions>(string[] args)

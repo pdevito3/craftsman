@@ -31,7 +31,7 @@
 
         public static void CreateMassTransitServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"MassTransitServiceExtension.cs", projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"{Utilities.GetMassTransitRegistrationName()}.cs", projectBaseName);
 
             if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                 fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

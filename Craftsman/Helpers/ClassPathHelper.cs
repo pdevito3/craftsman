@@ -47,6 +47,11 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{ApiProjectSuffix}", "Extensions", "Services"), className);
         }
 
+        public static ClassPath WebApiConsumersServiceExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{ApiProjectSuffix}", "Extensions", "Services", "Consumers"), className);
+        }
+
         public static ClassPath WebApiApplicationExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{ApiProjectSuffix}", "Extensions", "Application"), className);

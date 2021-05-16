@@ -110,6 +110,11 @@
             return $"Get{pluralEntity}Async";
         }
 
+        public static string GetMassTransitRegistrationName()
+        {
+            return "MassTransitServiceExtension";
+        }
+
         public static string GetAppSettingsName(string envName, bool asJson = true)
         {
             if (String.IsNullOrEmpty(envName))

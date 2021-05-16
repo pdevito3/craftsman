@@ -17,15 +17,15 @@
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
 
-    public static class AddBusCommand
+    public static class RegisterConsumerCommand
     {
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   This command will add a message bus to your web api and a messages project to your root directory using a formatted yaml or json file.{Environment.NewLine}");
+            WriteHelpText(@$"   This command will add a receive endpoint and regsiter it with MassTransit using a formatted yaml or json file.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman add:bus [options] <filepath>");
+            WriteHelpText(@$"   craftsman register:consumer [options] <filepath>");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Arguments:");
@@ -37,9 +37,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"   craftsman add:bus C:\fullpath\mybusinfo.yaml");
-            WriteHelpText(@$"   craftsman add:bus C:\fullpath\mybusinfo.yml");
-            WriteHelpText(@$"   craftsman add:bus C:\fullpath\mybusinfo.json");
+            WriteHelpText(@$"   craftsman register:consumer C:\fullpath\consumerinfo.yaml");
+            WriteHelpText(@$"   craftsman register:consumer C:\fullpath\consumerinfo.yml");
+            WriteHelpText(@$"   craftsman register:consumer C:\fullpath\consumerinfo.json");
             WriteHelpText(Environment.NewLine);
         }
 
@@ -47,13 +47,8 @@
         {
             try
             {
-                var template = new Bus();
-                template.Environments.Add(new ApiEnvironment { EnvironmentName = "Development" });
-                if (!string.IsNullOrEmpty(filePath))
-                {
-                    FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                    template = FileParsingHelper.GetTemplateFromFile<Bus>(filePath);
-                }
+                FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
+                var template = FileParsingHelper.GetTemplateFromFile<ConsumerTemplate>(filePath);
 
                 var srcDirectory = Path.Combine(boundedContextDirectory, "src");
                 var testDirectory = Path.Combine(boundedContextDirectory, "tests");
@@ -65,14 +60,13 @@
                 // get solution dir
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-                AddBus(template, srcDirectory, projectBaseName, solutionDirectory, fileSystem);
+                AddConsumers(template, projectBaseName, srcDirectory);
 
                 WriteHelpHeader($"{Environment.NewLine}Your event bus has been successfully added. Keep up the good work!");
             }
             catch (Exception e)
             {
-                if (e is InvalidMessageBrokerException
-                    || e is IsNotBoundedContextDirectory)
+                if (e is IsNotBoundedContextDirectory)
                 {
                     WriteError($"{e.Message}");
                 }
@@ -98,29 +92,16 @@
             }
         }
 
-        public static void AddBus(Bus template, string srcDirectory, string projectBaseName, string solutionDirectory, IFileSystem fileSystem)
+        public static void AddConsumers(ConsumerTemplate template, string projectBaseName, string srcDirectory)
         {
-            var messagesDirectory = Path.Combine(solutionDirectory, "Messages");
-
-            var massTransitPackages = new Dictionary<string, string>{
-                    { "MassTransit", "7.1.8" },
-                    { "MassTransit.AspNetCore", "7.1.8" },
-                    { "MassTransit.Extensions.DependencyInjection", "7.1.8" },
-                    { "MassTransit.RabbitMQ", "7.1.8" }
-                };
-            var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
-            Utilities.AddPackages(webApiClassPath, massTransitPackages);
-
-            WebApiServiceExtensionsBuilder.CreateMassTransitServiceExtension(srcDirectory, projectBaseName, fileSystem);
-            foreach (var env in template.Environments)
+            template.Consumers.ForEach(consumer =>
             {
-                WebApiAppSettingsModifier.AddRmq(srcDirectory, env, projectBaseName, fileSystem);
-                StartupModifier.RegisterMassTransitService(srcDirectory, env.EnvironmentName, projectBaseName);
-            }
+                // create consumer registration
+                ConsumerRegistrationBuilder.CreateConsumerRegistration(srcDirectory, consumer, projectBaseName);
 
-            SolutionBuilder.BuildMessagesProject(solutionDirectory, messagesDirectory);
-            BaseMessageBuilder.CreateBaseMessage(solutionDirectory);
-            Utilities.AddProjectReference(webApiClassPath, @"..\..\..\Messages\Messages.csproj");
+                // add to MR registration
+                MassTransitModifier.AddConsumerRegistation(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
+            });
         }
     }
 }
