@@ -22,7 +22,7 @@ namespace Craftsman.Models
         /// </summary>
         public string Name
         {
-            get => _name ?? Name.UppercaseFirstLetter();
+            get => _name.UppercaseFirstLetter();
             set => _name = value;
         }
 
@@ -45,8 +45,8 @@ namespace Craftsman.Models
         /// </summary>
         public string Lambda
         {
-            get => _lambda ?? Name.Substring(0,1).ToLower();
-            set => _lambda= value;
+            get => _lambda ?? Name.Substring(0, 1).ToLower();
+            set => _lambda = value;
         }
 
         /// <summary>
