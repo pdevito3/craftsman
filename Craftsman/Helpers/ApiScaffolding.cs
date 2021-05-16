@@ -137,6 +137,9 @@
             if (template.Consumers.Count > 0)
                 RegisterConsumerCommand.AddConsumers(template.Consumers, projectBaseName, srcDirectory);
 
+            if (template.Producers.Count > 0)
+                RegisterProducerCommand.AddProducers(template.Producers, projectBaseName, srcDirectory);
+
             if (template.Messages.Count > 0)
                 AddMessageCommand.AddMessages(solutionDirectory, fileSystem, template.Messages);
 

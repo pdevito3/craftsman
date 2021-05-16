@@ -73,6 +73,11 @@ namespace Craftsman.Models
         public List<Consumer> Consumers { get; set; } = new List<Consumer>();
 
         /// <summary>
+        /// A list of eventing producers to be added to the BC
+        /// </summary>
+        public List<Producer> Producers { get; set; } = new List<Producer>();
+
+        /// <summary>
         /// A list of eventing messages to be added to the BC
         /// </summary>
         public List<Message> Messages { get; set; } = new List<Message>();

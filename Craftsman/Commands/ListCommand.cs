@@ -31,6 +31,7 @@
 
             WriteHelpHeader(@$"{Environment.NewLine}    register");
             WriteHelpText(@$"      register:consumer   Creates a new receive endpoint for event bus consumption.");
+            WriteHelpText(@$"      register:producer   Updates bus configuration to register a producer.");
 
             WriteHelpHeader(@$"{Environment.NewLine}Options:");
             WriteHelpText(@$"   -h, --help          Display this help message");
@@ -43,6 +44,7 @@
             WriteHelpText(@$"   craftsman add:message -h");
             WriteHelpText(@$"   craftsman add:property -h");
             WriteHelpText(@$"   craftsman register:consumer -h");
+            WriteHelpText(@$"   craftsman register:producer -h");
         }
     }
 }
