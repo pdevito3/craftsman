@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed issue where POST would throw 500 when primary key != EntityNameId (e.g. PK of ReportId would break for an entity of ReportRequest) - fixes #30
 - Moved App Registrations to separate files
 - Moved Service Registrations to separate files
+- Fixed default value for strings on entities to use quotes
 - Added `add:bus` command
 - Added `AddBus` and `Broker` props to BC template
 

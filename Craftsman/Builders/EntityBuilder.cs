@@ -70,8 +70,7 @@
             {
                 var attributes = AttributeBuilder(props[eachProp]);
                 propString += attributes;
-
-                var defaultValue = props[eachProp].DefaultValue == null ? "" : $" = {props[eachProp].DefaultValue};";
+                string defaultValue = Utilities.GetDefaultValueText(props[eachProp].DefaultValue, props[eachProp].Type);
 
                 string newLine = eachProp == props.Count - 1 ? "" : $"{Environment.NewLine}{Environment.NewLine}";
                 propString += $@"        public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{defaultValue}{newLine}";

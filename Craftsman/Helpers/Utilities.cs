@@ -478,5 +478,13 @@
             File.Delete(classPath.FullClassPath);
             File.Move(tempPath, classPath.FullClassPath);
         }
+
+        public static string GetDefaultValueText(string defaultValue, string propType)
+        {
+            if (propType == "string")
+                return defaultValue == null ? "" : @$" = ""{defaultValue}"";";
+
+            return defaultValue == null ? "" : $" = {defaultValue};";
+        }
     }
 }
