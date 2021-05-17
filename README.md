@@ -25,7 +25,7 @@ For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wra
 
 ✅ Lots of cleanup 🧹 and 🐛 squashing
 
-🚧 Event Driven Architecture (EDA) scaffolding commands
+✅ Event Driven Architecture (EDA) scaffolding commands
 
 🚧 Pipeline Decorators
 
