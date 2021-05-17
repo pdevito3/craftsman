@@ -52,7 +52,7 @@
 
     public {abstractString}class {Utilities.GetDtoName(entity.Name, dto)} {inheritanceString}
     {{
-{propString.RemoveLastNewLine()}
+{propString}
 
         // add-on property marker - Do Not Delete This Comment
     }}
