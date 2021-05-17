@@ -119,7 +119,6 @@
             }
 
             SolutionBuilder.BuildMessagesProject(solutionDirectory, messagesDirectory);
-            BaseMessageBuilder.CreateBaseMessage(solutionDirectory);
             Utilities.AddProjectReference(webApiClassPath, @"..\..\..\Messages\Messages.csproj");
         }
     }

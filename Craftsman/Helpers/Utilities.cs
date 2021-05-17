@@ -133,11 +133,6 @@
             return $"{entityName}Profile";
         }
 
-        public static string GetBaseMessageName()
-        {
-            return $"IBaseMessage";
-        }
-
         public static string GetIntegrationTestFixtureName()
         {
             return $"TestFixture";

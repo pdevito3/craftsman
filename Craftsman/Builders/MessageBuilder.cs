@@ -39,7 +39,7 @@
     using System.Collections.Generic;
     using System.Text;
 
-    public interface {message.Name} : IBaseMessage
+    public interface {message.Name}
     {{
 {propString}
 
