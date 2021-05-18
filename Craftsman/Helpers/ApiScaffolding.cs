@@ -142,8 +142,6 @@
 
             if (template.Messages.Count > 0)
                 AddMessageCommand.AddMessages(solutionDirectory, fileSystem, template.Messages);
-
-            ReadmeBuilder.CreateBoundedContextReadme(boundedContextDirectory, template.SolutionName, srcDirectory, fileSystem);
         }
     }
 }

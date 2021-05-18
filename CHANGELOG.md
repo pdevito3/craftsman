@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `add:message` command
 - Updated entity name and entity prop names first letter to always be capitalized
 - Added `register:consumer` and `register:producer` commands
+- Removed BC readme and updated sln readme
 
 ## [0.9.3] - 2021-04-10
 
