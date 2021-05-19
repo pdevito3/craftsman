@@ -54,7 +54,7 @@
             for (var eachProp = 0; eachProp < props.Count; eachProp++)
             {
                 string newLine = eachProp == props.Count - 1 ? "" : $"{Environment.NewLine}{Environment.NewLine}";
-                propString += $@"        public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
+                propString += $@"        {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
             }
 
             return propString;
