@@ -30,24 +30,6 @@
             }
         }
 
-        public static void CreateBoundedContextReadme(string solutionDirectory, string solutionName, string srcDirectory, IFileSystem fileSystem)
-        {
-            var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"README.md");
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetBoundedContextReadmeFileText(solutionName, srcDirectory);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
-        }
-
         public static string GetReadmeFileText(string solutionName)
         {
             return @$"# {solutionName}
@@ -77,7 +59,7 @@ To run integration tests:
     1. Set an environment variable. It doesn't matter what that environment name is for these purposes.
         - Powershell: `$Env:ASPNETCORE_ENVIRONMENT = ""IntegrationTesting""`
         - Bash: export `ASPNETCORE_ENVIRONMENT = IntegrationTesting`
-    2. Run a Migration (necessary to set up the database) `dotnet ef migrations add ""InitialMigration"" --project YourBoundedContextName.Infrastructure --startup-project YourBoundedContextName.WebApi --output-dir Migrations`
+    2. Run a Migration:`dotnet ef migrations add ""InitialMigration"" --project YourBoundedContextName.Infrastructure --startup-project YourBoundedContextName.WebApi --output-dir Migrations`
 4. Run the tests. They will take some time on the first run in the last 24 hours in order to set up the docker configuration.
 ";
         }

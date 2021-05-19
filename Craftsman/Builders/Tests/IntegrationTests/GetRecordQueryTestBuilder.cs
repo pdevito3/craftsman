@@ -51,7 +51,7 @@
     using Microsoft.EntityFrameworkCore;
     using NUnit.Framework;
     using System.Threading.Tasks;
-    using static {featuresClassPath.ClassNamespace}.{featureName};
+    using {featuresClassPath.ClassNamespace};
     using static {testFixtureName};
 
     public class {queryName}Tests : TestBase
@@ -64,7 +64,7 @@
             await InsertAsync({fakeEntityVariableName});
 
             // Act
-            var query = new {queryName}({fakeEntityVariableName}.{pkName});
+            var query = new {featureName}.{queryName}({fakeEntityVariableName}.{pkName});
             var {lowercaseEntityPluralName} = await SendAsync(query);
 
             // Assert

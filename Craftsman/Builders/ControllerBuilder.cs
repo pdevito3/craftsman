@@ -80,12 +80,7 @@
     using {wrapperClassPath.ClassNamespace};
     using System.Threading;
     using MediatR;
-    using static {featureClassPath.ClassNamespace}.{Utilities.GetEntityListFeatureClassName(entity.Name)};
-    using static {featureClassPath.ClassNamespace}.{Utilities.GetEntityFeatureClassName(entity.Name)};
-    using static {featureClassPath.ClassNamespace}.{Utilities.AddEntityFeatureClassName(entity.Name)};
-    using static {featureClassPath.ClassNamespace}.{Utilities.DeleteEntityFeatureClassName(entity.Name)};
-    using static {featureClassPath.ClassNamespace}.{Utilities.UpdateEntityFeatureClassName(entity.Name)};
-    using static {featureClassPath.ClassNamespace}.{Utilities.PatchEntityFeatureClassName(entity.Name)};
+    using {featureClassPath.ClassNamespace};
 
     [ApiController]
     [Route(""{endpointBase}"")]
@@ -105,7 +100,7 @@
         public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
         {{
             // add error handling
-            var query = new {queryListMethodName}({lowercaseEntityVariable}ParametersDto);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryListMethodName}({lowercaseEntityVariable}ParametersDto);
             var queryResponse = await _mediator.Send(query);
 
             var paginationMetadata = new
@@ -133,7 +128,7 @@
         public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercasePrimaryKey})
         {{
             // add error handling
-            var query = new {queryRecordMethodName}({lowercasePrimaryKey});
+            var query = new {Utilities.GetEntityFeatureClassName(entity.Name)}.{queryRecordMethodName}({lowercasePrimaryKey});
             var queryResponse = await _mediator.Send(query);
 
             var response = new {singleResponse}(queryResponse);
@@ -146,7 +141,7 @@
         public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {lowercaseEntityVariable}ForCreation)
         {{
             // add error handling
-            var command = new {addRecordCommandMethodName}({lowercaseEntityVariable}ForCreation);
+            var command = new {Utilities.AddEntityFeatureClassName(entity.Name)}.{addRecordCommandMethodName}({lowercaseEntityVariable}ForCreation);
             var commandResponse = await _mediator.Send(command);
             var response = new {singleResponse}(commandResponse);
 
@@ -160,7 +155,7 @@
         public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercasePrimaryKey})
         {{
             // add error handling
-            var command = new {deleteRecordCommandMethodName}({lowercasePrimaryKey});
+            var command = new {Utilities.DeleteEntityFeatureClassName(entity.Name)}.{deleteRecordCommandMethodName}({lowercasePrimaryKey});
             await _mediator.Send(command);
 
             return NoContent();
@@ -171,7 +166,7 @@
         public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercasePrimaryKey}, {updateDto} {lowercaseEntityVariable})
         {{
             // add error handling
-            var command = new {updateRecordCommandMethodName}({lowercasePrimaryKey}, {lowercaseEntityVariable});
+            var command = new {Utilities.UpdateEntityFeatureClassName(entity.Name)}.{updateRecordCommandMethodName}({lowercasePrimaryKey}, {lowercaseEntityVariable});
             await _mediator.Send(command);
 
             return NoContent();
@@ -183,7 +178,7 @@
         public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {lowercasePrimaryKey}, JsonPatchDocument<{updateDto}> patchDoc)
         {{
             // add error handling
-            var command = new {patchRecordCommandMethodName}({lowercasePrimaryKey}, patchDoc);
+            var command = new {Utilities.PatchEntityFeatureClassName(entity.Name)}.{patchRecordCommandMethodName}({lowercasePrimaryKey}, patchDoc);
             await _mediator.Send(command);
 
             return NoContent();

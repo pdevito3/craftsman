@@ -59,7 +59,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using static {featuresClassPath.ClassNamespace}.{featureName};
+    using {featuresClassPath.ClassNamespace};
     using static {testFixtureName};
 
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
@@ -93,7 +93,7 @@
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
             // Act
-            var query = new {queryName}(queryParameters);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
             var {lowercaseEntityPluralName} = await SendAsync(query);
 
             // Assert
@@ -124,7 +124,7 @@
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}, {fakeEntityVariableNameThree});
 
             //Act
-            var query = new {queryName}(queryParameters);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
             var {lowercaseEntityPluralName} = await SendAsync(query);
 
             // Assert
@@ -183,7 +183,7 @@
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
             //Act
-            var query = new {queryName}(queryParameters);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
             var {lowercaseEntityPluralName} = await SendAsync(query);
 
             // Assert
@@ -250,7 +250,7 @@
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
             //Act
-            var query = new {queryName}(queryParameters);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
             var {lowercaseEntityPluralName} = await SendAsync(query);
 
             // Assert
@@ -327,7 +327,7 @@
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
             //Act
-            var query = new {queryName}(queryParameters);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
             var {lowercaseEntityPluralName} = await SendAsync(query);
 
             // Assert

@@ -65,7 +65,7 @@
     using System.Threading.Tasks;
     using System.Collections.Generic;
 
-    public class {className}
+    public static class {className}
     {{
         public class {updateCommandName} : IRequest<bool>
         {{

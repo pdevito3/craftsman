@@ -50,7 +50,7 @@
     using Microsoft.EntityFrameworkCore;
     using NUnit.Framework;
     using System.Threading.Tasks;
-    using static {featuresClassPath.ClassNamespace}.{featureName};
+    using {featuresClassPath.ClassNamespace};
     using static {testFixtureName};
 
     public class {commandName}Tests : TestBase
@@ -62,7 +62,7 @@
             var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
 
             // Act
-            var command = new {commandName}({fakeEntityVariableName});
+            var command = new {featureName}.{commandName}({fakeEntityVariableName});
             var {lowercaseEntityName}Returned = await SendAsync(command);
             var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
 

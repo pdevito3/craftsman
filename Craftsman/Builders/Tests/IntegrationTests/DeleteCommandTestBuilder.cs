@@ -53,7 +53,7 @@
     using Microsoft.EntityFrameworkCore;
     using NUnit.Framework;
     using System.Threading.Tasks;
-    using static {featuresClassPath.ClassNamespace}.{featureName};
+    using {featuresClassPath.ClassNamespace};
     using static {testFixtureName};
 
     public class {commandName}Tests : TestBase
@@ -68,7 +68,7 @@
             var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
             // Act
-            var command = new {commandName}({lowercaseEntityPk});
+            var command = new {featureName}.{commandName}({lowercaseEntityPk});
             await SendAsync(command);
             var {lowercaseEntityPluralName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
 

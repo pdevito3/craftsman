@@ -71,7 +71,7 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.JsonPatch;
     using System.Linq;
-    using static {featuresClassPath.ClassNamespace}.{featureName};
+    using {featuresClassPath.ClassNamespace};
     using static {testFixtureName};
 
     public class {commandName}Tests : TestBase
@@ -90,7 +90,7 @@
             patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, newValue);
 
             // Act
-            var command = new {commandName}({lowercaseEntityPk}, patchDoc);
+            var command = new {featureName}.{commandName}({lowercaseEntityPk}, patchDoc);
             await SendAsync(command);
             var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
 

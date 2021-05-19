@@ -62,7 +62,7 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class {className}
+    public static class {className}
     {{
         public class {queryListName} : IRequest<PagedList<{readDto }>>
         {{
