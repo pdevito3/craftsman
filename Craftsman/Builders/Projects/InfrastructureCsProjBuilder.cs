@@ -45,13 +45,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include=""AutoBogus"" Version=""2.12.0"" />
-    <PackageReference Include=""Bogus"" Version=""32.0.2"" />
-    <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""5.0.1"" />
-    <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""5.0.1"" />
+    <PackageReference Include=""AutoBogus"" Version=""2.13.0"" />
+    <PackageReference Include=""Bogus"" Version=""33.0.2"" />
+    <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""5.0.6"" />
+    <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""5.0.6"" />
     {sqlPackage}
-    <PackageReference Include=""Microsoft.Extensions.Configuration.Binder"" Version=""5.0.0"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Authentication.JwtBearer"" Version=""5.0.1"" />
+    <PackageReference Include=""Microsoft.Extensions.Configuration.Binder"" Version=""5.0.6"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Authentication.JwtBearer"" Version=""5.0.6"" />
   </ItemGroup>
 
   <ItemGroup>

@@ -43,14 +43,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include=""AutoBogus"" Version=""2.12.0"" />
-    <PackageReference Include=""Bogus"" Version=""32.0.2"" />
+    <PackageReference Include=""AutoBogus"" Version=""2.13.0"" />
+    <PackageReference Include=""Bogus"" Version=""33.0.2"" />
     <PackageReference Include=""FluentAssertions"" Version=""5.10.3"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""5.0.1"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""5.0.6"" />
     <PackageReference Include=""Moq"" Version=""4.16.1"" />
-    <PackageReference Include=""NUnit"" Version=""3.12.0"" />
-    <PackageReference Include=""NUnit3TestAdapter"" Version=""3.16.1"" />
-    <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""16.8.3"" />
+    <PackageReference Include=""NUnit"" Version=""3.13.2"" />
+    <PackageReference Include=""NUnit3TestAdapter"" Version=""3.17.0"" />
+    <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""16.9.4"" />
   </ItemGroup>
 
   <ItemGroup>
