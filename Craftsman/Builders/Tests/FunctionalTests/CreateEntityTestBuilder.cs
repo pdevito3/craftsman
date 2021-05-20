@@ -58,7 +58,7 @@
 
         private static string CreateEntityTest(Entity entity, bool hasRestrictedEndpoints, List<Policy> policies)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntityForCreation = $"Fake{Utilities.GetDtoName(entity.Name, Dto.Creation)}";
             var fakeEntityVariableName = $"fake{entity.Name}";
             var pkName = entity.PrimaryKeyProperty.Name;
 
@@ -73,9 +73,7 @@
         public async Task {testName}()
         {{
             // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();{clientAuth}
-
-            await InsertAsync({fakeEntityVariableName});
+            var {fakeEntityVariableName} = new {fakeEntityForCreation} {{ }}.Generate();{clientAuth}
 
             // Act
             var route = ApiRoutes.{entity.Plural}.Create;

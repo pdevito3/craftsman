@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `register:consumer` and `register:producer` commands
 - Removed BC readme and updated sln readme
 - Better namespacing for features in controllers using static classes for features
+- Updated functional test to pass without conflict
 
 ## [0.9.3] - 2021-04-10
 
