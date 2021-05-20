@@ -96,6 +96,9 @@
         {
             consumers.ForEach(consumer =>
             {
+                // create consumer
+                ConsumerBuilder.CreateConsumerFeature(srcDirectory, consumer, projectBaseName);
+
                 // create consumer registration
                 ConsumerRegistrationBuilder.CreateConsumerRegistration(srcDirectory, consumer, projectBaseName);
 

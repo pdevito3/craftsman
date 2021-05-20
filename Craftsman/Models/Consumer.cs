@@ -14,6 +14,8 @@
 
         public string ExchangeName { get; set; }
 
+        public string MessageName { get; set; }
+
         public string QueueName { get; set; }
 
         public string ExchangeType

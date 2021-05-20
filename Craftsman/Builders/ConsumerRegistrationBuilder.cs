@@ -15,6 +15,7 @@
         {
             var className = $@"{consumer.EndpointRegistrationMethodName}Registration";
             var classPath = ClassPathHelper.WebApiConsumersServiceExtensionsClassPath(solutionDirectory, $"{className}.cs", projectBaseName);
+            var consumerFeatureClassPath = ClassPathHelper.ConsumerFeaturesClassPath(solutionDirectory, $"{consumer.ConsumerName}.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -38,12 +39,12 @@
 
             if (Enum.GetName(typeof(ExchangeType), ExchangeType.Direct) == consumer.ExchangeType
                 || Enum.GetName(typeof(ExchangeType), ExchangeType.Topic) == consumer.ExchangeType)
-                data = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, className, consumer, lazyText, quorumText);
+                data = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, className, consumer, lazyText, quorumText, consumerFeatureClassPath.ClassNamespace);
 
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string GetDirectOrTopicConsumerRegistration(string classNamespace, string className, Consumer consumer, string lazyText, string quorumText)
+        public static string GetDirectOrTopicConsumerRegistration(string classNamespace, string className, Consumer consumer, string lazyText, string quorumText, string consumerFeatureUsing)
         {
             var exchangeType = Enum.GetName(typeof(ExchangeType), ExchangeType.Direct) == consumer.ExchangeType ? "ExchangeType.Direct" : "ExchangeType.Topic";
 
@@ -52,6 +53,7 @@
     using MassTransit;
     using MassTransit.RabbitMqTransport;
     using RabbitMQ.Client;
+    using {consumerFeatureUsing};
 
     public static class {className}
     {{
