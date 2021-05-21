@@ -17,7 +17,7 @@
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
 
-    public static class RegisterProducerCommand
+    public static class AddProducerCommand
     {
         public static void Help()
         {
@@ -25,7 +25,7 @@
             WriteHelpText(@$"   This command will add a MassTransit configuration for a message producer using a formatted yaml or json file.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman register:producer [options] <filepath>");
+            WriteHelpText(@$"   craftsman add:producer [options] <filepath>");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Arguments:");
@@ -37,9 +37,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"   craftsman register:producer C:\fullpath\producerinfo.yaml");
-            WriteHelpText(@$"   craftsman register:producer C:\fullpath\producerinfo.yml");
-            WriteHelpText(@$"   craftsman register:producer C:\fullpath\producerinfo.json");
+            WriteHelpText(@$"   craftsman add:producer C:\fullpath\producerinfo.yaml");
+            WriteHelpText(@$"   craftsman add:producer C:\fullpath\producerinfo.yml");
+            WriteHelpText(@$"   craftsman add:producer C:\fullpath\producerinfo.json");
             WriteHelpText(Environment.NewLine);
         }
 

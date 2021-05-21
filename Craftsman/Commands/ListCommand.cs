@@ -22,16 +22,14 @@
             WriteHelpHeader(@$"{Environment.NewLine}    add");
             WriteHelpText(@$"      add:bc              Add an API to your DDD project.");
             WriteHelpText(@$"      add:bus             Add a message bus to a web api.");
+            WriteHelpText(@$"      add:consumer        Creates a new receive endpoint for event bus consumption.");
             WriteHelpText(@$"      add:entity          Add a new entity to a web api.");
             WriteHelpText(@$"      add:message         Add a new eventing message.");
+            WriteHelpText(@$"      add:producer        Updates bus configuration to register a producer.");
             WriteHelpText(@$"      add:prop            Add a new property to an entity in a web api.");
 
             WriteHelpHeader(@$"{Environment.NewLine}    new");
             WriteHelpText(@$"      new:domain          Create a new DDD based project");
-
-            WriteHelpHeader(@$"{Environment.NewLine}    register");
-            WriteHelpText(@$"      register:consumer   Creates a new receive endpoint for event bus consumption.");
-            WriteHelpText(@$"      register:producer   Updates bus configuration to register a producer.");
 
             WriteHelpHeader(@$"{Environment.NewLine}Options:");
             WriteHelpText(@$"   -h, --help          Display this help message");
@@ -43,8 +41,8 @@
             WriteHelpText(@$"   craftsman add:entity -h");
             WriteHelpText(@$"   craftsman add:message -h");
             WriteHelpText(@$"   craftsman add:property -h");
-            WriteHelpText(@$"   craftsman register:consumer -h");
-            WriteHelpText(@$"   craftsman register:producer -h");
+            WriteHelpText(@$"   craftsman add:consumer -h");
+            WriteHelpText(@$"   craftsman add:producer -h");
         }
     }
 }

@@ -17,7 +17,7 @@
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
 
-    public static class RegisterConsumerCommand
+    public static class AddConsumerCommand
     {
         public static void Help()
         {
@@ -25,7 +25,7 @@
             WriteHelpText(@$"   This command will add a receive endpoint and regsiter it with MassTransit using a formatted yaml or json file.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman register:consumer [options] <filepath>");
+            WriteHelpText(@$"   craftsman add:consumer [options] <filepath>");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Arguments:");
@@ -37,9 +37,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"   craftsman register:consumer C:\fullpath\consumerinfo.yaml");
-            WriteHelpText(@$"   craftsman register:consumer C:\fullpath\consumerinfo.yml");
-            WriteHelpText(@$"   craftsman register:consumer C:\fullpath\consumerinfo.json");
+            WriteHelpText(@$"   craftsman add:consumer C:\fullpath\consumerinfo.yaml");
+            WriteHelpText(@$"   craftsman add:consumer C:\fullpath\consumerinfo.yml");
+            WriteHelpText(@$"   craftsman add:consumer C:\fullpath\consumerinfo.json");
             WriteHelpText(Environment.NewLine);
         }
 

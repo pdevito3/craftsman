@@ -185,7 +185,7 @@
             {
                 var filePath = args[1];
                 if (filePath == "-h" || filePath == "--help")
-                    RegisterConsumerCommand.Help();
+                    AddConsumerCommand.Help();
                 else
                 {
                     CheckForLatestVersion();
@@ -197,7 +197,7 @@
                         rootDir = Console.ReadLine();
                     }
 
-                    RegisterConsumerCommand.Run(filePath, rootDir, fileSystem);
+                    AddConsumerCommand.Run(filePath, rootDir, fileSystem);
                 }
             }
 
@@ -205,7 +205,7 @@
             {
                 var filePath = args[1];
                 if (filePath == "-h" || filePath == "--help")
-                    RegisterProducerCommand.Help();
+                    AddProducerCommand.Help();
                 else
                 {
                     CheckForLatestVersion();
@@ -217,7 +217,7 @@
                         rootDir = Console.ReadLine();
                     }
 
-                    RegisterProducerCommand.Run(filePath, rootDir, fileSystem);
+                    AddProducerCommand.Run(filePath, rootDir, fileSystem);
                 }
             }
         }

@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Bus, Messages, Producers, and Consumers props to BC template
 - Added `add:message` command
 - Updated entity name and entity prop names first letter to always be capitalized
-- Added `register:consumer` and `register:producer` commands
+- Added `add:consumer` and `add:producer` commands
 - Removed BC readme and updated sln readme
 - Better namespacing for features in controllers using static classes for features
 - Updated functional test to pass without conflict
