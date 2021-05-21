@@ -36,5 +36,7 @@
         public bool IsQuorum { get; set; } = true;
 
         public bool IsLazy { get; set; } = true;
+
+        public bool UsesDb { get; set; }
     }
 }

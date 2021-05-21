@@ -37,7 +37,7 @@
                 {
                     var newText = $"{line}";
                     if (line.Contains($"// Consumers -- Do Not Delete This Comment"))
-                        newText += @$"{Environment.NewLine}                    cfg.{endpointRegistrationName}();";
+                        newText += @$"{Environment.NewLine}                    cfg.{endpointRegistrationName}(context);";
                     if (line.Contains(consumerClassPath.ClassNamespace))
                         hasUsingForConsumerNamespace = true;
 

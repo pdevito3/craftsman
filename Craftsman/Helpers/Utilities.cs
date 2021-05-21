@@ -486,5 +486,13 @@
 
             return defaultValue == null ? "" : $" = {defaultValue};";
         }
+
+        public static string GetDbContext(string srcDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"", projectBaseName);
+            var contextClass = Directory.GetFiles(classPath.FullClassPath, "*.cs").FirstOrDefault();
+
+            return Path.GetFileNameWithoutExtension(contextClass);
+        }
     }
 }

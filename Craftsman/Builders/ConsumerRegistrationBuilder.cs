@@ -57,7 +57,7 @@
 
     public static class {className}
     {{
-        public static void {consumer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg)
+        public static void {consumer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
         {{
             cfg.ReceiveEndpoint(""{consumer.QueueName}"", re =>
             {{
@@ -65,7 +65,7 @@
                 re.ConfigureConsumeTopology = false;{quorumText}{lazyText}
 
                 // the consumers that are subscribed to the endpoint
-                re.Consumer<{consumer.ConsumerName}>();
+                re.ConfigureConsumer<{consumer.ConsumerName}>(context);
 
                 // the binding of the intermediary exchange and the primary exchange
                 re.Bind(""{consumer.ExchangeName}"", e =>

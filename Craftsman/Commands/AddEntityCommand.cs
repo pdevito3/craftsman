@@ -117,12 +117,9 @@
             ApiRouteModifier.AddRoutes(testDirectory, template.Entities, template.SolutionName);
         }
 
-        private static AddEntityTemplate GetDbContext(string solutionDirectory, AddEntityTemplate template, string projectBaseName)
+        private static AddEntityTemplate GetDbContext(string srcDirectory, AddEntityTemplate template, string projectBaseName)
         {
-            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"", projectBaseName);
-            var contextClass = Directory.GetFiles(classPath.FullClassPath, "*.cs").FirstOrDefault();
-
-            template.DbContextName = Path.GetFileNameWithoutExtension(contextClass);
+            template.DbContextName = Utilities.GetDbContext(srcDirectory, projectBaseName);
             return template;
         }
     }
