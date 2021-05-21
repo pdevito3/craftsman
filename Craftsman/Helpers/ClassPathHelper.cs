@@ -142,6 +142,11 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{ApiProjectSuffix}", "Features", "Consumers"), className);
         }
 
+        public static ClassPath ProducerFeaturesClassPath(string solutionDirectory, string className, string projectBaseName)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{ApiProjectSuffix}", "Features", "Producers"), className);
+        }
+
         public static ClassPath ApplicationInterfaceClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{CoreProjectSuffix}", "Interfaces"), className);

@@ -96,6 +96,9 @@
         {
             producers.ForEach(producer =>
             {
+                // add producer
+                ProducerBuilder.CreateProducerFeature(srcDirectory, producer, projectBaseName);
+
                 // create producer registration
                 ProducerRegistrationBuilder.CreateProducerRegistration(srcDirectory, producer, projectBaseName);
 

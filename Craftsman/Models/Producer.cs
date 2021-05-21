@@ -10,6 +10,8 @@
 
         public string EndpointRegistrationMethodName { get; set; }
 
+        public string ProducerName { get; set; }
+
         public string ExchangeName { get; set; }
 
         public string MessageName { get; set; }
@@ -26,5 +28,7 @@
                 _type = parsed;
             }
         }
+
+        public bool UsesDb { get; set; }
     }
 }
