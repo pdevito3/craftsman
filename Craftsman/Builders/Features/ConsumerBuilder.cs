@@ -52,6 +52,14 @@
             _mapper = mapper;{assignDb}
         }}
 
+        public class {consumer.ConsumerName}Profile : Profile
+        {{
+            public {consumer.ConsumerName}Profile()
+            {{
+                //createmap<to this, from this>
+            }}
+        }}
+
         public Task Consume(ConsumeContext<{consumer.MessageName}> context)
         {{
             // do work here
