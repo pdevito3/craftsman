@@ -10,6 +10,7 @@
     using System.IO.Abstractions;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
+    using Craftsman.Validators;
 
     public static class AddProducerCommand
     {
@@ -60,7 +61,8 @@
             }
             catch (Exception e)
             {
-                if (e is IsNotBoundedContextDirectory)
+                if (e is IsNotBoundedContextDirectory
+                    || e is DataValidationErrorException)
                 {
                     WriteError($"{e.Message}");
                 }
@@ -88,15 +90,18 @@
 
         public static void AddProducers(List<Producer> producers, string projectBaseName, string srcDirectory)
         {
+            var validator = new ProducerValidator();
+            foreach (var producer in producers)
+            {
+                var results = validator.Validate(producer);
+                if (!results.IsValid)
+                    throw new DataValidationErrorException(results.Errors);
+            }
+
             producers.ForEach(producer =>
             {
-                // add producer
                 ProducerBuilder.CreateProducerFeature(srcDirectory, producer, projectBaseName);
-
-                // create producer registration
                 ProducerRegistrationBuilder.CreateProducerRegistration(srcDirectory, producer, projectBaseName);
-
-                // add to MR registration
                 MassTransitModifier.AddProducerRegistation(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
             });
         }
