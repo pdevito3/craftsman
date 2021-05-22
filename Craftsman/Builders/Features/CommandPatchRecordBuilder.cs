@@ -4,11 +4,8 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using System;
     using System.IO;
-    using System.Linq;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class CommandPatchRecordBuilder
     {

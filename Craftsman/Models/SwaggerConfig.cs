@@ -1,9 +1,5 @@
 ﻿namespace Craftsman.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data.SqlTypes;
-
     public class SwaggerConfig
     {
         public string Title { get; set; }

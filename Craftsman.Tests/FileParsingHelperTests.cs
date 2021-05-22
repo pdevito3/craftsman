@@ -1,6 +1,5 @@
 ﻿namespace Craftsman.Tests
 {
-    using Craftsman.Commands;
     using Craftsman.Helpers;
     using Craftsman.Models;
     using FluentAssertions;

@@ -1,6 +1,5 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;

@@ -4,13 +4,8 @@
     using Craftsman.Models;
     using Craftsman.Tests.Fakes;
     using FluentAssertions;
-    using System;
-    using System.Collections.Generic;
     using Xunit;
-    using System.Linq;
-    using AutoBogus;
     using System.IO.Abstractions.TestingHelpers;
-    using System.IO;
     using Craftsman.Helpers;
     using Craftsman.Exceptions;
 

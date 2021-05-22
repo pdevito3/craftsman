@@ -1,10 +1,8 @@
 ﻿namespace Craftsman.Tests.FileTextTests
 {
-    using Craftsman.Builders;
     using Craftsman.Builders.Dtos;
     using Craftsman.Models;
     using Craftsman.Models.Interfaces;
-    using Craftsman.Tests.Fakes;
     using FluentAssertions;
     using NSubstitute;
     using Xunit;

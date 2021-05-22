@@ -1,9 +1,6 @@
 ﻿namespace Craftsman.Helpers
 {
-    using Craftsman.Enums;
     using Craftsman.Models;
-    using System;
-    using System.Collections.Generic;
     using System.IO;
 
     public static class ClassPathHelper

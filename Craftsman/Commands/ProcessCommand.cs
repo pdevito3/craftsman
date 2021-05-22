@@ -5,13 +5,10 @@
     using Craftsman.Enums;
     using Craftsman.Models;
     using RestSharp;
-    using Spectre.Console;
     using System;
-    using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Linq;
     using System.Reflection;
-    using System.Threading.Tasks;
     using static Helpers.ConsoleWriter;
 
     public class ProcessCommand

@@ -4,11 +4,9 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class CreateEntityTestBuilder
     {

@@ -1,26 +1,10 @@
 ﻿namespace Craftsman.Commands
 {
-    using Craftsman.Builders;
-    using Craftsman.Builders.Dtos;
-    using Craftsman.Builders.Features;
-    using Craftsman.Builders.Seeders;
-    using Craftsman.Builders.Tests.Fakes;
-    using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Enums;
-    using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using FluentAssertions.Common;
-    using LibGit2Sharp;
-    using Newtonsoft.Json;
     using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Diagnostics;
-    using System.IO;
     using System.IO.Abstractions;
-    using System.Linq;
-    using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
 

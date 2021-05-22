@@ -1,11 +1,6 @@
 ﻿namespace Craftsman.Commands
 {
     using Craftsman.Builders;
-    using Craftsman.Builders.Dtos;
-    using Craftsman.Builders.Seeders;
-    using Craftsman.Builders.Tests.Fakes;
-    using Craftsman.Builders.Tests.Utilities;
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
@@ -13,7 +8,6 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
-    using System.Linq;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
 

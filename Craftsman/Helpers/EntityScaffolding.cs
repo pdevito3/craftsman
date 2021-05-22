@@ -8,7 +8,6 @@
     using Craftsman.Builders.Tests.IntegrationTests;
     using Craftsman.Enums;
     using Craftsman.Models;
-    using Spectre.Console;
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using static Helpers.ConsoleWriter;

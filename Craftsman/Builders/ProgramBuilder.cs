@@ -2,10 +2,8 @@
 {
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
-    using System;
     using System.IO.Abstractions;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class ProgramBuilder
     {

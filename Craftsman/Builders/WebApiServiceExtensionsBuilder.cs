@@ -2,12 +2,8 @@
 {
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
-    using System;
-    using System.Collections.Generic;
     using System.IO.Abstractions;
-    using System.Linq;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class WebApiServiceExtensionsBuilder
     {

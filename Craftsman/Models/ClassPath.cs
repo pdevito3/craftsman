@@ -1,10 +1,7 @@
 ﻿namespace Craftsman.Models
 {
     using Craftsman.Models.Interfaces;
-    using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Text;
 
     public class ClassPath : IClassPath
     {

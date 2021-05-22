@@ -1,16 +1,9 @@
 ﻿namespace Craftsman
 {
-    using CommandLine;
     using Craftsman.Commands;
-    using Craftsman.CraftsmanOptions;
-    using Craftsman.Models;
-    using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
     using System.IO.Abstractions;
     using Autofac;
     using System.Reflection;
-    using Craftsman.Helpers;
 
     class Program
     {

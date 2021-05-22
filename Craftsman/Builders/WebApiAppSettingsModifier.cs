@@ -6,7 +6,6 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
-    using System.Text;
 
     public class WebApiAppSettingsModifier
     {

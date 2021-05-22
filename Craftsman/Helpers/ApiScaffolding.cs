@@ -1,18 +1,13 @@
 ﻿namespace Craftsman.Helpers
 {
     using Craftsman.Builders;
-    using Craftsman.Builders.Dtos;
-    using Craftsman.Builders.Features;
     using Craftsman.Builders.Seeders;
-    using Craftsman.Builders.Tests.Fakes;
     using Craftsman.Builders.Tests.FunctionalTests;
-    using Craftsman.Builders.Tests.IntegrationTests;
     using Craftsman.Builders.Tests.UnitTests;
     using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Commands;
     using Craftsman.Enums;
     using Craftsman.Models;
-    using LibGit2Sharp;
     using Spectre.Console;
     using System;
     using System.Collections.Generic;

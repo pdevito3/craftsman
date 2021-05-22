@@ -2,7 +2,6 @@
 {
     using Craftsman.Builders.Dtos;
     using Craftsman.Builders.Projects;
-    using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
