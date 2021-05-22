@@ -181,30 +181,34 @@
 {{
     using MassTransit;
     using Messages;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using RabbitMQ.Client;
 
     public static class MassTransitServiceExtension
     {{
-        public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration)
+        public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         {{
-            services.AddMassTransit(mt =>
+            if(env.EnvironmentName != ""FunctionalTesting"")
             {{
-                mt.UsingRabbitMq((context, cfg) =>
+                services.AddMassTransit(mt =>
                 {{
-                    cfg.Host(configuration[""RMQ:Host""], configuration[""RMQ:VirtualHost""], h =>
+                    mt.UsingRabbitMq((context, cfg) =>
                     {{
-                        h.Username(configuration[""RMQ:Username""]);
-                        h.Password(configuration[""RMQ:Password""]);
+                        cfg.Host(configuration[""RMQ:Host""], configuration[""RMQ:VirtualHost""], h =>
+                        {{
+                            h.Username(configuration[""RMQ:Username""]);
+                            h.Password(configuration[""RMQ:Password""]);
+                        }});
+
+                        // Producers -- Do Not Delete This Comment
+
+                        // Consumers -- Do Not Delete This Comment
                     }});
-
-                    // Producers -- Do Not Delete This Comment
-
-                    // Consumers -- Do Not Delete This Comment
                 }});
-            }});
-            services.AddMassTransitHostedService();
+                services.AddMassTransitHostedService();
+            }}
         }}
     }}
 }}";
