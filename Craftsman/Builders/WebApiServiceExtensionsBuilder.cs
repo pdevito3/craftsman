@@ -185,6 +185,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using RabbitMQ.Client;
+    using System.Reflection;
 
     public static class MassTransitServiceExtension
     {{
@@ -194,6 +195,7 @@
             {{
                 services.AddMassTransit(mt =>
                 {{
+                    mt.AddConsumers(Assembly.GetExecutingAssembly());
                     mt.UsingRabbitMq((context, cfg) =>
                     {{
                         cfg.Host(configuration[""RMQ:Host""], configuration[""RMQ:VirtualHost""], h =>

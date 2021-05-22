@@ -31,7 +31,8 @@
 
                 // enables a lazy queue for more stable cluster with better predictive performance.
                 // Please note that you should disable lazy queues if you require really high performance, if the queues are always short, or if you have set a max-length policy.
-                re.Lazy = true;" : "";
+                re.SetQueueArgument(""declare"", ""lazy"");" : "";
+            //re.Lazy = true;" : "";
 
             using FileStream fs = File.Create(classPath.FullClassPath);
             var data = "";

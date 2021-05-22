@@ -28,7 +28,7 @@
                 {
                     var newText = $"{line}";
                     if (line.Contains($"// Consumers -- Do Not Delete This Comment"))
-                        newText += @$"{Environment.NewLine}                    cfg.{endpointRegistrationName}(context);";
+                        newText += @$"{Environment.NewLine}                        cfg.{endpointRegistrationName}(context);";
                     if (line.Contains(consumerClassPath.ClassNamespace))
                         hasUsingForConsumerNamespace = true;
 
@@ -84,7 +84,7 @@
                 {
                     var newText = $"{line}";
                     if (line.Contains($"// Producers -- Do Not Delete This Comment"))
-                        newText += @$"{Environment.NewLine}                    cfg.{endpointRegistrationName}();";
+                        newText += @$"{Environment.NewLine}                        cfg.{endpointRegistrationName}();";
                     if (line.Contains(producerClassPath.ClassNamespace))
                         hasUsingForProducerNamespace = true;
 
