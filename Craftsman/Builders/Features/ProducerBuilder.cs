@@ -20,12 +20,12 @@
                 throw new FileAlreadyExistsException(classPath.FullClassPath);
 
             using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = GetDirectOrTopicProducerRegistration(classPath.ClassNamespace, producer, srcDirectory, projectBaseName);
+            var data = GetProducerRegistration(classPath.ClassNamespace, producer, srcDirectory, projectBaseName);
 
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string GetDirectOrTopicProducerRegistration(string classNamespace, Producer producer, string srcDirectory, string projectBaseName)
+        public static string GetProducerRegistration(string classNamespace, Producer producer, string srcDirectory, string projectBaseName)
         {
             var context = Utilities.GetDbContext(srcDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);

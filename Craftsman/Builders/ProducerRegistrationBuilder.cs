@@ -27,6 +27,8 @@
             if (Enum.GetName(typeof(ExchangeType), ExchangeType.Direct) == producer.ExchangeType
                 || Enum.GetName(typeof(ExchangeType), ExchangeType.Topic) == producer.ExchangeType)
                 data = GetDirectOrTopicProducerRegistration(classPath.ClassNamespace, className, producer);
+            else
+                data = GetFanoutProducerRegistration(classPath.ClassNamespace, className, producer);
 
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
@@ -66,6 +68,26 @@
                 * }});
                 */
             }});
+        }}
+    }}
+}}";
+        }
+
+        public static string GetFanoutProducerRegistration(string classNamespace, string className, Producer producer)
+        {
+            return @$"namespace {classNamespace}
+{{
+    using MassTransit;
+    using MassTransit.RabbitMqTransport;
+    using Messages;
+    using RabbitMQ.Client;
+
+    public static class {className}
+    {{
+        public static void {producer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg)
+        {{
+            cfg.Message<{producer.MessageName}>(e => e.SetEntityName(""{producer.ExchangeName}"")); // name of the primary exchange
+            cfg.Publish<{producer.MessageName}>(e => e.ExchangeType = ExchangeType.Fanout); // primary exchange type
         }}
     }}
 }}";

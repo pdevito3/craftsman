@@ -39,6 +39,8 @@
             if (Enum.GetName(typeof(ExchangeType), ExchangeType.Direct) == consumer.ExchangeType
                 || Enum.GetName(typeof(ExchangeType), ExchangeType.Topic) == consumer.ExchangeType)
                 data = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, className, consumer, lazyText, quorumText, consumerFeatureClassPath.ClassNamespace);
+            else
+                data = GetFanoutConsumerRegistration(classPath.ClassNamespace, className, consumer, lazyText, quorumText, consumerFeatureClassPath.ClassNamespace);
 
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
@@ -71,6 +73,38 @@
                 {{
                     e.RoutingKey = ""{consumer.RoutingKey}"";
                     e.ExchangeType = {exchangeType};
+                }});
+            }});
+        }}
+    }}
+}}";
+        }
+
+        public static string GetFanoutConsumerRegistration(string classNamespace, string className, Consumer consumer, string lazyText, string quorumText, string consumerFeatureUsing)
+        {
+            return @$"namespace {classNamespace}
+{{
+    using MassTransit;
+    using MassTransit.RabbitMqTransport;
+    using RabbitMQ.Client;
+    using {consumerFeatureUsing};
+
+    public static class {className}
+    {{
+        public static void {consumer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
+        {{
+            cfg.ReceiveEndpoint(""{consumer.QueueName}"", re =>
+            {{
+                // turns off default fanout settings
+                re.ConfigureConsumeTopology = false;{quorumText}{lazyText}
+
+                // the consumers that are subscribed to the endpoint
+                re.ConfigureConsumer<{consumer.ConsumerName}>(context);
+
+                // the binding of the intermediary exchange and the primary exchange
+                re.Bind(""{consumer.ExchangeName}"", e =>
+                {{
+                    e.ExchangeType = ExchangeType.Fanout;
                 }});
             }});
         }}
