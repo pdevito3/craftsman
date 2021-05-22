@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved App Registrations to separate files
 - Moved Service Registrations to separate files
 - Fixed default value for strings on entities to use quotes
+- Fixed missing exception handling on `add:bc` command
 - Added `add:bus` command
 - Added Bus, Messages, Producers, and Consumers props to BC template
 - Added `add:message` command

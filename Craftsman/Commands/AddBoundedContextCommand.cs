@@ -7,6 +7,8 @@
     using System.IO.Abstractions;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
+    using Craftsman.Exceptions;
+    using System.IO;
 
     public static class AddBoundedContextCommand
     {
@@ -54,22 +56,36 @@
             }
             catch (Exception e)
             {
-                AnsiConsole.WriteException(e, new ExceptionSettings
+                if (e is FileAlreadyExistsException
+                    || e is DirectoryAlreadyExistsException
+                    || e is InvalidSolutionNameException
+                    || e is FileNotFoundException
+                    || e is InvalidDbProviderException
+                    || e is InvalidFileTypeException
+                    || e is DataValidationErrorException
+                    || e is SolutiuonNameEntityMatchException)
                 {
-                    Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
-                    Style = new ExceptionStyle
+                    WriteError($"{e.Message}");
+                }
+                else
+                {
+                    AnsiConsole.WriteException(e, new ExceptionSettings
                     {
-                        Exception = new Style().Foreground(Color.Grey),
-                        Message = new Style().Foreground(Color.White),
-                        NonEmphasized = new Style().Foreground(Color.Cornsilk1),
-                        Parenthesis = new Style().Foreground(Color.Cornsilk1),
-                        Method = new Style().Foreground(Color.Red),
-                        ParameterName = new Style().Foreground(Color.Cornsilk1),
-                        ParameterType = new Style().Foreground(Color.Red),
-                        Path = new Style().Foreground(Color.Red),
-                        LineNumber = new Style().Foreground(Color.Cornsilk1),
-                    }
-                });
+                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
+                        Style = new ExceptionStyle
+                        {
+                            Exception = new Style().Foreground(Color.Grey),
+                            Message = new Style().Foreground(Color.White),
+                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
+                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
+                            Method = new Style().Foreground(Color.Red),
+                            ParameterName = new Style().Foreground(Color.Cornsilk1),
+                            ParameterType = new Style().Foreground(Color.Red),
+                            Path = new Style().Foreground(Color.Red),
+                            LineNumber = new Style().Foreground(Color.Cornsilk1),
+                        }
+                    });
+                }
             }
         }
     }
