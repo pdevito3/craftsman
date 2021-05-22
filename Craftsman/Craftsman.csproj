@@ -25,6 +25,8 @@
     <PackageReference Include="Autofac" Version="6.2.0" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="FluentValidation" Version="10.1.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="10.1.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="RestSharp" Version="106.11.7" />

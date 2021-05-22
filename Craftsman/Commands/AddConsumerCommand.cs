@@ -10,6 +10,8 @@
     using System.IO.Abstractions;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
+    using Craftsman.Validators;
+    using FluentValidation;
 
     public static class AddConsumerCommand
     {
@@ -54,13 +56,15 @@
                 // get solution dir
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
+
                 AddConsumers(template.Consumers, projectBaseName, srcDirectory);
 
                 WriteHelpHeader($"{Environment.NewLine}Your event bus has been successfully added. Keep up the good work!");
             }
             catch (Exception e)
             {
-                if (e is IsNotBoundedContextDirectory)
+                if (e is IsNotBoundedContextDirectory
+                    || e is DataValidationErrorException)
                 {
                     WriteError($"{e.Message}");
                 }
@@ -88,15 +92,18 @@
 
         public static void AddConsumers(List<Consumer> consumers, string projectBaseName, string srcDirectory)
         {
+            var validator = new ConsumerValidator();
+            foreach (var consumer in consumers)
+            {
+                var results = validator.Validate(consumer);
+                if (!results.IsValid)
+                    throw new DataValidationErrorException(results.Errors);
+            }
+
             consumers.ForEach(consumer =>
             {
-                // create consumer
                 ConsumerBuilder.CreateConsumerFeature(srcDirectory, consumer, projectBaseName);
-
-                // create consumer registration
                 ConsumerRegistrationBuilder.CreateConsumerRegistration(srcDirectory, consumer, projectBaseName);
-
-                // add to MR registration
                 MassTransitModifier.AddConsumerRegistation(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
             });
         }

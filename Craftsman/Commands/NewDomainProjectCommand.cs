@@ -69,6 +69,7 @@
                     || e is FileNotFoundException
                     || e is InvalidDbProviderException
                     || e is InvalidFileTypeException
+                    || e is DataValidationErrorException
                     || e is SolutiuonNameEntityMatchException)
                 {
                     WriteError($"{e.Message}");
