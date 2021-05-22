@@ -45,14 +45,14 @@
     <PackageReference Include=""Bogus"" Version=""33.0.2"" />
     <PackageReference Include=""Docker.DotNet"" Version=""3.125.4"" />
     <PackageReference Include=""FluentAssertions"" Version=""5.10.3"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""5.0.1"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""5.0.6"" />
     <PackageReference Include=""MediatR"" Version=""9.0.0"" />
     <PackageReference Include=""Moq"" Version=""4.16.1"" />
     <PackageReference Include=""Npgsql"" Version=""5.0.5"" />
     <PackageReference Include=""Newtonsoft.Json"" Version=""13.0.1"" />
     <PackageReference Include=""NUnit"" Version=""3.13.2"" />
     <PackageReference Include=""NUnit3TestAdapter"" Version=""3.17.0"" />
-    <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""16.8.3"" />
+    <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""16.9.4"" />
     <PackageReference Include=""Respawn"" Version=""4.0.0"" />
   </ItemGroup>
 

@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed BC readme and updated sln readme
 - Better namespacing for features in controllers using static classes for features
 - Updated functional test to pass without conflict
+- Updated nuget packages
 
 ## [0.9.3] - 2021-04-10
 
