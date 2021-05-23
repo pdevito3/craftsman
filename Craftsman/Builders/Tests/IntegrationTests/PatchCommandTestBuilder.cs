@@ -32,16 +32,10 @@
             var featureName = Utilities.PatchEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var commandName = Utilities.CommandPatchName(entity.Name);
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
-            var fakeEntityVariableName = $"fake{entity.Name}One";
-            var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var pkName = entity.PrimaryKeyProperty.Name;
-            var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var exceptionClassPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
 
@@ -63,18 +57,36 @@
     using {fakerClassPath.ClassNamespace};
     using {testUtilClassPath.ClassNamespace};
     using {dtoClassPath.ClassNamespace};
+    using {exceptionClassPath.ClassNamespace};
+    using {featuresClassPath.ClassNamespace};
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using NUnit.Framework;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.JsonPatch;
+    using System;
     using System.Linq;
-    using {featuresClassPath.ClassNamespace};
+    using System.Collections.Generic;
     using static {testFixtureName};
 
     public class {commandName}Tests : TestBase
     {{
-        [Test]
+        {GetAddCommandTest(commandName, entity, featureName, lookupVal, myProp)}
+        {BadKey(commandName, entity, featureName)}{NullPatchDoc(commandName, entity, featureName)}
+    }}
+}}";
+        }
+
+        private static string GetAddCommandTest(string commandName, Entity entity, string featureName, string lookupVal, EntityProperty prop)
+        {
+            var fakeEntity = Utilities.FakerName(entity.Name);
+            var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
+            var fakeEntityVariableName = $"fake{entity.Name}One";
+            var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
+            var pkName = entity.PrimaryKeyProperty.Name;
+            var lowercaseEntityPk = pkName.LowercaseFirstLetter();
+
+            return $@"[Test]
         public async Task {commandName}_Updates_Existing_{entity.Name}_In_Db()
         {{
             // Arrange
@@ -85,7 +97,7 @@
 
             var patchDoc = new JsonPatchDocument<{updateDto}>();
             var newValue = {lookupVal};
-            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, newValue);
+            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{prop.Name}, newValue);
 
             // Act
             var command = new {featureName}.{commandName}({lowercaseEntityPk}, patchDoc);
@@ -93,10 +105,51 @@
             var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
 
             // Assert
-            updated{entity.Name}.{myProp.Name}.Should().Be(newValue);
-        }}
-    }}
-}}";
+            updated{entity.Name}.{prop.Name}.Should().Be(newValue);
+        }}";
+        }
+
+        private static string NullPatchDoc(string commandName, Entity entity, string featureName)
+        {
+            var randomId = Utilities.GetRandomId(entity.PrimaryKeyProperty.Type);
+
+            return randomId == "" ? "" : $@"
+
+        [Test]
+        public async Task {commandName}_Throws_ApiException_When_Null_Patchdoc()
+        {{
+            // Arrange
+            var randomId = {randomId};
+
+            // Act
+            var command = new {featureName}.{commandName}(randomId, null);
+            Func<Task> act = () => SendAsync(command);
+
+            // Assert
+            act.Should().Throw<ApiException>();
+        }}";
+        }
+
+        private static string BadKey(string commandName, Entity entity, string featureName)
+        {
+            var badId = Utilities.GetRandomId(entity.PrimaryKeyProperty.Type);
+            var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
+
+            return badId == "" ? "" : $@"
+        [Test]
+        public async Task {commandName}_Throws_KeyNotFoundException_When_Bad_PK()
+        {{
+            // Arrange
+            var badId = {badId};
+            var patchDoc = new JsonPatchDocument<{updateDto}>();
+
+            // Act
+            var command = new {featureName}.{commandName}(badId, patchDoc);
+            Func<Task> act = () => SendAsync(command);
+
+            // Assert
+            act.Should().Throw<KeyNotFoundException>();
+        }}";
         }
     }
 }

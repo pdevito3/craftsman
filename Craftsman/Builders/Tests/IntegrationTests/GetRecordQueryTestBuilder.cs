@@ -30,10 +30,6 @@
             var featureName = Utilities.GetEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var queryName = Utilities.QueryRecordName(entity.Name);
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var fakeEntityVariableName = $"fake{entity.Name}One";
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var pkName = entity.PrimaryKeyProperty.Name;
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
@@ -46,13 +42,27 @@
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using NUnit.Framework;
+    using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using {featuresClassPath.ClassNamespace};
     using static {testFixtureName};
 
     public class {queryName}Tests : TestBase
     {{
-        [Test]
+        {GetTest(queryName, entity, featureName)}{GetWithoutKeyTest(queryName, entity, featureName)}
+    }}
+}}";
+        }
+
+        private static string GetTest(string queryName, Entity entity, string featureName)
+        {
+            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntityVariableName = $"fake{entity.Name}One";
+            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+            var pkName = entity.PrimaryKeyProperty.Name;
+
+            return $@"[Test]
         public async Task {queryName}_Returns_Resource_With_Accurate_Props()
         {{
             // Arrange
@@ -66,9 +76,28 @@
             // Assert
             {lowercaseEntityPluralName}.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
                 options.ExcludingMissingMembers());
-        }}
-    }}
-}}";
+        }}";
+        }
+
+        private static string GetWithoutKeyTest(string queryName, Entity entity, string featureName)
+        {
+            var badId = Utilities.GetRandomId(entity.PrimaryKeyProperty.Type);
+
+            return badId == "" ? "" : $@"
+
+        [Test]
+        public async Task {queryName}_Throws_KeyNotFoundException_When_Record_Does_Not_Exist()
+        {{
+            // Arrange
+            var badId = {badId};
+
+            // Act
+            var query = new {featureName}.{queryName}(badId);
+            Func<Task> act = () => SendAsync(query);
+
+            // Assert
+            act.Should().Throw<KeyNotFoundException>();
+        }}";
         }
     }
 }

@@ -30,12 +30,7 @@
             var featureName = Utilities.DeleteEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var commandName = Utilities.CommandDeleteName(entity.Name);
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var fakeEntityVariableName = $"fake{entity.Name}One";
-            var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var pkName = entity.PrimaryKeyProperty.Name;
-            var lowercaseEntityPk = pkName.LowercaseFirstLetter();
+            var badId = entity.PrimaryKeyProperty.Name;
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
@@ -48,13 +43,29 @@
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using NUnit.Framework;
+    using System.Collections.Generic;
+    using System;
     using System.Threading.Tasks;
     using {featuresClassPath.ClassNamespace};
     using static {testFixtureName};
 
     public class {commandName}Tests : TestBase
     {{
-        [Test]
+        {GetDeleteTest(commandName, entity, featureName)}{GetDeleteWithoutKeyTest(commandName, entity, featureName)}
+    }}
+}}";
+        }
+
+        private static string GetDeleteTest(string commandName, Entity entity, string featureName)
+        {
+            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntityVariableName = $"fake{entity.Name}One";
+            var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
+            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+            var pkName = entity.PrimaryKeyProperty.Name;
+            var lowercaseEntityPk = pkName.LowercaseFirstLetter();
+
+            return $@"[Test]
         public async Task {commandName}_Deletes_{entity.Name}_From_Db()
         {{
             // Arrange
@@ -70,9 +81,28 @@
 
             // Assert
             {lowercaseEntityPluralName}.Count.Should().Be(0);
-        }}
-    }}
-}}";
+        }}";
+        }
+
+        private static string GetDeleteWithoutKeyTest(string commandName, Entity entity, string featureName)
+        {
+            var badId = Utilities.GetRandomId(entity.PrimaryKeyProperty.Type);
+
+            return badId == "" ? "" : $@"
+
+        [Test]
+        public async Task {commandName}_Throws_KeyNotFoundException_When_Record_Does_Not_Exist()
+        {{
+            // Arrange
+            var badId = {badId};
+
+            // Act
+            var command = new {featureName}.{commandName}(badId);
+            Func<Task> act = () => SendAsync(command);
+
+            // Assert
+            act.Should().Throw<KeyNotFoundException>();
+        }}";
         }
     }
 }

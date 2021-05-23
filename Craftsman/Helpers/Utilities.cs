@@ -492,5 +492,19 @@
 
             return Path.GetFileNameWithoutExtension(contextClass);
         }
+
+        public static string GetRandomId(string idType)
+        {
+            if (idType.Equals("string", StringComparison.InvariantCultureIgnoreCase))
+                return @$"""badKey""";
+
+            if (idType.Equals("guid", StringComparison.InvariantCultureIgnoreCase))
+                return @$"Guid.NewGuid()";
+
+            if (idType.Equals("int", StringComparison.InvariantCultureIgnoreCase))
+                return @$"84709321";
+
+            return "";
+        }
     }
 }

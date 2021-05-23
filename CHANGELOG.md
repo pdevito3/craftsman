@@ -42,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated functional test to pass without conflict
 - Updated nuget packages
 - Added conflict test for add command when using a guid
+- Added tests for command and query exceptions
+  - Didn't do them in the controller as that is not the dependency. Can test the exceptions causing the correct httpstatus code in the exception separately
 
 ## [0.9.3] - 2021-04-10
 
