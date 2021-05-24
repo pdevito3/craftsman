@@ -189,7 +189,7 @@
 
     public static class MassTransitServiceExtension
     {{
-        public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+        public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration)
         {{
             if (!configuration.GetValue<bool>(""UseInMemoryBus""))
             {{
