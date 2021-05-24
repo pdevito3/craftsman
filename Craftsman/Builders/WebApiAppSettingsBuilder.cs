@@ -22,12 +22,9 @@
             if (File.Exists(classPath.FullClassPath))
                 File.Delete(classPath.FullClassPath);
 
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetAppSettingsText(env, dbName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            using FileStream fs = File.Create(classPath.FullClassPath);
+            var data = GetAppSettingsText(env, dbName);
+            fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
         private static string GetAppSettingsText(ApiEnvironment env, string dbName)
@@ -39,6 +36,7 @@
 
                 return @$"{{
   ""AllowedHosts"": ""*"",
+  ""UseInMemoryBus"": false,
   ""UseInMemoryDatabase"": true,
 {serilogSettings}{jwtSettings}
 }}
@@ -49,6 +47,7 @@
                 var connectionString = String.IsNullOrEmpty(env.ConnectionString) ? "local" : env.ConnectionString.Replace(@"\", @"\\");
                 return @$"{{
   ""AllowedHosts"": ""*"",
+  ""UseInMemoryBus"": false,
   ""UseInMemoryDatabase"": false,
   ""ConnectionStrings"": {{
     ""{dbName}"": ""{connectionString}""

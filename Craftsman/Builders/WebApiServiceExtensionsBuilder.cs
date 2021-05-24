@@ -191,7 +191,7 @@
     {{
         public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         {{
-            if(env.EnvironmentName != ""FunctionalTesting"")
+            if (!configuration.GetValue<bool>(""UseInMemoryBus""))
             {{
                 services.AddMassTransit(mt =>
                 {{
