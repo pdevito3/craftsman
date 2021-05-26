@@ -120,6 +120,8 @@
             {checkpoint}
 
             EnsureDatabase();
+
+            // MassTransit Setup -- Do Not Delete Comment
         }}
 
         private static void EnsureDatabase()
@@ -239,11 +241,12 @@
             }});
         }}
 
+        // MassTransit Methods -- Do Not Delete Comment
+
         [OneTimeTearDown]
-        public Task RunAfterAnyTests()
+        public async Task RunAfterAnyTests()
         {{
-            return Task.CompletedTask;
-            //return DockerSqlDatabaseUtilities.EnsureDockerStoppedAndRemovedAsync(_dockerContainerId);
+            // MassTransit Teardown -- Do Not Delete Comment
         }}
     }}
 }}";

@@ -12,6 +12,7 @@
     using Spectre.Console;
     using Craftsman.Validators;
     using FluentValidation;
+    using Craftsman.Builders.Tests.Utilities;
 
     public static class AddConsumerCommand
     {
@@ -57,7 +58,7 @@
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
 
-                AddConsumers(template.Consumers, projectBaseName, srcDirectory);
+                AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory);
 
                 WriteHelpHeader($"{Environment.NewLine}Your event bus has been successfully added. Keep up the good work!");
             }
@@ -90,7 +91,7 @@
             }
         }
 
-        public static void AddConsumers(List<Consumer> consumers, string projectBaseName, string srcDirectory)
+        public static void AddConsumers(List<Consumer> consumers, string projectBaseName, string srcDirectory, string testDirectory)
         {
             var validator = new ConsumerValidator();
             foreach (var consumer in consumers)
@@ -105,6 +106,8 @@
                 ConsumerBuilder.CreateConsumerFeature(srcDirectory, consumer, projectBaseName);
                 ConsumerRegistrationBuilder.CreateConsumerRegistration(srcDirectory, consumer, projectBaseName);
                 MassTransitModifier.AddConsumerRegistation(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
+
+                IntegrationTestFixtureModifier.AddMTConsumer(testDirectory, consumer.ConsumerName, projectBaseName);
             });
         }
     }

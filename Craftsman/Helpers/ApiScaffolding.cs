@@ -127,10 +127,10 @@
             }
 
             if (template.Bus.AddBus)
-                AddBusCommand.AddBus(template.Bus, srcDirectory, projectBaseName, solutionDirectory, fileSystem);
+                AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
 
             if (template.Consumers.Count > 0)
-                AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, srcDirectory);
+                AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory);
 
             if (template.Producers.Count > 0)
                 AddProducerCommand.AddProducers(template.Producers, projectBaseName, srcDirectory);

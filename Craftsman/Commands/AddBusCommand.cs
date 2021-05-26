@@ -10,6 +10,7 @@
     using System.IO.Abstractions;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
+    using Craftsman.Builders.Tests.Utilities;
 
     public static class AddBusCommand
     {
@@ -59,7 +60,7 @@
                 // get solution dir
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-                AddBus(template, srcDirectory, projectBaseName, solutionDirectory, fileSystem);
+                AddBus(template, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
 
                 WriteHelpHeader($"{Environment.NewLine}Your event bus has been successfully added. Keep up the good work!");
             }
@@ -92,7 +93,7 @@
             }
         }
 
-        public static void AddBus(Bus template, string srcDirectory, string projectBaseName, string solutionDirectory, IFileSystem fileSystem)
+        public static void AddBus(Bus template, string srcDirectory, string testDirectory, string projectBaseName, string solutionDirectory, IFileSystem fileSystem)
         {
             var messagesDirectory = Path.Combine(solutionDirectory, "Messages");
 
@@ -111,6 +112,8 @@
                 WebApiAppSettingsModifier.AddRmq(srcDirectory, env, projectBaseName, fileSystem);
                 StartupModifier.RegisterMassTransitService(srcDirectory, env.EnvironmentName, projectBaseName);
             }
+
+            IntegrationTestFixtureModifier.AddMassTransit(testDirectory, projectBaseName);
 
             SolutionBuilder.BuildMessagesProject(solutionDirectory, messagesDirectory);
             Utilities.AddProjectReference(webApiClassPath, @"..\..\..\Messages\Messages.csproj");

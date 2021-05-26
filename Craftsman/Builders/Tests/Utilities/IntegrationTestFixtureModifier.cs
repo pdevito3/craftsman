@@ -1,0 +1,115 @@
+﻿namespace Craftsman.Builders.Tests.Utilities
+{
+    using Craftsman.Helpers;
+    using Craftsman.Models;
+    using System.Collections.Generic;
+    using System.IO;
+
+    public class IntegrationTestFixtureModifier
+    {
+        public static void AddMassTransit(string testDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            var consumerFeatureClassPath = ClassPathHelper.ConsumerFeaturesClassPath(testDirectory, $"", projectBaseName);
+
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
+            {
+                using var output = new StreamWriter(tempPath);
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"UseInMemoryDatabase"))
+                    {
+                        newText += $@"
+                        {{ ""UseInMemoryBus"", ""true"" }},";
+                    }
+                    else if (line.Contains($"// MassTransit Setup -- Do Not Delete Comment"))
+                    {
+                        newText += $@"
+            services.AddMassTransitInMemoryTestHarness(cfg =>
+            {{
+                // Consumer Registration -- Do Not Delete Comment
+            }});
+            _harness = services.BuildServiceProvider().GetRequiredService<InMemoryTestHarness>();
+            await _harness.Start();";
+                    }
+                    else if (line.Contains($"using System;"))
+                    {
+                        newText += $@"
+    using MassTransit.Testing;
+    using MassTransit;
+    using {consumerFeatureClassPath.ClassNamespace};";
+                    }
+                    else if (line.Contains($"// MassTransit Teardown -- Do Not Delete Comment"))
+                    {
+                        newText += $@"
+            await _harness.Stop();";
+                    }
+                    else if (line.Contains($"// MassTransit Methods -- Do Not Delete Comment"))
+                    {
+                        newText += $@"
+        public static async Task PublishMessage<T>(object message)
+            where T : class
+        {{
+            await _harness.Bus.Publish<T>(message);
+        }}";
+                    }
+                    else if (line.Contains($"private static Checkpoint _checkpoint;"))
+                    {
+                        newText += $@"
+        public static InMemoryTestHarness _harness;";
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+
+            // delete the old file and set the name of the new one to the original name
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
+        }
+
+        public static void AddMTConsumer(string testDirectory, string consumerName, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
+            {
+                using var output = new StreamWriter(tempPath);
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"// Consumer Registration -- Do not delete this comment"))
+                    {
+                        newText += $@"
+                cfg.AddConsumer<{consumerName}>();
+                cfg.AddConsumerTestHarness<{consumerName}>();";
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+
+            // delete the old file and set the name of the new one to the original name
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
+        }
+    }
+}
