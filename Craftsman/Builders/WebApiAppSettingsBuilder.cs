@@ -31,12 +31,13 @@
         {
             var jwtSettings = GetJwtAuthSettings(env);
             var serilogSettings = GetSerilogSettings(env.EnvironmentName);
+            var bus = env.EnvironmentName == "FunctionalTesting" ? "true" : "false";
 
             if (env.EnvironmentName == "Development" || env.EnvironmentName == "FunctionalTesting")
 
                 return @$"{{
   ""AllowedHosts"": ""*"",
-  ""UseInMemoryBus"": false,
+  ""UseInMemoryBus"": {bus},
   ""UseInMemoryDatabase"": true,
 {serilogSettings}{jwtSettings}
 }}
