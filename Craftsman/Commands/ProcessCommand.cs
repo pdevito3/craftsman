@@ -178,7 +178,7 @@
                 }
             }
 
-            if ((args[0] == "register:consumer"))
+            if ((args[0] == "add:consumer" || args[0] == "add:consumers"))
             {
                 var filePath = args[1];
                 if (filePath == "-h" || filePath == "--help")
@@ -198,7 +198,7 @@
                 }
             }
 
-            if ((args[0] == "register:producer"))
+            if ((args[0] == "add:producer" || args[0] == "add:producers"))
             {
                 var filePath = args[1];
                 if (filePath == "-h" || filePath == "--help")

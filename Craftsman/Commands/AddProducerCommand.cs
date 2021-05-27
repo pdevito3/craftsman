@@ -21,6 +21,8 @@
 
             WriteHelpHeader(@$"Usage:");
             WriteHelpText(@$"   craftsman add:producer [options] <filepath>");
+            WriteHelpText(@$"   OR");
+            WriteHelpText(@$"   craftsman add:producers [options] <filepath>");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Arguments:");
@@ -57,7 +59,7 @@
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
                 AddProducers(template.Producers, projectBaseName, srcDirectory);
 
-                WriteHelpHeader($"{Environment.NewLine}Your event bus has been successfully added. Keep up the good work!");
+                WriteHelpHeader($"{Environment.NewLine}Your producer has been successfully added. Keep up the good work!");
             }
             catch (Exception e)
             {

@@ -23,6 +23,8 @@
 
             WriteHelpHeader(@$"Usage:");
             WriteHelpText(@$"   craftsman add:consumer [options] <filepath>");
+            WriteHelpText(@$"   OR");
+            WriteHelpText(@$"   craftsman add:consumers [options] <filepath>");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Arguments:");
@@ -60,7 +62,7 @@
 
                 AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory);
 
-                WriteHelpHeader($"{Environment.NewLine}Your event bus has been successfully added. Keep up the good work!");
+                WriteHelpHeader($"{Environment.NewLine}Your consumer has been successfully added. Keep up the good work!");
             }
             catch (Exception e)
             {
@@ -107,7 +109,7 @@
                 ConsumerRegistrationBuilder.CreateConsumerRegistration(srcDirectory, consumer, projectBaseName);
                 MassTransitModifier.AddConsumerRegistation(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
 
-                IntegrationTestFixtureModifier.AddMTConsumer(testDirectory, consumer.ConsumerName, projectBaseName);
+                IntegrationTestFixtureModifier.AddMTConsumer(testDirectory, consumer.ConsumerName, projectBaseName, srcDirectory);
             });
         }
     }
