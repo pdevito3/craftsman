@@ -2,6 +2,7 @@
 {
     using Craftsman.Helpers;
     using Craftsman.Models;
+    using System;
     using System.Collections.Generic;
     using System.IO;
 
@@ -46,8 +47,7 @@
                     {
                         newText += $@"
     using MassTransit.Testing;
-    using MassTransit;
-    using {consumerFeatureClassPath.ClassNamespace};";
+    using MassTransit;";
                     }
                     else if (line.Contains($"// MassTransit Teardown -- Do Not Delete Comment"))
                     {
@@ -78,7 +78,7 @@
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        public static void AddMTConsumer(string testDirectory, string consumerName, string projectBaseName)
+        public static void AddMTConsumer(string testDirectory, string consumerName, string projectBaseName, string srcDirectory)
         {
             var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
 
@@ -88,7 +88,10 @@
             if (!File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
+            var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"", projectBaseName);
+
             var tempPath = $"{classPath.FullClassPath}temp";
+            var hasUsingForConsumerNamespace = false;
             using (var input = File.OpenText(classPath.FullClassPath))
             {
                 using var output = new StreamWriter(tempPath);
@@ -96,12 +99,15 @@
                 while (null != (line = input.ReadLine()))
                 {
                     var newText = $"{line}";
-                    if (line.Contains($"// Consumer Registration -- Do not delete this comment"))
+                    if (line.Contains($"// Consumer Registration -- Do Not Delete Comment"))
                     {
                         newText += $@"
+
                 cfg.AddConsumer<{consumerName}>();
                 cfg.AddConsumerTestHarness<{consumerName}>();";
                     }
+                    if (line.Contains(consumerClassPath.ClassNamespace))
+                        hasUsingForConsumerNamespace = true;
 
                     output.WriteLine(newText);
                 }
@@ -110,6 +116,27 @@
             // delete the old file and set the name of the new one to the original name
             File.Delete(classPath.FullClassPath);
             File.Move(tempPath, classPath.FullClassPath);
+
+            if (!hasUsingForConsumerNamespace)
+            {
+                using (var input = File.OpenText(classPath.FullClassPath))
+                {
+                    using var output = new StreamWriter(tempPath);
+                    string line;
+                    while (null != (line = input.ReadLine()))
+                    {
+                        var newText = $"{line}";
+                        if (line.Contains($"using MassTransit;"))
+                            newText += @$"{Environment.NewLine}    using {consumerClassPath.ClassNamespace};";
+
+                        output.WriteLine(newText);
+                    }
+                }
+
+                // delete the old file and set the name of the new one to the original name
+                File.Delete(classPath.FullClassPath);
+                File.Move(tempPath, classPath.FullClassPath);
+            }
         }
     }
 }
