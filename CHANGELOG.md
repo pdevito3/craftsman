@@ -7,43 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Added SpectreConsole for a better CLI experience
-- Fixed double error messages
-- Fixed incorrect help message for `new:domain` command (#24)
-- Fixed help text on `list` command
-- Removed verbosity effectiveness from `new:domain`
-  - also do this in other commands?
-- Changed the seeder regions in `StartupDevelopment.cs` to comments
-- Cleaned up the Logger settings in `Program.cs`
-- Updated `Program.cs` to async
-- Changed the `new:domain` output to a single solution with directories for each bounded context for easier management
-- Updated `add:entity` and `add:prop` to now be called from the BC directory
-  - UPDATE WRAPT DOCS FOR THIS
-- Fixed controllers to inherit from `ControllerBase` instead of `Controller`. fixes (#26)
-- No extra space in the class in the dto classes when not abstract and trailing new line
-- If using a guid for a PK, it will be added to the creation dto (not manipulation or update) -- fixes #28
-- Guid PKs will have a default value of `Guid.NewGuid()` in their creation dto -- fixes #28
-- PK already exists guard will be performed when adding a new entity and throw a 409 conflict via a new conflict exception if a record already exists with that guid. -- fixes #29
-  - **Add an integ test for this**
-- Updated `ProducesResponseType` in controllers to generic `Response` type where applicable
-- Removed legacy comment for include statement marker
-- Fixed issue where POST would throw 500 when primary key != EntityNameId (e.g. PK of ReportId would break for an entity of ReportRequest) - fixes #30
-- Moved App Registrations to separate files
-- Moved Service Registrations to separate files
-- Fixed default value for strings on entities to use quotes
-- Fixed missing exception handling on `add:bc` command
+* None yet!
+
+## [0.10.0] - 2021-06-01
+
+### Added
+
+- Added [SpectreConsole](https://spectreconsole.net/) for a better CLI experience
 - Added `add:bus` command
-- Added Bus, Messages, Producers, and Consumers props to BC template
-- Added `add:message` command
-- Updated entity name and entity prop names first letter to always be capitalized
 - Added `add:consumer` and `add:producer` commands for direct, topic, and fanout messages
-- Removed BC readme and updated sln readme
-- Better namespacing for features in controllers using static classes for features
-- Updated functional test to pass without conflict
-- Updated nuget packages
+- Added Bus, Producers, and Consumers props to BC template
+- Added Messages to the domain template
+- Added `add:message` command
 - Added conflict test for add command when using a guid
 - Added tests for command and query exceptions
   - Didn't do them in the controller as that is not the dependency. Can test the exceptions causing the correct httpstatus code in the exception separately
+
+### Changed
+
+* Changed the `new:domain` output to a single solution with directories for each bounded context for easier management
+* Changed the seeder regions in `StartupDevelopment.cs` to comments
+* Changed the Logger settings in `Program.cs`
+* Updated `add:entity` and `add:prop` to now be called from the BC directory
+  - UPDATE WRAPT DOCS FOR THIS
+* Updated `ProducesResponseType` in controllers to generic `Response` type where applicable
+* Updated App Registrations to separate files
+* Updated Service Registrations to separate files
+* Updated entity name and entity prop names first letter to always be capitalized
+* Better namespacing for features in controllers using static classes for features
+* Updated functional test to pass without conflict
+* Updated nuget packages
+* Updated `Program.cs` to async
+* Changed migrations to happen after all bounded contexts are added
+
+### Removed
+
+- Removed verbosity effectiveness from `new:domain`
+  - also do this in other commands?
+- Removed legacy comment for include statement marker
+- Removed BC readme and updated sln readme
+
+### Fixed
+
+- Fixed double error messages
+- Fixed incorrect help message for `new:domain` command (#24)
+- Fixed help text on `list` command
+- Fixed controllers to inherit from `ControllerBase` instead of `Controller`. fixes (#26)
+- Fixed extra space in the class in the dto classes when not abstract and trailing new line
+- If using a guid for a PK, it will be added to the creation dto (not manipulation or update) -- fixes #28
+  - Guid PKs will have a default value of `Guid.NewGuid()` in their creation dto
+- PK already exists guard will be added for GUIDs and will be performed when adding a new entity and throw a 409 conflict via a new conflict exception if a record already exists with that guid. -- fixes #29
+  - **Add an integ test for this**
+- Fixed issue where POST would throw 500 when primary key != EntityNameId (e.g. PK of ReportId would break for an entity of ReportRequest) - fixes #30
+- Fixed default value for strings on entities to use quotes
+- Fixed missing exception handling on `add:bc` command
 
 ## [0.9.3] - 2021-04-10
 
