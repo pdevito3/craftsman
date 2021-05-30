@@ -135,12 +135,16 @@
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
         }
 
-        public static void BuildMessagesProject(string solutionDirectory, string messagesDirectory)
+        public static void BuildMessagesProject(string solutionDirectory)
         {
-            var messageProjectClassPath = ClassPathHelper.MessagesProjectRootClassPath(solutionDirectory, "");
+            var messageProjectExists = File.Exists(Path.Combine(solutionDirectory, "Messages", "Messages.csproj"));
+            if (!messageProjectExists)
+            {
+                var messageProjectClassPath = ClassPathHelper.MessagesProjectRootClassPath(solutionDirectory, "");
 
-            MessagesCsProjBuilder.CreateMessagesCsProj(solutionDirectory);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{messageProjectClassPath.FullClassPath}""", solutionDirectory);
+                MessagesCsProjBuilder.CreateMessagesCsProj(solutionDirectory);
+                Utilities.ExecuteProcess("dotnet", $@"sln add ""{messageProjectClassPath.FullClassPath}""", solutionDirectory);
+            }
         }
     }
 

@@ -115,9 +115,7 @@
 
             IntegrationTestFixtureModifier.AddMassTransit(testDirectory, projectBaseName);
 
-            var messageProjectExists = File.Exists(Path.Combine(solutionDirectory, "Messages", "Messages.csproj"));
-            if (!messageProjectExists)
-                SolutionBuilder.BuildMessagesProject(solutionDirectory, messagesDirectory);
+            SolutionBuilder.BuildMessagesProject(solutionDirectory);
 
             Utilities.AddProjectReference(webApiClassPath, @"..\..\..\Messages\Messages.csproj");
         }
