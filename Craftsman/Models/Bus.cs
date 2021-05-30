@@ -7,12 +7,12 @@ namespace Craftsman.Models
 {
     public class Bus
     {
+        private MessageBroker _broker = MessageBroker.RabbitMq;
+
         /// <summary>
         /// Will trigger the add service bus method and add it to the solution. Defaulted to false to make optional for use in something like new:domain
         /// </summary>
         public bool AddBus { get; set; } = false;
-
-        private MessageBroker _broker = MessageBroker.RabbitMq;
 
         public string ProjectBaseName { get; set; }
 

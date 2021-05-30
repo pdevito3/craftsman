@@ -9,6 +9,7 @@
     using System.IO.Abstractions;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
+    using Craftsman.Validators;
 
     public static class AddMessageCommand
     {
@@ -51,7 +52,8 @@
             }
             catch (Exception e)
             {
-                if (e is SolutionNotFoundException)
+                if (e is SolutionNotFoundException
+                    || e is DataValidationErrorException)
                 {
                     WriteError($"{e.Message}");
                 }
@@ -79,6 +81,14 @@
 
         public static void AddMessages(string solutionDirectory, IFileSystem fileSystem, List<Message> messages)
         {
+            var validator = new MessageValidator();
+            foreach (var message in messages)
+            {
+                var results = validator.Validate(message);
+                if (!results.IsValid)
+                    throw new DataValidationErrorException(results.Errors);
+            }
+
             messages.ForEach(message => MessageBuilder.CreateMessage(solutionDirectory, message, fileSystem));
         }
     }

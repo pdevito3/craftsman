@@ -29,6 +29,6 @@
             }
         }
 
-        public bool UsesDb { get; set; }
+        public bool UsesDb { get; set; } = true;
     }
 }
