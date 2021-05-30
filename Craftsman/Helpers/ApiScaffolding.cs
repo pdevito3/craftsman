@@ -134,9 +134,6 @@
 
             if (template.Producers.Count > 0)
                 AddProducerCommand.AddProducers(template.Producers, projectBaseName, srcDirectory);
-
-            if (template.Messages.Count > 0)
-                AddMessageCommand.AddMessages(solutionDirectory, fileSystem, template.Messages);
         }
     }
 }

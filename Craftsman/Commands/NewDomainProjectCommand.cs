@@ -52,6 +52,10 @@
                 foreach (var bc in domainProject.BoundedContexts)
                     ApiScaffolding.ScaffoldApi(domainDirectory, bc, fileSystem, verbosity);
 
+                // messages
+                if (domainProject.Messages.Count > 0)
+                    AddMessageCommand.AddMessages(domainDirectory, fileSystem, domainProject.Messages);
+
                 //final
                 ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
 

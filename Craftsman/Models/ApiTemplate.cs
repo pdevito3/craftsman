@@ -74,11 +74,6 @@ namespace Craftsman.Models
         /// </summary>
         public List<Producer> Producers { get; set; } = new List<Producer>();
 
-        /// <summary>
-        /// A list of eventing messages to be added to the BC
-        /// </summary>
-        public List<Message> Messages { get; set; } = new List<Message>();
-
         public AuthorizationSettings AuthorizationSettings { get; set; } = new AuthorizationSettings();
     }
 }
