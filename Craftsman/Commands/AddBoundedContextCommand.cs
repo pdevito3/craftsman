@@ -9,6 +9,7 @@
     using Spectre.Console;
     using Craftsman.Exceptions;
     using System.IO;
+    using System.Collections.Generic;
 
     public static class AddBoundedContextCommand
     {
@@ -50,6 +51,9 @@
                 {
                     ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity);
                 }
+
+                // migrations
+                Utilities.RunDbMigrations(boundedContexts.BoundedContexts, domainDirectory);
 
                 WriteHelpHeader($"{Environment.NewLine}Your bounded contexts have been successfully added. Keep up the good work!");
                 StarGithubRequest();

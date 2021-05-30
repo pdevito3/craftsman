@@ -6,6 +6,7 @@
     using Craftsman.Models;
     using FluentAssertions.Common;
     using LibGit2Sharp;
+    using Spectre.Console;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -505,6 +506,43 @@
                 return @$"84709321";
 
             return "";
+        }
+
+        private static bool RunDbMigration(ApiTemplate template, string srcDirectory)
+        {
+            var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, template.SolutionName);
+            var infraProjectClassPath = ClassPathHelper.InfrastructureProjectClassPath(srcDirectory, template.SolutionName);
+
+            return ExecuteProcess(
+                "dotnet",
+                @$"ef migrations add ""InitialMigration"" --project ""{infraProjectClassPath.FullClassPath}"" --startup-project ""{webApiProjectClassPath.FullClassPath}"" --output-dir Migrations",
+                srcDirectory,
+                new Dictionary<string, string>()
+                {
+                    { "ASPNETCORE_ENVIRONMENT", Guid.NewGuid().ToString() } // guid to not conflict with any given envs
+                },
+                20000,
+                $"{Emoji.Known.Warning} {template.SolutionName} Database Migrations timed out and will need to be run manually");
+        }
+
+        public static void RunDbMigrations(List<ApiTemplate> boundedContexts, string domainDirectory)
+        {
+            AnsiConsole.Status()
+                .AutoRefresh(true)
+                .Spinner(Spinner.Known.Dots2)
+                .Start($"[yellow]Running Migrations [/]", ctx =>
+                {
+                    foreach (var bc in boundedContexts)
+                    {
+                        var bcDirectory = $"{domainDirectory}{Path.DirectorySeparatorChar}{bc.SolutionName}";
+                        var srcDirectory = Path.Combine(bcDirectory, "src");
+
+                        ctx.Spinner(Spinner.Known.Dots2);
+                        ctx.Status($"[bold blue]Running {bc.SolutionName} Database Migrations [/]");
+                        if (Utilities.RunDbMigration(bc, srcDirectory))
+                            WriteLogMessage($"Database Migrations for {bc.SolutionName} were successful");
+                    }
+                });
         }
     }
 }

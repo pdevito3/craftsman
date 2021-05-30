@@ -7,8 +7,10 @@
     using Craftsman.Models;
     using Spectre.Console;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using System.Threading.Tasks;
     using static Helpers.ConsoleWriter;
 
     public static class NewDomainProjectCommand
@@ -55,6 +57,9 @@
                 // messages
                 if (domainProject.Messages.Count > 0)
                     AddMessageCommand.AddMessages(domainDirectory, fileSystem, domainProject.Messages);
+
+                // migrations
+                Utilities.RunDbMigrations(domainProject.BoundedContexts, domainDirectory);
 
                 //final
                 ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);

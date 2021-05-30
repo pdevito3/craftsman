@@ -44,29 +44,7 @@
                     ctx.Status($"[bold blue]Scaffolding Files for {solutionName} [/]");
                     RunTemplateBuilders(bcDirectory, srcDirectory, testDirectory, template, fileSystem, verbosity);
                     WriteLogMessage($"File scaffolding for {template.SolutionName} was successful");
-
-                    ctx.Spinner(Spinner.Known.Moon);
-                    ctx.Status($"[bold blue]Running {solutionName} Database Migrations [/]");
-                    if (RunDbMigration(template, srcDirectory))
-                        WriteLogMessage($"Database Migrations for {template.SolutionName} were successful");
                 });
-        }
-
-        private static bool RunDbMigration(ApiTemplate template, string srcDirectory)
-        {
-            var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, template.SolutionName);
-            var infraProjectClassPath = ClassPathHelper.InfrastructureProjectClassPath(srcDirectory, template.SolutionName);
-
-            return Utilities.ExecuteProcess(
-                "dotnet",
-                @$"ef migrations add ""InitialMigration"" --project ""{infraProjectClassPath.FullClassPath}"" --startup-project ""{webApiProjectClassPath.FullClassPath}"" --output-dir Migrations",
-                srcDirectory,
-                new Dictionary<string, string>()
-                {
-                    { "ASPNETCORE_ENVIRONMENT", Guid.NewGuid().ToString() } // guid to not conflict with any given envs
-                },
-                20000,
-                $"{Emoji.Known.Warning} {template.SolutionName} Database Migrations timed out and will need to be run manually");
         }
 
         private static void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)
