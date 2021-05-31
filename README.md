@@ -27,6 +27,12 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 🚧 Nextjs Scaffolding
 
+🚧 Performance Upgrades
+
+🚧 Pub/Sub Tests
+
+🚧 Logging Updates and OpenTelemetry additions 
+
 🚧 Pipeline Decorators
 
 🚧 More scaffolded test coverage
