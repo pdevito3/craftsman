@@ -8,37 +8,23 @@
     using System.IO;
     using System.Linq;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class GetListQueryTestBuilder
     {
         public static void CreateTests(string solutionDirectory, Entity entity, string projectBaseName)
         {
-            try
-            {
-                var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"{entity.Name}ListQueryTests.cs", entity.Name, projectBaseName);
+            var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"{entity.Name}ListQueryTests.cs", entity.Name, projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = WriteTestFileText(solutionDirectory, classPath, entity, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = WriteTestFileText(solutionDirectory, classPath, entity, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -46,7 +32,9 @@
         {
             var featureName = Utilities.GetEntityListFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
+            var queryName = Utilities.QueryListName(entity.Name);
 
+            var exceptionClassPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
@@ -67,21 +55,23 @@
 {{
     using {dtoClassPath.ClassNamespace};
     using {fakerClassPath.ClassNamespace};
+    using {exceptionClassPath.ClassNamespace};
+    using {featuresClassPath.ClassNamespace};
     using FluentAssertions;
     using NUnit.Framework;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using static {featuresClassPath.ClassNamespace}.{featureName};
     using static {testFixtureName};
 
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
-    {{ 
+    {{
         {GetEntitiesTest(entity)}
         {GetEntitiesWithPageSizeAndNumberTest(entity)}
+        {GetListWithoutParams(queryName, entity)}
         {sortTests}
         {filterTests}
-    }} 
+    }}
 }}";
         }
 
@@ -106,7 +96,7 @@
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
             // Act
-            var query = new {queryName}(queryParameters);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
             var {lowercaseEntityPluralName} = await SendAsync(query);
 
             // Assert
@@ -137,9 +127,9 @@
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}, {fakeEntityVariableNameThree});
 
             //Act
-            var query = new {queryName}(queryParameters);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
             var {lowercaseEntityPluralName} = await SendAsync(query);
-            
+
             // Assert
             {lowercaseEntityPluralName}.Should().HaveCount(1);
         }}";
@@ -196,9 +186,9 @@
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
             //Act
-            var query = new {queryName}(queryParameters);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
             var {lowercaseEntityPluralName} = await SendAsync(query);
-            
+
             // Assert
             {lowercaseEntityPluralName}
                 .FirstOrDefault()
@@ -219,7 +209,7 @@
             var entityParams = Utilities.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
             var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter(); 
+            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
 
             var alpha = @$"""alpha""";
             var bravo = @$"""bravo""";
@@ -263,9 +253,9 @@
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
             //Act
-            var query = new {queryName}(queryParameters);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
             var {lowercaseEntityPluralName} = await SendAsync(query);
-            
+
             // Assert
             {lowercaseEntityPluralName}
                 .FirstOrDefault()
@@ -292,7 +282,7 @@
             var alpha = @$"""alpha""";
             var bravo = @$"""bravo""";
             var bravoFilterVal = "bravo";
-            
+
             if (prop.Type == "string")
             {
                 // leave variables as is
@@ -340,9 +330,9 @@
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
             //Act
-            var query = new {queryName}(queryParameters);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
             var {lowercaseEntityPluralName} = await SendAsync(query);
-            
+
             // Assert
             {lowercaseEntityPluralName}.Should().HaveCount(1);
             {lowercaseEntityPluralName}
@@ -350,6 +340,24 @@
                 .Should().BeEquivalentTo(fake{entity.Name}Two, options =>
                     options.ExcludingMissingMembers());
         }}{Environment.NewLine}";
+        }
+
+        private static string GetListWithoutParams(string queryName, Entity entity)
+        {
+            return $@"
+        [Test]
+        public async Task {queryName}_Throws_ApiException_When_Null_Query_Parameters()
+        {{
+            // Arrange
+            // N/A
+
+            // Act
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(null);
+            Func<Task> act = () => SendAsync(query);
+
+            // Assert
+            act.Should().Throw<ApiException>();
+        }}";
         }
     }
 }

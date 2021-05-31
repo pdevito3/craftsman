@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Craftsman.Models
 {
@@ -22,7 +17,7 @@ namespace Craftsman.Models
         /// </summary>
         public string Name
         {
-            get => _name ?? Name.UppercaseFirstLetter();
+            get => _name.UppercaseFirstLetter();
             set => _name = value;
         }
 
@@ -45,8 +40,8 @@ namespace Craftsman.Models
         /// </summary>
         public string Lambda
         {
-            get => _lambda ?? Name.Substring(0,1).ToLower();
-            set => _lambda= value;
+            get => _lambda ?? Name.Substring(0, 1).ToLower();
+            set => _lambda = value;
         }
 
         /// <summary>

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Craftsman.Models
 {
@@ -11,6 +8,8 @@ namespace Craftsman.Models
     /// </summary>
     public class ApiTemplate
     {
+        private Bus _bus = new();
+
         /// <summary>
         /// The name of the solution you want to build
         /// </summary>
@@ -51,6 +50,29 @@ namespace Craftsman.Models
                 .ToList()
                 .Count > 0;
         }
+
+        /// <summary>
+        /// Message bus information for the bounded context. **Environment will be overriden by the BC environment and should be set there**
+        /// </summary>
+        public Bus Bus
+        {
+            get
+            {
+                _bus.Environments = Environments; // get bus environment settings from domain environments for a single source of truth
+                return _bus;
+            }
+            set => _bus = value;
+        }
+
+        /// <summary>
+        /// A list of eventing consumers to be added to the BC
+        /// </summary>
+        public List<Consumer> Consumers { get; set; } = new List<Consumer>();
+
+        /// <summary>
+        /// A list of eventing producers to be added to the BC
+        /// </summary>
+        public List<Producer> Producers { get; set; } = new List<Producer>();
 
         public AuthorizationSettings AuthorizationSettings { get; set; } = new AuthorizationSettings();
     }

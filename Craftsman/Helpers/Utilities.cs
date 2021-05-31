@@ -6,13 +6,12 @@
     using Craftsman.Models;
     using FluentAssertions.Common;
     using LibGit2Sharp;
+    using Spectre.Console;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using static Helpers.ConsoleWriter;
 
     public class Utilities
@@ -36,10 +35,29 @@
                 return prop;
         }
 
+        public static ClassPath GetStartupClassPath(string envName, string solutionDirectory, string projectBaseName)
+        {
+            return envName == "Production"
+                ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", projectBaseName)
+                : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs", projectBaseName);
+        }
+
         public static string SolutionGuard(string solutionDirectory)
         {
             var slnName = Directory.GetFiles(solutionDirectory, "*.sln").FirstOrDefault();
             return Path.GetFileNameWithoutExtension(slnName) ?? throw new SolutionNotFoundException();
+        }
+
+        public static void IsBoundedContextDirectoryGuard(string srcDirectory, string testDirectory)
+        {
+            if (!Directory.Exists(srcDirectory) || !Directory.Exists(testDirectory))
+                throw new IsNotBoundedContextDirectory();
+        }
+
+        public static void IsSolutionDirectoryGuard(string proposedDirectory)
+        {
+            if (!Directory.EnumerateFiles(proposedDirectory, "*.sln").Any())
+                throw new SolutionNotFoundException();
         }
 
         public static string CreateApiRouteClasses(List<Entity> entities)
@@ -91,9 +109,14 @@
             return $"Get{pluralEntity}Async";
         }
 
+        public static string GetMassTransitRegistrationName()
+        {
+            return "MassTransitServiceExtension";
+        }
+
         public static string GetAppSettingsName(string envName, bool asJson = true)
         {
-            if(String.IsNullOrEmpty(envName))
+            if (String.IsNullOrEmpty(envName))
                 return asJson ? $"appsettings.json" : $"appsettings";
 
             return asJson ? $"appsettings.{envName}.json" : $"appsettings.{envName}";
@@ -185,14 +208,19 @@
             {
                 case Dto.Manipulation:
                     return $"{entityName}ForManipulationDto";
+
                 case Dto.Creation:
                     return $"{entityName}ForCreationDto";
+
                 case Dto.Update:
                     return $"{entityName}ForUpdateDto";
+
                 case Dto.Read:
                     return $"{entityName}Dto";
+
                 case Dto.ReadParamaters:
                     return $"{entityName}ParametersDto";
+
                 default:
                     throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Dto), dto)}");
             }
@@ -204,16 +232,19 @@
             {
                 case Validator.Manipulation:
                     return $"{entityName}ForManipulationDtoValidator";
+
                 case Validator.Creation:
                     return $"{entityName}ForCreationDtoValidator";
+
                 case Validator.Update:
                     return $"{entityName}ForUpdateDtoValidator";
+
                 default:
                     throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Validator), validator)}");
             }
         }
 
-        public static void ExecuteProcess(string command, string args, string directory, Dictionary<string,string> envVariables, int killInterval = 15000, string processKilledMessage = "Process Killed.")
+        public static bool ExecuteProcess(string command, string args, string directory, Dictionary<string, string> envVariables, int killInterval = 15000, string processKilledMessage = "Process Killed.")
         {
             var process = new Process
             {
@@ -235,8 +266,10 @@
             if (!process.WaitForExit(killInterval))
             {
                 process.Kill();
-                WriteHelpText(processKilledMessage);
+                WriteWarning(processKilledMessage);
+                return false;
             }
+            return true;
         }
 
         public static void ExecuteProcess(string command, string args, string directory)
@@ -269,25 +302,25 @@
             if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
             {
                 // ex: options.AddPolicy("CanRead", policy => policy.RequireClaim("scope", "detailedrecipes.read"));
-                return $@"                options.AddPolicy(""{policy.Name}"", 
+                return $@"                options.AddPolicy(""{policy.Name}"",
                     policy => policy.RequireClaim(""scope"", ""{policy.PolicyValue}""));";
             }
             //else if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Role))
             //{
             //    // ex: options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Administrator"));
-            //    return $@"                options.AddPolicy(""{policy.Name}"", 
+            //    return $@"                options.AddPolicy(""{policy.Name}"",
             //        policy => policy.RequireRole(""{policy.PolicyValue}""));";
             //}
 
             // claim ex: options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
-            return $@"                options.AddPolicy(""{policy.Name}"", 
+            return $@"                options.AddPolicy(""{policy.Name}"",
                     policy => policy.RequireClaim(""{policy.PolicyValue}""));";
         }
 
         public static string BuildTestAuthorizationString(List<Policy> policies, List<Endpoint> endpoints, string entityName, PolicyType policyType)
         {
             var endpointStrings = new List<string>();
-            foreach(var endpoint in endpoints)
+            foreach (var endpoint in endpoints)
             {
                 endpointStrings.Add(Enum.GetName(typeof(Endpoint), endpoint));
             }
@@ -295,7 +328,7 @@
             var results = policies
                 .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == entityName)
                     && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Intersect(endpointStrings).Any()));
-            
+
             return "{\"" + string.Join("\", \"", results.Select(r => r.PolicyValue)) + "\"}";
         }
 
@@ -355,8 +388,6 @@
             return fkIncludes;
         }
 
-
-
         public static void GitSetup(string solutionDirectory)
         {
             GitBuilder.CreateGitIgnore(solutionDirectory);
@@ -369,6 +400,149 @@
 
             var author = new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
             repo.Commit("Initial Commit", author, author);
+        }
+
+        public static void AddPackages(ClassPath classPath, Dictionary<string, string> packagesToAdd)
+        {
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
+            {
+                using var output = new StreamWriter(tempPath);
+                string line;
+                var packagesAdded = false;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"PackageReference") && !packagesAdded)
+                    {
+                        newText += @$"{ProjectReferencePackagesString(packagesToAdd)}";
+                        packagesAdded = true;
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+
+            // delete the old file and set the name of the new one to the original name
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
+        }
+
+        private static string ProjectReferencePackagesString(Dictionary<string, string> packagesToAdd)
+        {
+            var packageString = "";
+            foreach (var package in packagesToAdd)
+            {
+                packageString += $@"{Environment.NewLine}    <PackageReference Include=""{package.Key}"" Version=""{package.Value}"" />";
+            }
+
+            return packageString;
+        }
+
+        public static void AddProjectReference(ClassPath classPath, string relativeProjectPath)
+        {
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
+            {
+                using var output = new StreamWriter(tempPath);
+                string line;
+                var projectAdded = false;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"ProjectReference") && !projectAdded)
+                    {
+                        newText += @$"
+    <ProjectReference Include=""{relativeProjectPath}"" />";
+                        projectAdded = true;
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+
+            // delete the old file and set the name of the new one to the original name
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
+        }
+
+        public static string GetDefaultValueText(string defaultValue, string propType)
+        {
+            if (propType == "string")
+                return defaultValue == null ? "" : @$" = ""{defaultValue}"";";
+
+            return defaultValue == null ? "" : $" = {defaultValue};";
+        }
+
+        public static string GetDbContext(string srcDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"", projectBaseName);
+            var contextClass = Directory.GetFiles(classPath.FullClassPath, "*.cs").FirstOrDefault();
+
+            return Path.GetFileNameWithoutExtension(contextClass);
+        }
+
+        public static string GetRandomId(string idType)
+        {
+            if (idType.Equals("string", StringComparison.InvariantCultureIgnoreCase))
+                return @$"""badKey""";
+
+            if (idType.Equals("guid", StringComparison.InvariantCultureIgnoreCase))
+                return @$"Guid.NewGuid()";
+
+            if (idType.Equals("int", StringComparison.InvariantCultureIgnoreCase))
+                return @$"84709321";
+
+            return "";
+        }
+
+        private static bool RunDbMigration(ApiTemplate template, string srcDirectory)
+        {
+            var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, template.SolutionName);
+            var infraProjectClassPath = ClassPathHelper.InfrastructureProjectClassPath(srcDirectory, template.SolutionName);
+
+            return ExecuteProcess(
+                "dotnet",
+                @$"ef migrations add ""InitialMigration"" --project ""{infraProjectClassPath.FullClassPath}"" --startup-project ""{webApiProjectClassPath.FullClassPath}"" --output-dir Migrations",
+                srcDirectory,
+                new Dictionary<string, string>()
+                {
+                    { "ASPNETCORE_ENVIRONMENT", Guid.NewGuid().ToString() } // guid to not conflict with any given envs
+                },
+                20000,
+                $"{Emoji.Known.Warning} {template.SolutionName} Database Migrations timed out and will need to be run manually");
+        }
+
+        public static void RunDbMigrations(List<ApiTemplate> boundedContexts, string domainDirectory)
+        {
+            AnsiConsole.Status()
+                .AutoRefresh(true)
+                .Spinner(Spinner.Known.Dots2)
+                .Start($"[yellow]Running Migrations [/]", ctx =>
+                {
+                    foreach (var bc in boundedContexts)
+                    {
+                        var bcDirectory = $"{domainDirectory}{Path.DirectorySeparatorChar}{bc.SolutionName}";
+                        var srcDirectory = Path.Combine(bcDirectory, "src");
+
+                        ctx.Spinner(Spinner.Known.Dots2);
+                        ctx.Status($"[bold blue]Running {bc.SolutionName} Database Migrations [/]");
+                        if (Utilities.RunDbMigration(bc, srcDirectory))
+                            WriteLogMessage($"Database Migrations for {bc.SolutionName} were successful");
+                    }
+                });
         }
     }
 }

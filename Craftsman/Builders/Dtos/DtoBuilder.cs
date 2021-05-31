@@ -4,40 +4,24 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public static class DtoBuilder
     {
         public static void CreateDtos(string solutionDirectory, Entity entity, string projectBaseName)
         {
-            try
-            {
-                // ****this class path will have an invalid FullClassPath. just need the directory
-                var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            // ****this class path will have an invalid FullClassPath. just need the directory
+            var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                CreateDtoFile(solutionDirectory, entity, Dto.Read, projectBaseName);
-                CreateDtoFile(solutionDirectory, entity, Dto.Manipulation, projectBaseName);
-                CreateDtoFile(solutionDirectory, entity, Dto.Creation, projectBaseName);
-                CreateDtoFile(solutionDirectory, entity, Dto.Update, projectBaseName);
-                CreateDtoFile(solutionDirectory, entity, Dto.ReadParamaters, projectBaseName);
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
+            CreateDtoFile(solutionDirectory, entity, Dto.Read, projectBaseName);
+            CreateDtoFile(solutionDirectory, entity, Dto.Manipulation, projectBaseName);
+            CreateDtoFile(solutionDirectory, entity, Dto.Creation, projectBaseName);
+            CreateDtoFile(solutionDirectory, entity, Dto.Update, projectBaseName);
+            CreateDtoFile(solutionDirectory, entity, Dto.ReadParamaters, projectBaseName);
         }
 
         public static string GetDtoFileText(string solutionDirectory, ClassPath classPath, Entity entity, Dto dto, string projectBaseName)

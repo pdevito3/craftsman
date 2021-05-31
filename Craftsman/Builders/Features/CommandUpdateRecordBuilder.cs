@@ -4,42 +4,26 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using System;
     using System.IO;
-    using System.Linq;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class CommandUpdateRecordBuilder
     {
         public static void CreateCommand(string solutionDirectory, Entity entity, string contextName, string projectBaseName)
         {
-            try
-            {
-                var classPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, $"{Utilities.UpdateEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            var classPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, $"{Utilities.UpdateEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -78,7 +62,7 @@
     using System.Threading.Tasks;
     using System.Collections.Generic;
 
-    public class {className}
+    public static class {className}
     {{
         public class {updateCommandName} : IRequest<bool>
         {{
@@ -112,7 +96,7 @@
 
             public async Task<bool> Handle({updateCommandName} request, CancellationToken cancellationToken)
             {{
-                // add logger (and a try catch with logger so i can cap the unexpected info)........ unless this happens in my logger decorator that i am going to add?
+                // add logger or use decorator
 
                 var recordToUpdate = await _db.{entity.Plural}
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});

@@ -2,8 +2,6 @@
 {
     using Craftsman.Helpers;
     using FluentAssertions;
-    using System;
-    using System.Collections.Generic;
     using System.IO;
     using Xunit;
 

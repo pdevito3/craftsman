@@ -1,30 +1,24 @@
-﻿
-namespace Craftsman.Commands
+﻿namespace Craftsman.Commands
 {
     using Craftsman.Builders;
-    using Craftsman.Builders.Dtos;
     using Craftsman.Builders.Seeders;
-    using Craftsman.Builders.Tests.Fakes;
     using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
-    using System.Linq;
     using static Helpers.ConsoleWriter;
+    using Spectre.Console;
 
     public static class AddEntityCommand
     {
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   This command can add one or more new entities to your Wrapt project using a formatted 
-   yaml or json file. The input file uses a simplified format from the `new:api` command that only 
-   requires a list of one or more entities.{Environment.NewLine}");
+            WriteHelpText(@$"   This command can add one or more new entities to your Wrapt project using a formatted yaml or json file.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
             WriteHelpText(@$"   craftsman add:entity [options] <filepath>");
@@ -41,9 +35,9 @@ namespace Craftsman.Commands
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman add:entities C:\fullpath\newentity.yaml");
-            WriteHelpText(@$"       craftsman add:entities C:\fullpath\newentity.yml");
-            WriteHelpText(@$"       craftsman add:entities C:\fullpath\newentity.json");
+            WriteHelpText(@$"   craftsman add:entities C:\fullpath\newentity.yaml");
+            WriteHelpText(@$"   craftsman add:entities C:\fullpath\newentity.yml");
+            WriteHelpText(@$"   craftsman add:entities C:\fullpath\newentity.json");
             WriteHelpText(Environment.NewLine);
         }
 
@@ -57,9 +51,10 @@ namespace Craftsman.Commands
                 var srcDirectory = Path.Combine(solutionDirectory, "src");
                 var testDirectory = Path.Combine(solutionDirectory, "tests");
 
-                template.SolutionName = Utilities.SolutionGuard(solutionDirectory); // this needs to happen before the projectbasename assignment
-                ProperDirectoryGuard(srcDirectory, testDirectory);
-                template = GetDbContext(srcDirectory, template, template.SolutionName);
+                Utilities.IsBoundedContextDirectoryGuard(srcDirectory, testDirectory);
+                var projectBaseName = Directory.GetParent(srcDirectory).Name;
+                template = GetDbContext(srcDirectory, template, projectBaseName);
+                template.SolutionName = projectBaseName;
 
                 WriteHelpText($"Your template file was parsed successfully.");
 
@@ -72,19 +67,29 @@ namespace Craftsman.Commands
             }
             catch (Exception e)
             {
-                if (e is FileAlreadyExistsException
-                    || e is DirectoryAlreadyExistsException
-                    || e is InvalidSolutionNameException
-                    || e is FileNotFoundException
-                    || e is InvalidDbProviderException
-                    || e is InvalidFileTypeException
-                    || e is SolutionNotFoundException
-                    || e is InvalidBaseDirectory)
+                if (e is IsNotBoundedContextDirectory)
                 {
                     WriteError($"{e.Message}");
                 }
                 else
-                    WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
+                {
+                    AnsiConsole.WriteException(e, new ExceptionSettings
+                    {
+                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
+                        Style = new ExceptionStyle
+                        {
+                            Exception = new Style().Foreground(Color.Grey),
+                            Message = new Style().Foreground(Color.White),
+                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
+                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
+                            Method = new Style().Foreground(Color.Red),
+                            ParameterName = new Style().Foreground(Color.Cornsilk1),
+                            ParameterType = new Style().Foreground(Color.Red),
+                            Path = new Style().Foreground(Color.Red),
+                            LineNumber = new Style().Foreground(Color.Cornsilk1),
+                        }
+                    });
+                }
             }
         }
 
@@ -108,18 +113,9 @@ namespace Craftsman.Commands
             ApiRouteModifier.AddRoutes(testDirectory, template.Entities, template.SolutionName);
         }
 
-        private static void ProperDirectoryGuard(string srcDirectory, string testDirectory)
+        private static AddEntityTemplate GetDbContext(string srcDirectory, AddEntityTemplate template, string projectBaseName)
         {
-            if(!Directory.Exists(srcDirectory) || !Directory.Exists(testDirectory))
-                throw new InvalidBaseDirectory();
-        }
-
-        private static AddEntityTemplate GetDbContext(string solutionDirectory, AddEntityTemplate template, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"", projectBaseName);
-            var contextClass = Directory.GetFiles(classPath.FullClassPath, "*.cs").FirstOrDefault();
-
-            template.DbContextName = Path.GetFileNameWithoutExtension(contextClass);
+            template.DbContextName = Utilities.GetDbContext(srcDirectory, projectBaseName);
             return template;
         }
     }

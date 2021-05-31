@@ -1,27 +1,15 @@
 ﻿namespace Craftsman.Commands
 {
-    using Craftsman.Builders;
-    using Craftsman.Builders.Dtos;
-    using Craftsman.Builders.Features;
-    using Craftsman.Builders.Seeders;
-    using Craftsman.Builders.Tests.Fakes;
-    using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Enums;
-    using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using FluentAssertions.Common;
-    using LibGit2Sharp;
-    using Newtonsoft.Json;
     using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Diagnostics;
-    using System.IO;
     using System.IO.Abstractions;
-    using System.Linq;
-    using YamlDotNet.Serialization;
     using static Helpers.ConsoleWriter;
+    using Spectre.Console;
+    using Craftsman.Exceptions;
+    using System.IO;
+    using System.Collections.Generic;
 
     public static class AddBoundedContextCommand
     {
@@ -44,10 +32,9 @@
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.yaml");
-            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.yml");
-            WriteHelpText(@$"       craftsman add:bc C:\fullpath\api.json{Environment.NewLine}");
-
+            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.yaml");
+            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.yml");
+            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.json{Environment.NewLine}");
         }
 
         public static void Run(string filePath, string domainDirectory, IFileSystem fileSystem, Verbosity verbosity)
@@ -55,6 +42,8 @@
             try
             {
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
+                Utilities.SolutionGuard(domainDirectory);
+
                 var boundedContexts = FileParsingHelper.GetTemplateFromFile<BoundedContextsTemplate>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 
@@ -62,6 +51,9 @@
                 {
                     ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity);
                 }
+
+                // migrations
+                Utilities.RunDbMigrations(boundedContexts.BoundedContexts, domainDirectory);
 
                 WriteHelpHeader($"{Environment.NewLine}Your bounded contexts have been successfully added. Keep up the good work!");
                 StarGithubRequest();
@@ -74,12 +66,30 @@
                     || e is FileNotFoundException
                     || e is InvalidDbProviderException
                     || e is InvalidFileTypeException
+                    || e is DataValidationErrorException
                     || e is SolutiuonNameEntityMatchException)
                 {
                     WriteError($"{e.Message}");
                 }
                 else
-                    WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
+                {
+                    AnsiConsole.WriteException(e, new ExceptionSettings
+                    {
+                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
+                        Style = new ExceptionStyle
+                        {
+                            Exception = new Style().Foreground(Color.Grey),
+                            Message = new Style().Foreground(Color.White),
+                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
+                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
+                            Method = new Style().Foreground(Color.Red),
+                            ParameterName = new Style().Foreground(Color.Cornsilk1),
+                            ParameterType = new Style().Foreground(Color.Red),
+                            Path = new Style().Foreground(Color.Red),
+                            LineNumber = new Style().Foreground(Color.Cornsilk1),
+                        }
+                    });
+                }
             }
         }
     }

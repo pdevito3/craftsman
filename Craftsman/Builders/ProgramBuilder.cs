@@ -2,41 +2,26 @@
 {
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
-    using System;
     using System.IO.Abstractions;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class ProgramBuilder
     {
         public static void CreateWebApiProgram(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            try
-            {
-                var classPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, $"Program.cs", projectBaseName);
+            var classPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, $"Program.cs", projectBaseName);
 
-                if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                    fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (fileSystem.File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetProgramText(classPath.ClassNamespace);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetProgramText(classPath.ClassNamespace);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -47,22 +32,28 @@
     using Autofac.Extensions.DependencyInjection;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Serilog;
     using System;
     using System.IO;
     using System.Reflection;
+    using System.Threading.Tasks;
 
     public class Program
     {{
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {{
-            var myEnv = Environment.GetEnvironmentVariable(""ASPNETCORE_ENVIRONMENT"");
-            var appSettings = myEnv == null ? $""appsettings.json"" : $""appsettings.{{myEnv}}.json"";
+            var host = CreateHostBuilder(args).Build();
 
-            //Read Configuration from appSettings
+            using var scope = host.Services.CreateScope();
+
+            //Read configuration from appSettings
+            var services = scope.ServiceProvider;
+            var hostEnvironment = services.GetService<IWebHostEnvironment>();
             var config = new ConfigurationBuilder()
-                .AddJsonFile(appSettings)
+                .AddJsonFile(""appsettings.json"")
+                .AddJsonFile($""appsettings.{{hostEnvironment.EnvironmentName}}.json"", true)
                 .Build();
 
             //Initialize Logger
@@ -73,9 +64,7 @@
             try
             {{
                 Log.Information(""Starting application"");
-                CreateHostBuilder(args)
-                    .Build()
-                    .Run();
+                await host.RunAsync();
             }}
             catch (Exception e)
             {{

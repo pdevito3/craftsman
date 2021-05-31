@@ -1,10 +1,7 @@
 namespace Craftsman.Tests.ModelTests
 {
     using Craftsman.Models;
-    using Craftsman.Tests.Fakes;
     using FluentAssertions;
-    using NuGet.Frameworks;
-    using System.Collections.Generic;
     using System.IO;
     using Xunit;
 

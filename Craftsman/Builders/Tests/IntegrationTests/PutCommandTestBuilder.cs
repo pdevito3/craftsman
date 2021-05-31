@@ -4,41 +4,26 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using System;
     using System.IO;
     using System.Linq;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class PutCommandTestBuilder
     {
         public static void CreateTests(string solutionDirectory, Entity entity, string projectBaseName)
         {
-            try
-            {
-                var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"Update{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
+            var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"Update{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = WriteTestFileText(solutionDirectory, classPath, entity, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = WriteTestFileText(solutionDirectory, classPath, entity, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -82,7 +67,7 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.JsonPatch;
     using System.Linq;
-    using static {featuresClassPath.ClassNamespace}.{featureName};
+    using {featuresClassPath.ClassNamespace};
     using static {testFixtureName};
 
     public class {commandName}Tests : TestBase
@@ -99,7 +84,7 @@
             var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
             // Act
-            var command = new {commandName}({lowercaseEntityPk}, updated{entity.Name}Dto);
+            var command = new {featureName}.{commandName}({lowercaseEntityPk}, updated{entity.Name}Dto);
             await SendAsync(command);
             var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
 

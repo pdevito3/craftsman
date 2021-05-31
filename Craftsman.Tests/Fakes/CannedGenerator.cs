@@ -1,9 +1,7 @@
 ﻿namespace Craftsman.Tests.Fakes
 {
     using Craftsman.Models;
-    using System;
     using System.Collections.Generic;
-    using System.Text;
 
     public static class CannedGenerator
     {

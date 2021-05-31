@@ -1,53 +1,35 @@
 ﻿namespace Craftsman.Builders.Seeders
 {
-    using Craftsman.Builders.Dtos;
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Reflection.Emit;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class SeederModifier
     {
         public static void AddSeeders(string srcDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
         {
-            try
+            foreach (var entity in entities)
             {
-                foreach (var entity in entities)
+                var classPath = ClassPathHelper.SeederClassPath(srcDirectory, $"{Utilities.GetSeederName(entity)}.cs", projectBaseName);
+
+                if (!Directory.Exists(classPath.ClassDirectory))
+                    Directory.CreateDirectory(classPath.ClassDirectory);
+
+                if (File.Exists(classPath.FullClassPath))
+                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+                using (FileStream fs = File.Create(classPath.FullClassPath))
                 {
-                    var classPath = ClassPathHelper.SeederClassPath(srcDirectory, $"{Utilities.GetSeederName(entity)}.cs", projectBaseName);
-
-                    if (!Directory.Exists(classPath.ClassDirectory))
-                        Directory.CreateDirectory(classPath.ClassDirectory);
-
-                    if (File.Exists(classPath.FullClassPath))
-                        throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-                    using (FileStream fs = File.Create(classPath.FullClassPath))
-                    {
-                        var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, dbContextName, srcDirectory, projectBaseName);
-                        fs.Write(Encoding.UTF8.GetBytes(data));
-                    }
+                    var data = SeederFunctions.GetEntitySeederFileText(classPath.ClassNamespace, entity, dbContextName, srcDirectory, projectBaseName);
+                    fs.Write(Encoding.UTF8.GetBytes(data));
                 }
+            }
 
-                RegisterAllNewSeeders(srcDirectory, entities, dbContextName, projectBaseName);
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
+            RegisterAllNewSeeders(srcDirectory, entities, dbContextName, projectBaseName);
         }
 
         private static void RegisterAllNewSeeders(string srcDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
@@ -69,7 +51,7 @@
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
-                        if (line.Contains($"#region {dbContextName} Seeder Region"))
+                        if (line.Contains($"// {dbContextName} Seeders"))
                         {
                             newText += @$"{Environment.NewLine}{GetSeederContextText(entities, dbContextName)}";
                         }

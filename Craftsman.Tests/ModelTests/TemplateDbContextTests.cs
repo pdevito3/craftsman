@@ -5,7 +5,6 @@ namespace Craftsman.Tests.ModelTests
     using Craftsman.Models;
     using FluentAssertions;
     using System;
-    using System.Runtime.InteropServices;
     using Xunit;
 
     public class TemplateDbContextTests

@@ -7,45 +7,33 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public static class ControllerBuilder
     {
         public static void CreateController(string solutionDirectory, Entity entity, bool AddSwaggerComments, List<Policy> policies, string projectBaseName = "")
         {
-            try
-            {
-                var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName, "v1");
+            var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName, "v1");
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = GetControllerFileText(classPath.ClassNamespace, entity, AddSwaggerComments, policies, solutionDirectory, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = GetControllerFileText(classPath.ClassNamespace, entity, AddSwaggerComments, policies, solutionDirectory, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
         public static string GetControllerFileText(string classNamespace, Entity entity, bool AddSwaggerComments, List<Policy> policies, string solutionDirectory, string projectBaseName)
         {
+            // TODO create an attribute factory that can order them how i want and work more dynamically
+
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
+            var lowercasePrimaryKey = entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var entityNamePlural = entity.Plural;
             var readDto = Utilities.GetDtoName(entityName, Dto.Read);
@@ -71,7 +59,7 @@
             var updateRecordAuthorizations = BuildAuthorizations(policies, Endpoint.UpdateRecord, entity.Name);
             var updatePartialAuthorizations = BuildAuthorizations(policies, Endpoint.UpdatePartial, entity.Name);
             var deleteRecordAuthorizations = BuildAuthorizations(policies, Endpoint.DeleteRecord, entity.Name);
-            var idParam = $@"{lowercaseEntityVariable}Id";
+            var hasConflictCode = entity.PrimaryKeyProperty.Type.IsGuidPropertyType();
 
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
@@ -90,17 +78,12 @@
     using {wrapperClassPath.ClassNamespace};
     using System.Threading;
     using MediatR;
-    using static {featureClassPath.ClassNamespace}.{Utilities.GetEntityListFeatureClassName(entity.Name)};
-    using static {featureClassPath.ClassNamespace}.{Utilities.GetEntityFeatureClassName(entity.Name)};
-    using static {featureClassPath.ClassNamespace}.{Utilities.AddEntityFeatureClassName(entity.Name)};
-    using static {featureClassPath.ClassNamespace}.{Utilities.DeleteEntityFeatureClassName(entity.Name)};
-    using static {featureClassPath.ClassNamespace}.{Utilities.UpdateEntityFeatureClassName(entity.Name)};
-    using static {featureClassPath.ClassNamespace}.{Utilities.PatchEntityFeatureClassName(entity.Name)};
+    using {featureClassPath.ClassNamespace};
 
     [ApiController]
     [Route(""{endpointBase}"")]
     [ApiVersion(""1.0"")]
-    public class {entityNamePlural}Controller: Controller
+    public class {entityNamePlural}Controller: ControllerBase
     {{
         private readonly IMediator _mediator;
 
@@ -115,7 +98,7 @@
         public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
         {{
             // add error handling
-            var query = new {queryListMethodName}({lowercaseEntityVariable}ParametersDto);
+            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryListMethodName}({lowercaseEntityVariable}ParametersDto);
             var queryResponse = await _mediator.Send(query);
 
             var paginationMetadata = new
@@ -139,24 +122,24 @@
         }}
         {GetSwaggerComments_GetRecord(entity, AddSwaggerComments, singleResponse, getRecordAuthorizations.Length > 0)}{getRecordAuthorizations}
         [Produces(""application/json"")]
-        [HttpGet(""{{{lowercaseEntityVariable}Id}}"", Name = ""{getRecordEndpointName}"")]
-        public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {idParam})
+        [HttpGet(""{{{lowercasePrimaryKey}}}"", Name = ""{getRecordEndpointName}"")]
+        public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercasePrimaryKey})
         {{
             // add error handling
-            var query = new {queryRecordMethodName}({idParam});
+            var query = new {Utilities.GetEntityFeatureClassName(entity.Name)}.{queryRecordMethodName}({lowercasePrimaryKey});
             var queryResponse = await _mediator.Send(query);
 
             var response = new {singleResponse}(queryResponse);
             return Ok(response);
         }}
-        {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0)}{addRecordAuthorizations}
+        {GetSwaggerComments_CreateRecord(entity, AddSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0, hasConflictCode)}{addRecordAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
         [HttpPost]
         public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {lowercaseEntityVariable}ForCreation)
         {{
             // add error handling
-            var command = new {addRecordCommandMethodName}({lowercaseEntityVariable}ForCreation);
+            var command = new {Utilities.AddEntityFeatureClassName(entity.Name)}.{addRecordCommandMethodName}({lowercaseEntityVariable}ForCreation);
             var commandResponse = await _mediator.Send(command);
             var response = new {singleResponse}(commandResponse);
 
@@ -166,22 +149,22 @@
         }}
         {GetSwaggerComments_DeleteRecord(entity, AddSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
         [Produces(""application/json"")]
-        [HttpDelete(""{{{idParam}}}"")]
-        public async Task<ActionResult> Delete{entityName}({pkPropertyType} {idParam})
+        [HttpDelete(""{{{lowercasePrimaryKey}}}"")]
+        public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercasePrimaryKey})
         {{
             // add error handling
-            var command = new {deleteRecordCommandMethodName}({idParam});
+            var command = new {Utilities.DeleteEntityFeatureClassName(entity.Name)}.{deleteRecordCommandMethodName}({lowercasePrimaryKey});
             await _mediator.Send(command);
 
             return NoContent();
         }}
         {GetSwaggerComments_PutRecord(entity, AddSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
         [Produces(""application/json"")]
-        [HttpPut(""{{{idParam}}}"")]
-        public async Task<IActionResult> Update{entityName}({pkPropertyType} {idParam}, {updateDto} {lowercaseEntityVariable})
+        [HttpPut(""{{{lowercasePrimaryKey}}}"")]
+        public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercasePrimaryKey}, {updateDto} {lowercaseEntityVariable})
         {{
             // add error handling
-            var command = new {updateRecordCommandMethodName}({idParam}, {lowercaseEntityVariable});
+            var command = new {Utilities.UpdateEntityFeatureClassName(entity.Name)}.{updateRecordCommandMethodName}({lowercasePrimaryKey}, {lowercaseEntityVariable});
             await _mediator.Send(command);
 
             return NoContent();
@@ -189,11 +172,11 @@
         {GetSwaggerComments_PatchRecord(entity, AddSwaggerComments, updatePartialAuthorizations.Length > 0)}{updatePartialAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
-        [HttpPatch(""{{{idParam}}}"")]
-        public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {idParam}, JsonPatchDocument<{updateDto}> patchDoc)
+        [HttpPatch(""{{{lowercasePrimaryKey}}}"")]
+        public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {lowercasePrimaryKey}, JsonPatchDocument<{updateDto}> patchDoc)
         {{
             // add error handling
-            var command = new {patchRecordCommandMethodName}({idParam}, patchDoc);
+            var command = new {Utilities.PatchEntityFeatureClassName(entity.Name)}.{patchRecordCommandMethodName}({lowercasePrimaryKey}, patchDoc);
             await _mediator.Send(command);
 
             return NoContent();
@@ -238,7 +221,7 @@
         ///    | `_=`     | Starts with                   |  `!_=*`   | Case-insensitive string does not Starts with |
         /// </remarks>
         [ProducesResponseType(typeof({listResponse}), 200)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
+        [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
@@ -258,26 +241,28 @@
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(typeof({singleResponse}), 200)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
+        [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
         }
 
-        private static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
+        private static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications, bool hasGuidPk)
         {
             var authResponses = GetAuthResponses(hasAuthentications);
             var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+            var conflictResponses = GetConflictResponses(hasGuidPk);
+            var conflictCommentResponses = GetConflictCommentResponses(hasGuidPk);
             if (buildComments)
                 return $@"
         /// <summary>
         /// Creates a new {entity.Name} record.
         /// </summary>
         /// <response code=""201"">{entity.Name} created.</response>
-        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
+        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}{conflictCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(typeof({singleResponse}), 201)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
+        [ProducesResponseType(typeof(Response<>), 400)]{authResponses}{conflictResponses}
         [ProducesResponseType(500)]";
 
             return "";
@@ -296,7 +281,7 @@
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
+        [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
@@ -315,7 +300,7 @@
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
+        [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
@@ -334,7 +319,7 @@
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]{authResponses}
+        [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
         [ProducesResponseType(500)]";
 
             return "";
@@ -348,7 +333,7 @@
             foreach (var result in results)
             {
                 if (result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
-                    //|| result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Claim))
+                //|| result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Claim))
                 {
                     authorizations += $@"{Environment.NewLine}        [Authorize(Policy = ""{result.Name}"")]";
                 }
@@ -367,11 +352,23 @@
             if (hasAuthentications)
             {
                 authResponses = $@"
-        [ProducesResponseType(401)] 
-        [ProducesResponseType(403)]";
+        [ProducesResponseType(typeof(Response<>), 401)]
+        [ProducesResponseType(typeof(Response<>), 403)]";
             }
 
             return authResponses;
+        }
+
+        private static string GetConflictResponses(bool hasConflictResponse)
+        {
+            var conflictResponses = "";
+            if (hasConflictResponse)
+            {
+                conflictResponses = $@"
+        [ProducesResponseType(typeof(Response<>), 409)]";
+            }
+
+            return conflictResponses;
         }
 
         private static string GetAuthCommentResponses(bool hasAuthentications)
@@ -385,7 +382,18 @@
             }
 
             return authResponseComments;
+        }
 
+        private static string GetConflictCommentResponses(bool hasConflictResponse)
+        {
+            var responseComments = "";
+            if (hasConflictResponse)
+            {
+                responseComments = $@"
+        /// <response code=""409"">A record already exists with this primary key.</response>";
+            }
+
+            return responseComments;
         }
     }
 }

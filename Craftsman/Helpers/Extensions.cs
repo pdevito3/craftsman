@@ -1,8 +1,6 @@
 ﻿namespace Craftsman
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text;
 
     public static class Extensions
     {
@@ -16,6 +14,7 @@
             // Return char and concat substring.
             return char.ToUpper(value[0]) + value.Substring(1);
         }
+
         public static string LowercaseFirstLetter(this string value)
         {
             // Check for empty string.
@@ -34,6 +33,11 @@
                 input = input.Substring(0, index) + input.Substring(index + Environment.NewLine.Length);
 
             return input;
+        }
+
+        public static bool IsGuidPropertyType(this string input)
+        {
+            return input.Equals("guid", StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

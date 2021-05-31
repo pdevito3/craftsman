@@ -1,69 +1,56 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System;
     using System.IO;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class CoreExceptionsBuilder
     {
         public static void CreateExceptions(string solutionDirectory, string projectBaseName)
         {
-            try
-            {
-                // ****this class path will have an invalid FullClassPath. just need the directory
-                var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
+            // ****this class path will have an invalid FullClassPath. just need the directory
+            var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                CreateApiException(solutionDirectory, projectBaseName);
-                CreateValidationException(solutionDirectory, projectBaseName);
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
+            CreateApiException(solutionDirectory, projectBaseName);
+            CreateValidationException(solutionDirectory, projectBaseName);
+            CreateConflictException(solutionDirectory, projectBaseName);
+        }
+
+        public static void CreateConflictException(string solutionDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, $"ConflictException.cs", projectBaseName);
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
+
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+            using FileStream fs = File.Create(classPath.FullClassPath);
+            var data = "";
+            data = GetConflictExceptionFileText(classPath.ClassNamespace);
+            fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
         public static void CreateApiException(string solutionDirectory, string projectBaseName)
         {
-            try
-            {
-                var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, $"ApiException.cs", projectBaseName);
+            var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, $"ApiException.cs", projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetApiExceptionFileText(classPath.ClassNamespace);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetApiExceptionFileText(classPath.ClassNamespace);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -88,34 +75,42 @@
 }}";
         }
 
+        public static string GetConflictExceptionFileText(string classNamespace)
+        {
+            return @$"namespace {classNamespace}
+{{
+    using System;
+    using System.Globalization;
+
+    public class ConflictException : Exception
+    {{
+        public ConflictException() : base() {{ }}
+
+        public ConflictException(string message) : base(message) {{ }}
+
+        public ConflictException(string message, params object[] args)
+            : base(string.Format(CultureInfo.CurrentCulture, message, args))
+        {{
+        }}
+    }}
+}}";
+        }
+
         public static void CreateValidationException(string solutionDirectory, string projectBaseName)
         {
-            try
-            {
-                var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, $"ValidationException.cs", projectBaseName);
+            var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, $"ValidationException.cs", projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetValidationExceptionFileText(classPath.ClassNamespace);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetValidationExceptionFileText(classPath.ClassNamespace);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 

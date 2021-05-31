@@ -1,9 +1,4 @@
 ﻿using Craftsman.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Craftsman.Models
 {
@@ -13,16 +8,21 @@ namespace Craftsman.Models
         private bool _canManipulate = true;
         private bool _isForeignKey = false;
         private string _type = "string";
+        private string _name;
 
         /// <summary>
         /// Name of the property
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name.UppercaseFirstLetter();
+            set => _name = value;
+        }
 
         /// <summary>
         /// Type of property (e.g. string, int, DateTime?, etc.)
         /// </summary>
-        public string Type 
+        public string Type
         {
             get => _type;
             set => _type = Utilities.PropTypeCleanup(value);
@@ -71,7 +71,7 @@ namespace Craftsman.Models
         /// <summary>
         /// Designates the property as a foreign key for the entity
         /// </summary>
-        public bool IsForeignKey 
+        public bool IsForeignKey
         {
             get => ForeignKeyPropName != null;
             private set => _isForeignKey = value;
@@ -91,6 +91,5 @@ namespace Craftsman.Models
         /// Database field name to use when it doesn't match the property name
         /// </summary>
         public string ColumnName { get; set; }
-
     }
 }

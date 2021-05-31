@@ -1,11 +1,9 @@
 ﻿namespace Craftsman.Models
 {
-    using System;
-    using System.Collections.Generic;
+    using Craftsman.Models.Interfaces;
     using System.IO;
-    using System.Text;
 
-    public class ClassPath
+    public class ClassPath : IClassPath
     {
         public ClassPath(string solutionDirectory, string topPath, string className)
         {

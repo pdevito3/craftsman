@@ -4,42 +4,26 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using System;
     using System.IO;
-    using System.Linq;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class CommandAddRecordBuilder
     {
         public static void CreateCommand(string solutionDirectory, Entity entity, string contextName, string projectBaseName)
         {
-            try
-            {
-                var classPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, $"{Utilities.AddEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            var classPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, $"{Utilities.AddEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = "";
-                    data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -63,6 +47,13 @@
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var validatorsClassPath = ClassPathHelper.ValidationClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
 
+            var conflictConditional = entity.PrimaryKeyProperty.Type.IsGuidPropertyType() ? @$"
+                if (await _db.{entity.Plural}.AnyAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{commandProp}.{primaryKeyPropName}))
+                {{
+                    throw new ConflictException(""{entity.Name} already exists with this primary key."");
+                }}
+" : "";
+
             return @$"namespace {classNamespace}
 {{
     using {entityClassPath.ClassNamespace};
@@ -79,7 +70,7 @@
     using System.Threading.Tasks;
     using System.Collections.Generic;
 
-    public class {className}
+    public static class {className}
     {{
         public class {addCommandName} : IRequest<{readDto}>
         {{
@@ -110,14 +101,13 @@
             }}
 
             public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
-            {{
+            {{{conflictConditional}
                 var {entityNameLowercase} = _mapper.Map<{entityName}> (request.{commandProp});
                 _db.{entity.Plural}.Add({entityNameLowercase});
                 var saveSuccessful = await _db.SaveChangesAsync() > 0;
 
                 if (saveSuccessful)
                 {{
-                    // include marker -- to accommodate adding includes with craftsman commands, the next line must stay as `var result = await _db.{entity.Plural}`. -- do not delete this comment
                     return await _db.{entity.Plural}
                         .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
                         .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName});

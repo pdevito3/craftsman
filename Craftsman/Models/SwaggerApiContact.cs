@@ -1,8 +1,5 @@
 ﻿namespace Craftsman.Models
 {
-    using System;
-    using System.Collections.Generic;
-
     public class SwaggerApiContact
     {
         public string Name { get; set; }

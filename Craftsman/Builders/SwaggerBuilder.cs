@@ -1,6 +1,5 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
@@ -8,122 +7,103 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class SwaggerBuilder
     {
-        public static void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies, string projectBaseName = "")
+        public static void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies, string projectBaseName, IFileSystem fileSystem)
         {
-            if(!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
+            if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
             {
-                AddSwaggerServiceExtension(solutionDirectory, swaggerConfig, solutionName, addJwtAuthentication, policies, projectBaseName);
-                AddSwaggerAppExtension(solutionDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
-                UpdateWebApiCsProjSwaggerSettings(solutionDirectory, solutionName, projectBaseName);
+                AddSwaggerServiceExtension(solutionDirectory, projectBaseName, swaggerConfig, solutionName, addJwtAuthentication, policies, fileSystem);
+                WebApiAppExtensionsBuilder.CreateSwaggerWebApiAppExtension(solutionDirectory, swaggerConfig, addJwtAuthentication, projectBaseName, fileSystem);
+                UpdateWebApiCsProjSwaggerSettings(solutionDirectory, projectBaseName);
             }
         }
 
         public static void RegisterSwaggerInStartup(string solutionDirectory, ApiEnvironment env, string projectBaseName = "")
         {
-            try
+            var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"{Utilities.GetStartupName(env.EnvironmentName)}.cs", projectBaseName);
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
             {
-                var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"{Utilities.GetStartupName(env.EnvironmentName)}.cs", projectBaseName);
-
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
-
-                if (!File.Exists(classPath.FullClassPath))
-                    throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
-
-                var tempPath = $"{classPath.FullClassPath}temp";
-                using (var input = File.OpenText(classPath.FullClassPath))
+                using (var output = new StreamWriter(tempPath))
                 {
-                    using (var output = new StreamWriter(tempPath))
+                    string line;
+                    while (null != (line = input.ReadLine()))
                     {
-                        string line;
-                        while (null != (line = input.ReadLine()))
+                        var newText = $"{line}";
+                        if (line.Contains("Dynamic Services"))
                         {
-                            var newText = $"{line}";
-                            if (line.Contains("Dynamic Services"))
-                            {
-                                newText += $"{Environment.NewLine}            services.AddSwaggerExtension(_config);";
-                            }
-                            else if (line.Contains("Dynamic App"))
-                            {
-                                newText += $"{Environment.NewLine}            app.UseSwaggerExtension(_config);";
-                            }
-
-                            output.WriteLine(newText);
+                            newText += $"{Environment.NewLine}            services.AddSwaggerExtension(_config);";
                         }
+                        else if (line.Contains("Dynamic App"))
+                        {
+                            newText += $"{Environment.NewLine}            app.UseSwaggerExtension(_config);";
+                        }
+
+                        output.WriteLine(newText);
                     }
                 }
+            }
 
-                // delete the old file and set the name of the new one to the original name
-                File.Delete(classPath.FullClassPath);
-                File.Move(tempPath, classPath.FullClassPath);
-            }
-            catch (FileAlreadyExistsException e)
+            // delete the old file and set the name of the new one to the original name
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
+        }
+
+        public static void AddSwaggerServiceExtension(string solutionDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies, IFileSystem fileSystem)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"SwaggerServiceExtension.cs", projectBaseName);
+
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = "";
+                data = GetSwaggerServiceExtensionText(classPath.ClassNamespace, swaggerConfig, solutionName, addJwtAuthentication, policies);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        private static void AddSwaggerServiceExtension(string solutionDirectory, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies, string projectBaseName = "")
+        public static string GetSwaggerServiceExtensionText(string classNamespace, SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies)
         {
-            try
-            {
-                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"ServiceExtensions.cs", projectBaseName);
+            return @$"namespace {classNamespace}
+{{
+    using AutoMapper;
+    using FluentValidation.AspNetCore;
+    using MediatR;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.OpenApi.Models;
+    using System;
+    using System.IO;
+    using System.Collections.Generic;
+    using System.Reflection;
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
-
-                if (!File.Exists(classPath.FullClassPath))
-                    throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
-
-                var tempPath = $"{classPath.FullClassPath}temp";
-                using (var input = File.OpenText(classPath.FullClassPath))
-                {
-                    using (var output = new StreamWriter(tempPath))
-                    {
-                        string line;
-                        while (null != (line = input.ReadLine()))
-                        {
-                            var newText = $"{line}";
-                            if (line.Contains("// Swagger Marker - Do Not Delete"))
-                            {
-                                newText += GetSwaggerServiceExtensionText(swaggerConfig, solutionName, addJwtAuthentication, policies);
-                            }
-
-                            output.WriteLine(newText);
-                        }
-                    }
-                }
-
-                // delete the old file and set the name of the new one to the original name
-                File.Delete(classPath.FullClassPath);
-                File.Move(tempPath, classPath.FullClassPath);
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
+    public static class SwaggerServiceExtension
+    {{
+        {GetSwaggerServiceExtensionText(swaggerConfig, solutionName, addJwtAuthentication, policies)}
+    }}
+}}";
         }
 
         private static string GetSwaggerServiceExtensionText(SwaggerConfig swaggerConfig, string solutionName, bool addJwtAuthentication, List<Policy> policies)
         {
-            var contactUrlLine = IsCleanUri(swaggerConfig.ApiContact.Url) 
+            var contactUrlLine = IsCleanUri(swaggerConfig.ApiContact.Url)
                 ? $@"
                             Url = new Uri(""{ swaggerConfig.ApiContact.Url }""),"
                 : "";
@@ -177,13 +157,12 @@
 
                 config.IncludeXmlComments(string.Format(@$""{{AppDomain.CurrentDomain.BaseDirectory}}{{Path.DirectorySeparatorChar}}{solutionName}.WebApi.xml""));";
 
-            var swaggerText = $@"
-        public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
+            var swaggerText = $@"public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
         {{
             services.AddSwaggerGen(config =>
             {{
                 config.SwaggerDoc(
-                    ""v1"", 
+                    ""v1"",
                     new OpenApiInfo
                     {{
                         Version = ""v1"",
@@ -204,7 +183,7 @@
         private static object GetPolicies(List<Policy> policies)
         {
             var policyStrings = "";
-            foreach(var policy in policies)
+            foreach (var policy in policies)
             {
                 policyStrings += $@"
                                     {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},";
@@ -225,77 +204,12 @@
             return "";
         }
 
-        private static void AddSwaggerAppExtension(string solutionDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication, string projectBaseName = "")
-        {
-            try
-            {
-                var classPath = ClassPathHelper.WebApiExtensionsClassPath(solutionDirectory, $"AppExtensions.cs", projectBaseName);
-
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
-
-                if (!File.Exists(classPath.FullClassPath))
-                    throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
-
-                var tempPath = $"{classPath.FullClassPath}temp";
-                using (var input = File.OpenText(classPath.FullClassPath))
-                {
-                    using (var output = new StreamWriter(tempPath))
-                    {
-                        string line;
-                        while (null != (line = input.ReadLine()))
-                        {
-                            var newText = $"{line}";
-                            if (line.Contains("// Swagger Marker - Do Not Delete"))
-                            {
-                                newText += GetSwaggerAppExtensionText(swaggerConfig, addJwtAuthentication);
-                            }
-
-                            output.WriteLine(newText);
-                        }
-                    }
-                }
-
-                // delete the old file and set the name of the new one to the original name
-                File.Delete(classPath.FullClassPath);
-                File.Move(tempPath, classPath.FullClassPath);
-            }
-            catch (FileAlreadyExistsException e)
-            {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
-            }
-        }
         private static bool IsCleanUri(string uri)
         {
             return Uri.TryCreate(uri, UriKind.Absolute, out var outUri) && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps);
         }
 
-        private static string GetSwaggerAppExtensionText(SwaggerConfig swaggerConfig, bool addJwtAuthentication)
-        {
-            var swaggerAuth = addJwtAuthentication ? $@"
-                config.OAuthClientId(configuration[""JwtSettings:ClientId""]);
-                config.OAuthUsePkce();" : "";
-
-           var swaggerText = $@"
-        public static void UseSwaggerExtension(this IApplicationBuilder app, IConfiguration configuration)
-        {{
-            app.UseSwagger();
-            app.UseSwaggerUI(config =>
-            {{
-                config.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");{swaggerAuth}
-            }});
-        }}";
-
-            return swaggerText;
-        }
-
-        public static void UpdateWebApiCsProjSwaggerSettings(string solutionDirectory, string solutionName, string projectBaseName = "")
+        public static void UpdateWebApiCsProjSwaggerSettings(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
 
@@ -316,7 +230,7 @@
                         var newText = $"{line}";
                         if (line.Contains($"DocumentationFile"))
                         {
-                            newText = @$"    <DocumentationFile>{solutionName}.WebApi.xml</DocumentationFile>";
+                            newText = @$"    <DocumentationFile>{projectBaseName}.WebApi.xml</DocumentationFile>";
                         }
                         else if (line.Contains($"NoWarn"))
                         {

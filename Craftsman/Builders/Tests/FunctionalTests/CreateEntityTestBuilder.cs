@@ -4,41 +4,26 @@
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public class CreateEntityTestBuilder
     {
         public static void CreateTests(string solutionDirectory, Entity entity, List<Policy> policies, string projectBaseName)
         {
-            try
-            {
-                var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"Create{entity.Name}Tests.cs", entity.Name, projectBaseName);
+            var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"Create{entity.Name}Tests.cs", entity.Name, projectBaseName);
 
-                if (!Directory.Exists(classPath.ClassDirectory))
-                    Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (FileStream fs = File.Create(classPath.FullClassPath))
-                {
-                    var data = WriteTestFileText(solutionDirectory, classPath, entity, policies, projectBaseName);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = WriteTestFileText(solutionDirectory, classPath, entity, policies, projectBaseName);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -71,7 +56,7 @@
 
         private static string CreateEntityTest(Entity entity, bool hasRestrictedEndpoints, List<Policy> policies)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntityForCreation = $"Fake{Utilities.GetDtoName(entity.Name, Dto.Creation)}";
             var fakeEntityVariableName = $"fake{entity.Name}";
             var pkName = entity.PrimaryKeyProperty.Name;
 
@@ -86,9 +71,7 @@
         public async Task {testName}()
         {{
             // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();{clientAuth}
-
-            await InsertAsync({fakeEntityVariableName});
+            var {fakeEntityVariableName} = new {fakeEntityForCreation} {{ }}.Generate();{clientAuth}
 
             // Act
             var route = ApiRoutes.{entity.Plural}.Create;

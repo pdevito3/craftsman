@@ -1,46 +1,30 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
     using System.Text;
-    using static Helpers.ConsoleWriter;
 
     public static class EntityBuilder
     {
         public static void CreateEntity(string solutionDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
         {
-            try
-            {
-                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs", projectBaseName);
+            var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs", projectBaseName);
 
-                if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                    fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-                if (fileSystem.File.Exists(classPath.FullClassPath))
-                    throw new FileAlreadyExistsException(classPath.FullClassPath);
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-                using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-                {
-                    var data = GetEntityFileText(classPath.ClassNamespace, entity);
-                    fs.Write(Encoding.UTF8.GetBytes(data));
-                }
-            }
-            catch (FileAlreadyExistsException e)
+            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
-                WriteError(e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                WriteError($"An unhandled exception occurred when running the API command.\nThe error details are: \n{e.Message}");
-                throw;
+                var data = GetEntityFileText(classPath.ClassNamespace, entity);
+                fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
@@ -83,8 +67,7 @@
             {
                 var attributes = AttributeBuilder(props[eachProp]);
                 propString += attributes;
-
-                var defaultValue = props[eachProp].DefaultValue == null ? "" : $" = {props[eachProp].DefaultValue};";
+                string defaultValue = Utilities.GetDefaultValueText(props[eachProp].DefaultValue, props[eachProp].Type);
 
                 string newLine = eachProp == props.Count - 1 ? "" : $"{Environment.NewLine}{Environment.NewLine}";
                 propString += $@"        public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{defaultValue}{newLine}";

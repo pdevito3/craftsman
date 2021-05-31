@@ -1,14 +1,8 @@
 ﻿namespace Craftsman.Tests.FileTextTests
 {
     using Craftsman.Builders;
-    using Craftsman.Models;
-    using Craftsman.Tests.Fakes;
     using FluentAssertions;
-    using System;
-    using System.Collections.Generic;
     using Xunit;
-    using System.Linq;
-    using AutoBogus;
 
     public class StartupFileTextTests
     {

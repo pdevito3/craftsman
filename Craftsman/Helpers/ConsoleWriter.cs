@@ -1,84 +1,42 @@
 ﻿namespace Craftsman.Helpers
 {
+    using Spectre.Console;
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using System.Runtime.InteropServices;
-    using System.Text;
 
     public static class ConsoleWriter
     {
         public static void WriteInfo(string message)
         {
-            var origBgColor = Console.BackgroundColor;
-            var origTextColor = Console.ForegroundColor;
-
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
-            Console.ForegroundColor = ConsoleColor.White;
-
-            Console.WriteLine(message);
-
-            Console.BackgroundColor = origBgColor;
-            Console.ForegroundColor = origTextColor;
+            AnsiConsole.MarkupLine($"[bold mediumpurple3_1]{message.EscapeMarkup()}[/]");
         }
 
         public static void WriteError(string message)
         {
-            var origBgColor = Console.BackgroundColor;
-            var origTextColor = Console.ForegroundColor;
-
-            Console.BackgroundColor = ConsoleColor.Red;
-            Console.ForegroundColor = ConsoleColor.White;
-
-            Console.WriteLine(message);
-
-            Console.BackgroundColor = origBgColor;
-            Console.ForegroundColor = origTextColor;
+            AnsiConsole.MarkupLine($"[bold indianred1]ERROR: {message.EscapeMarkup()}[/]");
         }
 
         public static void WriteWarning(string message)
         {
-            var origBgColor = Console.BackgroundColor;
-            var origTextColor = Console.ForegroundColor;
-
-            Console.BackgroundColor = ConsoleColor.Yellow;
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-
-            Console.WriteLine(message);
-
-            Console.BackgroundColor = origBgColor;
-            Console.ForegroundColor = origTextColor;
+            AnsiConsole.MarkupLine($"[bold olive]WARNING: {message.EscapeMarkup()}[/]");
         }
 
         public static void WriteHelpHeader(string message)
         {
-            var origBgColor = Console.BackgroundColor;
-            var origTextColor = Console.ForegroundColor;
-
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-
-            Console.WriteLine(message);
-
-            Console.BackgroundColor = origBgColor;
-            Console.ForegroundColor = origTextColor;
+            AnsiConsole.MarkupLine($"[bold olive]{message.EscapeMarkup()}[/]");
         }
 
         public static void WriteHelpText(string message)
         {
-            var origBgColor = Console.BackgroundColor;
-            var origTextColor = Console.ForegroundColor;
-
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Green;
-
-            Console.WriteLine(message);
-
-            Console.BackgroundColor = origBgColor;
-            Console.ForegroundColor = origTextColor;
+            AnsiConsole.MarkupLine($"[green3]{message.EscapeMarkup()}[/]");
         }
-        
+
+        public static void WriteLogMessage(string message)
+        {
+            AnsiConsole.MarkupLine($"[grey]{message}.[/]");
+        }
+
         public static void WriteGettingStarted(string solutionName)
         {
             WriteHelpText(@$"{Environment.NewLine}
@@ -90,11 +48,11 @@
 
         public static void StarGithubRequest()
         {
-            WriteHelpText(@$"{Environment.NewLine}Would you like to show some love by starring the repo? (y/n) [n]");
+            WriteHelpText(@$"{Environment.NewLine}Would you like to show some love by starring the repo? {Emoji.Known.Star} (y/n) [n]");
             var starRepo = Console.ReadKey();
             if (starRepo.Key == ConsoleKey.Y)
             {
-                WriteHelpText($"{Environment.NewLine}Thanks, it means the world to me!");
+                WriteHelpText($"{Environment.NewLine}Thanks, it means the world to me! {Emoji.Known.PartyingFace}");
                 var url = "https://github.com/pdevito3/craftsman";
                 try
                 {
@@ -122,7 +80,8 @@
                     }
                 }
             }
-            else {
+            else
+            {
                 WriteHelpText($"{Environment.NewLine}I understand, but am not going to pretend I'm not sad about it...");
             }
         }
