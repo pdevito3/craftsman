@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * None yet!
 
-## [0.10.0] - 2021-06-01
+## [0.10.0] - 2021-05-31
 
 ### Added
 
@@ -29,7 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Changed the seeder regions in `StartupDevelopment.cs` to comments
 * Changed the Logger settings in `Program.cs`
 * Updated `add:entity` and `add:prop` to now be called from the BC directory
-  - UPDATE WRAPT DOCS FOR THIS
 * Updated `ProducesResponseType` in controllers to generic `Response` type where applicable
 * Updated App Registrations to separate files
 * Updated Service Registrations to separate files
@@ -42,8 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Removed verbosity effectiveness from `new:domain`
-  - also do this in other commands?
+- Removed verbosity option from commands due to simplified spectre console
 - Removed legacy comment for include statement marker
 - Removed BC readme and updated sln readme
 
@@ -57,7 +55,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - If using a guid for a PK, it will be added to the creation dto (not manipulation or update) -- fixes #28
   - Guid PKs will have a default value of `Guid.NewGuid()` in their creation dto
 - PK already exists guard will be added for GUIDs and will be performed when adding a new entity and throw a 409 conflict via a new conflict exception if a record already exists with that guid. -- fixes #29
-  - **Add an integ test for this**
 - Fixed issue where POST would throw 500 when primary key != EntityNameId (e.g. PK of ReportId would break for an entity of ReportRequest) - fixes #30
 - Fixed default value for strings on entities to use quotes
 - Fixed missing exception handling on `add:bc` command
