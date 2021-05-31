@@ -13,19 +13,19 @@ Craftsman is the workhorse behind the [Wrapt](https://wrapt.dev) framework and p
 
 For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wrapt.dev).
 
-## Upcoming Features in v0.10.x
+## Upcoming Features in v0.11.x - SpaCurity 🔐
 
-✅ [Spectre.Console](https://spectreconsole.net/) CLI updates
+Below are some items I have on the docket for v0.11.x. I likely won't get to everything below and this could be reprioritized a bit over time, but want to make sure I let everyone know what's on the horizon! 
 
-✅ All Bounded Contexts will be in one solution
+Have a request for something you don't see below? Shoot me a message and let's talk about it!
 
-✅ Logger and appsetting registration clean up
+🚧 `add:endpoint` and `add:feature` commands
 
-✅ Better Guid primary key support
+🚧 Auth Server Scaffolding
 
-✅ Lots of cleanup 🧹 and 🐛 squashing
+🚧 BFF Scaffolding
 
-✅ Event Driven Architecture (EDA) scaffolding commands
+🚧 Nextjs Scaffolding
 
 🚧 Pipeline Decorators
 
