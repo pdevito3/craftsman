@@ -74,13 +74,13 @@
                     {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{dbContextName}>());";
             }
             return $@"
-                using (var context = app.ApplicationServices.GetService<{dbContextName}>())
-                {{
-                    context.Database.EnsureCreated();
+            using (var context = app.ApplicationServices.GetService<{dbContextName}>())
+            {{
+                context.Database.EnsureCreated();
 
-                    // {dbContextName} Seeders
+                // {dbContextName} Seeders
 {seeders.RemoveLastNewLine()}
-                }}
+            }}
 ";
         }
     }
