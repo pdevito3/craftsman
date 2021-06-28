@@ -19,7 +19,9 @@ Below are some items I have on the docket for v0.11.x. I likely won't get to eve
 
 Have a request for something you don't see below? Shoot me a message and let's talk about it!
 
-🚧 `add:endpoint` and `add:feature` commands
+✅ Added `add:feature` command
+
+🚧 Add `add:endpoint` command
 
 🚧 Auth Server Scaffolding
 
