@@ -25,6 +25,7 @@
             WriteHelpText(@$"      add:message         Add a new eventing message.");
             WriteHelpText(@$"      add:producer        Updates bus configuration to register a producer.");
             WriteHelpText(@$"      add:prop            Add a new property to an entity in a web api.");
+            WriteHelpText(@$"      add:feature         Add a skeleton feature. Has `new:feature` alias.");
 
             WriteHelpHeader(@$"{Environment.NewLine}    new");
             WriteHelpText(@$"      new:domain          Create a new DDD based project");

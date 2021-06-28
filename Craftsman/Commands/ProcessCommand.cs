@@ -9,6 +9,7 @@
     using System.IO.Abstractions;
     using System.Linq;
     using System.Reflection;
+    using System.Text;
     using static Helpers.ConsoleWriter;
 
     public class ProcessCommand
@@ -17,6 +18,7 @@
 
         public void Run(string[] args)
         {
+            Console.OutputEncoding = Encoding.Unicode;
             var myEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
             if (args.Length == 0)
@@ -216,6 +218,28 @@
 
                     AddProducerCommand.Run(filePath, rootDir, fileSystem);
                 }
+            }
+
+            if (args[0] == "add:feature" || args[0] == "new:feature")
+            {
+                if (args.Length > 1)
+                {
+                    var filePath = args[1];
+                    if (filePath == "-h" || filePath == "--help")
+                        AddFeatureCommand.Help();
+
+                    return;
+                }
+
+                CheckForLatestVersion();
+
+                var rootDir = fileSystem.Directory.GetCurrentDirectory();
+                if (myEnv == "Dev")
+                {
+                    Console.WriteLine("Enter the root directory.");
+                    rootDir = Console.ReadLine();
+                }
+                AddFeatureCommand.Run(rootDir, fileSystem);
             }
         }
 

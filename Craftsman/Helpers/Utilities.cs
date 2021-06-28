@@ -18,7 +18,7 @@
     {
         public static string PropTypeCleanup(string prop)
         {
-            var lowercaseProps = new string[] { "string", "int", "decimal", "double", "float", "object", "bool", "byte", "char", "byte", "ushort", "uint", "ulong" };
+            var lowercaseProps = new string[] { "string", "int", "decimal", "double", "float", "object", "bool", "char", "byte", "ushort", "uint", "ulong" };
             if (lowercaseProps.Contains(prop.ToLower()))
                 return prop.ToLower();
             else if (prop.ToLower() == "datetime")
