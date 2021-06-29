@@ -108,8 +108,11 @@
                 }}
 
                 _mapper.Map(request.{commandProp}, recordToUpdate);
-                var saveSuccessful = await _db.SaveChangesAsync() > 0;
 
+                if (_db.Entry(recordToUpdate).State != EntityState.Modified)
+                    return true;
+
+                var saveSuccessful = await _db.SaveChangesAsync() > 0;
                 if (!saveSuccessful)
                 {{
                     // add log
