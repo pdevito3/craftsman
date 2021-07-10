@@ -38,6 +38,7 @@
             var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
             var entityNameLowercase = entity.Name.LowercaseFirstLetter();
             var commandProp = $"{entity.Name}ToUpdate";
+            var newEntitDataProp = $"New{entity.Name}Data";
             var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
 
             var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
@@ -69,10 +70,10 @@
             public {primaryKeyPropType} {primaryKeyPropName} {{ get; set; }}
             public {updateDto} {commandProp} {{ get; set; }}
 
-            public {updateCommandName}({primaryKeyPropType} {entityNameLowercase}, {updateDto} {updatedEntityProp})
+            public {updateCommandName}({primaryKeyPropType} {entityNameLowercase}, {updateDto} {newEntitDataProp})
             {{
                 {primaryKeyPropName} = {entityNameLowercase};
-                {commandProp} = {updatedEntityProp};
+                {commandProp} = {newEntitDataProp};
             }}
         }}
 
@@ -98,16 +99,16 @@
             {{
                 // add logger or use decorator
 
-                var recordToUpdate = await _db.{entity.Plural}
+                var {updatedEntityProp} = await _db.{entity.Plural}
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
 
-                if (recordToUpdate == null)
+                if ({updatedEntityProp} == null)
                 {{
                     // log error
                     throw new KeyNotFoundException();
                 }}
 
-                _mapper.Map(request.{commandProp}, recordToUpdate);
+                _mapper.Map(request.{commandProp}, {updatedEntityProp});
 
                 await _db.SaveChangesAsync();
 

@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - Removed save successful checks on add and update commands
+- Added better naming to PUT command variables
 
 ### Fixed
 
