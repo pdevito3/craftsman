@@ -32,7 +32,7 @@
             WriteHelpText(Environment.NewLine);
         }
 
-        public static void Run(string solutionDirectory, IFileSystem fileSystem)
+        public static void Run(string solutionDirectory)
         {
             try
             {
@@ -40,19 +40,19 @@
                 var testDirectory = Path.Combine(solutionDirectory, "tests");
 
                 Utilities.IsBoundedContextDirectoryGuard(srcDirectory, testDirectory);
-                var projectBaseName = Directory.GetParent(srcDirectory).Name;
+                var projectBaseName = Directory.GetParent(srcDirectory)?.Name;
                 var contextName = Utilities.GetDbContext(srcDirectory, projectBaseName);
 
-                var featureProperties = RunPrompt();
-                EmptyFeatureBuilder.CreateCommand(srcDirectory, contextName, projectBaseName, featureProperties);
+                var feature = RunPrompt();
+                EmptyFeatureBuilder.CreateCommand(srcDirectory, contextName, projectBaseName, feature);
 
                 WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
                 AnsiConsole.WriteLine();
             }
             catch (Exception e)
             {
-                if (e is SolutionNotFoundException
-                    || e is DataValidationErrorException)
+                if (e is SolutionNotFoundException 
+                    or DataValidationErrorException)
                 {
                     WriteError($"{e.Message}");
                 }
@@ -78,7 +78,7 @@
             }
         }
 
-        private static NewFeatureProperties RunPrompt()
+        private static Feature RunPrompt()
         {
             AnsiConsole.WriteLine();
             AnsiConsole.Render(new Rule("[yellow]Add a New Feature[/]").RuleStyle("grey").Centered());
@@ -100,9 +100,9 @@
                 .AddRow("[grey]Directory[/]", directory)
             );
 
-            return new NewFeatureProperties()
+            return new Feature()
             {
-                Feature = feature,
+                Name = feature,
                 Command = command,
                 ResponseType = responseType,
                 Directory = directory,

@@ -225,7 +225,7 @@
                 if (args.Length > 1)
                 {
                     var filePath = args[1];
-                    if (filePath == "-h" || filePath == "--help")
+                    if (filePath is "-h" or "--help")
                         AddFeatureCommand.Help();
 
                     return;
@@ -239,7 +239,7 @@
                     Console.WriteLine("Enter the root directory.");
                     rootDir = Console.ReadLine();
                 }
-                AddFeatureCommand.Run(rootDir, fileSystem);
+                AddFeatureCommand.Run(rootDir);
             }
         }
 

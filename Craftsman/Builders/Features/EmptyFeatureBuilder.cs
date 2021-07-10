@@ -10,9 +10,9 @@
 
     public class EmptyFeatureBuilder
     {
-        public static void CreateCommand(string srcDirectory, string contextName, string projectBaseName, NewFeatureProperties featureProperties)
+        public static void CreateCommand(string srcDirectory, string contextName, string projectBaseName, Feature newFeature)
         {
-            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{featureProperties.Feature}.cs", featureProperties.Directory, projectBaseName);
+            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{newFeature.Name}.cs", newFeature.Directory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -22,24 +22,25 @@
 
             using FileStream fs = File.Create(classPath.FullClassPath);
             var data = "";
-            data = GetCommandFileText(classPath.ClassNamespace, contextName, srcDirectory, projectBaseName, featureProperties);
+            data = GetCommandFileText(classPath.ClassNamespace, contextName, srcDirectory, projectBaseName, newFeature);
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string GetCommandFileText(string classNamespace, string contextName, string srcDirectory, string projectBaseName, NewFeatureProperties featureProperties)
+        public static string GetCommandFileText(string classNamespace, string contextName, string srcDirectory,
+            string projectBaseName, Feature newFeature)
         {
-            var featureClassName = featureProperties.Feature;
-            var commandName = featureProperties.Command;
-            var returnPropType = featureProperties.ResponseType;
+            var featureClassName = newFeature.Name;
+            var commandName = newFeature.Command;
+            var returnPropType = newFeature.ResponseType;
 
             var exceptionsClassPath = ClassPathHelper.CoreExceptionClassPath(srcDirectory, "", projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
             var returnValue = GetReturnValue(returnPropType);
 
-            var mtUsing = featureProperties.IsProducer ? @"
+            var mtUsing = newFeature.IsProducer ? @"
     using MassTransit;" : "";
 
-            var handlerCtor = featureProperties.IsProducer ? $@"private readonly {contextName} _db;
+            var handlerCtor = newFeature.IsProducer ? $@"private readonly {contextName} _db;
             private readonly IMapper _mapper;
             private readonly IPublishEndpoint _publishEndpoint;
 
@@ -103,7 +104,7 @@
         }
 
         //var lowercaseProps = new string[] { "string", "int", "decimal", "double", "float", "object", "bool", "char", "byte", "ushort", "uint", "ulong" };
-        public static string GetReturnValue(string propType) => propType switch
+        private static string GetReturnValue(string propType) => propType switch
         {
             "bool" => "true",
             "string" => @$"""TBD Return Value""",
