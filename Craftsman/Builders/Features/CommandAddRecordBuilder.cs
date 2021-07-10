@@ -104,19 +104,12 @@
             {{{conflictConditional}
                 var {entityNameLowercase} = _mapper.Map<{entityName}> (request.{commandProp});
                 _db.{entity.Plural}.Add({entityNameLowercase});
-                var saveSuccessful = await _db.SaveChangesAsync() > 0;
 
-                if (saveSuccessful)
-                {{
-                    return await _db.{entity.Plural}
-                        .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
-                        .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName});
-                }}
-                else
-                {{
-                    // add log
-                    throw new Exception(""Unable to save the new record. Please check the logs for more information."");
-                }}
+                await _db.SaveChangesAsync();
+
+                return await _db.{entity.Plural}
+                    .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName});
             }}
         }}
     }}

@@ -109,15 +109,7 @@
 
                 _mapper.Map(request.{commandProp}, recordToUpdate);
 
-                if (_db.Entry(recordToUpdate).State != EntityState.Modified)
-                    return true;
-
-                var saveSuccessful = await _db.SaveChangesAsync() > 0;
-                if (!saveSuccessful)
-                {{
-                    // add log
-                    throw new Exception(""Unable to save the requested changes. Please check the logs for more information."");
-                }}
+                await _db.SaveChangesAsync();
 
                 return true;
             }}

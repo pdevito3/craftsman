@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added an `add:feature` command (also works with `new:feature`)
 
+### Changed
+
+- Removed save successful checks on add and update commands
+
 ### Fixed
 
 - Seeder indentation in startup fixed
