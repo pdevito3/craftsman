@@ -105,8 +105,7 @@
                 Name = feature,
                 Command = command,
                 ResponseType = responseType,
-                Directory = directory,
-                IsProducer = producer
+                Directory = directory
             };
         }
 

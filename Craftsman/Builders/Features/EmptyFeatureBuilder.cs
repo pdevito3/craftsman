@@ -37,20 +37,7 @@
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
             var returnValue = GetReturnValue(returnPropType);
 
-            var mtUsing = newFeature.IsProducer ? @"
-    using MassTransit;" : "";
-
-            var handlerCtor = newFeature.IsProducer ? $@"private readonly {contextName} _db;
-            private readonly IMapper _mapper;
-            private readonly IPublishEndpoint _publishEndpoint;
-
-            public Handler({contextName} db, IMapper mapper, IPublishEndpoint publishEndpoint)
-            {{
-                _mapper = mapper;
-                _db = db;
-                _publishEndpoint = publishEndpoint;
-            }}" :
-            $@"private readonly {contextName} _db;
+            var handlerCtor = $@"private readonly {contextName} _db;
             private readonly IMapper _mapper;
 
             public Handler({contextName} db, IMapper mapper)
@@ -64,7 +51,7 @@
     using {exceptionsClassPath.ClassNamespace};
     using {contextClassPath.ClassNamespace};
     using AutoMapper;
-    using AutoMapper.QueryableExtensions;{mtUsing}
+    using AutoMapper.QueryableExtensions;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using System;
