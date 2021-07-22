@@ -5,6 +5,7 @@
     using Craftsman.Tests.Fakes;
     using FluentAssertions;
     using System.Collections.Generic;
+    using Builders.Endpoints;
     using Xunit;
 
     public class ControllerFileTextTests
