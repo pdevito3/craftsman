@@ -11,7 +11,7 @@
 
     public static class ControllerBuilder
     {
-        public static void CreateController(string solutionDirectory, Entity entity, bool addSwaggerComments, List<Policy> policies, string projectBaseName = "")
+        public static void CreateController(string solutionDirectory, Entity entity, bool addSwaggerComments, List<Policy> policies, string projectBaseName)
         {
             var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName, "v1");
 
