@@ -138,6 +138,7 @@
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {{
+            // TODO update CORS for your env
             services.AddCorsService(""{corsName}"");
             services.AddInfrastructure(_config, _env);
             services.AddControllers()
