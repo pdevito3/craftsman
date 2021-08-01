@@ -10,6 +10,7 @@
     using Craftsman.Models;
     using System.Collections.Generic;
     using System.IO.Abstractions;
+    using Builders.Endpoints;
     using static Helpers.ConsoleWriter;
 
     public class EntityScaffolding

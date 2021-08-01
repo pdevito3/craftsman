@@ -18,7 +18,7 @@
             var entity = new Entity();
             entity.Name = "Patient";
             entity.Properties.Add(new EntityProperty { Type = "guid", IsPrimaryKey = true, Name = "MyPrimaryKey" });
-            var fileText = DtoFileTextGenerator.GetDtoText(classPath, entity, Enums.Dto.Creation, "");
+            var fileText = DtoFileTextGenerator.GetDtoText(classPath, entity, Enums.Dto.Creation);
 
             var expectedText = @$"namespace {classPath.ClassNamespace}
 {{
@@ -46,7 +46,7 @@
             var entity = new Entity();
             entity.Name = "Patient";
             entity.Properties.Add(new EntityProperty { Type = "int", IsPrimaryKey = true, Name = "MyPrimaryKey" });
-            var fileText = DtoFileTextGenerator.GetDtoText(classPath, entity, Enums.Dto.Creation, "");
+            var fileText = DtoFileTextGenerator.GetDtoText(classPath, entity, Enums.Dto.Creation);
 
             var expectedText = @$"namespace {classPath.ClassNamespace}
 {{

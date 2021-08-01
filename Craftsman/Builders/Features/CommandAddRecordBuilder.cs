@@ -47,13 +47,6 @@
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var validatorsClassPath = ClassPathHelper.ValidationClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
 
-            var conflictConditional = entity.PrimaryKeyProperty.Type.IsGuidPropertyType() ? @$"
-                if (await _db.{entity.Plural}.AnyAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{commandProp}.{primaryKeyPropName}))
-                {{
-                    throw new ConflictException(""{entity.Name} already exists with this primary key."");
-                }}
-" : "";
-
             return @$"namespace {classNamespace}
 {{
     using {entityClassPath.ClassNamespace};
@@ -101,7 +94,7 @@
             }}
 
             public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
-            {{{conflictConditional}
+            {{
                 var {entityNameLowercase} = _mapper.Map<{entityName}> (request.{commandProp});
                 _db.{entity.Plural}.Add({entityNameLowercase});
 

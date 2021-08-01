@@ -29,7 +29,7 @@
             if (dto == Dto.ReadParamaters)
                 return DtoFileTextGenerator.GetReadParameterDtoText(solutionDirectory, classPath.ClassNamespace, entity, dto, projectBaseName);
             else
-                return DtoFileTextGenerator.GetDtoText(classPath, entity, dto, projectBaseName);
+                return DtoFileTextGenerator.GetDtoText(classPath, entity, dto);
         }
 
         public static void CreateDtoFile(string solutionDirectory, Entity entity, Dto dto, string projectBaseName)

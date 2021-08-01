@@ -12,11 +12,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added an `add:feature` command (also works with `new:feature`)
+- Guid PKs will now have a default of `Guid.NewGuid()`
 
 ### Changed
 
 - Removed save successful checks on add and update commands
 - Added better naming to PUT command variables
+- Guid PKs will no longer be added to the creation DTO
+- POST commands will no longer have a conflict check since you can't add a PK anymore
+- A conflict integration test will not be added anymore
+- `NoKeyGenerated` commands are no longer in dbcontext
 
 ### Fixed
 

@@ -21,11 +21,9 @@
             if (fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = GetEntityFileText(classPath.ClassNamespace, entity);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            using var fs = fileSystem.File.Create(classPath.FullClassPath);
+            var data = GetEntityFileText(classPath.ClassNamespace, entity);
+            fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
         public static string GetEntityFileText(string classNamespace, Entity entity)
@@ -54,10 +52,7 @@
         {
             var tableName = entity.TableName ?? entity.Name;
 
-            if (entity.Schema != null)
-                return @$"[Table(""{tableName}"", Schema=""{entity.Schema}"")]";
-
-            return @$"[Table(""{tableName}"")]";
+            return entity.Schema != null ? @$"[Table(""{tableName}"", Schema=""{entity.Schema}"")]" : @$"[Table(""{tableName}"")]";
         }
 
         public static string EntityPropBuilder(List<EntityProperty> props)

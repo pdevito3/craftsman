@@ -482,7 +482,10 @@
         {
             if (propType == "string")
                 return defaultValue == null ? "" : @$" = ""{defaultValue}"";";
-
+            
+            if (propType.IsGuidPropertyType())
+                return @" = Guid.NewGuid();";
+            
             return defaultValue == null ? "" : $" = {defaultValue};";
         }
 

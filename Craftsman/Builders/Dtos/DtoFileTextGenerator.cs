@@ -25,22 +25,16 @@
 }}";
         }
 
-        public static string GetDtoText(IClassPath dtoClassPath, Entity entity, Dto dto, string projectBaseName)
+        public static string GetDtoText(IClassPath dtoClassPath, Entity entity, Dto dto)
         {
             var propString = DtoPropBuilder(entity.Properties, dto);
-            if (dto == Dto.Creation)
-            {
-                propString = "";
-                if (entity.PrimaryKeyProperty.Type.IsGuidPropertyType())
-                    propString = DtoPropBuilder(new List<EntityProperty>() { entity.PrimaryKeyProperty }, dto);
-            }
-            else if (dto == Dto.Update)
+            if (dto is Dto.Update or Dto.Creation)
                 propString = "";
 
             var abstractString = dto == Dto.Manipulation ? $"abstract " : "";
 
             var inheritanceString = "";
-            if (dto == Dto.Creation || dto == Dto.Update)
+            if (dto is Dto.Creation or Dto.Update)
                 inheritanceString = $": {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}";
 
             return @$"namespace {dtoClassPath.ClassNamespace}
