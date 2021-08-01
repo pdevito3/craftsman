@@ -69,7 +69,7 @@
                 var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
                 var pkName = entity.PrimaryKeyProperty.Name;
 
-                entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}public static class {entity.Plural}
+                entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}        public static class {entity.Plural}
         {{
             public const string {pkName} = ""{{{pkName.LowercaseFirstLetter()}}}"";
             public const string GetList = Base + ""/{lowercaseEntityPluralName}"";
