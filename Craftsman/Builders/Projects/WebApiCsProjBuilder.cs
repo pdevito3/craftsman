@@ -40,6 +40,10 @@
     <DocumentationFile></DocumentationFile>
     <NoWarn>1701;1702;</NoWarn>
   </PropertyGroup>
+  <PropertyGroup Condition=""'$(Configuration)|$(Platform)'=='Release|AnyCPU'"">
+    <DocumentationFile></DocumentationFile>
+    <NoWarn>1701;1702;</NoWarn>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include=""Autofac.Extensions.DependencyInjection"" Version=""7.1.0"" />

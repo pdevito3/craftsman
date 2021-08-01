@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added an `add:feature` command (also works with `new:feature`)
 - Guid PKs will now have a default of `Guid.NewGuid()`
+- Added XML docs to release in webapi csproj
 
 ### Changed
 
