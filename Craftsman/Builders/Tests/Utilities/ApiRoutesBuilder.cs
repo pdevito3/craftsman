@@ -9,7 +9,7 @@
 
     public class ApiRoutesBuilder
     {
-        public static void CreateClass(string solutionDirectory, string projectBaseName, List<Entity> entities, IFileSystem fileSystem)
+        public static void BaseRoutesClass(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "ApiRoutes.cs");
 
@@ -19,24 +19,20 @@
             if (fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetBaseText(classPath.ClassNamespace, entities);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            using var fs = fileSystem.File.Create(classPath.FullClassPath);
+            var data = "";
+            data = GetBaseText(classPath.ClassNamespace);
+            fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string GetBaseText(string classNamespace, List<Entity> entities)
+        public static string GetBaseText(string classNamespace)
         {
-            var entityRouteClasses = Utilities.CreateApiRouteClasses(entities);
-
             return @$"namespace {classNamespace}
 {{
     public class ApiRoutes
     {{
         public const string Base = ""api"";
-        public const string Health = Base + ""/health"";        {entityRouteClasses}
+        public const string Health = Base + ""/health"";
 
         // new api route marker - do not delete
     }}

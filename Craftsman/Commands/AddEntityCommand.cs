@@ -110,7 +110,6 @@
             InfrastructureServiceRegistrationModifier.AddPolicies(srcDirectory, template.AuthorizationSettings.Policies, template.SolutionName);
             SeederModifier.AddSeeders(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
             DbContextModifier.AddDbSet(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
-            ApiRouteModifier.AddRoutes(testDirectory, template.Entities, template.SolutionName);
         }
 
         private static AddEntityTemplate GetDbContext(string srcDirectory, AddEntityTemplate template, string projectBaseName)

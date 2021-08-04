@@ -1,5 +1,6 @@
 ﻿namespace Craftsman.Helpers
 {
+    using System;
     using Craftsman.Builders;
     using Craftsman.Builders.Dtos;
     using Craftsman.Builders.Features;
@@ -10,7 +11,9 @@
     using Craftsman.Models;
     using System.Collections.Generic;
     using System.IO.Abstractions;
+    using System.Linq;
     using Builders.Endpoints;
+    using Builders.Tests.Utilities;
     using static Helpers.ConsoleWriter;
 
     public class EntityScaffolding
@@ -27,39 +30,64 @@
         {
             foreach (var entity in entities)
             {
+                // not worrying about DTOs, profiles, validators, fakers - they are all added by default
                 EntityBuilder.CreateEntity(srcDirectory, entity, projectBaseName, fileSystem);
                 DtoBuilder.CreateDtos(srcDirectory, entity, projectBaseName);
-
                 ValidatorBuilder.CreateValidators(srcDirectory, projectBaseName, entity);
                 ProfileBuilder.CreateProfile(srcDirectory, entity, projectBaseName);
-
-                QueryGetRecordBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
-                QueryGetListBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
-                CommandAddRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                CommandDeleteRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                CommandUpdateRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                CommandPatchRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
+                
+                // TODO refactor to factory?
+                foreach (var feature in entity.Features)
+                {
+                    if (feature.Type == FeatureType.AddRecord.Name)
+                    {
+                        CommandAddRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
+                        AddCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                        CreateEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                    }
+                    if (feature.Type == FeatureType.GetRecord.Name)
+                    {
+                        QueryGetRecordBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
+                        GetRecordQueryTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                        GetEntityRecordTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                    }
+                    if (feature.Type == FeatureType.GetList.Name)
+                    {
+                        QueryGetListBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
+                        GetListQueryTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                        GetEntityListTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                    }
+                    if (feature.Type == FeatureType.DeleteRecord.Name)
+                    {
+                        CommandDeleteRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
+                        DeleteCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                        DeleteEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                    }
+                    if (feature.Type == FeatureType.UpdateRecord.Name)
+                    {
+                        CommandUpdateRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
+                        PutCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                        PutEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                    }
+                    if (feature.Type == FeatureType.PatchRecord.Name)
+                    {
+                        CommandPatchRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
+                        PatchCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                        PatchEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                    }
+                    if (feature.Type == FeatureType.AdHocRecord.Name)
+                    {
+                        EmptyFeatureBuilder.CreateCommand(srcDirectory, dbContextName, projectBaseName, feature);
+                        // TODO empty failing test to promote test writing?
+                    }
+                    
+                    ApiRouteModifier.AddRoute(testDirectory, entity, feature, projectBaseName);
+                }
 
                 ControllerBuilder.CreateController(srcDirectory, entity, addSwaggerComments, policies, projectBaseName);
 
                 // Shared Tests
                 FakesBuilder.CreateFakes(testDirectory, projectBaseName, entity);
-
-                // Integration Tests
-                AddCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                DeleteCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                PatchCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                GetRecordQueryTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                GetListQueryTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                PutCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-
-                // Functional Tests
-                CreateEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
-                DeleteEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
-                GetEntityRecordTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
-                GetEntityListTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
-                PatchEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
-                PutEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
 
                 if (verbosity == Verbosity.More)
                     WriteHelpText($"{projectBaseName} '{entity.Name}' entity was scaffolded successfully.");

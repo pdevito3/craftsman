@@ -7,26 +7,32 @@
 
     public class Feature
     {
-        private string _responseType = "bool";
         private FeatureType _featureType;
-
         public string Type
         {
-            get => Enum.GetName(typeof(FeatureType), _featureType);
+            get => _featureType.Name;
             set
             {
-                if (!Enum.TryParse<FeatureType>(value, true, out var parsed))
+                if (!FeatureType.TryFromName(value, true, out var parsed))
                 {
                     throw new InvalidFeatureTypeException(value);
                 }
                 _featureType = parsed;
             }
         }
+
+        private readonly string _url = null;
+        public string Url 
+        {
+            get => _url;
+            set => _featureType.Url(value);
+        }
         
         public string Name { get; set; }
         
         public string Command { get; set; }
 
+        private string _responseType = "bool";
         public string ResponseType
         {
             get => _responseType;

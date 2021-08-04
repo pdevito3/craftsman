@@ -61,5 +61,7 @@ namespace Craftsman.Models
         /// The database schema that will be used. Optional and null if they want to use default value
         /// </summary>
         public string Schema { get; set; }
+
+        public List<Feature> Features { get; set; }
     }
 }
