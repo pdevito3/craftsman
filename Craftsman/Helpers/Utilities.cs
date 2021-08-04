@@ -294,7 +294,7 @@
 
         public static string EndpointBaseGenerator(string entityNamePlural)
         {
-            return $@"api/{entityNamePlural}";
+            return $@"api/{entityNamePlural.ToLower()}";
         }
 
         public static string PolicyStringBuilder(Policy policy)

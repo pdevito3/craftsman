@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - POST commands will no longer have a conflict check since you can't add a PK anymore
 - A conflict integration test will not be added anymore
 - `NoKeyGenerated` commands are no longer in dbcontext
+- Controller url all lowercase
 
 ### Fixed
 
