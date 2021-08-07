@@ -17,14 +17,17 @@
         {
         }
         public abstract string Url(string url = null);
-        public abstract string RouteTestingName(string url = null);
-
+        public abstract string FeatureName(string name = null);
+        public abstract string CommandName(string command, string entityName);
+        
         private class GetRecordType : FeatureType
         {
             public GetRecordType() : base(nameof(GetRecord), 1) {}
 
-            public override string RouteTestingName(string name = null)
-                => name ?? "GetRecord";
+            public override string FeatureName(string name = null)
+                => name.EscapeSpaces() ?? "GetRecord";
+            public override string CommandName(string command, string entityName)
+                => command.EscapeSpaces() ?? $"Get{entityName}";
             public override string Url(string url = null)
                 => url.EscapeCurlyBraces() ?? $@"Base + ""/{{lowercaseEntityPluralName}}/"" + {{pkName}}";
         }
@@ -33,8 +36,10 @@
         {
             public GetListType() : base(nameof(GetList), 2) {}
 
-            public override string RouteTestingName(string name = null) =>
+            public override string FeatureName(string name = null) =>
                 name.EscapeSpaces() ?? "GetList";
+            public override string CommandName(string command, string entityName) =>
+                command.EscapeSpaces() ?? $"Get{entityName}List";
             public override string Url(string url = null) =>
                 url.EscapeCurlyBraces() ?? $@"Base + ""/{{lowercaseEntityPluralName}}/""";
         }
@@ -43,8 +48,10 @@
         {
             public AddRecordType() : base(nameof(AddRecord), 3) {}
 
-            public override string RouteTestingName(string name = null)
-                => name ?? "Create";
+            public override string FeatureName(string name = null)
+                => name.EscapeSpaces() ?? "Create";
+            public override string CommandName(string command, string entityName)
+                => command.EscapeSpaces() ?? $"Add{entityName}";
             public override string Url(string url = null)
                 => url.EscapeCurlyBraces() ?? $@"Base + ""/{{lowercaseEntityPluralName}}/""";
         }
@@ -53,8 +60,10 @@
         {
             public DeleteRecordType() : base(nameof(DeleteRecord), 4) {}
 
-            public override string RouteTestingName(string name = null)
-                => name ?? "Delete";
+            public override string FeatureName(string name = null)
+                => name.EscapeSpaces() ?? "Delete";
+            public override string CommandName(string command, string entityName)
+                => command.EscapeSpaces() ?? $"Delete{entityName}";
             public override string Url(string url = null)
                 => url.EscapeCurlyBraces() ?? $@"Base + ""/{{lowercaseEntityPluralName}}/"" + {{pkName}}";
         }
@@ -64,8 +73,10 @@
         {
             public UpdateRecordType() : base(nameof(UpdateRecord), 5) {}
 
-            public override string RouteTestingName(string name = null)
-                => name ?? "UpdateRecord";
+            public override string FeatureName(string name = null)
+                => name.EscapeSpaces() ?? "UpdateRecord";
+            public override string CommandName(string command, string entityName)
+                => command.EscapeSpaces() ?? $"Update{entityName}";
             public override string Url(string url = null)
                 => url.EscapeCurlyBraces() ?? $@"Base + ""/{{lowercaseEntityPluralName}}/"" + {{pkName}}";
         }
@@ -75,8 +86,10 @@
         {
             public PatchRecordType() : base(nameof(PatchRecord), 6) {}
 
-            public override string RouteTestingName(string name = null)
-                => name ?? "PatchRecord";
+            public override string FeatureName(string name = null)
+                => name.EscapeSpaces() ?? "PatchRecord";
+            public override string CommandName(string command, string entityName)
+                => command.EscapeSpaces() ?? $"Patch{entityName}";
             public override string Url(string url = null)
                 => url.EscapeCurlyBraces() ?? $@"Base + ""/{{lowercaseEntityPluralName}}/"" + {{pkName}}";
         }
@@ -86,8 +99,10 @@
         {
             public AdHocRecordType() : base(nameof(AdHocRecord), 7) {}
 
-            public override string RouteTestingName(string name = null)
+            public override string FeatureName(string name = null)
                 => name.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");
+            public override string CommandName(string command, string entityName)
+                => command.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");
             public override string Url(string url = null)
                 => url.EscapeCurlyBraces() ?? throw new Exception("Ad Hoc Features require a url path.");
         }

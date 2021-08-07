@@ -8,9 +8,7 @@
         {
             // Check for empty string.
             if (string.IsNullOrEmpty(value))
-            {
-                return string.Empty;
-            }
+                return value;
             // Return char and concat substring.
             return char.ToUpper(value[0]) + value.Substring(1);
         }
@@ -19,7 +17,7 @@
         {
             // Check for empty string.
             if (string.IsNullOrEmpty(value))
-                return string.Empty;
+                return value;
             
             // Return char and concat substring.
             return char.ToLower(value[0]) + value.Substring(1);
@@ -29,7 +27,7 @@
         {
             // Check for empty string.
             if (string.IsNullOrEmpty(value))
-                return string.Empty;
+                return value;
 
             return value
                 .Replace("{", "{{")
@@ -40,7 +38,7 @@
         {
             // Check for empty string.
             if (string.IsNullOrEmpty(value))
-                return string.Empty;
+                return value;
 
             return value
                 .Replace(" ", escapeWith);

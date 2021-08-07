@@ -7,30 +7,42 @@
 
     public class Feature
     {
-        private FeatureType _featureType;
+        public string EntityName { get; set; }
+        
+        private FeatureType FeatureType { get; set; }
         public string Type
         {
-            get => _featureType.Name;
+            get => FeatureType.Name;
             set
             {
                 if (!FeatureType.TryFromName(value, true, out var parsed))
                 {
                     throw new InvalidFeatureTypeException(value);
                 }
-                _featureType = parsed;
+                FeatureType = parsed;
             }
         }
 
-        private readonly string _url = null;
-        public string Url 
+        private string _url = null;
+        public string Url
         {
-            get => _url;
-            set => _featureType.Url(value);
+            get => FeatureType.Url(_url);
+            set => _url = value;
         }
-        
-        public string Name { get; set; }
-        
-        public string Command { get; set; }
+
+        private string _name = null;
+        public string Name
+        {
+            get => FeatureType.FeatureName(_name);
+            set => _name = value;
+        }
+
+        private string _command = null;
+        public string Command
+        {
+            get => FeatureType.CommandName(_command, EntityName);
+            set => _command = value;
+        }
 
         private string _responseType = "bool";
         public string ResponseType
@@ -40,7 +52,7 @@
         }
 
         public string Directory { get; set; }
-        
+
         // feature role as command, producer, consumer in the future... dropped the ball on the OG implementation
     }
 }

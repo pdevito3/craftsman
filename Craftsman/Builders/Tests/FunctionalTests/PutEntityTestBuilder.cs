@@ -79,7 +79,7 @@
             await InsertAsync({fakeEntityVariableName});
 
             // Act
-            var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{FeatureType.UpdateRecord.RouteTestingName()}.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+            var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{FeatureType.UpdateRecord.FeatureName()}.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
             var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
             // Assert
@@ -106,7 +106,7 @@
             await InsertAsync({fakeEntityVariableName});
 
             // Act
-            var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{FeatureType.UpdateRecord.RouteTestingName()}.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+            var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{FeatureType.UpdateRecord.FeatureName()}.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
             var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
             // Assert
@@ -134,7 +134,7 @@
             await InsertAsync({fakeEntityVariableName});
 
             // Act
-            var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{FeatureType.UpdateRecord.RouteTestingName()}.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+            var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{FeatureType.UpdateRecord.FeatureName()}.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
             var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
             // Assert
