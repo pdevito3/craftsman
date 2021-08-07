@@ -29,7 +29,7 @@
                         var newText = $"{line}";
                         if (line.Contains($"new api route marker"))
                         {
-                            newText += $"            public const string {feature.Name} = {feature.Url};";
+                            newText += $"{Environment.NewLine}            public const string {feature.Name} = {feature.Url};";
                         }
 
                         output.WriteLine(newText);
