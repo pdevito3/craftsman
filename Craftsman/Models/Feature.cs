@@ -17,7 +17,10 @@
             {
                 if (!FeatureType.TryFromName(value, true, out var parsed))
                 {
-                    throw new InvalidFeatureTypeException(value);
+                    if(value.Equals("CreateRecord", StringComparison.InvariantCultureIgnoreCase))
+                        FeatureType = FeatureType.AddRecord;
+                    else
+                        throw new InvalidFeatureTypeException(value);
                 }
                 FeatureType = parsed;
             }
