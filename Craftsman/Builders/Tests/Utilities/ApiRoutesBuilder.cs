@@ -9,9 +9,9 @@
 
     public class ApiRoutesBuilder
     {
-        public static void BaseRoutesClass(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateClass(string testDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "ApiRoutes.cs");
+            var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "ApiRoutes.cs");
 
             if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                 fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
@@ -25,7 +25,7 @@
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string GetBaseText(string classNamespace)
+        private static string GetBaseText(string classNamespace)
         {
             return @$"namespace {classNamespace}
 {{

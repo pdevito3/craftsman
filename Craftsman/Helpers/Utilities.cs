@@ -528,5 +528,26 @@
                     }
                 });
         }
+        
+        public static string CreateApiRouteClasses(Entity entity)
+        {
+            var entityRouteClasses = "";
+
+            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+            var pkName = entity.PrimaryKeyProperty.Name;
+
+            entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}        public static class {entity.Plural}
+        {{
+            public const string {pkName} = ""{{{pkName.LowercaseFirstLetter()}}}"";
+            public const string GetList = Base + ""/{lowercaseEntityPluralName}"";
+            public const string GetRecord = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
+            public const string Create = Base + ""/{lowercaseEntityPluralName}"";
+            public const string Delete = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
+            public const string Put = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
+            public const string Patch = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
+        }}";
+
+            return entityRouteClasses;
+        }
     }
 }

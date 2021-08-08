@@ -36,6 +36,7 @@
                 ValidatorBuilder.CreateValidators(srcDirectory, projectBaseName, entity);
                 ProfileBuilder.CreateProfile(srcDirectory, entity, projectBaseName);
                 ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName);
+                ApiRouteModifier.AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold
                 
                 // TODO refactor to factory?
                 foreach (var feature in entity.Features)
@@ -88,8 +89,6 @@
                         // TODO ad hoc feature endpoint
                         // TODO empty failing test to promote test writing?
                     }
-                    
-                    ApiRouteModifier.AddRoute(testDirectory, entity, feature, projectBaseName);
                 }
 
                 // Shared Tests

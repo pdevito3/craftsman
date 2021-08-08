@@ -57,7 +57,7 @@
 
             // base files needed before below is ran
             DbContextBuilder.CreateDbContext(srcDirectory, template.Entities, template.DbContext.ContextName, template.DbContext.Provider, template.DbContext.DatabaseName, projectBaseName);
-            ApiRoutesBuilder.BaseRoutesClass(testDirectory, projectBaseName, fileSystem);
+            ApiRoutesBuilder.CreateClass(testDirectory, projectBaseName, fileSystem);
 
             //entities
             EntityScaffolding.ScaffoldEntities(srcDirectory,

@@ -26,13 +26,6 @@
             }
         }
 
-        private string _url = null;
-        public string Url
-        {
-            get => FeatureType.Url(_url);
-            set => _url = value;
-        }
-
         private string _name = null;
         public string Name
         {
