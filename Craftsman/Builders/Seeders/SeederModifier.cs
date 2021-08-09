@@ -71,7 +71,7 @@
             var seeders = "";
             foreach (var entity in entities)
             {
-                seeders += @$"                    {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{dbContextName}>());";
+                seeders += @$"                    {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{dbContextName}>());{Environment.NewLine}";
             }
 
             return seeders;
