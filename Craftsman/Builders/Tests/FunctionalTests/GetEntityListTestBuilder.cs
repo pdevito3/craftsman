@@ -55,7 +55,7 @@
 
         private static string GetEntityTest(Entity entity, bool hasRestrictedEndpoints, List<Policy> policies)
         {
-            var testName = $"Get_{entity.Name}_List_Returns_NoContent";
+            var testName = $"Get_{entity.Name}_List_Returns_200";
             testName += hasRestrictedEndpoints ? "_WithAuth" : "";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.GetList }, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"_client.AddAuth(new[] {scopes});" : null;

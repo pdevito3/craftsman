@@ -59,7 +59,7 @@
             var fakeEntityVariableName = $"fake{entity.Name}";
             var pkName = entity.PrimaryKeyProperty.Name;
 
-            var testName = $"Get_{entity.Name}_Record_Returns_NoContent";
+            var testName = $"Get_{entity.Name}_Record_Returns_200";
             testName += hasRestrictedEndpoints ? "_WithAuth" : "";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.GetRecord }, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"

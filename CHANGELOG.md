@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - PUT commands will no longer throw 500 when entity is not modified (#31)
 - Route indentation fixed
 - Removed annoying comments from features
+- Fixed test name for basic gets in functional tests
 
 ## [0.10.0] - 2021-05-31
 
