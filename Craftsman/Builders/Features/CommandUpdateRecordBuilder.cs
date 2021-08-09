@@ -97,14 +97,12 @@
 
             public async Task<bool> Handle({updateCommandName} request, CancellationToken cancellationToken)
             {{
-                // add logger or use decorator
-
                 var {updatedEntityProp} = await _db.{entity.Plural}
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
 
                 if ({updatedEntityProp} == null)
                 {{
-                    // log error
+                    // TODO log error
                     throw new KeyNotFoundException();
                 }}
 

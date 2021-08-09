@@ -88,7 +88,7 @@
             {{
                 if (request.QueryParameters == null)
                 {{
-                    // log error
+                    // TODO log error
                     throw new ApiException(""Invalid query parameters."");
                 }}
 

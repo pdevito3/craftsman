@@ -80,14 +80,12 @@
 
             public async Task<bool> Handle({deleteCommandName} request, CancellationToken cancellationToken)
             {{
-                // add logger (and a try catch with logger so i can cap the unexpected info)........ unless this happens in my logger decorator that i am going to add?
-
                 var recordToDelete = await _db.{entity.Plural}
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
 
                 if (recordToDelete == null)
                 {{
-                    // log error
+                    // TODO log error
                     throw new KeyNotFoundException();
                 }}
 

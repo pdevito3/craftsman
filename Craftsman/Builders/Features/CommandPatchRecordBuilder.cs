@@ -100,7 +100,7 @@
                 // add logger or use decorator
                 if (request.PatchDoc == null)
                 {{
-                    // log error
+                    // TODO log error
                     throw new ApiException(""Invalid patch document."");
                 }}
 
