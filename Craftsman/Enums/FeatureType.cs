@@ -11,7 +11,7 @@
         public static readonly FeatureType DeleteRecord = new DeleteRecordType();
         public static readonly FeatureType UpdateRecord = new UpdateRecordType();
         public static readonly FeatureType PatchRecord = new PatchRecordType();
-        public static readonly FeatureType AdHocRecord = new AdHocRecordType();
+        public static readonly FeatureType AdHoc = new AdHocType();
 
         protected FeatureType(string name, int value) : base(name, value)
         {
@@ -82,9 +82,9 @@
         }
         
         
-        private class AdHocRecordType : FeatureType
+        private class AdHocType : FeatureType
         {
-            public AdHocRecordType() : base(nameof(AdHocRecord), 7) {}
+            public AdHocType() : base(nameof(AdHoc), 7) {}
 
             public override string FeatureName(string name = null)
                 => name.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");

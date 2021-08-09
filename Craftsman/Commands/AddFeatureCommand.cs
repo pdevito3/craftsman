@@ -102,6 +102,7 @@
 
             return new Feature()
             {
+                Type = "AdHoc",
                 Name = feature,
                 Command = command,
                 ResponseType = responseType,

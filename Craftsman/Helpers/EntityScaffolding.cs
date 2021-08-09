@@ -83,7 +83,7 @@
                         PatchEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
                         ControllerModifier.AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments, policies, projectBaseName);
                     }
-                    if (feature.Type == FeatureType.AdHocRecord.Name)
+                    if (feature.Type == FeatureType.AdHoc.Name)
                     {
                         EmptyFeatureBuilder.CreateCommand(srcDirectory, dbContextName, projectBaseName, feature);
                         // TODO ad hoc feature endpoint
