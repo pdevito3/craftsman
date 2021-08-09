@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - A conflict integration test will not be added anymore
 - `NoKeyGenerated` commands are no longer in dbcontext
 - Controller url all lowercase
+- Swagger comments on by default
 
 ### Fixed
 

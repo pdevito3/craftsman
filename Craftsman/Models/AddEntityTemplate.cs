@@ -25,7 +25,7 @@ namespace Craftsman.Models
         /// <summary>
         /// Add swagger comments to the controller Optional
         /// </summary>
-        public bool AddSwaggerComments { get; set; } = false;
+        public bool AddSwaggerComments { get; set; } = true;
 
         public AuthorizationSettings AuthorizationSettings { get; set; } = new AuthorizationSettings();
 
