@@ -74,20 +74,16 @@
             var authResponses = GetAuthResponses(hasAuthentications);
             var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
             var conflictResponses = GetConflictResponses(hasGuidPk);
-            var conflictCommentResponses = GetConflictCommentResponses(hasGuidPk);
-            if (buildComments)
-                return $@"
+            return buildComments ? $@"
         /// <summary>
         /// Creates a new {entity.Name} record.
         /// </summary>
         /// <response code=""201"">{entity.Name} created.</response>
-        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}{conflictCommentResponses}
+        /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(typeof({singleResponse}), 201)]
         [ProducesResponseType(typeof(Response<>), 400)]{authResponses}{conflictResponses}
-        [ProducesResponseType(500)]";
-
-            return "";
+        [ProducesResponseType(500)]" : "";
         }
 
         public static string GetSwaggerComments_DeleteRecord(Entity entity, bool buildComments, bool hasAuthentications)
