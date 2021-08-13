@@ -72,6 +72,7 @@
             PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, fileSystem);
             ResponseBuilder.CreateResponse(srcDirectory, projectBaseName, fileSystem);
             CoreExceptionsBuilder.CreateExceptions(srcDirectory, projectBaseName);
+            InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(srcDirectory, projectBaseName, fileSystem);
         }
 
         private static void BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)
