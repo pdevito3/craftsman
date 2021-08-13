@@ -9,6 +9,7 @@
     using System.IO.Abstractions;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
@@ -18,7 +19,13 @@
 
         public void Run(string[] args)
         {
-            Console.OutputEncoding = Encoding.Unicode;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // this makes emojis come up more reliably. might get built into spectre better in the future, so give a go deleting this at some point
+                // they seem to show up fine on osx and actually need this to be off to work there
+                Console.OutputEncoding = Encoding.Unicode;
+            }
+            
             var myEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
             if (args.Length == 0)
