@@ -23,7 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Entities live on their respective entity folder in the domain with their feature
   - TODO update consumer and producer directory
   - Removed the `webapi` suffix on the api project
-  - TODO update db modifier to add entity using
+  - Core directories moved to web api
+  - `Contexts` dir changed to `Databases`
 - Removed save successful checks on add and update commands
 - Added better naming to PUT command variables
 - Guid PKs will no longer be added to the creation DTO
