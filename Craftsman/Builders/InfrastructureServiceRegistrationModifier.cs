@@ -8,9 +8,9 @@
 
     public class InfrastructureServiceRegistrationModifier
     {
-        public static void InitializeAuthServices(string solutionDirectory, string projectBaseName, List<Policy> policies)
+        public static void InitializeAuthServices(string srcDirectory, string projectBaseName, List<Policy> policies)
         {
-            var classPath = ClassPathHelper.InfrastructureServiceRegistrationClassPath(solutionDirectory, projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetInfraRegistrationName()}.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -52,9 +52,9 @@
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        public static void AddPolicies(string solutionDirectory, List<Policy> policies, string projectBaseName)
+        public static void AddPolicies(string srcDirectory, List<Policy> policies, string projectBaseName)
         {
-            var classPath = ClassPathHelper.InfrastructureServiceRegistrationClassPath(solutionDirectory, projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetInfraRegistrationName()}.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);

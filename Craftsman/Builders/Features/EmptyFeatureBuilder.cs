@@ -33,7 +33,7 @@
             var commandName = newFeature.Command;
             var returnPropType = newFeature.ResponseType;
 
-            var exceptionsClassPath = ClassPathHelper.CoreExceptionClassPath(srcDirectory, "", projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
             var returnValue = GetReturnValue(returnPropType);
 

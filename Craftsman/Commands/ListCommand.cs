@@ -24,7 +24,6 @@
             WriteHelpText(@$"      add:entity          Add a new entity to a web api.");
             WriteHelpText(@$"      add:message         Add a new eventing message.");
             WriteHelpText(@$"      add:producer        Updates bus configuration to register a producer.");
-            WriteHelpText(@$"      add:prop            Add a new property to an entity in a web api.");
             WriteHelpText(@$"      add:feature         Add a skeleton feature. Has `new:feature` alias.");
 
             WriteHelpHeader(@$"{Environment.NewLine}    new");
@@ -39,7 +38,6 @@
             WriteHelpText(@$"   craftsman add:bus -h");
             WriteHelpText(@$"   craftsman add:entity -h");
             WriteHelpText(@$"   craftsman add:message -h");
-            WriteHelpText(@$"   craftsman add:property -h");
             WriteHelpText(@$"   craftsman add:consumer -h");
             WriteHelpText(@$"   craftsman add:producer -h");
         }

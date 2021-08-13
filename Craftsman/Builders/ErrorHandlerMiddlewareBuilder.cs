@@ -28,7 +28,7 @@
         public static string GetErrorHandlerMiddlewareText(string solutionDirectory, string projectBaseName, string classNamespace)
         {
             var wrappersClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
 
             return @$"namespace {classNamespace}
 {{

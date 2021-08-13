@@ -10,7 +10,7 @@
         public static void CreateExceptions(string solutionDirectory, string projectBaseName)
         {
             // ****this class path will have an invalid FullClassPath. just need the directory
-            var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
+            var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -22,7 +22,7 @@
 
         public static void CreateConflictException(string solutionDirectory, string projectBaseName)
         {
-            var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, $"ConflictException.cs", projectBaseName);
+            var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ConflictException.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -38,7 +38,7 @@
 
         public static void CreateApiException(string solutionDirectory, string projectBaseName)
         {
-            var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, $"ApiException.cs", projectBaseName);
+            var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ApiException.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -98,7 +98,7 @@
 
         public static void CreateValidationException(string solutionDirectory, string projectBaseName)
         {
-            var classPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, $"ValidationException.cs", projectBaseName);
+            var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ValidationException.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);

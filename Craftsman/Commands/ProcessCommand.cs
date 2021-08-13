@@ -110,40 +110,6 @@
                 }
             }
 
-            if (args.Length > 1 && (args[0] == "add:property" || args[0] == "add:prop"))
-            {
-                if (args[1] == "-h" || args[1] == "--help")
-                    AddEntityPropertyCommand.Help();
-                else
-                {
-                    CheckForLatestVersion();
-
-                    var entityName = "";
-                    var newProperty = new EntityProperty();
-                    Parser.Default.ParseArguments<AddPropertyOptions>(args)
-                        .WithParsed(options =>
-                        {
-                            entityName = options.Entity.UppercaseFirstLetter();
-                            newProperty = new EntityProperty()
-                            {
-                                Name = options.Name,
-                                Type = options.Type,
-                                CanFilter = options.CanFilter,
-                                CanSort = options.CanSort,
-                                ForeignKeyPropName = options.ForeignKeyPropName
-                            };
-                        });
-
-                    var solutionDir = fileSystem.Directory.GetCurrentDirectory();
-                    if (myEnv == "Dev")
-                    {
-                        Console.WriteLine("Enter the solution directory.");
-                        solutionDir = Console.ReadLine();
-                    }
-                    AddEntityPropertyCommand.Run(solutionDir, entityName, newProperty);
-                }
-            }
-
             if ((args[0] == "add:bus"))
             {
                 var filePath = "";

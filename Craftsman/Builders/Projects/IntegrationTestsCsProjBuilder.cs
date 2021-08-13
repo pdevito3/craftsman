@@ -27,9 +27,7 @@
 
         public static string GetTestsCsProjFileText(bool addJwtAuth, string solutionDirectory, string projectBaseName)
         {
-            var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
             var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-            var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
             var sharedTestClassPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
 
             return @$"<Project Sdk=""Microsoft.NET.Sdk"">
@@ -57,8 +55,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include=""..\..\src\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />
-    <ProjectReference Include=""..\..\src\{infraClassPath.ClassNamespace}\{infraClassPath.ClassName}"" />
     <ProjectReference Include=""..\..\src\{webApiClassPath.ClassNamespace}\{webApiClassPath.ClassName}"" />
     <ProjectReference Include=""..\{sharedTestClassPath.ClassNamespace}\{sharedTestClassPath.ClassName}"" />
   </ItemGroup>

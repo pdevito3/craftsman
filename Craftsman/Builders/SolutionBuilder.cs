@@ -30,63 +30,33 @@
         public static void AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, string dbProvider, string dbName, string projectBaseName, bool addJwtAuth, IFileSystem fileSystem)
         {
             // add webapi first so it is default project
-            BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbName, fileSystem);
-            BuildCoreProject(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
-            BuildInfrastructureProject(solutionDirectory, srcDirectory, projectBaseName, dbProvider, fileSystem);
+            BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, dbName, fileSystem);
             BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
             BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
-            BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
+            BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName);
             BuildUnitTestProject(solutionDirectory, testDirectory, projectBaseName);
         }
 
-        private static void BuildCoreProject(string solutionDirectory, string srcDirectory, string projectBaseName, IFileSystem fileSystem)
-        {
-            var solutionFolder = srcDirectory.GetSolutionFolder(solutionDirectory);
-            var coreProjectClassPath = ClassPathHelper.CoreProjectClassPath(srcDirectory, projectBaseName);
-
-            CoreCsProjBuilder.CreateCoreCsProj(srcDirectory, projectBaseName);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{coreProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
-
-            // dir won't show up in project until file is added
-            Directory.CreateDirectory(ClassPathHelper.EntityClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.DtoClassPath(srcDirectory, "", "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.CoreExceptionClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.SharedDtoClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-
-            BasePaginationParametersBuilder.CreateBasePaginationParameters(srcDirectory, projectBaseName, fileSystem);
-            PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, fileSystem);
-            ResponseBuilder.CreateResponse(srcDirectory, projectBaseName, fileSystem);
-            CoreExceptionsBuilder.CreateExceptions(srcDirectory, projectBaseName);
-        }
-
-        private static void BuildInfrastructureProject(string solutionDirectory, string testDirectory, string projectBaseName, string dbProvider, IFileSystem fileSystem)
-        {
-            var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
-            var infrastructurePersistenceProjectClassPath = ClassPathHelper.InfrastructureProjectClassPath(testDirectory, projectBaseName);
-
-            InfrastructureCsProjBuilder.CreateInfrastructurePersistenceCsProj(testDirectory, projectBaseName, dbProvider);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{infrastructurePersistenceProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
-
-            // base folders
-            Directory.CreateDirectory(ClassPathHelper.DbContextClassPath(testDirectory, "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.SeederClassPath(testDirectory, "", projectBaseName).ClassDirectory);
-
-            InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(testDirectory, projectBaseName, fileSystem);
-        }
-
-        private static void BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, string dbName, IFileSystem fileSystem)
+        private static void BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, string dbProvider, string dbName, IFileSystem fileSystem)
         {
             var solutionFolder = srcDirectory.GetSolutionFolder(solutionDirectory);
             var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
 
-            WebApiCsProjBuilder.CreateWebApiCsProj(srcDirectory, projectBaseName);
+            WebApiCsProjBuilder.CreateWebApiCsProj(srcDirectory, projectBaseName, dbProvider);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{webApiProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
 
             // base folders
             Directory.CreateDirectory(ClassPathHelper.ControllerClassPath(srcDirectory, "", projectBaseName, "v1").ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+
+            // additional from what was other projects
+            Directory.CreateDirectory(ClassPathHelper.DtoClassPath(srcDirectory, "", "", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.SharedDtoClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.SeederClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
 
             WebApiServiceExtensionsBuilder.CreateApiVersioningServiceExtension(srcDirectory, projectBaseName, fileSystem);
             WebApiServiceExtensionsBuilder.CreateCorsServiceExtension(srcDirectory, projectBaseName, fileSystem);
@@ -97,6 +67,12 @@
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, fileSystem);
             ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, fileSystem);
             StartupBuilder.CreateWebApiStartup(srcDirectory, "Production", useJwtAuth, projectBaseName);
+            
+            BasePaginationParametersBuilder.CreateBasePaginationParameters(srcDirectory, projectBaseName, fileSystem);
+            PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, fileSystem);
+            ResponseBuilder.CreateResponse(srcDirectory, projectBaseName, fileSystem);
+            CoreExceptionsBuilder.CreateExceptions(srcDirectory, projectBaseName);
+            InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(srcDirectory, projectBaseName, fileSystem);
         }
 
         private static void BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)
@@ -117,7 +93,7 @@
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
         }
 
-        private static void BuildSharedTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)
+        private static void BuildSharedTestProject(string solutionDirectory, string testDirectory, string projectBaseName)
         {
             var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
             var testProjectClassPath = ClassPathHelper.SharedTestProjectRootClassPath(testDirectory, "", projectBaseName);
