@@ -90,13 +90,7 @@
                 }}
 
                 _db.{entity.Plural}.Remove(recordToDelete);
-                var saveSuccessful = await _db.SaveChangesAsync() > 0;
-
-                if (!saveSuccessful)
-                {{
-                    // add log
-                    throw new Exception(""Unable to save the new record. Please check the logs for more information."");
-                }}
+                wait _db.SaveChangesAsync();
 
                 return true;
             }}

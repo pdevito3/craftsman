@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Controller url all lowercase
 - Swagger comments on by default
 - 409 no longer shown on swagegr comments for POST
+- No more save successful check on delete command
 
 ### Fixed
 
