@@ -41,9 +41,9 @@
             var newEntitDataProp = $"New{entity.Name}Data";
             var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
 
-            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var validatorsClassPath = ClassPathHelper.ValidationClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
 

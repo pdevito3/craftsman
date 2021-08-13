@@ -41,9 +41,9 @@
             var commandProp = $"{entityName}ToAdd";
             var newEntityProp = $"{entityNameLowercase}ToAdd";
 
-            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entityName, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var validatorsClassPath = ClassPathHelper.ValidationClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
 

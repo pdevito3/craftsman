@@ -35,9 +35,9 @@
             var paramsDto = Utilities.GetDtoName(entity.Name, Dto.ReadParamaters);
             var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
 
-            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.CoreExceptionClassPath(solutionDirectory, "", projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
 

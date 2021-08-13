@@ -30,7 +30,6 @@
             var appAuth = "";
             var apiServiceExtensionsClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, "", projectBaseName);
             var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(solutionDirectory, "", projectBaseName);
-            var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
             var seederClassPath = ClassPathHelper.SeederClassPath(solutionDirectory, "", projectBaseName);
 
             if (useJwtAuth)
@@ -52,7 +51,6 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using {infraClassPath.ClassNamespace};
     using {seederClassPath.ClassNamespace};
     using {dbContextClassPath.ClassNamespace};
     using {apiServiceExtensionsClassPath.ClassNamespace};
@@ -118,7 +116,6 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using {infraClassPath.ClassNamespace};
     using {apiServiceExtensionsClassPath.ClassNamespace};
     using {apiAppExtensionsClassPath.ClassNamespace};
     using Serilog;

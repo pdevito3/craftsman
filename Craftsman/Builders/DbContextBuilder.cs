@@ -34,11 +34,15 @@
 
         public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
         {
-            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
-
+            var entitiesUsings = "";
+            foreach (var entity in entities)
+            {
+                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+                entitiesUsings += $"{Environment.NewLine}    using {classPath.ClassNamespace}";
+            }
+            
             return @$"namespace {classNamespace}
-{{
-    using {entitiesClassPath.ClassNamespace};
+{{{entitiesUsings};
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using System.Threading;
@@ -78,7 +82,7 @@
 
         private static void RegisterContext(string solutionDirectory, string dbProvider, string dbContextName, string dbName, string projectBaseName)
         {
-            var classPath = ClassPathHelper.InfrastructureServiceRegistrationClassPath(solutionDirectory, projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, Utilities.GetInfraRegistrationName(), projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -164,11 +168,15 @@
 
         public static string GetAuditableSaveOverride(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
         {
-            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+            var entitiesUsings = "";
+            foreach (var entity in entities)
+            {
+                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+                entitiesUsings += $"{Environment.NewLine}    using {classPath.ClassNamespace}";
+            }
             // notice domain.common that would need to be added and looked up. possibly interfaces too
             return @$"namespace {classNamespace}
-{{
-    using {entitiesClassPath.ClassNamespace};
+{{{entitiesUsings};
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using System.Threading;

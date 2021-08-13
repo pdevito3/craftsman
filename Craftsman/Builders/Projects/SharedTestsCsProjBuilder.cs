@@ -27,12 +27,12 @@
 
         public static string GetInfrastructurePersistenceCsProjFileText(string solutionDirectory, string projectBaseName)
         {
-            var coreClassPath = ClassPathHelper.CoreProjectClassPath(solutionDirectory, projectBaseName);
+            var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
 
             return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include=""..\..\src\{coreClassPath.ClassNamespace}\{coreClassPath.ClassName}"" />
+    <ProjectReference Include=""..\..\src\{apiClassPath.ClassNamespace}\{apiClassPath.ClassName}"" />
   </ItemGroup>
 
 </Project>";

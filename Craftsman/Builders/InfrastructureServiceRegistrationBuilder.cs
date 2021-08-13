@@ -9,7 +9,7 @@
     {
         public static void CreateInfrastructureServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.InfrastructureServiceRegistrationClassPath(solutionDirectory, projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, Utilities.GetInfraRegistrationName(), projectBaseName);
 
             if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                 fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

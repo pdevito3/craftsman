@@ -10,7 +10,7 @@
     {
         public static void InitializeAuthServices(string solutionDirectory, string projectBaseName, List<Policy> policies)
         {
-            var classPath = ClassPathHelper.InfrastructureServiceRegistrationClassPath(solutionDirectory, projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, Utilities.GetInfraRegistrationName(), projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -54,7 +54,7 @@
 
         public static void AddPolicies(string solutionDirectory, List<Policy> policies, string projectBaseName)
         {
-            var classPath = ClassPathHelper.InfrastructureServiceRegistrationClassPath(solutionDirectory, projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, Utilities.GetInfraRegistrationName(), projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
