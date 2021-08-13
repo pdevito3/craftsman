@@ -13,9 +13,9 @@
 
     public class DbContextBuilder
     {
-        public static void CreateDbContext(string solutionDirectory, List<Entity> entities, string dbContextName, string dbProvider, string dbName, string projectBaseName)
+        public static void CreateDbContext(string srcDirectory, List<Entity> entities, string dbContextName, string dbProvider, string dbName, string projectBaseName)
         {
-            var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs", projectBaseName);
+            var classPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{dbContextName}.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -25,20 +25,24 @@
 
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, solutionDirectory, projectBaseName);
+                var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, srcDirectory, projectBaseName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
 
-            RegisterContext(solutionDirectory, dbProvider, dbContextName, dbName, projectBaseName);
+            RegisterContext(srcDirectory, dbProvider, dbContextName, dbName, projectBaseName);
         }
 
         public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
         {
-            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
-
+            var entitiesUsings = "";
+            foreach (var entity in entities)
+            {
+                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+                entitiesUsings += $"{Environment.NewLine}    using {classPath.ClassNamespace};";
+            }
+            
             return @$"namespace {classNamespace}
-{{
-    using {entitiesClassPath.ClassNamespace};
+{{{entitiesUsings}
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using System.Threading;
@@ -76,9 +80,9 @@
             return dbSetText;
         }
 
-        private static void RegisterContext(string solutionDirectory, string dbProvider, string dbContextName, string dbName, string projectBaseName)
+        private static void RegisterContext(string srcDirectory, string dbProvider, string dbContextName, string dbName, string projectBaseName)
         {
-            var classPath = ClassPathHelper.InfrastructureServiceRegistrationClassPath(solutionDirectory, projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetInfraRegistrationName()}.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -87,7 +91,7 @@
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var usingDbStatement = GetDbUsingStatement(dbProvider);
-            InstallDbProviderNugetPackages(dbProvider, solutionDirectory);
+            InstallDbProviderNugetPackages(dbProvider, srcDirectory);
 
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
@@ -164,11 +168,15 @@
 
         public static string GetAuditableSaveOverride(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
         {
-            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", projectBaseName);
+            var entitiesUsings = "";
+            foreach (var entity in entities)
+            {
+                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+                entitiesUsings += $"{Environment.NewLine}    using {classPath.ClassNamespace};";
+            }
             // notice domain.common that would need to be added and looked up. possibly interfaces too
             return @$"namespace {classNamespace}
-{{
-    using {entitiesClassPath.ClassNamespace};
+{{{entitiesUsings};
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using System.Threading;

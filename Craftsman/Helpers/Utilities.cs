@@ -95,6 +95,11 @@
             return "MassTransitServiceExtension";
         }
 
+        public static string GetInfraRegistrationName()
+        {
+            return "InfrastructureServiceExtension";
+        }
+
         public static string GetAppSettingsName(string envName, bool asJson = true)
         {
             if (String.IsNullOrEmpty(envName))
@@ -495,11 +500,10 @@
         private static bool RunDbMigration(ApiTemplate template, string srcDirectory)
         {
             var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, template.SolutionName);
-            var infraProjectClassPath = ClassPathHelper.InfrastructureProjectClassPath(srcDirectory, template.SolutionName);
 
             return ExecuteProcess(
                 "dotnet",
-                @$"ef migrations add ""InitialMigration"" --project ""{infraProjectClassPath.FullClassPath}"" --startup-project ""{webApiProjectClassPath.FullClassPath}"" --output-dir Migrations",
+                @$"ef migrations add ""InitialMigration"" --project ""{webApiProjectClassPath.FullClassPath}""",
                 srcDirectory,
                 new Dictionary<string, string>()
                 {

@@ -16,9 +16,6 @@
             if (!File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
-            var infraClassPath = ClassPathHelper.InfrastructureProjectClassPath(solutionDirectory, projectBaseName);
-            var serviceRegistrationsClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"", projectBaseName);
-
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
             {

@@ -11,6 +11,12 @@
         public static void AddDbSet(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
         {
             var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs", projectBaseName);
+            var entitiesUsings = "";
+            foreach (var entity in entities)
+            {
+                var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+                entitiesUsings += $"    using {entityClassPath.ClassNamespace};{Environment.NewLine}"; // note this foreach adds newline after where dbbuilder adds before
+            }
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -30,6 +36,12 @@
                         if (line.Contains($"#region DbSet Region"))
                         {
                             newText += @$"{Environment.NewLine}{DbContextBuilder.GetDbSetText(entities)}";
+                        }
+                        
+                        // TODO add test. assumes that this using exists and that the builder above adds a new line after the usings
+                        if (line.Contains("using Microsoft.EntityFrameworkCore;"))
+                        {
+                            newText = $"{entitiesUsings}{line}";
                         }
 
                         output.WriteLine(newText);
