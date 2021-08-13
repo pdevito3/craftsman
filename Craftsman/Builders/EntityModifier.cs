@@ -8,9 +8,9 @@
 
     public class EntityModifier
     {
-        public static void AddEntityProperties(string solutionDirectory, string entityName, List<EntityProperty> props, string projectBaseName)
+        public static void AddEntityProperties(string solutionDirectory, string entityName, string entityPlural, List<EntityProperty> props, string projectBaseName)
         {
-            var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entityName}.cs", entityName, projectBaseName);
+            var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entityName}.cs", entityPlural, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");

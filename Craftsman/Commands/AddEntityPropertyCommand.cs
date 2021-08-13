@@ -49,7 +49,7 @@
             WriteHelpText(Environment.NewLine);
         }
 
-        public static void Run(string solutionDirectory, string entityName, EntityProperty prop)
+        public static void Run(string solutionDirectory, string entityName, string entityPlural, EntityProperty prop)
         {
             try
             {
@@ -59,7 +59,7 @@
                 Utilities.IsBoundedContextDirectoryGuard(srcDirectory, testDirectory);
                 var projectBaseName = Directory.GetParent(srcDirectory).Name;
 
-                EntityModifier.AddEntityProperties(srcDirectory, entityName, propList, projectBaseName);
+                EntityModifier.AddEntityProperties(srcDirectory, entityName, entityPlural, propList, projectBaseName);
                 DtoModifier.AddPropertiesToDtos(srcDirectory, entityName, propList, projectBaseName);
 
                 WriteHelpHeader($"{Environment.NewLine}The '{prop.Name}' property was successfully added to the '{entityName}' entity and its associated DTOs. Keep up the good work!");

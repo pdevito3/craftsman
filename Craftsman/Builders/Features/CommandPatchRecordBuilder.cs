@@ -40,7 +40,7 @@
             var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
             var patchedEntityProp = $"{entityNameLowercase}ToPatch";
 
-            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);

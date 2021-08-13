@@ -14,7 +14,7 @@
             var entitiesUsings = "";
             foreach (var entity in entities)
             {
-                var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+                var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
                 entitiesUsings += $"    using {entityClassPath.ClassNamespace};{Environment.NewLine}"; // note this foreach adds newline after where dbbuilder adds before
             }
 

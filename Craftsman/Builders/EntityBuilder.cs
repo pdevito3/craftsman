@@ -13,7 +13,7 @@
     {
         public static void CreateEntity(string solutionDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs", entity.Name, projectBaseName);
+            var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
 
             if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                 fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

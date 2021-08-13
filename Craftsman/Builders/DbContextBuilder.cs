@@ -37,7 +37,7 @@
             var entitiesUsings = "";
             foreach (var entity in entities)
             {
-                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
                 entitiesUsings += $"{Environment.NewLine}    using {classPath.ClassNamespace};";
             }
             
@@ -171,7 +171,7 @@
             var entitiesUsings = "";
             foreach (var entity in entities)
             {
-                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
                 entitiesUsings += $"{Environment.NewLine}    using {classPath.ClassNamespace};";
             }
             // notice domain.common that would need to be added and looked up. possibly interfaces too

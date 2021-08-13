@@ -41,7 +41,7 @@
 
         private static string GetFakeFileText(string classNamespace, string objectToFakeClassName, Entity entity, string solutionDirectory, string projectBaseName)
         {
-            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
             // this... is super fragile. Should really refactor this

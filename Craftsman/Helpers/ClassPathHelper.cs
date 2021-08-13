@@ -112,10 +112,10 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{SharedTestProjectSuffix}", "Fakes", entityName), className);
         }
 
-        public static ClassPath EntityClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        public static ClassPath EntityClassPath(string solutionDirectory, string className, string entityPlural, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural), className);
         }
 
         public static ClassPath SeederClassPath(string solutionDirectory, string className, string projectBaseName)
@@ -127,7 +127,7 @@
         public static ClassPath DbContextClassPath(string srcDirectory, string className, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Contexts"), className);
+            return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Databases"), className);
         }
 
         public static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityPlural, string projectBaseName)
