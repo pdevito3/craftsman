@@ -42,6 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Removed annoying comments from features
 - Fixed test name for basic gets in functional tests
 - Seeders in startup will newline when there are multiple entities
+- Unicode now onlyenforced on windows (for better emoji support)
 
 ## [0.10.0] - 2021-05-31
 
