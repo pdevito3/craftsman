@@ -30,7 +30,7 @@
             var appAuth = "";
             var apiServiceExtensionsClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, "", projectBaseName);
             var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(solutionDirectory, "", projectBaseName);
-            var seederClassPath = ClassPathHelper.SeederClassPath(solutionDirectory, "", projectBaseName);
+            var seederClassPath = ClassPathHelper.DummySeederClassPath(solutionDirectory, "", projectBaseName);
 
             if (useJwtAuth)
             {

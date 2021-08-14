@@ -14,7 +14,7 @@
         {
             foreach (var entity in entities)
             {
-                var classPath = ClassPathHelper.SeederClassPath(solutionDirectory, $"{Utilities.GetSeederName(entity)}.cs", projectBaseName);
+                var classPath = ClassPathHelper.DummySeederClassPath(solutionDirectory, $"{Utilities.GetSeederName(entity)}.cs", projectBaseName);
 
                 if (!Directory.Exists(classPath.ClassDirectory))
                     Directory.CreateDirectory(classPath.ClassDirectory);

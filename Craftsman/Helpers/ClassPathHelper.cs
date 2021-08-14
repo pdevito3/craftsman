@@ -118,10 +118,10 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural), className);
         }
 
-        public static ClassPath SeederClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath DummySeederClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Seeders"), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Seeders", "DummyData"), className);
         }
 
         public static ClassPath DbContextClassPath(string srcDirectory, string className, string projectBaseName)
