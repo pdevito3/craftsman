@@ -58,13 +58,7 @@ namespace Craftsman.Models
         /// </summary>
         public bool IsRequired
         {
-            get
-            {
-                if (IsPrimaryKey)
-                    return true;
-                else
-                    return false;
-            }
+            get => IsPrimaryKey || _isRequired;
             set => _isRequired = value;
         }
 

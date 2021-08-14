@@ -17,6 +17,17 @@ namespace Craftsman.Tests.ModelTests
             prop.IsRequired.Should().Be(true);
             prop.CanManipulate.Should().Be(false);
         }
+        
+        [Fact]
+        public void property_is_required_when_marked_true_and_not_pk()
+        {
+            var prop = new EntityProperty()
+            {
+                IsRequired = true
+            };
+
+            prop.IsRequired.Should().Be(true);
+        }
 
         [Theory]
         [InlineData("keyname",true)]
