@@ -84,6 +84,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Updated nuget packages
 * Updated `Program.cs` to async
 * Changed migrations to happen after all bounded contexts are added
+* Removed the custom fluent validation boilderplate from the add, update, patch, and ad hoc commands
 
 ### Removed
 

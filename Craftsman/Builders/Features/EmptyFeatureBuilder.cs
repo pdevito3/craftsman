@@ -68,13 +68,6 @@
             }}
         }}
 
-        public class Custom{featureClassName}Validation
-        {{
-            public Custom{featureClassName}Validation()
-            {{
-            }}
-        }}
-
         public class Handler : IRequestHandler<{commandName}, {returnPropType}>
         {{
             {handlerCtor}

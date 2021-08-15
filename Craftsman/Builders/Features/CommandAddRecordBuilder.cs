@@ -75,13 +75,6 @@
             }}
         }}
 
-        public class CustomCreate{entityName}Validation : {manipulationValidator}<{createDto}>
-        {{
-            public CustomCreate{entityName}Validation()
-            {{
-            }}
-        }}
-
         public class Handler : IRequestHandler<{addCommandName}, {readDto}>
         {{
             private readonly {contextName} _db;

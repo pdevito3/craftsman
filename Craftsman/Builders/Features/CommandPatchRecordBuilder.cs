@@ -77,13 +77,6 @@
             }}
         }}
 
-        public class CustomPatch{entity.Name}Validation : {manipulationValidator}<{updateDto}>
-        {{
-            public CustomPatch{entity.Name}Validation()
-            {{
-            }}
-        }}
-
         public class Handler : IRequestHandler<{patchCommandName}, bool>
         {{
             private readonly {contextName} _db;
