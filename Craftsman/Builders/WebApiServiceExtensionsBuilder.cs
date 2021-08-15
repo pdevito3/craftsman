@@ -157,6 +157,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
+    using Sieve.Services;
     using System;
     using System.IO;
     using System.Collections.Generic;
@@ -167,6 +168,7 @@
         public static void AddWebApiServices(this IServiceCollection services)
         {{
             services.AddMediatR(typeof(Startup));
+            services.AddScoped<SieveProcessor>();
             services.AddMvc()
                 .AddFluentValidation(cfg => {{ cfg.RegisterValidatorsFromAssemblyContaining<Startup>(); }});
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
