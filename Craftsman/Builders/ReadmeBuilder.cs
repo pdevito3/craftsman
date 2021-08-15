@@ -7,7 +7,7 @@
 
     public class ReadmeBuilder
     {
-        public static void CreateReadme(string solutionDirectory, string solutionName, IFileSystem fileSystem)
+        public static void CreateReadme(string solutionDirectory, string projectName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"README.md");
 
@@ -20,14 +20,14 @@
             using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
                 var data = "";
-                data = GetReadmeFileText(solutionName);
+                data = GetReadmeFileText(projectName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        public static string GetReadmeFileText(string solutionName)
+        public static string GetReadmeFileText(string projectName)
         {
-            return @$"# {solutionName}
+            return @$"# {projectName}
 
 This project was created with [Craftsman](https://github.com/pdevito3/craftsman).
 
@@ -36,7 +36,7 @@ This project was created with [Craftsman](https://github.com/pdevito3/craftsman)
 Go to your solution directory:
 
 ```shell
-cd {solutionName}
+cd {projectName}
 ```
 
 Run your solution:

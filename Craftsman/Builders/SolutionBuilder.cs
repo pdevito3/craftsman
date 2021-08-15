@@ -11,12 +11,12 @@
 
     public class SolutionBuilder
     {
-        public static void BuildSolution(string solutionDirectory, string solutionName, IFileSystem fileSystem)
+        public static void BuildSolution(string solutionDirectory, string projectName, IFileSystem fileSystem)
         {
             try
             {
                 fileSystem.Directory.CreateDirectory(solutionDirectory);
-                Utilities.ExecuteProcess("dotnet", @$"new sln -n {solutionName}", solutionDirectory);
+                Utilities.ExecuteProcess("dotnet", @$"new sln -n {projectName}", solutionDirectory);
             }
             catch (Exception e)
             {

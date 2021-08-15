@@ -7,9 +7,9 @@
 
     public class WebAppFactoryBuilder
     {
-        public static void CreateWebAppFactory(string solutionDirectory, string solutionName, string dbContextName, bool addJwtAuthentication)
+        public static void CreateWebAppFactory(string solutionDirectory, string projectName, string dbContextName, bool addJwtAuthentication)
         {
-            var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, $"{Utilities.GetWebHostFactoryName()}.cs", solutionName);
+            var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, $"{Utilities.GetWebHostFactoryName()}.cs", projectName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -19,7 +19,7 @@
 
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = GetWebAppFactoryFileText(classPath, dbContextName, solutionDirectory, solutionName, addJwtAuthentication);
+                var data = GetWebAppFactoryFileText(classPath, dbContextName, solutionDirectory, projectName, addJwtAuthentication);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }

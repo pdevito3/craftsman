@@ -7,9 +7,9 @@
 
     public class HttpClientExtensionsBuilder
     {
-        public static void Create(string solutionDirectory, string solutionName)
+        public static void Create(string solutionDirectory, string projectName)
         {
-            var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, solutionName, $"HttpClientExtensions.cs");
+            var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectName, $"HttpClientExtensions.cs");
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);

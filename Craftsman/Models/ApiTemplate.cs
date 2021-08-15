@@ -11,9 +11,9 @@ namespace Craftsman.Models
         private Bus _bus = new();
 
         /// <summary>
-        /// The name of the solution you want to build
+        /// The name of the project in your bounded context
         /// </summary>
-        public string SolutionName { get; set; }
+        public string ProjectName { get; set; }
 
         /// <summary>
         /// The name of the solution you want to build

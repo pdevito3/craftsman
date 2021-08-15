@@ -26,9 +26,9 @@
             }
         }
 
-        public static string GetErrorHandlerAppExtensionText(string classNamespace, string solutionDirectory, string solutionName)
+        public static string GetErrorHandlerAppExtensionText(string classNamespace, string solutionDirectory, string projectName)
         {
-            var webApiClassPath = ClassPathHelper.WebApiMiddlewareClassPath(solutionDirectory, "", solutionName);
+            var webApiClassPath = ClassPathHelper.WebApiMiddlewareClassPath(solutionDirectory, "", projectName);
             return @$"namespace {classNamespace}
 {{
     using Microsoft.AspNetCore.Builder;

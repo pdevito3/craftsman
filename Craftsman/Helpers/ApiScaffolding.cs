@@ -19,37 +19,37 @@
     {
         public static void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)
         {
-            var solutionName = template.SolutionName;
+            var projectName = template.ProjectName;
             AnsiConsole.Status()
                 .AutoRefresh(true)
                 .Spinner(Spinner.Known.Dots2)
-                .Start($"[yellow]Creating {template.SolutionName} [/]", ctx =>
+                .Start($"[yellow]Creating {template.ProjectName} [/]", ctx =>
                 {
                     FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
-                    FileParsingHelper.RunSolutionNameAssignedGuard(solutionName);
-                    FileParsingHelper.SolutionNameDoesNotEqualEntityGuard(solutionName, template.Entities);
+                    FileParsingHelper.RunSolutionNameAssignedGuard(projectName);
+                    FileParsingHelper.SolutionNameDoesNotEqualEntityGuard(projectName, template.Entities);
 
                     // add an accelerate.config.yaml file to the root?
-                    var bcDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{solutionName}";
+                    var bcDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{projectName}";
                     var srcDirectory = Path.Combine(bcDirectory, "src");
                     var testDirectory = Path.Combine(bcDirectory, "tests");
                     fileSystem.Directory.CreateDirectory(srcDirectory);
                     fileSystem.Directory.CreateDirectory(testDirectory);
 
                     ctx.Spinner(Spinner.Known.BouncingBar);
-                    ctx.Status($"[bold blue]Building {solutionName} Projects [/]");
-                    SolutionBuilder.AddProjects(buildSolutionDirectory, srcDirectory, testDirectory, template.DbContext.Provider, template.DbContext.DatabaseName, solutionName, template.AddJwtAuthentication, fileSystem);
+                    ctx.Status($"[bold blue]Building {projectName} Projects [/]");
+                    SolutionBuilder.AddProjects(buildSolutionDirectory, srcDirectory, testDirectory, template.DbContext.Provider, template.DbContext.DatabaseName, projectName, template.AddJwtAuthentication, fileSystem);
 
                     // add all files based on the given template config
-                    ctx.Status($"[bold blue]Scaffolding Files for {solutionName} [/]");
+                    ctx.Status($"[bold blue]Scaffolding Files for {projectName} [/]");
                     RunTemplateBuilders(bcDirectory, srcDirectory, testDirectory, template, fileSystem, verbosity);
-                    WriteLogMessage($"File scaffolding for {template.SolutionName} was successful");
+                    WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
                 });
         }
 
         private static void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)
         {
-            var projectBaseName = template.SolutionName;
+            var projectBaseName = template.ProjectName;
 
             // get solution dir from bcDir
             var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;

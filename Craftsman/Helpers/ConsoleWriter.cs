@@ -37,12 +37,12 @@
             AnsiConsole.MarkupLine($"[grey]{message}.[/]");
         }
 
-        public static void WriteGettingStarted(string solutionName)
+        public static void WriteGettingStarted(string projectName)
         {
             WriteHelpText(@$"{Environment.NewLine}
     To get started:");
             WriteHelpText(@$"
-        cd {solutionName}
+        cd {projectName}
         dotnet run --project webapi{Environment.NewLine}");
         }
 

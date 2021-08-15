@@ -320,7 +320,7 @@
 
         public static void AddStartupEnvironmentsWithServices(
             string solutionDirectory,
-            string solutionName,
+            string projectName,
             string dbName,
             List<ApiEnvironment> environments,
             SwaggerConfig swaggerConfig,
@@ -330,10 +330,10 @@
         {
             // add a development environment by default for local work if none exists
             if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
-                environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{solutionName} (Development)" });
+                environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{projectName} (Development)" });
 
             if (environments.Where(e => e.EnvironmentName == "Production").Count() == 0)
-                environments.Add(new ApiEnvironment { EnvironmentName = "Production", ProfileName = $"{solutionName} (Production)" });
+                environments.Add(new ApiEnvironment { EnvironmentName = "Production", ProfileName = $"{projectName} (Production)" });
 
             var sortedEnvironments = environments.OrderBy(e => e.EnvironmentName == "Development" ? 1 : 0).ToList(); // sets dev as default profile
             foreach (var env in sortedEnvironments)
@@ -499,7 +499,7 @@
 
         private static bool RunDbMigration(ApiTemplate template, string srcDirectory)
         {
-            var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, template.SolutionName);
+            var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, template.ProjectName);
 
             return ExecuteProcess(
                 "dotnet",
@@ -510,7 +510,7 @@
                     { "ASPNETCORE_ENVIRONMENT", Guid.NewGuid().ToString() } // guid to not conflict with any given envs
                 },
                 20000,
-                $"{Emoji.Known.Warning} {template.SolutionName} Database Migrations timed out and will need to be run manually");
+                $"{Emoji.Known.Warning} {template.ProjectName} Database Migrations timed out and will need to be run manually");
         }
 
         public static void RunDbMigrations(List<ApiTemplate> boundedContexts, string domainDirectory)
@@ -522,13 +522,13 @@
                 {
                     foreach (var bc in boundedContexts)
                     {
-                        var bcDirectory = $"{domainDirectory}{Path.DirectorySeparatorChar}{bc.SolutionName}";
+                        var bcDirectory = $"{domainDirectory}{Path.DirectorySeparatorChar}{bc.ProjectName}";
                         var srcDirectory = Path.Combine(bcDirectory, "src");
 
                         ctx.Spinner(Spinner.Known.Dots2);
-                        ctx.Status($"[bold blue]Running {bc.SolutionName} Database Migrations [/]");
+                        ctx.Status($"[bold blue]Running {bc.ProjectName} Database Migrations [/]");
                         if (Utilities.RunDbMigration(bc, srcDirectory))
-                            WriteLogMessage($"Database Migrations for {bc.SolutionName} were successful");
+                            WriteLogMessage($"Database Migrations for {bc.ProjectName} were successful");
                     }
                 });
         }

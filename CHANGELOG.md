@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - No more save successful check on delete command
 - Seeders have a sub `DummyData` directory
 - Sieve service registration moved to webapi service class
+- `SolutionName` to `ProjectName`
 
 ### Fixed
 
