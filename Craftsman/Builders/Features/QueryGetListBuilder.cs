@@ -87,10 +87,7 @@
             public async Task<PagedList<{readDto}>> Handle({queryListName} request, CancellationToken cancellationToken)
             {{
                 if (request.QueryParameters == null)
-                {{
-                    // TODO log error
                     throw new ApiException(""Invalid query parameters."");
-                }}
 
                 var collection = _db.{entity.Plural}
                     as IQueryable<{entity.Name}>;

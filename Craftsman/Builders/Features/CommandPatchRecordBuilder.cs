@@ -90,30 +90,21 @@
 
             public async Task<bool> Handle({patchCommandName} request, CancellationToken cancellationToken)
             {{
-                // add logger or use decorator
                 if (request.PatchDoc == null)
-                {{
-                    // TODO log error
                     throw new ApiException(""Invalid patch document."");
-                }}
 
                 var {updatedEntityProp} = await _db.{entity.Plural}
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
 
                 if ({updatedEntityProp} == null)
-                {{
-                    // log error
                     throw new KeyNotFoundException();
-                }}
 
                 var {patchedEntityProp} = _mapper.Map<{updateDto}>({updatedEntityProp}); // map the {entityNameLowercase} we got from the database to an updatable {entityNameLowercase} model
                 request.PatchDoc.ApplyTo({patchedEntityProp}); // apply patchdoc updates to the updatable {entityNameLowercase}
 
                 var validationResults = new CustomPatch{entity.Name}Validation().Validate({patchedEntityProp});
                 if (!validationResults.IsValid)
-                {{
                     throw new ValidationException(validationResults.Errors);
-                }}
 
                 _mapper.Map({patchedEntityProp}, {updatedEntityProp});
                 await _db.SaveChangesAsync();

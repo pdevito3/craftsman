@@ -84,10 +84,7 @@
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
 
                 if (recordToDelete == null)
-                {{
-                    // TODO log error
                     throw new KeyNotFoundException();
-                }}
 
                 _db.{entity.Plural}.Remove(recordToDelete);
                 await _db.SaveChangesAsync();

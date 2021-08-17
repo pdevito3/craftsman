@@ -85,10 +85,7 @@
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
 
                 if (result == null)
-                {{
-                    // TODO log error
                     throw new KeyNotFoundException();
-                }}
 
                 return result;
             }}

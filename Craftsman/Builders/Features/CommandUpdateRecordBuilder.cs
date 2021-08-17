@@ -94,10 +94,7 @@
                     .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
 
                 if ({updatedEntityProp} == null)
-                {{
-                    // TODO log error
                     throw new KeyNotFoundException();
-                }}
 
                 _mapper.Map(request.{commandProp}, {updatedEntityProp});
 
