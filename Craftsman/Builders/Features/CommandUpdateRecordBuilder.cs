@@ -38,7 +38,7 @@
             var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
             var entityNameLowercase = entity.Name.LowercaseFirstLetter();
             var commandProp = $"{entity.Name}ToUpdate";
-            var newEntitDataProp = $"New{entity.Name}Data";
+            var newEntityDataProp = $"new{entity.Name}Data";
             var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
 
             var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
@@ -70,10 +70,10 @@
             public {primaryKeyPropType} {primaryKeyPropName} {{ get; set; }}
             public {updateDto} {commandProp} {{ get; set; }}
 
-            public {updateCommandName}({primaryKeyPropType} {entityNameLowercase}, {updateDto} {newEntitDataProp})
+            public {updateCommandName}({primaryKeyPropType} {entityNameLowercase}, {updateDto} {newEntityDataProp})
             {{
                 {primaryKeyPropName} = {entityNameLowercase};
-                {commandProp} = {newEntitDataProp};
+                {commandProp} = {newEntityDataProp};
             }}
         }}
 

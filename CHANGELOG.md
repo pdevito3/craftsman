@@ -49,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Seeders in startup will newline when there are multiple entities
 - Unicode now onlyenforced on windows (for better emoji support)
 - Fixed `isRequired` property
+- Command prop for `Update` command has proper casing
 
 ### Removed
 
