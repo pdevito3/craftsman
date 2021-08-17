@@ -90,7 +90,7 @@
                 }}
 
                 _db.{entity.Plural}.Remove(recordToDelete);
-                wait _db.SaveChangesAsync();
+                await _db.SaveChangesAsync();
 
                 return true;
             }}
