@@ -51,6 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed `isRequired` property
 - Command prop for `Update` command has proper casing
 - Fixed spacing on functional tests
+- Added name annotations for all endpoints (#33)
 
 ### Removed
 

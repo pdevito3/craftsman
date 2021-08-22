@@ -22,7 +22,7 @@
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_CreateRecord(entity, addSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0, hasConflictCode)}{addRecordAuthorizations}
         [Consumes(""application/json"")]
         [Produces(""application/json"")]
-        [HttpPost]
+        [HttpPost(Name = ""Add{entityName}"")]
         public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {lowercaseEntityVariable}ForCreation)
         {{
             // add error handling
