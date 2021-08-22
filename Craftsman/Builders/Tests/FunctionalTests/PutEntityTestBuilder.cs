@@ -67,7 +67,8 @@
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdateRecord }, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"
 
-            _client.AddAuth(new[] {scopes});" : "";
+            _client.AddAuth(new[] {scopes});
+            " : "";
 
             return $@"[Test]
         public async Task {testName}()
@@ -75,7 +76,6 @@
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
             var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();{clientAuth}
-
             await InsertAsync({fakeEntityVariableName});
 
             // Act
