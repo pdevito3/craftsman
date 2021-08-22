@@ -468,11 +468,11 @@
         {
             if (propType == "string")
                 return defaultValue == null ? "" : @$" = ""{defaultValue}"";";
+
+            if ((propType.IsGuidPropertyType() && !propType.Contains("?")))
+                return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : @" = Guid.NewGuid();";
             
-            if (propType.IsGuidPropertyType())
-                return @" = Guid.NewGuid();";
-            
-            return defaultValue == null ? "" : $" = {defaultValue};";
+            return string.IsNullOrEmpty(defaultValue) ? "" : $" = {defaultValue};";
         }
 
         public static string GetDbContext(string srcDirectory, string projectBaseName)
