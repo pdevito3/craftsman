@@ -9,11 +9,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+* None yet!
+
+## [0.11.0] - 2021-08-22
+
 ### Added
 
 - Added an `add:feature` command (also works with `new:feature`)
-- Guid PKs will now have a default of `Guid.NewGuid()`
-- Added XML docs to release in webapi csproj
+- Non-nullable guids will now have a default of `Guid.NewGuid()` unless otherwise specified
+- Added XML docs to release in csproj
 - Added a new `features` option to entities to allow for granular feature control. The accepted values are `AdHoc`, `GetRecord`, `GetList`, `DeleteRecord`, `UpdateRecord`, `PatchRecord`, `AddRecord`, and `CreateRecord` (same as `AddRecord` but available as an alias in case you can't remember!)
 
 ### Changed
@@ -54,7 +58,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 
 - Removed the `add:property` cli command
-  - TODO update docs
 
 ## [0.10.0] - 2021-05-31
 
