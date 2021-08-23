@@ -25,7 +25,6 @@
         [HttpGet(Name = ""{getListEndpointName}"")]
         public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
         {{
-            // add error handling
             var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryListMethodName}({lowercaseEntityVariable}ParametersDto);
             var queryResponse = await _mediator.Send(query);
 
