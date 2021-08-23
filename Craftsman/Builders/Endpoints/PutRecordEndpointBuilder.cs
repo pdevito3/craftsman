@@ -20,7 +20,7 @@
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_PutRecord(entity, addSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
         [Produces(""application/json"")]
-        [HttpPut(""{{{lowercasePrimaryKey}}}"")]
+        [HttpPut(""{{{lowercasePrimaryKey}}}"", Name = ""Update{entityName}""))]
         public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercasePrimaryKey}, {updateDto} {lowercaseEntityVariable})
         {{
             // add error handling

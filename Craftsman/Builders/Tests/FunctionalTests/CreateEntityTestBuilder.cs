@@ -20,11 +20,9 @@
             if (File.Exists(classPath.FullClassPath))
                 throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = WriteTestFileText(solutionDirectory, classPath, entity, policies, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            using FileStream fs = File.Create(classPath.FullClassPath);
+            var data = WriteTestFileText(solutionDirectory, classPath, entity, policies, projectBaseName);
+            fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
         private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, List<Policy> policies, string projectBaseName)

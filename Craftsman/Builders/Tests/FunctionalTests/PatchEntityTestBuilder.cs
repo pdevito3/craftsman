@@ -72,7 +72,8 @@
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdatePartial }, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"
 
-            _client.AddAuth(new[] {scopes});" : "";
+            _client.AddAuth(new[] {scopes});
+            " : "";
 
             // if no string properties, do one with an int
             if (myProp == null)
@@ -91,7 +92,6 @@
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
             var patchDoc = new JsonPatchDocument<{updateDto}>();
             patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});{clientAuth}
-
             await InsertAsync({fakeEntityVariableName});
 
             // Act

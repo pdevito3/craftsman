@@ -87,7 +87,7 @@
             var command = AskCommand(feature);
             var responseType = AskResponseType();
             var producer = AskIsProducer();
-            var directory = AskDirectory();
+            var entityPluralForDir = AskEntityPluralForDir();
 
             AnsiConsole.WriteLine();
             AnsiConsole.Render(new Table().AddColumns("[grey]Property[/]", "[grey]Value[/]")
@@ -97,7 +97,7 @@
                 .AddRow("[grey]Command Name[/]", command)
                 .AddRow("[grey]Response Type[/]", responseType)
                 .AddRow("[grey]Is Producer[/]", producer.ToString())
-                .AddRow("[grey]Directory[/]", directory)
+                .AddRow("[grey]Entity Plural[/]", entityPluralForDir)
             );
 
             return new Feature()
@@ -106,7 +106,7 @@
                 Name = feature,
                 Command = command,
                 ResponseType = responseType,
-                Directory = directory
+                EntityPlural = entityPluralForDir
             };
         }
 
@@ -152,10 +152,10 @@
             return responseType;
         }
 
-        private static string AskDirectory()
+        private static string AskEntityPluralForDir()
         {
             var command = AnsiConsole.Prompt(
-                new TextPrompt<string>($"[grey][[Optional]][/] What entity sub-directory of your features do you want to add this to? If blank, the feature will be added directly to the Feature directory. (Default: [green]none[/])?")
+                new TextPrompt<string>($"[grey][[Optional]][/] What is the *plural* name of the entity for this feature? You can also leave this response blank to put the feature will be added directly to the Domain directory. (Default: [green]none[/])?")
                 .DefaultValue($"")
                 .HideDefaultValue()
             );

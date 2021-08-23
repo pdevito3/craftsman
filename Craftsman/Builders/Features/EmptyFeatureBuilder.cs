@@ -12,7 +12,7 @@
     {
         public static void CreateCommand(string srcDirectory, string contextName, string projectBaseName, Feature newFeature)
         {
-            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{newFeature.Name}.cs", newFeature.Directory, projectBaseName);
+            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{newFeature.Name}.cs", newFeature.EntityPlural, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -76,7 +76,7 @@
             {{
                 // Add your command logic for your feature here!
 
-                return {returnValue}; // change this
+                return {returnValue};
             }}
         }}
     }}
