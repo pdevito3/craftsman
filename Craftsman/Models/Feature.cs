@@ -8,6 +8,8 @@
     public class Feature
     {
         public string EntityName { get; set; }
+
+        public string EntityPlural { get; set; }
         
         private FeatureType FeatureType { get; set; }
         public string Type
@@ -46,8 +48,6 @@
             get => _responseType;
             set => _responseType = Utilities.PropTypeCleanup(value);
         }
-
-        public string Directory { get; set; }
 
         // feature role as command, producer, consumer in the future... dropped the ball on the OG implementation
     }
