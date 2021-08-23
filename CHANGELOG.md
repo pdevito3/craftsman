@@ -25,7 +25,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Instead of 3 BC projects (Core, Infra, Api) there will now be one. This helps with colocation and does force premature optimization for something like a model library and a heavily separated infra project.
   - Features dir changed to Domain with a features directory inside of it
   - Entities live on their respective entity folder in the domain with their feature
-  - TODO update consumer and producer directory
   - Removed the `webapi` suffix on the api project
   - Core directories moved to web api
   - `Contexts` dir changed to `Databases`
