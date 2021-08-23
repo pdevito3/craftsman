@@ -17,7 +17,7 @@
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_DeleteRecord(entity, addSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
         [Produces(""application/json"")]
-        [HttpDelete(""{{{lowercasePrimaryKey}}}"", Name = ""Delete{entityName}""))]
+        [HttpDelete(""{{{lowercasePrimaryKey}}}"", Name = ""Delete{entityName}"")]
         public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercasePrimaryKey})
         {{
             // add error handling
