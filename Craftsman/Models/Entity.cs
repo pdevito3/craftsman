@@ -69,8 +69,15 @@ namespace Craftsman.Models
             set
             {
                 var entitylessFeatures = value ?? new List<Feature>();
-                _features = entitylessFeatures.Select(f => {f.EntityName = Name; return f;}).ToList();
+                _features = entitylessFeatures
+                    .Select(f =>
+                    {
+                        f.EntityName = Name;
+                        f.EntityPlural = Plural;
+                        return f;
+                    })
+                    .ToList();
             }
-        } 
+        }
     }
 }
