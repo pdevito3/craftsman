@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.11.1] - 2021-08-23
+
+### Fixed
+
+- Removed extra parentheses on endpoint names
+
 ## [0.11.0] - 2021-08-22
 
 ### Added
