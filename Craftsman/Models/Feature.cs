@@ -50,8 +50,8 @@
             get => _responseType;
             set => _responseType = Utilities.PropTypeCleanup(value);
         }
-
-        public List<Policy> Policies { get; set; }
+        
+        public List<Policy> Policies { get; set; } = new List<Policy>();
 
         // feature role as command, producer, consumer in the future... dropped the ball on the OG implementation
     }
