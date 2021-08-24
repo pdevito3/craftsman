@@ -10,6 +10,7 @@
     using System;
     using System.IO;
     using System.IO.Abstractions;
+    using System.Linq;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
 
@@ -102,12 +103,14 @@
                 template.Entities,
                 template.DbContextName,
                 template.AddSwaggerComments,
-                template.AuthorizationSettings.Policies,
                 fileSystem,
                 verbosity);
 
             //seeders & dbsets
-            InfrastructureServiceRegistrationModifier.AddPolicies(srcDirectory, template.AuthorizationSettings.Policies, template.SolutionName);
+            foreach (var feature in template.Entities.SelectMany(entity => entity.Features))
+            {
+                InfrastructureServiceRegistrationModifier.AddPolicies(srcDirectory, feature.Policies , template.SolutionName);
+            }
             SeederModifier.AddSeeders(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
             DbContextModifier.AddDbSet(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
         }

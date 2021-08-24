@@ -29,8 +29,6 @@ namespace Craftsman.Models
         /// </summary>
         public bool AddSwaggerComments { get; set; } = true;
 
-        public AuthorizationSettings AuthorizationSettings { get; set; } = new AuthorizationSettings();
-
         /// <summary>
         /// Calculation to determine whether or not authentication is added to the project
         /// </summary>

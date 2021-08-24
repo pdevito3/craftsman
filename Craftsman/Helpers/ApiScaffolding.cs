@@ -66,7 +66,6 @@
                 template.Entities,
                 template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
-                template.AuthorizationSettings.Policies,
                 fileSystem,
                 verbosity);
 
