@@ -53,7 +53,7 @@
             var projectBaseName = template.ProjectName;
 
             // get solution dir from bcDir
-            var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
+            var solutionDirectory = Directory.GetParent(boundedContextDirectory)?.FullName;
             Utilities.IsSolutionDirectoryGuard(solutionDirectory);
 
             // base files needed before below is ran
@@ -91,21 +91,23 @@
             FunctionalTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
             HealthTestBuilder.CreateTests(testDirectory, projectBaseName);
             HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
+            EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, fileSystem);
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, projectBaseName);
 
             //services
             // TODO move the auth stuff to a modifier to make it SOLID so i can add it to an add auth command
-            foreach (var feature in template.Entities.SelectMany(entity => entity.Features))
+            var policies = template.Entities
+                .SelectMany(entity => entity.Features)
+                .SelectMany(feature => feature.Policies);
+            
+            SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, projectBaseName, template.AddJwtAuthentication, policies, projectBaseName, fileSystem);
+            if (template.AddJwtAuthentication)
             {
-                SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, projectBaseName, template.AddJwtAuthentication, feature.Policies, projectBaseName, fileSystem);
-                if (template.AddJwtAuthentication)
-                {
-                    InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName, feature.Policies);
-                }
+                InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName, policies);
             }
-
+            
             if (template.Bus.AddBus)
                 AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
 

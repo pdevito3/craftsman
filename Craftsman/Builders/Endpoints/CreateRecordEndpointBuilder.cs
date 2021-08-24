@@ -13,11 +13,11 @@
             var entityName = entity.Name;
             var readDto = Utilities.GetDtoName(entityName, Dto.Read);
             var creationDto = Utilities.GetDtoName(entityName, Dto.Creation);
-            var primaryKeyProp = entity.PrimaryKeyProperty;
+            var primaryKeyProp = Entity.PrimaryKeyProperty;
             var addRecordCommandMethodName = Utilities.CommandAddName(entityName);
             var singleResponse = $@"Response<{readDto}>";
             var addRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
-            var hasConflictCode = entity.PrimaryKeyProperty.Type.IsGuidPropertyType();
+            var hasConflictCode = Entity.PrimaryKeyProperty.Type.IsGuidPropertyType();
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_CreateRecord(entity, addSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0, hasConflictCode)}{addRecordAuthorizations}
         [Consumes(""application/json"")]

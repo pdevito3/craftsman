@@ -37,7 +37,7 @@
 
             var entityName = entity.Name;
             var entityNameLowercase = entity.Name.LowercaseFirstLetter();
-            var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
+            var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
             var commandProp = $"{entityName}ToAdd";
             var newEntityProp = $"{entityNameLowercase}ToAdd";
 

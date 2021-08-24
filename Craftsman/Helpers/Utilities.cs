@@ -12,7 +12,9 @@
     using System.Diagnostics;
     using System.Diagnostics.Tracing;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
+    using System.Text;
     using static Helpers.ConsoleWriter;
 
     public class Utilities
@@ -357,6 +359,18 @@
             return fkIncludes;
         }
 
+        public static void CreateFile(ClassPath classPath, string fileText, IFileSystem fileSystem)
+        {
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+            if (fileSystem.File.Exists(classPath.FullClassPath))
+                throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+            using var fs = fileSystem.File.Create(classPath.FullClassPath);
+            fs.Write(Encoding.UTF8.GetBytes(fileText));
+        }
+
         public static void GitSetup(string solutionDirectory)
         {
             GitBuilder.CreateGitIgnore(solutionDirectory);
@@ -521,7 +535,7 @@
             var entityRouteClasses = "";
 
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}        public static class {entity.Plural}
         {{

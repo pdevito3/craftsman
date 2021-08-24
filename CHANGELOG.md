@@ -9,10 +9,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+* Added BaseEntity that all entities will inherit from.
+  * TODO: docs
+
 ### Updated
 
 * Moved Policies to Feature
   * TODO: docs
+* There is no more primary key property. A Guid with a name `Id` will be inherited by all entities.
 
 ## [0.11.1] - 2021-08-23
 

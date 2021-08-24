@@ -59,7 +59,7 @@
             var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             var testName = $"Put_{entity.Name}_Returns_NoContent";
             testName += hasRestrictedEndpoints ? "_WithAuth" : "";
@@ -92,7 +92,7 @@
             var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
         [Test]
@@ -119,7 +119,7 @@
             var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
         [Test]

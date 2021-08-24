@@ -60,7 +60,7 @@
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"[Test]
         public async Task {queryName}_Returns_Resource_With_Accurate_Props()
@@ -81,7 +81,7 @@
 
         private static string GetWithoutKeyTest(string queryName, Entity entity, string featureName)
         {
-            var badId = Utilities.GetRandomId(entity.PrimaryKeyProperty.Type);
+            var badId = Utilities.GetRandomId(Entity.PrimaryKeyProperty.Type);
 
             return badId == "" ? "" : $@"
 

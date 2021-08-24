@@ -83,7 +83,7 @@
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
             return $@"[Test]
@@ -111,7 +111,7 @@
 
         private static string NullPatchDoc(string commandName, Entity entity, string featureName)
         {
-            var randomId = Utilities.GetRandomId(entity.PrimaryKeyProperty.Type);
+            var randomId = Utilities.GetRandomId(Entity.PrimaryKeyProperty.Type);
 
             return randomId == "" ? "" : $@"
 
@@ -132,7 +132,7 @@
 
         private static string BadKey(string commandName, Entity entity, string featureName)
         {
-            var badId = Utilities.GetRandomId(entity.PrimaryKeyProperty.Type);
+            var badId = Utilities.GetRandomId(Entity.PrimaryKeyProperty.Type);
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
 
             return badId == "" ? "" : $@"

@@ -9,11 +9,11 @@
     {
         public static string GetEndpointTextForGetRecord(Entity entity, bool addSwaggerComments,List<Policy> policies)
         {
-            var lowercasePrimaryKey = entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
+            var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var entityNamePlural = entity.Plural;
             var readDto = Utilities.GetDtoName(entityName, Dto.Read);
-            var primaryKeyProp = entity.PrimaryKeyProperty;
+            var primaryKeyProp = Entity.PrimaryKeyProperty;
             var queryRecordMethodName = Utilities.QueryRecordName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
             var singleResponse = $@"Response<{readDto}>";

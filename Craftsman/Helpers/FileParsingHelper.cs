@@ -57,7 +57,7 @@
 
         public static void RunPrimaryKeyGuard(List<Entity> entities)
         {
-            if (entities.Where(e => e.PrimaryKeyProperty == null).ToList().Count > 0)
+            if (entities.Where(e => Entity.PrimaryKeyProperty == null).ToList().Count > 0)
                 throw new MissingPrimaryKeyException("One of your entity properties is missing a primary key designation. " +
                     "Please make sure you have an `IsPrimaryKey: true` option on whichever property you want to be used as your prmary key.");
         }

@@ -61,7 +61,7 @@
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
             var lookupVal = $@"""Easily Identified Value For Test""";
@@ -106,7 +106,7 @@
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
             var lookupVal = $@"""Easily Identified Value For Test""";
@@ -135,7 +135,7 @@
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
             var lookupVal = $@"""Easily Identified Value For Test""";

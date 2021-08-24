@@ -34,8 +34,8 @@
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var manipulationValidator = Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation);
 
-            var primaryKeyPropType = entity.PrimaryKeyProperty.Type;
-            var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
+            var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
+            var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
             var entityNameLowercase = entity.Name.LowercaseFirstLetter();
             var commandProp = $"{entity.Name}ToUpdate";
             var newEntityDataProp = $"new{entity.Name}Data";
