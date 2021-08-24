@@ -13,6 +13,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using System.Linq;
     using static Helpers.ConsoleWriter;
 
     public class ApiScaffolding
@@ -96,11 +97,13 @@
 
             //services
             // TODO move the auth stuff to a modifier to make it SOLID so i can add it to an add auth command
-            SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, projectBaseName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies, projectBaseName, fileSystem);
-
-            if (template.AddJwtAuthentication)
+            foreach (var feature in template.Entities.SelectMany(entity => entity.Features))
             {
-                InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName, template.AuthorizationSettings.Policies);
+                SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, projectBaseName, template.AddJwtAuthentication, feature.Policies, projectBaseName, fileSystem);
+                if (template.AddJwtAuthentication)
+                {
+                    InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName, feature.Policies);
+                }
             }
 
             if (template.Bus.AddBus)
