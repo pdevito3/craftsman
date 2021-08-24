@@ -17,7 +17,7 @@
             var queryListMethodName = Utilities.QueryListName(entityName);
             var listResponse = $@"Response<IEnumerable<{readDto}>>";
             var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
-            var getListAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies, Endpoint.GetList, entity.Name);
+            var getListAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetList(entity, addSwaggerComments, listResponse, getListAuthorizations.Length > 0)}{getListAuthorizations}
         [Consumes(""application/json"")]

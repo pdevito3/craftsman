@@ -9,7 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-* None yet!
+### Updated
+
+* Moved Policies to Feature
+  * TODO: docs
 
 ## [0.11.1] - 2021-08-23
 

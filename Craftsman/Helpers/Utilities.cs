@@ -10,6 +10,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Tracing;
     using System.IO;
     using System.Linq;
     using static Helpers.ConsoleWriter;
@@ -305,17 +306,7 @@
 
         public static string BuildTestAuthorizationString(List<Policy> policies, List<Endpoint> endpoints, string entityName, PolicyType policyType)
         {
-            var endpointStrings = new List<string>();
-            foreach (var endpoint in endpoints)
-            {
-                endpointStrings.Add(Enum.GetName(typeof(Endpoint), endpoint));
-            }
-
-            var results = policies
-                .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == entityName)
-                    && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Intersect(endpointStrings).Any()));
-
-            return "{\"" + string.Join("\", \"", results.Select(r => r.PolicyValue)) + "\"}";
+            return "{\"" + string.Join("\", \"", policies.Select(r => r.PolicyValue)) + "\"}";
         }
 
         public static void AddStartupEnvironmentsWithServices(
@@ -353,14 +344,6 @@
             // add an integration testing env to make sure that an in memory database is used
             var functionalEnv = new ApiEnvironment() { EnvironmentName = "FunctionalTesting" };
             WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, functionalEnv, "", projectBaseName);
-        }
-
-        public static List<Policy> GetEndpointPolicies(List<Policy> policies, Endpoint endpoint, string entityName)
-        {
-            return policies
-                .Where(p => p.EndpointEntities.Any(ee => ee.EntityName == entityName)
-                    && p.EndpointEntities.Any(ee => ee.RestrictedEndpoints.Any(re => re == Enum.GetName(typeof(Endpoint), endpoint))))
-                .ToList();
         }
 
         public static string GetForeignKeyIncludes(Entity entity)

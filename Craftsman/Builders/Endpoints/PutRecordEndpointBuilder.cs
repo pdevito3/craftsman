@@ -16,7 +16,7 @@
             var primaryKeyProp = entity.PrimaryKeyProperty;
             var updateRecordCommandMethodName = Utilities.CommandUpdateName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
-            var updateRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies, Endpoint.UpdateRecord, entity.Name);
+            var updateRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_PutRecord(entity, addSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
         [Produces(""application/json"")]

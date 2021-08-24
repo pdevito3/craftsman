@@ -143,21 +143,19 @@
             return "";
         }
 
-        public static string BuildAuthorizations(List<Policy> policies, Endpoint endpoint, string entityName)
+        public static string BuildAuthorizations(List<Policy> policies)
         {
-            var results = Utilities.GetEndpointPolicies(policies, endpoint, entityName);
-
             var authorizations = "";
-            foreach (var result in results)
+            foreach (var policy in policies)
             {
-                if (result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
+                if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
                 //|| result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Claim))
                 {
-                    authorizations += $@"{Environment.NewLine}        [Authorize(Policy = ""{result.Name}"")]";
+                    authorizations += $@"{Environment.NewLine}        [Authorize(Policy = ""{policy.Name}"")]";
                 }
                 else
                 {
-                    authorizations += $@"{Environment.NewLine}        [Authorize(Roles = ""{result.Name}"")]";
+                    authorizations += $@"{Environment.NewLine}        [Authorize(Roles = ""{policy.Name}"")]";
                 }
             }
 

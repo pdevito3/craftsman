@@ -16,7 +16,7 @@
             var primaryKeyProp = entity.PrimaryKeyProperty;
             var addRecordCommandMethodName = Utilities.CommandAddName(entityName);
             var singleResponse = $@"Response<{readDto}>";
-            var addRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies, Endpoint.AddRecord, entity.Name);
+            var addRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
             var hasConflictCode = entity.PrimaryKeyProperty.Type.IsGuidPropertyType();
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_CreateRecord(entity, addSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0, hasConflictCode)}{addRecordAuthorizations}

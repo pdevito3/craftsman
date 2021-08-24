@@ -1,6 +1,8 @@
 ﻿namespace Craftsman.Models
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Enums;
     using Exceptions;
     using Helpers;
@@ -48,6 +50,8 @@
             get => _responseType;
             set => _responseType = Utilities.PropTypeCleanup(value);
         }
+
+        public List<Policy> Policies { get; set; }
 
         // feature role as command, producer, consumer in the future... dropped the ball on the OG implementation
     }

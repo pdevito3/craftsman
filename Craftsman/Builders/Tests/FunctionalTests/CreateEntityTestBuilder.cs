@@ -30,8 +30,7 @@
             var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
-            var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.AddRecord, entity.Name);
-            var hasRestrictedEndpoints = restrictedPolicies.Count > 0;
+            var hasRestrictedEndpoints = policies.Count > 0;
             var authOnlyTests = hasRestrictedEndpoints ? $@"
             {CreateEntityTestUnauthorized(entity)}
             {CreateEntityTestForbidden(entity)}" : "";
