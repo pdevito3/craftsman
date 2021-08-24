@@ -42,8 +42,6 @@
     public class {entity.Name}
     {{
 {propString}
-
-        // add-on property marker - Do Not Delete This Comment
     }}
 }}";
         }
