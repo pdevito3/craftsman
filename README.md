@@ -19,6 +19,8 @@ v0.11 had a lot of little cleanup items, but I want to bring in some of the big 
 
 Have a request for something you don't see below? Shoot me a message and let's talk about it!
 
+✅ docker utility updates for integration tests using [Fluent Docker](https://github.com/mariotoffia/FluentDocker) 🐳
+
 🚧 `add:feature` enhancement to add more than just ad-hoc features
 
 🚧 Better environment variable support
