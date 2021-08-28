@@ -12,19 +12,8 @@
         public static void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, string dbName, string provider, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestFixture.cs", projectBaseName);
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, dbName, provider);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, dbName, provider);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
         public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName, string dbName, string provider)
@@ -86,14 +75,11 @@
         private static IServiceScopeFactory _scopeFactory;
         private static Checkpoint _checkpoint;
 
-        private string _dockerContainerId;
-        private string _dockerSqlPort;
-
         [OneTimeSetUp]
         public async Task RunBeforeAnyTests()
         {{
-            (_dockerContainerId, _dockerSqlPort) = await DockerSqlDatabaseUtilities.EnsureDockerStartedAndGetContainerIdAndPortAsync();
-            var dockerConnectionString = DockerSqlDatabaseUtilities.GetSqlConnectionString(_dockerSqlPort);
+            var dockerDbPort = await DockerDatabaseUtilities.EnsureDockerStartedAndGetPortPortAsync();
+            var dockerConnectionString = DockerDatabaseUtilities.GetSqlConnectionString(dockerDbPort.ToString());
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

@@ -86,7 +86,8 @@
             PagedListTestBuilder.CreateTests(testDirectory, projectBaseName);
             IntegrationTestFixtureBuilder.CreateFixture(testDirectory, projectBaseName, template.DbContext.ContextName, template.DbContext.DatabaseName, template.DbContext.Provider, fileSystem);
             IntegrationTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
-            DockerDatabaseUtilitiesBuilder.CreateClass(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
+            DockerUtilitiesBuilder.CreateGeneralUtilityClass(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
+            DockerUtilitiesBuilder.CreateDockerDatabaseUtilityClass(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
             WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
             FunctionalTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
             HealthTestBuilder.CreateTests(testDirectory, projectBaseName);
