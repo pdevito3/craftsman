@@ -42,6 +42,7 @@
     <PackageReference Include=""AutoBogus"" Version=""2.13.0"" />
     <PackageReference Include=""Bogus"" Version=""33.0.2"" />
     <PackageReference Include=""Docker.DotNet"" Version=""3.125.4"" />
+    <PackageReference Include=""Ductus.FluentDocker"" Version=""2.10.7"" />
     <PackageReference Include=""FluentAssertions"" Version=""5.10.3"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""5.0.6"" />
     <PackageReference Include=""MediatR"" Version=""9.0.0"" />
