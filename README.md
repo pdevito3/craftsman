@@ -21,7 +21,7 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 ✅ docker utility updates for integration tests using [Fluent Docker](https://github.com/mariotoffia/FluentDocker) 🐳
 
-🚧 `add:feature` enhancement to add more than just ad-hoc features
+✅  `add:feature` enhancement to add more than just ad-hoc features
 
 🚧 Better environment variable support
 

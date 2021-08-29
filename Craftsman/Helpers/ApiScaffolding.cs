@@ -67,8 +67,7 @@
                 template.Entities,
                 template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
-                fileSystem,
-                verbosity);
+                fileSystem);
 
             // environments
             Utilities.AddStartupEnvironmentsWithServices(

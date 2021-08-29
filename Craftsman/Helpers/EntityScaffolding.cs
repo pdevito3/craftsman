@@ -24,8 +24,7 @@
             List<Entity> entities,
             string dbContextName,
             bool addSwaggerComments,
-            IFileSystem fileSystem,
-            Verbosity verbosity)
+            IFileSystem fileSystem)
         {
             foreach (var entity in entities)
             {
@@ -40,62 +39,83 @@
                 // TODO refactor to factory?
                 foreach (var feature in entity.Features)
                 {
-                    if (feature.Type == FeatureType.AddRecord.Name)
-                    {
-                        CommandAddRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                        AddCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                        CreateEntityTestBuilder.CreateTests(testDirectory, entity, feature.Policies, projectBaseName);
-                        ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddRecord, entity, addSwaggerComments, feature.Policies, projectBaseName);
-                    }
-                    if (feature.Type == FeatureType.GetRecord.Name)
-                    {
-                        QueryGetRecordBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
-                        GetRecordQueryTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                        GetEntityRecordTestBuilder.CreateTests(testDirectory, entity, feature.Policies, projectBaseName);
-                        ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments, feature.Policies, projectBaseName);
-                    }
-                    if (feature.Type == FeatureType.GetList.Name)
-                    {
-                        QueryGetListBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
-                        GetListQueryTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                        GetEntityListTestBuilder.CreateTests(testDirectory, entity, feature.Policies, projectBaseName);
-                        ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments, feature.Policies, projectBaseName);
-                    }
-                    if (feature.Type == FeatureType.DeleteRecord.Name)
-                    {
-                        CommandDeleteRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                        DeleteCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                        DeleteEntityTestBuilder.CreateTests(testDirectory, entity, feature.Policies, projectBaseName);
-                        ControllerModifier.AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments, feature.Policies, projectBaseName);
-                    }
-                    if (feature.Type == FeatureType.UpdateRecord.Name)
-                    {
-                        CommandUpdateRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                        PutCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                        PutEntityTestBuilder.CreateTests(testDirectory, entity, feature.Policies, projectBaseName);
-                        ControllerModifier.AddEndpoint(srcDirectory, FeatureType.UpdateRecord, entity, addSwaggerComments, feature.Policies, projectBaseName);
-                    }
-                    if (feature.Type == FeatureType.PatchRecord.Name)
-                    {
-                        CommandPatchRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                        PatchCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                        PatchEntityTestBuilder.CreateTests(testDirectory, entity, feature.Policies, projectBaseName);
-                        ControllerModifier.AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments, feature.Policies, projectBaseName);
-                    }
-                    if (feature.Type == FeatureType.AdHoc.Name)
-                    {
-                        EmptyFeatureBuilder.CreateCommand(srcDirectory, dbContextName, projectBaseName, feature);
-                        // TODO ad hoc feature endpoint
-                        // TODO empty failing test to promote test writing?
-                    }
+                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature.Policies, feature, entity);
                 }
 
                 // Shared Tests
                 FakesBuilder.CreateFakes(testDirectory, projectBaseName, entity);
-
-                if (verbosity == Verbosity.More)
-                    WriteHelpText($"{projectBaseName} '{entity.Name}' entity was scaffolded successfully.");
             }
+        }
+
+        public static void AddFeatureToProject(string srcDirectory, string testDirectory, string projectBaseName,
+            string dbContextName, bool addSwaggerComments, List<Policy> policies, Feature feature, Entity entity)
+        {
+            if (feature.Type == FeatureType.AddRecord.Name)
+            {
+                CommandAddRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
+                AddCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                CreateEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddRecord, entity, addSwaggerComments, policies,
+                    projectBaseName);
+            }
+
+            if (feature.Type == FeatureType.GetRecord.Name)
+            {
+                ScaffoldGetRecord(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, policies, entity);
+            }
+
+            if (feature.Type == FeatureType.GetList.Name)
+            {
+                QueryGetListBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
+                GetListQueryTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                GetEntityListTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments, policies,
+                    projectBaseName);
+            }
+            
+            if (feature.Type == FeatureType.DeleteRecord.Name)
+            {
+                CommandDeleteRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
+                DeleteCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                DeleteEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments, policies,
+                    projectBaseName);
+            }
+            
+            if (feature.Type == FeatureType.UpdateRecord.Name)
+            {
+                CommandUpdateRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
+                PutCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                PutEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.UpdateRecord, entity, addSwaggerComments, policies,
+                    projectBaseName);
+            }
+            
+            if (feature.Type == FeatureType.PatchRecord.Name)
+            {
+                CommandPatchRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
+                PatchCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                PatchEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments, policies,
+                    projectBaseName);
+            }
+
+            if (feature.Type == FeatureType.AdHoc.Name)
+            {
+                EmptyFeatureBuilder.CreateCommand(srcDirectory, dbContextName, projectBaseName, feature);
+                // TODO ad hoc feature endpoint
+                // TODO empty failing test to promote test writing?
+            }
+        }
+
+        public static void ScaffoldGetRecord(string srcDirectory, string testDirectory, string projectBaseName,
+            string dbContextName, bool addSwaggerComments, List<Policy> policies, Entity entity)
+        {
+            QueryGetRecordBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
+            GetRecordQueryTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+            GetEntityRecordTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+            ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments, policies,
+                projectBaseName);
         }
     }
 }

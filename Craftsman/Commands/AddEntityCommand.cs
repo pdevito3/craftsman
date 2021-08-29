@@ -62,7 +62,7 @@
                 FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
 
                 // add all files based on the given template config
-                RunEntityBuilders(srcDirectory, testDirectory, template, fileSystem, verbosity);
+                RunEntityBuilders(srcDirectory, testDirectory, template, fileSystem);
 
                 WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
             }
@@ -94,7 +94,7 @@
             }
         }
 
-        private static void RunEntityBuilders(string srcDirectory, string testDirectory, AddEntityTemplate template, IFileSystem fileSystem, Verbosity verbosity)
+        private static void RunEntityBuilders(string srcDirectory, string testDirectory, AddEntityTemplate template, IFileSystem fileSystem)
         {
             //entities
             EntityScaffolding.ScaffoldEntities(srcDirectory,
@@ -103,8 +103,7 @@
                 template.Entities,
                 template.DbContextName,
                 template.AddSwaggerComments,
-                fileSystem,
-                verbosity);
+                fileSystem);
 
             //seeders & dbsets
             foreach (var feature in template.Entities.SelectMany(entity => entity.Features))

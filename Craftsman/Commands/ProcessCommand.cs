@@ -212,7 +212,7 @@
                     Console.WriteLine("Enter the root directory.");
                     rootDir = Console.ReadLine();
                 }
-                AddFeatureCommand.Run(rootDir);
+                AddFeatureCommand.Run(rootDir, fileSystem);
             }
         }
 
