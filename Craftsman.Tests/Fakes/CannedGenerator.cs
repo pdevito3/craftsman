@@ -14,14 +14,6 @@
                 {
                     new EntityProperty()
                     {
-                        Name = "ProductId",
-                        Type = "int",
-                        IsPrimaryKey = true,
-                        CanFilter = true,
-                        CanSort = false,
-                    },
-                    new EntityProperty()
-                    {
                         Name = "Name",
                         Type = "string",
                         CanFilter = true,
@@ -48,17 +40,5 @@
                 }
             };
         }
-
-        public static EntityProperty FakeBasicIntKeyProperty()
-        {
-            return new EntityProperty()
-            {
-                Name = "ProductId",
-                Type = "int",
-                IsPrimaryKey = true,
-                CanFilter = true,
-                CanSort = false,
-            };
     }
-}
 }

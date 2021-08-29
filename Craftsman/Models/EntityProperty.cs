@@ -44,21 +44,16 @@ namespace Craftsman.Models
         /// </summary>
         public bool CanManipulate
         {
-            get => !IsPrimaryKey;
+            get =>  _canManipulate;
             set => _canManipulate = value;
         }
-
-        /// <summary>
-        /// Designates the property as the primary key for the entity
-        /// </summary>
-        public bool IsPrimaryKey { get; set; } = false;
 
         /// <summary>
         /// Denotes a required field in the database
         /// </summary>
         public bool IsRequired
         {
-            get => IsPrimaryKey || _isRequired;
+            get => _isRequired;
             set => _isRequired = value;
         }
 
@@ -85,5 +80,17 @@ namespace Craftsman.Models
         /// Database field name to use when it doesn't match the property name
         /// </summary>
         public string ColumnName { get; set; }
+
+        public static EntityProperty GetPrimaryKey()
+        {
+            return new()
+               {
+                   ColumnName = "id",
+                   IsRequired = true,
+                   CanManipulate = false,
+                   Name = "Id",
+                   Type = "Guid"
+               };
+        }
     }
 }

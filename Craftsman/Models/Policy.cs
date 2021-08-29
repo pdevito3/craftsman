@@ -34,9 +34,5 @@
         /// </summary>
         public string PolicyValue { get; set; }
 
-        /// <summary>
-        /// The entity endpoint information (e.g. Recipe, GetList, GetRecord).
-        /// </summary>
-        public List<EntityEndpoint> EndpointEntities { get; set; }
     }
 }

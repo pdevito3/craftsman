@@ -8,12 +8,12 @@
     {
         public static string GetEndpointTextForDeleteRecord(Entity entity, bool addSwaggerComments,List<Policy> policies)
         {
-            var lowercasePrimaryKey = entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
+            var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
-            var primaryKeyProp = entity.PrimaryKeyProperty;
+            var primaryKeyProp = Entity.PrimaryKeyProperty;
             var deleteRecordCommandMethodName = Utilities.CommandDeleteName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
-            var deleteRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies, Endpoint.DeleteRecord, entity.Name);
+            var deleteRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_DeleteRecord(entity, addSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
         [Produces(""application/json"")]

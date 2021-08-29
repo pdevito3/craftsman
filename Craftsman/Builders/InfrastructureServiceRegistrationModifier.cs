@@ -8,7 +8,7 @@
 
     public class InfrastructureServiceRegistrationModifier
     {
-        public static void InitializeAuthServices(string srcDirectory, string projectBaseName, List<Policy> policies)
+        public static void InitializeAuthServices(string srcDirectory, string projectBaseName, IEnumerable<Policy> policies)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetInfraRegistrationName()}.cs", projectBaseName);
 
@@ -99,7 +99,7 @@
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        private static string GetAuthServicesText(List<Policy> policies)
+        private static string GetAuthServicesText(IEnumerable<Policy> policies)
         {
             var policiesString = "";
             foreach (var policy in policies)
@@ -123,7 +123,7 @@
             }});";
         }
 
-        private static List<Policy> GetPoliciesThatDoNotExist(List<Policy> policies, string existingFileFullClassPath)
+        private static List<Policy> GetPoliciesThatDoNotExist(IEnumerable<Policy> policies, string existingFileFullClassPath)
         {
             var nonExistantPolicies = new List<Policy>();
             nonExistantPolicies.AddRange(policies);

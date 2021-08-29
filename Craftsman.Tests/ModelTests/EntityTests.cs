@@ -42,17 +42,5 @@ namespace Craftsman.Tests.ModelTests
 
             entity.Lambda.Should().BeEquivalentTo("n");
         }
-
-        [Fact]
-        public void PrimaryKeyAutoAssigned()
-        {
-            var entity = new FakeEntity { }.Generate();
-            var prop = new FakeEntityProperty { }.Generate();
-            prop.IsPrimaryKey = true;
-            entity.Properties.Clear();
-            entity.Properties.Add(prop);
-
-            entity.PrimaryKeyProperty.Should().BeEquivalentTo(prop);
-        }
     }
 }

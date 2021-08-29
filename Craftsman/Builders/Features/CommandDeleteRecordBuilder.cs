@@ -31,8 +31,8 @@
             var className = Utilities.DeleteEntityFeatureClassName(entity.Name);
             var deleteCommandName = Utilities.CommandDeleteName(entity.Name);
 
-            var primaryKeyPropType = entity.PrimaryKeyProperty.Type;
-            var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
+            var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
+            var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
             var entityNameLowercase = entity.Name.LowercaseFirstLetter();
 
             var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);

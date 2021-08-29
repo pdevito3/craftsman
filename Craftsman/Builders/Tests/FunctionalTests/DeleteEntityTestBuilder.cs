@@ -31,8 +31,7 @@
             var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
-            var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.DeleteRecord, entity.Name);
-            var hasRestrictedEndpoints = restrictedPolicies.Count > 0;
+            var hasRestrictedEndpoints = policies.Count > 0;
             var authOnlyTests = hasRestrictedEndpoints ? $@"
             {DeleteEntityTestUnauthorized(entity)}
             {DeleteEntityTestForbidden(entity)}" : "";
@@ -57,7 +56,7 @@
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             var testName = $"Delete_{entity.Name}Returns_NoContent";
             testName += hasRestrictedEndpoints ? "_WithAuth" : "";
@@ -87,7 +86,7 @@
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
         [Test]
@@ -111,7 +110,7 @@
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
         [Test]

@@ -38,7 +38,7 @@
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");

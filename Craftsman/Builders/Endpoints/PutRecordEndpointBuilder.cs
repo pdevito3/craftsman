@@ -10,13 +10,13 @@
         public static string GetEndpointTextForPutRecord(Entity entity, bool addSwaggerComments,List<Policy> policies)
         {
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
-            var lowercasePrimaryKey = entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
+            var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
-            var primaryKeyProp = entity.PrimaryKeyProperty;
+            var primaryKeyProp = Entity.PrimaryKeyProperty;
             var updateRecordCommandMethodName = Utilities.CommandUpdateName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
-            var updateRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies, Endpoint.UpdateRecord, entity.Name);
+            var updateRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_PutRecord(entity, addSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
         [Produces(""application/json"")]

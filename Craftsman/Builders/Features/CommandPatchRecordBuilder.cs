@@ -19,12 +19,10 @@
             if (File.Exists(classPath.FullClassPath))
                 throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            using FileStream fs = File.Create(classPath.FullClassPath);
+            var data = "";
+            data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, projectBaseName);
+            fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
         public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string projectBaseName)
@@ -34,8 +32,8 @@
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var manipulationValidator = Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation);
 
-            var primaryKeyPropType = entity.PrimaryKeyProperty.Type;
-            var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
+            var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
+            var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
             var entityNameLowercase = entity.Name.LowercaseFirstLetter();
             var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
             var patchedEntityProp = $"{entityNameLowercase}ToPatch";
@@ -101,10 +99,6 @@
 
                 var {patchedEntityProp} = _mapper.Map<{updateDto}>({updatedEntityProp}); // map the {entityNameLowercase} we got from the database to an updatable {entityNameLowercase} model
                 request.PatchDoc.ApplyTo({patchedEntityProp}); // apply patchdoc updates to the updatable {entityNameLowercase}
-
-                var validationResults = new CustomPatch{entity.Name}Validation().Validate({patchedEntityProp});
-                if (!validationResults.IsValid)
-                    throw new ValidationException(validationResults.Errors);
 
                 _mapper.Map({patchedEntityProp}, {updatedEntityProp});
                 await _db.SaveChangesAsync();

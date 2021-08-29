@@ -13,6 +13,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using System.Linq;
     using static Helpers.ConsoleWriter;
 
     public class ApiScaffolding
@@ -52,7 +53,7 @@
             var projectBaseName = template.ProjectName;
 
             // get solution dir from bcDir
-            var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
+            var solutionDirectory = Directory.GetParent(boundedContextDirectory)?.FullName;
             Utilities.IsSolutionDirectoryGuard(solutionDirectory);
 
             // base files needed before below is ran
@@ -66,9 +67,7 @@
                 template.Entities,
                 template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
-                template.AuthorizationSettings.Policies,
-                fileSystem,
-                verbosity);
+                fileSystem);
 
             // environments
             Utilities.AddStartupEnvironmentsWithServices(
@@ -92,19 +91,23 @@
             FunctionalTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
             HealthTestBuilder.CreateTests(testDirectory, projectBaseName);
             HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
+            EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, fileSystem);
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, projectBaseName);
 
             //services
             // TODO move the auth stuff to a modifier to make it SOLID so i can add it to an add auth command
-            SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, projectBaseName, template.AddJwtAuthentication, template.AuthorizationSettings.Policies, projectBaseName, fileSystem);
-
+            var policies = template.Entities
+                .SelectMany(entity => entity.Features)
+                .SelectMany(feature => feature.Policies);
+            
+            SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, projectBaseName, template.AddJwtAuthentication, policies, projectBaseName, fileSystem);
             if (template.AddJwtAuthentication)
             {
-                InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName, template.AuthorizationSettings.Policies);
+                InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName, policies);
             }
-
+            
             if (template.Bus.AddBus)
                 AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
 

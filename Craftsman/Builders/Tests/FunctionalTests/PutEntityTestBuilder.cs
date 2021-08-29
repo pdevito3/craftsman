@@ -32,8 +32,7 @@
             var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
-            var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.UpdateRecord, entity.Name);
-            var hasRestrictedEndpoints = restrictedPolicies.Count > 0;
+            var hasRestrictedEndpoints = policies.Count > 0;
             var authOnlyTests = hasRestrictedEndpoints ? $@"
             {EntityTestUnauthorized(entity)}
             {EntityTestForbidden(entity)}" : "";
@@ -60,7 +59,7 @@
             var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             var testName = $"Put_{entity.Name}_Returns_NoContent";
             testName += hasRestrictedEndpoints ? "_WithAuth" : "";
@@ -93,7 +92,7 @@
             var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
         [Test]
@@ -120,7 +119,7 @@
             var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
         [Test]

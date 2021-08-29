@@ -45,9 +45,8 @@
 
     public {abstractString}class {Utilities.GetDtoName(entity.Name, dto)} {inheritanceString}
     {{
+        public Guid Id {{ get; set; }}
 {propString}
-
-        // add-on property marker - Do Not Delete This Comment
     }}
 }}";
         }

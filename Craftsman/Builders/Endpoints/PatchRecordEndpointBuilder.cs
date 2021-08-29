@@ -9,13 +9,13 @@
     {
         public static string GetEndpointTextForPatchRecord(Entity entity, bool addSwaggerComments,List<Policy> policies)
         {
-            var lowercasePrimaryKey = entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
+            var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
-            var primaryKeyProp = entity.PrimaryKeyProperty;
+            var primaryKeyProp = Entity.PrimaryKeyProperty;
             var patchRecordCommandMethodName = Utilities.CommandPatchName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
-            var updatePartialAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies, Endpoint.UpdatePartial, entity.Name);
+            var updatePartialAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_PatchRecord(entity, addSwaggerComments, updatePartialAuthorizations.Length > 0)}{updatePartialAuthorizations}
         [Consumes(""application/json"")]

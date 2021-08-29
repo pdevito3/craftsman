@@ -33,8 +33,8 @@
             var queryRecordName = Utilities.QueryRecordName(entity.Name);
             var readDto = Utilities.GetDtoName(entity.Name, Dto.Read);
 
-            var primaryKeyPropType = entity.PrimaryKeyProperty.Type;
-            var primaryKeyPropName = entity.PrimaryKeyProperty.Name;
+            var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
+            var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
             var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
 
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);

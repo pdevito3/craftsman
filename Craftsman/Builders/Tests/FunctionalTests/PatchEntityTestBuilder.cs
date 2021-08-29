@@ -34,8 +34,7 @@
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
-            var restrictedPolicies = Utilities.GetEndpointPolicies(policies, Endpoint.UpdatePartial, entity.Name);
-            var hasRestrictedEndpoints = restrictedPolicies.Count > 0;
+            var hasRestrictedEndpoints = policies.Count > 0;
             var authOnlyTests = hasRestrictedEndpoints ? $@"
             {EntityTestUnauthorized(entity)}
             {EntityTestForbidden(entity)}" : "";
@@ -62,7 +61,7 @@
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
             var lookupVal = $@"""Easily Identified Value For Test""";
@@ -107,7 +106,7 @@
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
             var lookupVal = $@"""Easily Identified Value For Test""";
@@ -136,7 +135,7 @@
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
             var lookupVal = $@"""Easily Identified Value For Test""";

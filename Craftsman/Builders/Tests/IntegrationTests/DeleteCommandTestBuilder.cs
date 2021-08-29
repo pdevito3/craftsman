@@ -30,7 +30,7 @@
             var featureName = Utilities.DeleteEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var commandName = Utilities.CommandDeleteName(entity.Name);
-            var badId = entity.PrimaryKeyProperty.Name;
+            var badId = Entity.PrimaryKeyProperty.Name;
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
@@ -62,7 +62,7 @@
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var pkName = entity.PrimaryKeyProperty.Name;
+            var pkName = Entity.PrimaryKeyProperty.Name;
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
             return $@"[Test]
@@ -86,7 +86,7 @@
 
         private static string GetDeleteWithoutKeyTest(string commandName, Entity entity, string featureName)
         {
-            var badId = Utilities.GetRandomId(entity.PrimaryKeyProperty.Type);
+            var badId = Utilities.GetRandomId(Entity.PrimaryKeyProperty.Type);
 
             return badId == "" ? "" : $@"
 
