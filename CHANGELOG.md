@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Removed the broken patch validation from command
+- No more `409` produced response annotation on POST
 
 
 ## [0.11.1] - 2021-08-23
