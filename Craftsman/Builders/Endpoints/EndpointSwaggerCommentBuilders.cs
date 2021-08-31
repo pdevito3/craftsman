@@ -73,7 +73,6 @@
         {
             var authResponses = GetAuthResponses(hasAuthentications);
             var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
-            var conflictResponses = GetConflictResponses(hasGuidPk);
             return buildComments ? $@"
         /// <summary>
         /// Creates a new {entity.Name} record.
@@ -82,7 +81,7 @@
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
         [ProducesResponseType(typeof({singleResponse}), 201)]
-        [ProducesResponseType(typeof(Response<>), 400)]{authResponses}{conflictResponses}
+        [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
         [ProducesResponseType(500)]" : "";
         }
 
