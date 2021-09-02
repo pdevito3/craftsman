@@ -27,7 +27,9 @@
 
         public static string GetDtoText(IClassPath dtoClassPath, Entity entity, Dto dto)
         {
-            var propString = DtoPropBuilder(entity.Properties, dto);
+            var propString = dto is Dto.Read ? $@"
+        public Guid Id {{ get; set; }}" : "";
+            propString += DtoPropBuilder(entity.Properties, dto);
             if (dto is Dto.Update or Dto.Creation)
                 propString = "";
 
@@ -45,7 +47,6 @@
 
     public {abstractString}class {Utilities.GetDtoName(entity.Name, dto)} {inheritanceString}
     {{
-        public Guid Id {{ get; set; }}
 {propString}
     }}
 }}";
