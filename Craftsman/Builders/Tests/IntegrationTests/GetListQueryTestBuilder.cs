@@ -246,9 +246,9 @@
             //Arrange
             var {fakeEntityVariableNameOne} = new {fakeEntity} {{ }}.Generate();
             var {fakeEntityVariableNameTwo} = new {fakeEntity} {{ }}.Generate();
-            fake{entity.Name}One.{prop.Name} = {bravo};
-            fake{entity.Name}Two.{prop.Name} = {alpha};
-            var queryParameters = new {entityParams}() {{ SortOrder = ""{prop.Name}"" }};
+            fake{entity.Name}One.{prop.Name} = {alpha};
+            fake{entity.Name}Two.{prop.Name} = {bravo};
+            var queryParameters = new {entityParams}() {{ SortOrder = ""-{prop.Name}"" }};
 
             await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
