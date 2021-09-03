@@ -9,9 +9,9 @@
 
     public class CommandUpdateRecordBuilder
     {
-        public static void CreateCommand(string solutionDirectory, Entity entity, string contextName, string projectBaseName)
+        public static void CreateCommand(string srcDirectory, Entity entity, string contextName, string projectBaseName)
         {
-            var classPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, $"{Utilities.UpdateEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{Utilities.UpdateEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -22,12 +22,12 @@
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
                 var data = "";
-                data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, projectBaseName);
+                data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, srcDirectory, projectBaseName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string projectBaseName)
+        public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string srcDirectory, string projectBaseName)
         {
             var className = Utilities.UpdateEntityFeatureClassName(entity.Name);
             var updateCommandName = Utilities.CommandUpdateName(entity.Name);
@@ -41,11 +41,11 @@
             var newEntityDataProp = $"new{entity.Name}Data";
             var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
 
-            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
-            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-            var validatorsClassPath = ClassPathHelper.ValidationClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+            var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Name, projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
+            var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
+            var validatorsClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
             return @$"namespace {classNamespace}
 {{
