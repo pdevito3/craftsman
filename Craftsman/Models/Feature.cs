@@ -2,11 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Enums;
     using Exceptions;
     using Helpers;
-
+    
     public class Feature
     {
         public string EntityName { get; set; }
@@ -52,6 +51,26 @@
         }
         
         public List<Policy> Policies { get; set; } = new List<Policy>();
+
+        /// <summary>
+        /// The name of the property on the foreign entity you are doing a batch add on.
+        /// </summary>
+        public string BatchPropertyName { get; set; }
+
+        private string _batchPropType;
+        /// <summary>
+        /// The data type of the the property you are doing the batch add on. This is for a FK property, so probably a Guid or int.
+        /// </summary>
+        public string BatchPropertyType
+        {
+            get => _batchPropType;
+            set => _batchPropType = Utilities.PropTypeCleanup(value);
+        }
+        
+        /// <summary>
+        /// The name of the DbSet for the FK you are doing a batch add on. Generally, the plural of the FK entity. Leave null if you're not batching on a FK.
+        /// </summary>
+        public string BatchPropertyDbSetName { get; set; }
 
         // feature role as command, producer, consumer in the future... dropped the ball on the OG implementation
     }

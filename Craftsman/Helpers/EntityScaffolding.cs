@@ -39,7 +39,7 @@
                 // TODO refactor to factory?
                 foreach (var feature in entity.Features)
                 {
-                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature.Policies, feature, entity);
+                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature.Policies, feature, entity, fileSystem);
                 }
 
                 // Shared Tests
@@ -48,7 +48,8 @@
         }
 
         public static void AddFeatureToProject(string srcDirectory, string testDirectory, string projectBaseName,
-            string dbContextName, bool addSwaggerComments, List<Policy> policies, Feature feature, Entity entity)
+            string dbContextName, bool addSwaggerComments, List<Policy> policies, Feature feature, Entity entity,
+            IFileSystem fileSystem)
         {
             if (feature.Type == FeatureType.AddRecord.Name)
             {
@@ -98,6 +99,15 @@
                 PatchEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments, policies,
                     projectBaseName);
+            }
+            
+            if (feature.Type == FeatureType.AddListforFk.Name)
+            {
+                CommandAddListBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName, feature, fileSystem);
+                // AddListCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                // AddListEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                // ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddListUsingFk, entity, addSwaggerComments, policies,
+                //     projectBaseName);
             }
 
             if (feature.Type == FeatureType.AdHoc.Name)

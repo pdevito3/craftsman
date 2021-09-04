@@ -12,6 +12,7 @@
         public static readonly FeatureType UpdateRecord = new UpdateRecordType();
         public static readonly FeatureType PatchRecord = new PatchRecordType();
         public static readonly FeatureType AdHoc = new AdHocType();
+        public static readonly FeatureType AddListforFk = new AddListForFkType();
 
         protected FeatureType(string name, int value) : base(name, value)
         {
@@ -90,6 +91,16 @@
                 => name.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");
             public override string CommandName(string command, string entityName)
                 => command.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");
+        }
+
+        private class AddListForFkType : FeatureType
+        {
+            public AddListForFkType() : base(nameof(AddListforFk), 8) {}
+
+            public override string FeatureName(string name = null)
+                => name.EscapeSpaces() ?? $"CreateList"; //TODO bring in entity name here...
+            public override string CommandName(string command, string entityName)
+                => command.EscapeSpaces() ?? $"Add{entityName}List";
         }
     }
 }

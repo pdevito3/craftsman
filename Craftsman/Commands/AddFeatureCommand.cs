@@ -55,7 +55,8 @@
                     true,
                     feature.Policies,
                     feature,
-                    new Entity() { Name = feature.EntityName, Plural = feature.EntityPlural});
+                    new Entity() { Name = feature.EntityName, Plural = feature.EntityPlural},
+                    fileSystem);
                 
                 WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
                 AnsiConsole.WriteLine();
@@ -96,7 +97,7 @@
 
             var featureType = AskFeatureType();
             
-            if (featureType != FeatureType.AdHoc.Name)
+            if (featureType != FeatureType.AdHoc.Name && featureType != FeatureType.AddListforFk.Name)
             {
                 var entityName = AskEntityName();
                 var entityPlural = AskEntityPlural(entityName);
@@ -121,6 +122,42 @@
                     Policies = policies
                 };
             }
+            
+            if (featureType == FeatureType.AddListforFk.Name)
+            {
+                var entityName = AskEntityName();
+                var entityPlural = AskEntityPlural(entityName);
+                var useSwagger = AskUseSwaggerComments();
+                var policies = AskPolicies();
+                var propName = AskBatchOnPropertyName();
+                var propType = AskBatchOnPropertyType();
+                var dbSet = AskBatchPropertyDbSetName();
+
+                AnsiConsole.WriteLine();
+                AnsiConsole.Render(new Table().AddColumns("[grey]Property[/]", "[grey]Value[/]")
+                    .RoundedBorder()
+                    .BorderColor(Color.Grey)
+                    .AddRow("[grey]Entity Name[/]", entityName)
+                    .AddRow("[grey]Entity Plural[/]", entityPlural)
+                    .AddRow("[grey]Use Swagger[/]", useSwagger.ToString())
+                    .AddRow("[grey]Batch Prop Name[/]", propName)
+                    .AddRow("[grey]Batch Prop Type[/]", propType)
+                    .AddRow("[grey]Batch DbSet[/]", dbSet)
+                    .AddRow("[grey]Policies[/]", policies.Count > 0 ? $"{policies.Count} policies" : "-")
+                );
+                
+                return new Feature()
+                {
+                    Type = featureType,
+                    EntityName = entityName,
+                    EntityPlural = entityPlural,
+                    Policies = policies,
+                    BatchPropertyName = propName,
+                    BatchPropertyType = propType,
+                    BatchPropertyDbSetName = dbSet
+                };
+            }
+            
             
             var feature = AskFeature();
             var command = AskCommand(feature);
@@ -207,7 +244,16 @@
                 new SelectionPrompt<string>()
                     .Title("What [green]type of feature[/] do you want to add?")
                     .PageSize(50)
-                    .AddChoices("AdHoc", "AddRecord", "DeleteRecord", "GetList", "GetRecord", "UpdateRecord", "PatchRecord"));
+                    .AddChoices(FeatureType.AdHoc.Name,
+                        FeatureType.AddListforFk.Name,
+                        FeatureType.AddRecord.Name,
+                        FeatureType.DeleteRecord.Name,
+                        FeatureType.GetList.Name,
+                        FeatureType.GetRecord.Name,
+                        FeatureType.PatchRecord.Name,
+                        FeatureType.UpdateRecord.Name
+                    )
+                );
         }
 
         private static string AskEntityName()
@@ -223,6 +269,27 @@
                 new TextPrompt<string>($"What's the [green]plural name[/] of the entity that will use this feature (Default: [green]{entityName}s[/])?")
                     .DefaultValue($"{entityName}s")
                     .HideDefaultValue()
+            );
+        }
+
+        private static string AskBatchOnPropertyName()
+        {
+            return AnsiConsole.Prompt(
+                new TextPrompt<string>("What's the [green]name of the property[/] that you will batch add for in this feature (e.g. `eventId` would add a list of records that all have the same event id)?")
+            );
+        }
+
+        private static string AskBatchOnPropertyType()
+        {
+            return AnsiConsole.Prompt(
+                new TextPrompt<string>("What's the [green]data type[/] of the the property you are doing the batch add on (case insensitive).")
+            );
+        }
+
+        private static string AskBatchPropertyDbSetName()
+        {
+            return AnsiConsole.Prompt(
+                new TextPrompt<string>("What's the [green]name of the DbSet[/] of the the property you are doing the batch add on? Leave [green]null[/] if you're not batching on a FK.")
             );
         }
 
