@@ -38,7 +38,7 @@
                                 endpoint = GetRecordEndpointBuilder.GetEndpointTextForGetRecord(entity, addSwaggerComments, policies);
                             else if(featureType == FeatureType.AddRecord)
                                 endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateRecord(entity, addSwaggerComments, policies);
-                            else if(featureType == FeatureType.AddListforFk)
+                            else if(featureType == FeatureType.AddListByFk)
                                 endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateList(entity, addSwaggerComments, policies, feature);
                             else if(featureType == FeatureType.DeleteRecord)
                                 endpoint = DeleteRecordEndpointBuilder.GetEndpointTextForDeleteRecord(entity, addSwaggerComments, policies);

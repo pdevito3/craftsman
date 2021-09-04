@@ -97,7 +97,7 @@
 
             var featureType = AskFeatureType();
             
-            if (featureType != FeatureType.AdHoc.Name && featureType != FeatureType.AddListforFk.Name)
+            if (featureType != FeatureType.AdHoc.Name && featureType != FeatureType.AddListByFk.Name)
             {
                 var entityName = AskEntityName();
                 var entityPlural = AskEntityPlural(entityName);
@@ -123,7 +123,7 @@
                 };
             }
             
-            if (featureType == FeatureType.AddListforFk.Name)
+            if (featureType == FeatureType.AddListByFk.Name)
             {
                 var entityName = AskEntityName();
                 var entityPlural = AskEntityPlural(entityName);
@@ -248,7 +248,7 @@
                     .Title("What [green]type of feature[/] do you want to add?")
                     .PageSize(50)
                     .AddChoices(FeatureType.AdHoc.Name,
-                        FeatureType.AddListforFk.Name,
+                        FeatureType.AddListByFk.Name,
                         FeatureType.AddRecord.Name,
                         FeatureType.DeleteRecord.Name,
                         FeatureType.GetList.Name,

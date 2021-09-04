@@ -23,6 +23,8 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 ✅  `add:feature` enhancement to add more than just ad-hoc features
 
+✅  new `AddListByFk` option for the `add:feature`  command and `Feature` property of an entity
+
 🚧 Better environment variable support
 
 🚧 Better foreign key support
