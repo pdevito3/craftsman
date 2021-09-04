@@ -91,7 +91,7 @@
             var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
             return buildComments ? $@"
         /// <summary>
-        /// Creates one or more new {entity.Name} records.
+        /// Creates one or more {entity.Name} records.
         /// </summary>
         /// <response code=""201"">{entity.Name} List created.</response>
         /// <response code=""400"">{entity.Name} List has missing/invalid values.</response>{authCommentResponses}

@@ -29,11 +29,11 @@
             }
         }
 
-        private string _name = null;
+        private string _featureName = null;
         public string Name
         {
-            get => FeatureType.FeatureName(_name);
-            set => _name = value;
+            get => FeatureType.FeatureName(EntityName, _featureName);
+            set => _featureName = value;
         }
 
         private string _command = null;
