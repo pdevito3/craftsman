@@ -475,9 +475,19 @@
         public static string GetDbContext(string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"", projectBaseName);
-            var contextClass = Directory.GetFiles(classPath.FullClassPath, "*.cs").FirstOrDefault();
+            var directoryClasses = Directory.GetFiles(classPath.FullClassPath, "*.cs");
+            foreach (var directoryClass in directoryClasses)
+            {
+                using var input = File.OpenText(directoryClass);
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    if (line.Contains($": DbContext"))
+                        return Path.GetFileNameWithoutExtension(directoryClass);
+                }
+            }
 
-            return Path.GetFileNameWithoutExtension(contextClass);
+            return "";
         }
 
         public static string GetRandomId(string idType)
@@ -488,10 +498,7 @@
             if (idType.Equals("guid", StringComparison.InvariantCultureIgnoreCase))
                 return @$"Guid.NewGuid()";
 
-            if (idType.Equals("int", StringComparison.InvariantCultureIgnoreCase))
-                return @$"84709321";
-
-            return "";
+            return idType.Equals("int", StringComparison.InvariantCultureIgnoreCase) ? @$"84709321" : "";
         }
 
         private static bool RunDbMigration(ApiTemplate template, string srcDirectory)
