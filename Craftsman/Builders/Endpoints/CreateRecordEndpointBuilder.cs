@@ -25,7 +25,6 @@
         [HttpPost(Name = ""Add{entityName}"")]
         public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {lowercaseEntityVariable}ForCreation)
         {{
-            // add error handling
             var command = new {Utilities.AddEntityFeatureClassName(entity.Name)}.{addRecordCommandMethodName}({lowercaseEntityVariable}ForCreation);
             var commandResponse = await _mediator.Send(command);
             var response = new {singleResponse}(commandResponse);

@@ -23,7 +23,6 @@
         [HttpPatch(""{{{lowercasePrimaryKey}}}"", Name = ""PartiallyUpdate{entityName}"")]
         public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {lowercasePrimaryKey}, JsonPatchDocument<{updateDto}> patchDoc)
         {{
-            // add error handling
             var command = new {Utilities.PatchEntityFeatureClassName(entity.Name)}.{patchRecordCommandMethodName}({lowercasePrimaryKey}, patchDoc);
             await _mediator.Send(command);
 

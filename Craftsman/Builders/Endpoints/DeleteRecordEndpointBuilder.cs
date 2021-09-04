@@ -20,7 +20,6 @@
         [HttpDelete(""{{{lowercasePrimaryKey}}}"", Name = ""Delete{entityName}"")]
         public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercasePrimaryKey})
         {{
-            // add error handling
             var command = new {Utilities.DeleteEntityFeatureClassName(entity.Name)}.{deleteRecordCommandMethodName}({lowercasePrimaryKey});
             await _mediator.Send(command);
 

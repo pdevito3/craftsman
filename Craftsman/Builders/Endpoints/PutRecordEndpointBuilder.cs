@@ -23,7 +23,6 @@
         [HttpPut(""{{{lowercasePrimaryKey}}}"", Name = ""Update{entityName}"")]
         public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercasePrimaryKey}, {updateDto} {lowercaseEntityVariable})
         {{
-            // add error handling
             var command = new {Utilities.UpdateEntityFeatureClassName(entity.Name)}.{updateRecordCommandMethodName}({lowercasePrimaryKey}, {lowercaseEntityVariable});
             await _mediator.Send(command);
 
