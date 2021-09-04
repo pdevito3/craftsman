@@ -12,7 +12,7 @@
     {
         public static void CreateCommand(string srcDirectory, Entity entity, string contextName, string projectBaseName, Feature feature, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{Utilities.AddEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{feature.Name}.cs", entity.Plural, projectBaseName);
             var fileText = GetCommandFileText(classPath.ClassNamespace, entity, contextName, srcDirectory, feature, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }

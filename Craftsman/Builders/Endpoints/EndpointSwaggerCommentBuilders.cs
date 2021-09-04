@@ -69,7 +69,7 @@
             return "";
         }
 
-        public static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications, bool hasGuidPk)
+        public static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
         {
             var authResponses = GetAuthResponses(hasAuthentications);
             var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
@@ -80,6 +80,22 @@
         /// <response code=""201"">{entity.Name} created.</response>
         /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
         /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
+        [ProducesResponseType(typeof({singleResponse}), 201)]
+        [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
+        [ProducesResponseType(500)]" : "";
+        }
+
+        public static string GetSwaggerComments_CreateList(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
+        {
+            var authResponses = GetAuthResponses(hasAuthentications);
+            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+            return buildComments ? $@"
+        /// <summary>
+        /// Creates one or more new {entity.Name} records.
+        /// </summary>
+        /// <response code=""201"">{entity.Name} List created.</response>
+        /// <response code=""400"">{entity.Name} List has missing/invalid values.</response>{authCommentResponses}
+        /// <response code=""500"">There was an error on the server while creating the list of {entity.Name}.</response>
         [ProducesResponseType(typeof({singleResponse}), 201)]
         [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
         [ProducesResponseType(500)]" : "";

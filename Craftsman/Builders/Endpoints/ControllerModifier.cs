@@ -10,7 +10,7 @@
 
     public class ControllerModifier
     {
-        public static void AddEndpoint(string srcDirectory, FeatureType featureType, Entity entity, bool addSwaggerComments, List<Policy> policies, string projectBaseName)
+        public static void AddEndpoint(string srcDirectory, FeatureType featureType, Entity entity, bool addSwaggerComments, List<Policy> policies, Feature feature, string projectBaseName)
         {
             var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName, "v1");
 
@@ -38,6 +38,8 @@
                                 endpoint = GetRecordEndpointBuilder.GetEndpointTextForGetRecord(entity, addSwaggerComments, policies);
                             else if(featureType == FeatureType.AddRecord)
                                 endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateRecord(entity, addSwaggerComments, policies);
+                            else if(featureType == FeatureType.AddListforFk)
+                                endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateList(entity, addSwaggerComments, policies, feature);
                             else if(featureType == FeatureType.DeleteRecord)
                                 endpoint = DeleteRecordEndpointBuilder.GetEndpointTextForDeleteRecord(entity, addSwaggerComments, policies);
                             else if(featureType == FeatureType.UpdateRecord)
