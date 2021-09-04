@@ -52,10 +52,15 @@
         
         public List<Policy> Policies { get; set; } = new List<Policy>();
 
+        private string _batchPropName;
         /// <summary>
         /// The name of the property on the foreign entity you are doing a batch add on.
         /// </summary>
-        public string BatchPropertyName { get; set; }
+        public string BatchPropertyName
+        {
+            get => _batchPropName;
+            set => _batchPropName = value.UppercaseFirstLetter();
+        }
 
         private string _batchPropType;
         /// <summary>
@@ -65,6 +70,16 @@
         {
             get => _batchPropType;
             set => _batchPropType = Utilities.PropTypeCleanup(value);
+        }
+        
+        private string _parentEntity;
+        /// <summary>
+        /// The name of the parent entity that the FK you using is associated to. For example, if you had a FK of `EventId`, the parent entity might be `Event`. Leave null if you're not batching on a FK.
+        /// </summary>
+        public string ParentEntity
+        {
+            get => _parentEntity;
+            set => _parentEntity = value.UppercaseFirstLetter();
         }
         
         /// <summary>

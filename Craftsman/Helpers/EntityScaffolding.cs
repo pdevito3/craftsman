@@ -108,8 +108,8 @@
             if (feature.Type == FeatureType.AddListforFk.Name)
             {
                 CommandAddListBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName, feature, fileSystem);
-                // AddListCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
-                // AddListEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName);
+                AddListCommandTestBuilder.CreateTests(testDirectory, entity, feature, projectBaseName, fileSystem);
+                AddListTestBuilder.CreateTests(testDirectory, entity, policies, feature, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddListforFk, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
             }

@@ -131,7 +131,8 @@
                 var policies = AskPolicies();
                 var propName = AskBatchOnPropertyName();
                 var propType = AskBatchOnPropertyType();
-                var dbSet = AskBatchPropertyDbSetName();
+                var parentEntity = AskParentEntity();
+                var dbSet = AskBatchPropertyDbSetName(parentEntity);
 
                 AnsiConsole.WriteLine();
                 AnsiConsole.Render(new Table().AddColumns("[grey]Property[/]", "[grey]Value[/]")
@@ -140,10 +141,11 @@
                     .AddRow("[grey]Entity Name[/]", entityName)
                     .AddRow("[grey]Entity Plural[/]", entityPlural)
                     .AddRow("[grey]Use Swagger[/]", useSwagger.ToString())
+                    .AddRow("[grey]Policies[/]", policies.Count > 0 ? $"{policies.Count} policies" : "-")
                     .AddRow("[grey]Batch Prop Name[/]", propName)
                     .AddRow("[grey]Batch Prop Type[/]", propType)
+                    .AddRow("[grey]Parent Entity[/]", parentEntity)
                     .AddRow("[grey]Batch DbSet[/]", dbSet)
-                    .AddRow("[grey]Policies[/]", policies.Count > 0 ? $"{policies.Count} policies" : "-")
                 );
                 
                 return new Feature()
@@ -154,7 +156,8 @@
                     Policies = policies,
                     BatchPropertyName = propName,
                     BatchPropertyType = propType,
-                    BatchPropertyDbSetName = dbSet
+                    BatchPropertyDbSetName = dbSet,
+                    ParentEntity = parentEntity
                 };
             }
             
@@ -275,21 +278,33 @@
         private static string AskBatchOnPropertyName()
         {
             return AnsiConsole.Prompt(
-                new TextPrompt<string>("What's the [green]name of the property[/] that you will batch add for in this feature (e.g. `eventId` would add a list of records that all have the same event id)?")
+                new TextPrompt<string>("What's the [green]name of the property[/] that you will batch add for in this feature (e.g. `EventId` would add a list of records that all have the same event id)?")
             );
         }
 
         private static string AskBatchOnPropertyType()
         {
             return AnsiConsole.Prompt(
-                new TextPrompt<string>("What's the [green]data type[/] of the the property you are doing the batch add on (case insensitive).")
+                new TextPrompt<string>(
+                        $"What's the [green]data type[/] of the the property you are doing the batch add on (case insensitive)? (Default: [green]Guid[/])")
+                    .DefaultValue($"Guid")
+                    .HideDefaultValue()
             );
         }
 
-        private static string AskBatchPropertyDbSetName()
+        private static string AskBatchPropertyDbSetName(string entityName)
         {
             return AnsiConsole.Prompt(
-                new TextPrompt<string>("What's the [green]name of the DbSet[/] of the the property you are doing the batch add on? Leave [green]null[/] if you're not batching on a FK.")
+                new TextPrompt<string>($"What's the [green]name of the DbSet[/] of the the property you are doing the batch add on? Leave [green]null[/] if you're not batching on a FK. (Default: [green]{entityName}s[/])")
+                    .DefaultValue($"{entityName}s")
+                    .HideDefaultValue()
+            );
+        }
+
+        private static string AskParentEntity()
+        {
+            return AnsiConsole.Prompt(
+                new TextPrompt<string>("What's the [green]name of the parent entity[/] that the FK you using is associated to? For example, if you had a FK of `EventId`, the parent entity might be `Event`. Leave null if you're not batching on a FK.")
             );
         }
 
