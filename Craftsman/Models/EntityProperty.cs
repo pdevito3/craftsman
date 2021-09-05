@@ -6,7 +6,6 @@ namespace Craftsman.Models
     {
         private bool _isRequired = false;
         private bool _canManipulate = true;
-        private bool _isForeignKey = false;
         private string _type = "string";
         private string _name;
 
@@ -60,16 +59,22 @@ namespace Craftsman.Models
         /// <summary>
         /// Designates the property as a foreign key for the entity
         /// </summary>
-        public bool IsForeignKey
-        {
-            get => ForeignKeyPropName != null;
-            private set => _isForeignKey = value;
-        }
+        public bool IsForeignKey => !string.IsNullOrEmpty(ForeignEntityName);
 
         /// <summary>
-        /// Captures the foreign key property name
+        /// Captures the name of the entity this property is linked to as a foreign key.
         /// </summary>
-        public string ForeignKeyPropName { get; set; }
+        public string ForeignEntityName { get; set; }
+
+        private string _plural;
+        /// <summary>
+        /// The plural value for the foreign entity, if applicable. Defaults to ForeignEntityName with an appended 's'.
+        /// </summary>
+        public string ForeignEntityPlural
+        {
+            get => _plural ?? $"{ForeignEntityName}s";
+            set => _plural = value;
+        }
 
         /// <summary>
         /// Default value for this property

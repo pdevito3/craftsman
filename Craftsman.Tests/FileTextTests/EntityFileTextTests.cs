@@ -14,7 +14,7 @@
             var classNamespace = "Domain.Entities";
             var entity = CannedGenerator.FakeBasicProduct();
             var tableAnnotation = EntityBuilder.TableAnnotationBuilder(entity);
-            var fileText = EntityBuilder.GetEntityFileText(classNamespace, entity);
+            var fileText = EntityBuilder.GetEntityFileText(classNamespace, "", entity, "");
 
             var expectedText = @$"namespace Domain.Entities
 {{
@@ -51,7 +51,7 @@
             entity.Properties.Add(new EntityProperty { Name = "Test", Type = type, DefaultValue = defaultVal, CanFilter = true, CanSort = true });
 
             var tableAnnotation = EntityBuilder.TableAnnotationBuilder(entity);
-            var fileText = EntityBuilder.GetEntityFileText(classNamespace, entity);
+            var fileText = EntityBuilder.GetEntityFileText(classNamespace, "", entity, "");
 
             var expectedText = @$"namespace Domain.Entities
 {{
@@ -88,7 +88,7 @@
             var entity = CannedGenerator.FakeBasicProduct();
             entity.Properties.Add(new EntityProperty { Name = "ProductType", Type = "int", CanFilter = true, CanSort = true, ColumnName = "Product_Type" });
 
-            var fileText = EntityBuilder.GetEntityFileText(classNamespace, entity);
+            var fileText = EntityBuilder.GetEntityFileText(classNamespace, "", entity, "");
 
             var expectedText = @$"namespace Domain.Entities
 {{

@@ -461,12 +461,12 @@
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        public static string GetDefaultValueText(string defaultValue, string propType)
+        public static string GetDefaultValueText(string defaultValue, EntityProperty prop)
         {
-            if (propType == "string")
+            if (prop.Type == "string")
                 return defaultValue == null ? "" : @$" = ""{defaultValue}"";";
 
-            if ((propType.IsGuidPropertyType() && !propType.Contains("?")))
+            if ((prop.Type.IsGuidPropertyType() && !prop.Type.Contains("?") && !prop.IsForeignKey))
                 return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : @" = Guid.NewGuid();";
             
             return string.IsNullOrEmpty(defaultValue) ? "" : $" = {defaultValue};";

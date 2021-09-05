@@ -25,9 +25,9 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 ✅  new `AddListByFk` option for the `add:feature`  command and `FeatureType` property of an entity
 
-🚧 Better environment variable support
+✅ Better foreign key support
 
-🚧 Better foreign key support
+🚧 Better environment variable support
 
 🚧 Auth Server Scaffolding
 

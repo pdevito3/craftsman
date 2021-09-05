@@ -21,8 +21,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Moved Policies to Feature
   * TODO: docs
+  
 * There is no more primary key property. A Guid with a name `Id` will be inherited by all entities.
+
 * Docker utilities for integration test refactored to use Fluent Docker wherever possible for better readability. Some enhancements were made as well (e.g. better container/volume naming, proper volume mounting).
+
+* Updated FK support to better API
+
+  * TODO: docs
+
+    ```yaml
+        Properties:
+          - Name: EventId
+            Type: Guid
+            ColumnName: event_id
+            ForeignEntityName: Event
+            ForeignEntityPlural: Events
+    ```
 
 ### Fixed
 

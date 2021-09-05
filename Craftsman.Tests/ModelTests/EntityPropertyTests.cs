@@ -20,11 +20,11 @@ namespace Craftsman.Tests.ModelTests
         [Theory]
         [InlineData("keyname",true)]
         [InlineData(null, false)]
-        public void ISForiegnKeyAssignedAppropriately(string keyname, bool isFk)
+        public void ISForiegnKeyAssignedAppropriately(string keyName, bool isFk)
         {
             var prop = new EntityProperty()
             {
-                ForeignKeyPropName = keyname
+                ForeignEntityName = keyName
             };
 
             prop.IsForeignKey.Should().Be(isFk);
