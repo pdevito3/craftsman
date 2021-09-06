@@ -43,12 +43,12 @@
 
                     // add all files based on the given template config
                     ctx.Status($"[bold blue]Scaffolding Files for {projectName} [/]");
-                    RunTemplateBuilders(bcDirectory, srcDirectory, testDirectory, template, fileSystem, verbosity);
+                    RunTemplateBuilders(bcDirectory, srcDirectory, testDirectory, template, fileSystem);
                     WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
                 });
         }
 
-        private static void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)
+        private static void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem)
         {
             var projectBaseName = template.ProjectName;
 
@@ -89,7 +89,7 @@
             DockerUtilitiesBuilder.CreateDockerDatabaseUtilityClass(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
             WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
             FunctionalTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
-            HealthTestBuilder.CreateTests(testDirectory, projectBaseName);
+            HealthTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
             HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
             EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, fileSystem);
 

@@ -63,7 +63,7 @@
             var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"[Test]
-        public async Task {queryName}_Returns_Resource_With_Accurate_Props()
+        public async Task can_get_existing_{entity.Name.ToLower()}_with_accurate_props()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
@@ -86,7 +86,7 @@
             return badId == "" ? "" : $@"
 
         [Test]
-        public async Task {queryName}_Throws_KeyNotFoundException_When_Record_Does_Not_Exist()
+        public async Task get_{entity.Name.ToLower()}_throws_keynotfound_exception_when_record_does_not_exist()
         {{
             // Arrange
             var badId = {badId};

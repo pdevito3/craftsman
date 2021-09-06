@@ -6,25 +6,16 @@
     using Craftsman.Models;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Text;
 
     public class PutEntityTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, Entity entity, List<Policy> policies, string projectBaseName)
+        public static void CreateTests(string solutionDirectory, Entity entity, List<Policy> policies, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"Update{entity.Name}RecordTests.cs", entity.Name, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = WriteTestFileText(solutionDirectory, classPath, entity, policies, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = WriteTestFileText(solutionDirectory, classPath, entity, policies, projectBaseName);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
         private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, List<Policy> policies, string projectBaseName)
@@ -61,8 +52,8 @@
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
             var pkName = Entity.PrimaryKeyProperty.Name;
 
-            var testName = $"Put_{entity.Name}_Returns_NoContent";
-            testName += hasRestrictedEndpoints ? "_WithAuth" : "";
+            var testName = $"put_{entity.Name.ToLower()}_returns_nocontent_when_entity_exists";
+            testName += hasRestrictedEndpoints ? "_and_auth_credentials_are_valid" : "";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdateRecord }, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"
 
@@ -96,7 +87,7 @@
 
             return $@"
         [Test]
-        public async Task Put_{entity.Name}_Returns_Unauthorized_Without_Valid_Token()
+        public async Task put_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
@@ -123,7 +114,7 @@
 
             return $@"
         [Test]
-        public async Task Put_{entity.Name}_Returns_Forbidden_Without_Proper_Scope()
+        public async Task put_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();

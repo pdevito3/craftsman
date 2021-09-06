@@ -40,7 +40,7 @@
     public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{
         [Test]
-        public void PagedList_Returns_Accurate_Data_For_Standard_Pagination()
+        public void pagedlist_returns_accurate_data_for_standard_pagination()
         {{
             var pageNumber = 2;
             var pageSize = 2;
@@ -57,7 +57,7 @@
         }}
 
         [Test]
-        public void PagedList_Returns_Accurate_Data_With_Last_Record()
+        public void pagedlist_returns_accurate_data_with_last_record()
         {{
             var pageNumber = 3;
             var pageSize = 2;

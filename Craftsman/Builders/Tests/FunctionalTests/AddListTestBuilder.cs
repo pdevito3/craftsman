@@ -59,8 +59,8 @@
             var fakeEntityVariableName = $"fake{entity.Name}List";
             var fakeParentEntity = $"fake{feature.ParentEntity}";
 
-            var testName = $"{feature.Name}_Returns_Created_When_Valid";
-            testName += hasRestrictedEndpoints ? "_WithAuth" : "";
+            var testName = $"create_{entity.Name.ToLower()}_list_returns_created_using_valid_dto";
+            testName += hasRestrictedEndpoints ? "_and_valid_auth_credentials" : "";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.AddRecord }, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"
 
@@ -89,8 +89,8 @@
             var fakeEntityForCreation = $"Fake{createDto}";
             var fakeEntityVariableName = $"fake{entity.Name}List";
 
-            var testName = $"{feature.Name}_Returns_NotFound_When_Fk_Doesnt_Exist";
-            testName += hasRestrictedEndpoints ? "_WithAuth" : "";
+            var testName = $"create_{entity.Name.ToLower()}_list_returns_notfound_when_fk_doesnt_exist";
+            testName += hasRestrictedEndpoints ? "_and_valid_auth_credentials" : "";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.AddRecord }, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"
 
@@ -117,8 +117,8 @@
             var fakeEntityForCreation = $"Fake{createDto}";
             var fakeEntityVariableName = $"fake{entity.Name}List";
 
-            var testName = $"{feature.Name}_Returns_BadRequest_When_No_Fk_Param";
-            testName += hasRestrictedEndpoints ? "_WithAuth" : "";
+            var testName = $"create_{entity.Name.ToLower()}_list_returns_badrequest_when_no_fk_param";
+            testName += hasRestrictedEndpoints ? "_and_valid_auth_credentials" : "";
             var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.AddRecord }, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"
 
@@ -145,7 +145,7 @@
 
             return $@"
         [Test]
-        public async Task Create_{entity.Name}_Returns_Unauthorized_Without_Valid_Token()
+        public async Task create_{entity.Name.ToLower()}_list_returns_unauthorized_without_valid_token()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
@@ -168,7 +168,7 @@
 
             return $@"
         [Test]
-        public async Task Create_{entity.Name}_Returns_Forbidden_Without_Proper_Scope()
+        public async Task create_{entity.Name.ToLower()}_list_returns_forbidden_without_proper_scope()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();

@@ -61,7 +61,7 @@
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
 
             return $@"[Test]
-        public async Task {commandName}_Adds_New_{entity.Name}_To_Db()
+        public async Task can_add_new_{entity.Name.ToLower()}_to_db()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();

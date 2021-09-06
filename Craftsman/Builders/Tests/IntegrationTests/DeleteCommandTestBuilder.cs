@@ -66,7 +66,7 @@
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
             return $@"[Test]
-        public async Task {commandName}_Deletes_{entity.Name}_From_Db()
+        public async Task can_delete_{entity.Name.ToLower()}_from_db()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
@@ -91,7 +91,7 @@
             return badId == "" ? "" : $@"
 
         [Test]
-        public async Task {commandName}_Throws_KeyNotFoundException_When_Record_Does_Not_Exist()
+        public async Task delete_{entity.Name.ToLower()}_throws_keynotfoundexception_when_record_does_not_exist()
         {{
             // Arrange
             var badId = {badId};

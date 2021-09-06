@@ -86,7 +86,7 @@
 
             return @$"
         [Test]
-        public async Task {queryName}_Returns_Resource_With_Accurate_Props()
+        public async Task can_get_{entity.Name.ToLower()}_list()
         {{
             // Arrange
             var {fakeEntityVariableNameOne} = new {fakeEntity} {{ }}.Generate();
@@ -116,7 +116,7 @@
 
             return $@"
         [Test]
-        public async Task {queryName}_Returns_Expected_Page_Size_And_Number()
+        public async Task can_get_{entity.Name.ToLower()}_list_with_expected_page_size_and_number()
         {{
             //Arrange
             var {fakeEntityVariableNameOne} = new {fakeEntity} {{ }}.Generate();
@@ -174,7 +174,7 @@
 
             return $@"
         [Test]
-        public async Task {queryName}_Returns_Sorted_{entity.Name}_{prop.Name}_List_In_Asc_Order()
+        public async Task can_get_sorted_list_of_{entity.Name.ToLower()}_by_{prop.Name}_in_asc_order()
         {{
             //Arrange
             var {fakeEntityVariableNameOne} = new {fakeEntity} {{ }}.Generate();
@@ -241,7 +241,7 @@
 
             return $@"
         [Test]
-        public async Task {queryName}_Returns_Sorted_{entity.Name}_{prop.Name}_List_In_Desc_Order()
+        public async Task can_get_sorted_list_of_{entity.Name.ToLower()}_by_{prop.Name}_in_desc_order()
         {{
             //Arrange
             var {fakeEntityVariableNameOne} = new {fakeEntity} {{ }}.Generate();
@@ -318,7 +318,7 @@
 
             return $@"
         [Test]
-        public async Task {queryName}_Filters_{entity.Name}_{prop.Name}()
+        public async Task can_filter_{entity.Name.ToLower()}_list_using_{prop.Name}()
         {{
             //Arrange
             var {fakeEntityVariableNameOne} = new {fakeEntity} {{ }}.Generate();
@@ -346,7 +346,7 @@
         {
             return $@"
         [Test]
-        public async Task {queryName}_Throws_ApiException_When_Null_Query_Parameters()
+        public async Task get_{entity.Name.ToLower()}_list_throws_apiexception_when_query_parameters_are_null()
         {{
             // Arrange
             // N/A

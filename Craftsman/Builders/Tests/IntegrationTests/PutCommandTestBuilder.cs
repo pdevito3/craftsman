@@ -73,7 +73,7 @@
     public class {commandName}Tests : TestBase
     {{
         [Test]
-        public async Task {commandName}_Updates_Existing_{entity.Name}_In_Db()
+        public async Task can_update_existing_{entity.Name.ToLower()}_in_db()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();

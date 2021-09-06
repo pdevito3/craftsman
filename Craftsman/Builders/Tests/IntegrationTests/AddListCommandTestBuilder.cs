@@ -62,7 +62,7 @@
             var fakeParentEntity = $"fake{feature.ParentEntity}";
 
             return $@"[Test]
-        public async Task {feature.Command}_Adds_New_{entity.Name}_List_To_Db()
+        public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()
         {{
             // Arrange
             var {fakeParentEntity} = new Fake{feature.ParentEntity} {{ }}.Generate();

@@ -87,7 +87,7 @@
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
             return $@"[Test]
-        public async Task {commandName}_Updates_Existing_{entity.Name}_In_Db()
+        public async Task can_patch_existing_{entity.Name.ToLower()}_in_db()
         {{
             // Arrange
             var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
@@ -116,7 +116,7 @@
             return randomId == "" ? "" : $@"
 
         [Test]
-        public async Task {commandName}_Throws_ApiException_When_Null_Patchdoc()
+        public async Task passing_null_patchdoc_throws_apiexception()
         {{
             // Arrange
             var randomId = {randomId};
@@ -137,7 +137,7 @@
 
             return badId == "" ? "" : $@"
         [Test]
-        public async Task {commandName}_Throws_KeyNotFoundException_When_Bad_PK()
+        public async Task patch_{entity.Name.ToLower()}_throws_keynotfound_exception_when_record_does_not_exist()
         {{
             // Arrange
             var badId = {badId};
