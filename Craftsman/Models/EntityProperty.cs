@@ -37,14 +37,13 @@ namespace Craftsman.Models
         /// </summary>
         public bool CanSort { get; set; } = false;
 
-        //TODO update to default to true unless primary key == true
         /// <summary>
         /// Determines if the property can be manipulated when creating or updating the associated entity
         /// </summary>
         public bool CanManipulate
         {
             get =>  _canManipulate;
-            set => _canManipulate = value;
+            set => _canManipulate = IsForeignKey ? false : value;
         }
 
         /// <summary>

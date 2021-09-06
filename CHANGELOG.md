@@ -40,6 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
             ForeignEntityName: Event
             ForeignEntityPlural: Events
     ```
+    
+    Can not have fk in manipulation DTO. will need to add manually and adjust feature accordingly (currently assumes it's from query param)
 
 ### Fixed
 
