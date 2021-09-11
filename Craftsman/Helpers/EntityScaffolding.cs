@@ -10,6 +10,7 @@
     using Craftsman.Enums;
     using Craftsman.Models;
     using System.Collections.Generic;
+    using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
     using Builders.Endpoints;
@@ -33,8 +34,10 @@
                 DtoBuilder.CreateDtos(srcDirectory, entity, projectBaseName);
                 ValidatorBuilder.CreateValidators(srcDirectory, projectBaseName, entity);
                 ProfileBuilder.CreateProfile(srcDirectory, entity, projectBaseName);
-                ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName);
                 ApiRouteModifier.AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold
+                
+                if(entity.Features.Count > 0)
+                    ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName);
                 
                 // TODO refactor to factory?
                 foreach (var feature in entity.Features)
@@ -51,6 +54,10 @@
             string dbContextName, bool addSwaggerComments, List<Policy> policies, Feature feature, Entity entity,
             IFileSystem fileSystem)
         {
+            var controllerClassPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName);
+            if (!File.Exists(controllerClassPath.FullClassPath))
+                ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName);
+            
             if (feature.Type == FeatureType.AddRecord.Name)
             {
                 CommandAddRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);

@@ -49,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - No more `409` produced response annotation on POST
 - Descending sort tests now actually test desc instead of mirroring asc
 - Removed error handler comments in controller
+- Empty controller no longer added when no features present (fixes #40)
 
 ## [0.11.2] - TBD
 
