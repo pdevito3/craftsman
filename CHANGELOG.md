@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.11.2] - TBD
+
+### Fixed
+
+- Better variable name on delete integ test
+
 ## [0.11.1] - 2021-08-23
 
 ### Fixed

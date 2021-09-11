@@ -61,7 +61,7 @@
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+            var dbResponseVariableName = $"{lowercaseEntityName}Response";
             var pkName = entity.PrimaryKeyProperty.Name;
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
@@ -77,10 +77,10 @@
             // Act
             var command = new {featureName}.{commandName}({lowercaseEntityPk});
             await SendAsync(command);
-            var {lowercaseEntityPluralName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
+            var {dbResponseVariableName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
 
             // Assert
-            {lowercaseEntityPluralName}.Count.Should().Be(0);
+            {dbResponseVariableName}.Count.Should().Be(0);
         }}";
         }
 
