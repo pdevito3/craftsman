@@ -50,12 +50,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Descending sort tests now actually test desc instead of mirroring asc
 - Removed error handler comments in controller
 
-
-## [0.11.1] - 2021-08-23
+## [0.11.2] - TBD
 
 ### Fixed
 
-- Removed extra parentheses on endpoint names
+- Better variable name on delete integ test
 
 ## [0.11.1] - 2021-08-23
 
