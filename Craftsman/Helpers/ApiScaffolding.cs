@@ -6,7 +6,6 @@
     using Craftsman.Builders.Tests.UnitTests;
     using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Commands;
-    using Craftsman.Enums;
     using Craftsman.Models;
     using Spectre.Console;
     using System;
@@ -18,7 +17,7 @@
 
     public class ApiScaffolding
     {
-        public static void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template, IFileSystem fileSystem, Verbosity verbosity)
+        public static void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template, IFileSystem fileSystem)
         {
             var projectName = template.ProjectName;
             AnsiConsole.Status()

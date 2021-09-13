@@ -88,6 +88,37 @@
                     NewDomainProjectCommand.Run(filePath, rootDir, fileSystem, verbosity);
                 }
             }
+            
+            if ((args[0] == "new:example" || args[0] == "example"))
+            {
+                if (args.Length > 1 && (args[1] == "-h" || args[1] == "--help"))
+                    NewExampleCommand.Help();
+                else
+                {
+                    CheckForLatestVersion();
+
+                    var name = "";
+                    var type = "";
+                    Parser.Default.ParseArguments<NewExampleOptions>(args)
+                        .WithParsed(options =>
+                        {
+                            name = options.Name;
+                            type = options.Type;
+                        });
+
+                    if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(type))
+                        throw new Exception(
+                            "Please provide a name and type for this example project. For example `craftsman new:example -t basic -n MyExampleProject`.");
+                    
+                    var solutionDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the solution directory.");
+                        solutionDir = Console.ReadLine();
+                    }
+                    NewExampleCommand.Run(type, name, solutionDir, fileSystem);
+                }
+            }
 
             if (args.Length == 2 && (args[0] == "add:entity" || args[0] == "add:entities"))
             {

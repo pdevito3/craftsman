@@ -49,7 +49,7 @@
 
                 foreach (var template in boundedContexts.BoundedContexts)
                 {
-                    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity);
+                    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem);
                 }
 
                 // migrations

@@ -13,47 +13,46 @@
     using System.Threading.Tasks;
     using static Helpers.ConsoleWriter;
 
-    public static class NewDomainProjectCommand
+    public static class NewExampleCommand
     {
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   Scaffolds out a DDD project based on a given template file in a json or yaml format.{Environment.NewLine}");
+            WriteHelpText(@$"   Scaffolds out an example project.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman new:domain [options] <filepath>{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman new:example [options] arguments{Environment.NewLine}");
 
             WriteHelpHeader(@$"Arguments:");
-            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that describes your domain using a proper Wrapt format.");
+            WriteHelpText(@$"   -t, --type         The type of example you'd like to create.");
+            WriteHelpText(@$"   -n, --name         The name of the project you're creating.");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Options:");
-            WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
+            WriteHelpText(@$"   -h, --help          Display this help message.");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"   craftsman new:domain C:\fullpath\domain.yaml");
-            WriteHelpText(@$"   craftsman new:domain C:\fullpath\domain.yml");
-            WriteHelpText(@$"   craftsman new:domain C:\fullpath\domain.json{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman new:example --type basic --name MyExampleProjectName");
+            WriteHelpText(@$"   craftsman new:example --type withauth --name MyExampleProjectName");
+            WriteHelpText(@$"   craftsman new:example --type withbus --name MyExampleProjectName{Environment.NewLine}");
         }
 
-        public static void Run(string filePath, string buildSolutionDirectory, IFileSystem fileSystem, Verbosity verbosity)
+        public static void Run(string type, string name, string buildSolutionDirectory, IFileSystem fileSystem)
         {
             try
             {
-                FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var domainProject = FileParsingHelper.GetTemplateFromFile<DomainProject>(filePath);
-                WriteLogMessage($"Your template file was parsed successfully");
+                //ExampleType
+                var domainProject = GetExampleDomain(name);
 
                 var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
                 fileSystem.Directory.CreateDirectory(domainDirectory);
                 SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
-
-                //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
-                //    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity));
                 foreach (var bc in domainProject.BoundedContexts)
                     ApiScaffolding.ScaffoldApi(domainDirectory, bc, fileSystem);
 
+                //TODO add yaml example file
+                
                 // messages
                 if (domainProject.Messages.Count > 0)
                     AddMessageCommand.AddMessages(domainDirectory, fileSystem, domainProject.Messages);
@@ -103,6 +102,65 @@
                     });
                 }
             }
+        }
+
+        private static DomainProject GetExampleDomain(string name)
+        {
+            var basic = new DomainProject()
+            {
+                DomainName = name,
+                BoundedContexts = new List<ApiTemplate>()
+                {
+                    new ApiTemplate()
+                    {
+                        ProjectName = "RecipeManagement",
+                        DbContext = new TemplateDbContext()
+                        {
+                            ContextName = "RecipeManagementDbContext",
+                            DatabaseName = "RecipeManagement",
+                            Provider = "Postgres"
+                        },
+                        Entities = new List<Entity>()
+                        {
+                            new Entity()
+                            {
+                                Name = "Recipe",
+                                Properties = new List<EntityProperty>()
+                                {
+                                    new()
+                                    {
+                                        Name = "Title",
+                                        Type = "string",
+                                        CanFilter = true,
+                                    },
+                                    new()
+                                    {
+                                        Name = "Directions",
+                                        Type = "string",
+                                        CanFilter = true,
+                                    },
+                                    new()
+                                    {
+                                        Name = "Favorite",
+                                        Type = "bool?",
+                                        CanFilter = true,
+                                    },
+                                    new()
+                                    {
+                                        Name = "Rating",
+                                        Type = "int?",
+                                        CanFilter = true,
+                                        CanSort = true,
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+                
+            };
+
+            return basic;
         }
     }
 }

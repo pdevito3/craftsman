@@ -42,6 +42,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     ```
     
     Can not have fk in manipulation DTO. will need to add manually and adjust feature accordingly (currently assumes it's from query param)
+    
+    > TODO: add `RelationshipToParentEntity` to allow for appropriate prop to be added to entity (`Many` adds a list with a prop using the plural, Single adds a prop with a singular type and name)
 
 ### Fixed
 
