@@ -10,7 +10,9 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using System.Linq;
     using System.Threading.Tasks;
+    using CommandLine.Text;
     using static Helpers.ConsoleWriter;
 
     public static class NewExampleCommand
@@ -42,8 +44,8 @@
         {
             try
             {
-                //ExampleType
-                var domainProject = GetExampleDomain(name);
+                var exampleType = ExampleType.FromName(type, ignoreCase: true);
+                var domainProject = GetExampleDomain(name, exampleType);
 
                 var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
                 fileSystem.Directory.CreateDirectory(domainDirectory);
@@ -104,9 +106,61 @@
             }
         }
 
-        private static DomainProject GetExampleDomain(string name)
+        private static DomainProject GetExampleDomain(string name, ExampleType exampleType)
         {
-            var basic = new DomainProject()
+            if (exampleType == ExampleType.Basic)
+                return GetBasicProject(name);
+            if (exampleType == ExampleType.WithAuth)
+                return GetWithAuthProject(name);
+
+            throw new Exception("Example Type was not recognized.");
+        }
+
+        private static Entity BasicRecipeEntity()
+        {
+            return new Entity()
+            {
+                Name = "Recipe",
+                Properties = new List<EntityProperty>()
+                {
+                    new()
+                    {
+                        Name = "Title",
+                        Type = "string",
+                        CanFilter = true,
+                    },
+                    new()
+                    {
+                        Name = "Directions",
+                        Type = "string",
+                        CanFilter = true,
+                    },
+                    new()
+                    {
+                        Name = "Favorite",
+                        Type = "bool?",
+                        CanFilter = true,
+                    },
+                    new()
+                    {
+                        Name = "Rating",
+                        Type = "int?",
+                        CanFilter = true,
+                        CanSort = true,
+                    },
+                }
+            };   
+        }
+        
+        private static DomainProject GetBasicProject(string name)
+        {
+            var entity = BasicRecipeEntity();
+            entity.Features.Add(new Feature() { Type = FeatureType.GetList.Name });
+            entity.Features.Add(new Feature() { Type = FeatureType.GetRecord.Name });
+            entity.Features.Add(new Feature() { Type = FeatureType.AddRecord.Name });
+            entity.Features.Add(new Feature() { Type = FeatureType.UpdateRecord.Name });
+            
+            return new DomainProject()
             {
                 DomainName = name,
                 BoundedContexts = new List<ApiTemplate>()
@@ -122,45 +176,89 @@
                         },
                         Entities = new List<Entity>()
                         {
-                            new Entity()
-                            {
-                                Name = "Recipe",
-                                Properties = new List<EntityProperty>()
-                                {
-                                    new()
-                                    {
-                                        Name = "Title",
-                                        Type = "string",
-                                        CanFilter = true,
-                                    },
-                                    new()
-                                    {
-                                        Name = "Directions",
-                                        Type = "string",
-                                        CanFilter = true,
-                                    },
-                                    new()
-                                    {
-                                        Name = "Favorite",
-                                        Type = "bool?",
-                                        CanFilter = true,
-                                    },
-                                    new()
-                                    {
-                                        Name = "Rating",
-                                        Type = "int?",
-                                        CanFilter = true,
-                                        CanSort = true,
-                                    },
-                                }
-                            }
+                            BasicRecipeEntity()
                         }
                     }
                 }
-                
+            };
+        }
+
+        private static DomainProject GetWithAuthProject(string name)
+        {
+            var template = GetBasicProject(name);
+            var boundary = template.BoundedContexts.FirstOrDefault();
+            boundary.Environments = new List<ApiEnvironment>()
+            {
+                new ApiEnvironment()
+                {
+                    EnvironmentName = "Development",
+                    Authority = "https://localhost:5010",
+                    Audience = "recipeManagementDev",
+                    AuthorizationUrl = "https://localhost:5010/connect/authorize",
+                    TokenUrl = "https://localhost:5010/connect/token",
+                    ClientId = "service.client.dev"
+                },
+                new ApiEnvironment()
+                {
+                    EnvironmentName = "QA",
+                    Authority = "https://qaauth.com",
+                    Audience = "recipeManagementQa",
+                    AuthorizationUrl = "https://qaauth.com/connect/authorize",
+                    TokenUrl = "https://qaauth.com/connect/token",
+                    ClientId = "service.client.qa",
+                },
+                new ApiEnvironment()
+                {
+                    EnvironmentName = "Production",
+                    Authority = "https://prodauth.com",
+                    Audience = "recipeManagement",
+                    AuthorizationUrl = "https://prodauth.com/connect/authorize",
+                    TokenUrl = "https://prodauth.com/connect/token",
+                    ClientId = "service.client",
+                }
             };
 
-            return basic;
+            var entity = BasicRecipeEntity();
+            entity.Features.Add(new Feature()
+            {
+                Type = FeatureType.GetList.Name,
+                Policies = new List<Policy>()
+                {
+                    new Policy() { Name = "CanReadRecipes", PolicyType = "scope", PolicyValue = "recipes.read" }
+                }
+            });
+            entity.Features.Add(new Feature()
+            {
+                Type = FeatureType.GetRecord.Name,
+                Policies = new List<Policy>()
+                {
+                    new Policy() { Name = "CanReadRecipes", PolicyType = "scope", PolicyValue = "recipes.read" }
+                }
+            });
+            entity.Features.Add(new Feature()
+            {
+                Type = FeatureType.AddRecord.Name,
+                Policies = new List<Policy>()
+                {
+                    new Policy() { Name = "CanAddRecipes", PolicyType = "scope", PolicyValue = "recipes.add" }
+                }
+            });
+            entity.Features.Add(new Feature()
+            {
+                Type = FeatureType.UpdateRecord.Name,
+                Policies = new List<Policy>()
+                {
+                    new Policy() { Name = "CanUpdateRecipes", PolicyType = "scope", PolicyValue = "recipes.update" }
+                }
+            });
+            
+            boundary.Entities.Clear();
+            boundary.Entities.Add(entity);
+            
+            template.BoundedContexts.Clear();
+            template.BoundedContexts.Add(boundary);
+
+            return template;
         }
     }
 }
