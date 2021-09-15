@@ -99,12 +99,17 @@
             // TODO move the auth stuff to a modifier to make it SOLID so i can add it to an add auth command
             var policies = template.Entities
                 .SelectMany(entity => entity.Features)
-                .SelectMany(feature => feature.Policies);
+                .SelectMany(feature => feature.Policies)
+                .ToList();
             
             SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, projectBaseName, template.AddJwtAuthentication, policies, projectBaseName, fileSystem);
             if (template.AddJwtAuthentication)
             {
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName, policies);
+                foreach (var feature in template.Entities.SelectMany(entity => entity.Features))
+                {
+                    InfrastructureServiceRegistrationModifier.AddPolicies(srcDirectory, feature.Policies , projectBaseName);
+                }
             }
             
             if (template.Bus.AddBus)

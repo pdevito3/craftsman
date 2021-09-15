@@ -8,7 +8,7 @@
 
     public class InfrastructureServiceRegistrationModifier
     {
-        public static void InitializeAuthServices(string srcDirectory, string projectBaseName, IEnumerable<Policy> policies)
+        public static void InitializeAuthServices(string srcDirectory, string projectBaseName, List<Policy> policies)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetInfraRegistrationName()}.cs", projectBaseName);
 
@@ -20,7 +20,7 @@
 
             var authUsings = $@"
     using Microsoft.AspNetCore.Authentication.JwtBearer;";
-            var authServices = GetAuthServicesText(policies);
+            var authServices = GetAuthServicesText();
 
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
@@ -99,14 +99,8 @@
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        private static string GetAuthServicesText(IEnumerable<Policy> policies)
+        private static string GetAuthServicesText()
         {
-            var policiesString = "";
-            foreach (var policy in policies)
-            {
-                policiesString += $@"{Environment.NewLine}{Utilities.PolicyStringBuilder(policy)}";
-            }
-
             return $@"
             if(env.EnvironmentName != ""FunctionalTesting"")
             {{
@@ -119,11 +113,11 @@
             }}
 
             services.AddAuthorization(options =>
-            {{{policiesString}
+            {{
             }});";
         }
 
-        private static List<Policy> GetPoliciesThatDoNotExist(IEnumerable<Policy> policies, string existingFileFullClassPath)
+        private static List<Policy> GetPoliciesThatDoNotExist(List<Policy> policies, string existingFileFullClassPath)
         {
             var nonExistantPolicies = new List<Policy>();
             nonExistantPolicies.AddRange(policies);
