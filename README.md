@@ -27,6 +27,8 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 ✅ Better foreign key support
 
+✅ `example` command to generate example projects with associated templates
+
 🚧 Better environment variable support
 
 🚧 Auth Server Scaffolding
