@@ -243,19 +243,13 @@
 
         private static string AskFeatureType()
         {
+            var featureTypes = FeatureType.List.Select(e => e.Name);
+
             return AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("What [green]type of feature[/] do you want to add?")
                     .PageSize(50)
-                    .AddChoices(FeatureType.AdHoc.Name,
-                        FeatureType.AddListByFk.Name,
-                        FeatureType.AddRecord.Name,
-                        FeatureType.DeleteRecord.Name,
-                        FeatureType.GetList.Name,
-                        FeatureType.GetRecord.Name,
-                        FeatureType.PatchRecord.Name,
-                        FeatureType.UpdateRecord.Name
-                    )
+                    .AddChoices(featureTypes)
                 );
         }
 

@@ -119,13 +119,13 @@
 
         private static string AskExampleType()
         {
+            var exampleTypes = ExampleType.List.Select(e => e.Name);
+            
             return AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("What [green]type of example[/] do you want to create?")
                     .PageSize(50)
-                    .AddChoices(ExampleType.Basic.Name,
-                        ExampleType.WithAuth.Name
-                    )
+                    .AddChoices(exampleTypes)
             );
         }
 
