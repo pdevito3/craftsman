@@ -13,9 +13,9 @@
             WriteHelpHeader(@$"Commands:");
 
             WriteHelpHeader(@$"    assistance");
-            WriteHelpText(@$"      list                List commands");
+            WriteHelpText(@$"      list                List commands.");
             WriteHelpText(@$"      version, --version  Display the current Craftsman version.");
-            WriteHelpText(@$"      -h, --help          Display help for a command");
+            WriteHelpText(@$"      -h, --help          Display help for a command.");
 
             WriteHelpHeader(@$"{Environment.NewLine}    add");
             WriteHelpText(@$"      add:bc              Add an API to your DDD project.");
@@ -27,13 +27,15 @@
             WriteHelpText(@$"      add:feature         Add a skeleton feature. Has `new:feature` alias.");
 
             WriteHelpHeader(@$"{Environment.NewLine}    new");
-            WriteHelpText(@$"      new:domain          Create a new DDD based project");
+            WriteHelpText(@$"      new:domain          Create a new DDD based project.");
+            WriteHelpText(@$"      new:example         Create an example project with an associated template file.");
 
             WriteHelpHeader(@$"{Environment.NewLine}Options:");
-            WriteHelpText(@$"   -h, --help          Display this help message");
+            WriteHelpText(@$"   -h, --help          Display this help message.");
 
             WriteHelpHeader(@$"{Environment.NewLine}Example Help Options:");
             WriteHelpText(@$"   craftsman new:domain -h");
+            WriteHelpText(@$"   craftsman new:example -h");
             WriteHelpText(@$"   craftsman add:bc -h");
             WriteHelpText(@$"   craftsman add:bus -h");
             WriteHelpText(@$"   craftsman add:entity -h");

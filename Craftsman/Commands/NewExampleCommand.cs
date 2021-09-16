@@ -25,10 +25,6 @@
             WriteHelpHeader(@$"Usage:");
             WriteHelpText(@$"   craftsman new:example [options] arguments{Environment.NewLine}");
 
-            WriteHelpHeader(@$"Arguments:");
-            WriteHelpText(@$"   -t, --type         The type of example you'd like to create.");
-            WriteHelpText(@$"   -n, --name         The name of the project you're creating.");
-
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Options:");
             WriteHelpText(@$"   -h, --help          Display this help message.");
