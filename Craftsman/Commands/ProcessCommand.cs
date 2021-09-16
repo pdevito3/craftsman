@@ -97,26 +97,13 @@
                 {
                     CheckForLatestVersion();
 
-                    var name = "";
-                    var type = "";
-                    Parser.Default.ParseArguments<NewExampleOptions>(args)
-                        .WithParsed(options =>
-                        {
-                            name = options.Name;
-                            type = options.Type;
-                        });
-
-                    if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(type))
-                        throw new Exception(
-                            "Please provide a name and type for this example project. For example `craftsman new:example -t basic -n MyExampleProject`.");
-                    
-                    var solutionDir = fileSystem.Directory.GetCurrentDirectory();
+                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
                     if (myEnv == "Dev")
                     {
-                        Console.WriteLine("Enter the solution directory.");
-                        solutionDir = Console.ReadLine();
+                        Console.WriteLine("Enter the root directory.");
+                        rootDir = Console.ReadLine();
                     }
-                    NewExampleCommand.Run(type, name, solutionDir, fileSystem);
+                    NewExampleCommand.Run(rootDir, fileSystem);
                 }
             }
 

@@ -40,12 +40,12 @@
             WriteHelpText(@$"   craftsman new:example --type withbus --name MyExampleProjectName{Environment.NewLine}");
         }
 
-        public static void Run(string type, string name, string buildSolutionDirectory, IFileSystem fileSystem)
+        public static void Run(string buildSolutionDirectory, IFileSystem fileSystem)
         {
             try
             {
-                var exampleType = ExampleType.FromName(type, ignoreCase: true);
-                var domainProject = GetExampleDomain(name, exampleType);
+                var promptResponse = RunPrompt();
+                var domainProject = GetExampleDomain(promptResponse.name, promptResponse.type);
 
                 var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
                 fileSystem.Directory.CreateDirectory(domainDirectory);
@@ -68,7 +68,7 @@
                 if (domainProject.AddGit)
                     Utilities.GitSetup(domainDirectory);
 
-                AnsiConsole.MarkupLine($"{Environment.NewLine}[bold yellow1]Your domain project is ready! Build something amazing. [/]");
+                AnsiConsole.MarkupLine($"{Environment.NewLine}[bold yellow1]Your example project is project is ready![/]");
                 StarGithubRequest();
             }
             catch (Exception e)
@@ -105,7 +105,35 @@
                 }
             }
         }
+        private static (ExampleType type, string name) RunPrompt()
+        {
+            AnsiConsole.WriteLine();
+            AnsiConsole.Render(new Rule("[yellow]Create an Example Project[/]").RuleStyle("grey").Centered());
 
+            var typeString = AskExampleType();
+            var exampleType = ExampleType.FromName(typeString, ignoreCase: true);
+            var projectName = AskExampleProjectName();
+
+            return (exampleType, projectName);
+        }
+
+        private static string AskExampleType()
+        {
+            return AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("What [green]type of example[/] do you want to create?")
+                    .PageSize(50)
+                    .AddChoices(ExampleType.Basic.Name,
+                        ExampleType.WithAuth.Name
+                    )
+            );
+        }
+
+        private static string AskExampleProjectName()
+        {
+            return AnsiConsole.Ask<string>("What would you like to name this project (e.g. [green]MyExampleProject[/])?");
+        }
+        
         private static DomainProject GetExampleDomain(string name, ExampleType exampleType)
         {
             if (exampleType == ExampleType.Basic)
