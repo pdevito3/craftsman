@@ -445,10 +445,14 @@
                 while (null != (line = input.ReadLine()))
                 {
                     var newText = $"{line}";
-                    if (line.Contains($"ProjectReference") && !projectAdded)
+                    if (line.Contains($"</Project>") && !projectAdded)
                     {
-                        newText += @$"
-    <ProjectReference Include=""{relativeProjectPath}"" />";
+                        newText = @$"
+  <ItemGroup>
+    <ProjectReference Include=""{relativeProjectPath}"" />
+  </ItemGroup>
+
+{newText}";
                         projectAdded = true;
                     }
 

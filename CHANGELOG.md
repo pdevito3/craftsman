@@ -52,6 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Descending sort tests now actually test desc instead of mirroring asc
 - Removed error handler comments in controller
 - Empty controller no longer added when no features present (fixes #40)
+- Messages project will be properly referenced when using a bus
 
 ## [0.11.2] - TBD
 
