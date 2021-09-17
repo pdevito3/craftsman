@@ -41,14 +41,12 @@
             try
             {
                 var promptResponse = RunPrompt();
+                var templateString = GetExampleDomain(promptResponse.name, promptResponse.type);
                 
-                var templateString = BasicTemplate(promptResponse.name);
                 var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(templateString);
-                WriteLogMessage($"Your template file was parsed successfully");
-
                 var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
-                NewDomainProjectCommand.CreateNewDomainProject(domainDirectory, fileSystem, domainProject);
                 
+                NewDomainProjectCommand.CreateNewDomainProject(domainDirectory, fileSystem, domainProject);
                 ExampleTemplateBuilder.CreateYamlFile(domainDirectory, templateString, fileSystem);
 
                 AnsiConsole.MarkupLine($"{Environment.NewLine}[bold yellow1]Your example project is project is ready![/]");
@@ -117,83 +115,16 @@
             return AnsiConsole.Ask<string>("What would you like to name this project (e.g. [green]MyExampleProject[/])?");
         }
         
-        private static DomainProject GetExampleDomain(string name, ExampleType exampleType)
+        private static string GetExampleDomain(string name, ExampleType exampleType)
         {
             if (exampleType == ExampleType.Basic)
-                return GetBasicProject(name);
+                return BasicTemplate(name);
             if (exampleType == ExampleType.WithAuth)
-                return GetWithAuthProject(name);
-            if(exampleType == ExampleType.WithBus)
-                return GetWithBusProject(name);
+                return AuthTemplate(name);
+            // if(exampleType == ExampleType.WithBus)
+            //     return GetWithBusProject(name);
 
             throw new Exception("Example type was not recognized.");
-        }
-
-        private static Entity BasicRecipeEntity()
-        {
-            return new Entity()
-            {
-                Name = "Recipe",
-                Properties = new List<EntityProperty>()
-                {
-                    new()
-                    {
-                        Name = "Title",
-                        Type = "string",
-                        CanFilter = true,
-                    },
-                    new()
-                    {
-                        Name = "Directions",
-                        Type = "string",
-                        CanFilter = true,
-                    },
-                    new()
-                    {
-                        Name = "Favorite",
-                        Type = "bool?",
-                        CanFilter = true,
-                    },
-                    new()
-                    {
-                        Name = "Rating",
-                        Type = "int?",
-                        CanFilter = true,
-                        CanSort = true,
-                    },
-                }
-            };   
-        }
-        
-        private static DomainProject GetBasicProject(string name)
-        {
-            var entity = BasicRecipeEntity();
-            entity.Features.Add(new Feature() { Type = FeatureType.GetList.Name });
-            entity.Features.Add(new Feature() { Type = FeatureType.GetRecord.Name });
-            entity.Features.Add(new Feature() { Type = FeatureType.AddRecord.Name });
-            entity.Features.Add(new Feature() { Type = FeatureType.UpdateRecord.Name });
-            
-            return new DomainProject()
-            {
-                DomainName = name,
-                BoundedContexts = new List<ApiTemplate>()
-                {
-                    new ApiTemplate()
-                    {
-                        ProjectName = "RecipeManagement",
-                        DbContext = new TemplateDbContext()
-                        {
-                            ContextName = "RecipeManagementDbContext",
-                            DatabaseName = "RecipeManagement",
-                            Provider = "Postgres"
-                        },
-                        Entities = new List<Entity>()
-                        {
-                            BasicRecipeEntity()
-                        }
-                    }
-                }
-            };
         }
 
         private static string BasicTemplate(string name)
@@ -208,12 +139,12 @@ BoundedContexts:
    Provider: SqlServer
   Entities:
   - Name: Recipe
-    # Features:
-    # - Type: AddRecord
-    # - Type: GetRecord
-    # - Type: GetList
-    # - Type: UpdateRecord
-    # - Type: DeleteRecord
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
     Properties:
     - Name: Title
       Type: string
@@ -236,85 +167,89 @@ BoundedContexts:
       CanFilter: true
       CanSort: true";
         }
-
-        private static DomainProject GetWithAuthProject(string name)
-        {
-            var template = GetBasicProject(name);
-            var boundary = template.BoundedContexts.FirstOrDefault();
-            boundary.Environments = new List<ApiEnvironment>()
-            {
-                new ApiEnvironment()
-                {
-                    EnvironmentName = "Development",
-                    Authority = "https://localhost:5010",
-                    Audience = "recipeManagementDev",
-                    AuthorizationUrl = "https://localhost:5010/connect/authorize",
-                    TokenUrl = "https://localhost:5010/connect/token",
-                    ClientId = "service.client.dev"
-                },
-                new ApiEnvironment()
-                {
-                    EnvironmentName = "QA",
-                    Authority = "https://qaauth.com",
-                    Audience = "recipeManagementQa",
-                    AuthorizationUrl = "https://qaauth.com/connect/authorize",
-                    TokenUrl = "https://qaauth.com/connect/token",
-                    ClientId = "service.client.qa",
-                },
-                new ApiEnvironment()
-                {
-                    EnvironmentName = "Production",
-                    Authority = "https://prodauth.com",
-                    Audience = "recipeManagement",
-                    AuthorizationUrl = "https://prodauth.com/connect/authorize",
-                    TokenUrl = "https://prodauth.com/connect/token",
-                    ClientId = "service.client",
-                }
-            };
-
-            var entity = BasicRecipeEntity();
-            entity.Features.Add(new Feature()
-            {
-                Type = FeatureType.GetList.Name,
-                Policies = new List<Policy>()
-                {
-                    new Policy() { Name = "CanReadRecipes", PolicyType = "scope", PolicyValue = "recipes.read" }
-                }
-            });
-            entity.Features.Add(new Feature()
-            {
-                Type = FeatureType.GetRecord.Name,
-                Policies = new List<Policy>()
-                {
-                    new Policy() { Name = "CanReadRecipes", PolicyType = "scope", PolicyValue = "recipes.read" }
-                }
-            });
-            entity.Features.Add(new Feature()
-            {
-                Type = FeatureType.AddRecord.Name,
-                Policies = new List<Policy>()
-                {
-                    new Policy() { Name = "CanAddRecipes", PolicyType = "scope", PolicyValue = "recipes.add" }
-                }
-            });
-            entity.Features.Add(new Feature()
-            {
-                Type = FeatureType.UpdateRecord.Name,
-                Policies = new List<Policy>()
-                {
-                    new Policy() { Name = "CanUpdateRecipes", PolicyType = "scope", PolicyValue = "recipes.update" }
-                }
-            });
-            
-            boundary.Entities.Clear();
-            boundary.Entities.Add(entity);
-            
-            template.BoundedContexts.Clear();
-            template.BoundedContexts.Add(boundary);
-
-            return template;
-        }
         
+        private static string AuthTemplate(string name)
+        {
+            return $@"DomainName: {name}
+BoundedContexts:
+- ProjectName: RecipeManagement
+  Port: 5375
+  DbContext:
+   ContextName: RecipesDbContext
+   DatabaseName: RecipeManagement
+   Provider: SqlServer
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+      Policies:
+      - Name: CanReadRecipes
+        PolicyType: scope
+        PolicyValue: recipes.read
+    - Type: GetRecord
+      Policies:
+      - Name: CanReadRecipes
+        PolicyType: scope
+        PolicyValue: recipes.read
+    - Type: AddRecord
+      Policies:
+      - Name: CanAddRecipes
+        PolicyType: scope
+        PolicyValue: recipes.add
+    - Type: UpdateRecord
+      Policies:
+      - Name: CanUpdateRecipes
+        PolicyType: scope
+        PolicyValue: recipes.update
+    - Type: DeleteRecord
+      Policies:
+      - Name: CanDeleteRecipes
+        PolicyType: scope
+        PolicyValue: recipes.delete
+    Properties:
+    - Name: Title
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Directions
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeSourceLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Description
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: ImageLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+  Environments:
+    - EnvironmentName: Development
+      Authority: https://localhost:5010
+      Audience: recipeManagementDev
+      AuthorizationUrl: https://localhost:5010/connect/authorize
+      TokenUrl: https://localhost:5010/connect/token
+      ClientId: service.client.dev
+    - EnvironmentName: Qa
+      ConnectionString: ""MyQaConnectionString""
+      Authority: https://qaauth.com
+      Audience: recipeManagementQa
+      AuthorizationUrl: https://qaauth.com/connect/authorize
+      TokenUrl: https://qaauth.com/connect/token
+      ClientId: service.client.qa
+    - EnvironmentName: Production
+      ConnectionString: ""MyProdConnectionString""
+      Authority: https://auth.com
+      Audience: recipeManagement
+      AuthorizationUrl: https://auth.com/connect/authorize
+      TokenUrl: https://auth.com/connect/token
+      ClientId: service.client";
+        }
+
         private static DomainProject GetWithBusProject(string name)
         {
             var boundary = new ApiTemplate();
