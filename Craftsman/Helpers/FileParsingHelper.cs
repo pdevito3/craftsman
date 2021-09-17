@@ -28,6 +28,14 @@
             return templatefromYaml;
         }
 
+        public static T ReadYamlString<T>(string yamlString)
+        {
+            var deserializer = new Deserializer();
+            T templatefromYaml = deserializer.Deserialize<T>(yamlString);
+
+            return templatefromYaml;
+        }
+
         public static T ReadJson<T>(string jsonFile)
         {
             return JsonConvert.DeserializeObject<T>(File.ReadAllText(jsonFile));

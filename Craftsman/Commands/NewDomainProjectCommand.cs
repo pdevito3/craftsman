@@ -46,26 +46,7 @@
                 WriteLogMessage($"Your template file was parsed successfully");
 
                 var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
-                fileSystem.Directory.CreateDirectory(domainDirectory);
-                SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
-
-                //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
-                //    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity));
-                foreach (var bc in domainProject.BoundedContexts)
-                    ApiScaffolding.ScaffoldApi(domainDirectory, bc, fileSystem);
-
-                // messages
-                if (domainProject.Messages.Count > 0)
-                    AddMessageCommand.AddMessages(domainDirectory, fileSystem, domainProject.Messages);
-
-                // migrations
-                Utilities.RunDbMigrations(domainProject.BoundedContexts, domainDirectory);
-
-                //final
-                ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
-
-                if (domainProject.AddGit)
-                    Utilities.GitSetup(domainDirectory);
+                CreateNewDomainProject(domainDirectory, fileSystem, domainProject);
 
                 AnsiConsole.MarkupLine($"{Environment.NewLine}[bold yellow1]Your domain project is ready! Build something amazing. [/]");
                 StarGithubRequest();
@@ -103,6 +84,31 @@
                     });
                 }
             }
+        }
+
+        public static void CreateNewDomainProject(string domainDirectory, IFileSystem fileSystem,
+            DomainProject domainProject)
+        {
+            fileSystem.Directory.CreateDirectory(domainDirectory);
+            SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
+
+            //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
+            //    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity));
+            foreach (var bc in domainProject.BoundedContexts)
+                ApiScaffolding.ScaffoldApi(domainDirectory, bc, fileSystem);
+
+            // messages
+            if (domainProject.Messages.Count > 0)
+                AddMessageCommand.AddMessages(domainDirectory, fileSystem, domainProject.Messages);
+
+            // migrations
+            Utilities.RunDbMigrations(domainProject.BoundedContexts, domainDirectory);
+
+            //final
+            ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
+
+            if (domainProject.AddGit)
+                Utilities.GitSetup(domainDirectory);
         }
     }
 }

@@ -41,28 +41,15 @@
             try
             {
                 var promptResponse = RunPrompt();
-                var domainProject = GetExampleDomain(promptResponse.name, promptResponse.type);
+                
+                var templateString = BasicTemplate(promptResponse.name);
+                var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(templateString);
+                WriteLogMessage($"Your template file was parsed successfully");
 
                 var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
-                fileSystem.Directory.CreateDirectory(domainDirectory);
-                SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
-                foreach (var bc in domainProject.BoundedContexts)
-                    ApiScaffolding.ScaffoldApi(domainDirectory, bc, fileSystem);
-
-                //TODO add yaml example file
+                NewDomainProjectCommand.CreateNewDomainProject(domainDirectory, fileSystem, domainProject);
                 
-                // messages
-                if (domainProject.Messages.Count > 0)
-                    AddMessageCommand.AddMessages(domainDirectory, fileSystem, domainProject.Messages);
-
-                // migrations
-                Utilities.RunDbMigrations(domainProject.BoundedContexts, domainDirectory);
-
-                //final
-                ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
-
-                if (domainProject.AddGit)
-                    Utilities.GitSetup(domainDirectory);
+                ExampleTemplateBuilder.CreateYamlFile(domainDirectory, templateString, fileSystem);
 
                 AnsiConsole.MarkupLine($"{Environment.NewLine}[bold yellow1]Your example project is project is ready![/]");
                 StarGithubRequest();
@@ -207,6 +194,47 @@
                     }
                 }
             };
+        }
+
+        private static string BasicTemplate(string name)
+        {
+            return $@"DomainName: {name}
+BoundedContexts:
+- ProjectName: RecipeManagement
+  Port: 5375
+  DbContext:
+   ContextName: RecipesDbContext
+   DatabaseName: RecipeManagement
+   Provider: SqlServer
+  Entities:
+  - Name: Recipe
+    # Features:
+    # - Type: AddRecord
+    # - Type: GetRecord
+    # - Type: GetList
+    # - Type: UpdateRecord
+    # - Type: DeleteRecord
+    Properties:
+    - Name: Title
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Directions
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeSourceLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Description
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: ImageLink
+      Type: string
+      CanFilter: true
+      CanSort: true";
         }
 
         private static DomainProject GetWithAuthProject(string name)
