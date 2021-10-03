@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * New `AddListByFk` option for the `add:feature`  command and `Feature` property of an entity.
   * TODO: docs
 * New `craftsman example` or `craftsman new:example` command to create an example project with a prompted workflow
+* Added `.DS_Store` and `.env` to gitignore
 
 ### Updated
 

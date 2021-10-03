@@ -290,7 +290,7 @@ typings/
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
 
-# Paket dependency manager
+# Paket dependency manage
 .paket/paket.exe
 paket-files/
 
@@ -320,6 +320,13 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+#DS Store
+.DS_Store
+
+#ENV
+.env
+
 ";
         }
     }
