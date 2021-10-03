@@ -41,28 +41,13 @@
             try
             {
                 var promptResponse = RunPrompt();
-                var domainProject = GetExampleDomain(promptResponse.name, promptResponse.type);
-
-                var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
-                fileSystem.Directory.CreateDirectory(domainDirectory);
-                SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
-                foreach (var bc in domainProject.BoundedContexts)
-                    ApiScaffolding.ScaffoldApi(domainDirectory, bc, fileSystem);
-
-                //TODO add yaml example file
+                var templateString = GetExampleDomain(promptResponse.name, promptResponse.type);
                 
-                // messages
-                if (domainProject.Messages.Count > 0)
-                    AddMessageCommand.AddMessages(domainDirectory, fileSystem, domainProject.Messages);
-
-                // migrations
-                Utilities.RunDbMigrations(domainProject.BoundedContexts, domainDirectory);
-
-                //final
-                ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
-
-                if (domainProject.AddGit)
-                    Utilities.GitSetup(domainDirectory);
+                var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(templateString);
+                var domainDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
+                
+                NewDomainProjectCommand.CreateNewDomainProject(domainDirectory, fileSystem, domainProject);
+                ExampleTemplateBuilder.CreateYamlFile(domainDirectory, templateString, fileSystem);
 
                 AnsiConsole.MarkupLine($"{Environment.NewLine}[bold yellow1]Your example project is project is ready![/]");
                 StarGithubRequest();
@@ -130,282 +115,206 @@
             return AnsiConsole.Ask<string>("What would you like to name this project (e.g. [green]MyExampleProject[/])?");
         }
         
-        private static DomainProject GetExampleDomain(string name, ExampleType exampleType)
+        private static string GetExampleDomain(string name, ExampleType exampleType)
         {
             if (exampleType == ExampleType.Basic)
-                return GetBasicProject(name);
+                return BasicTemplate(name);
             if (exampleType == ExampleType.WithAuth)
-                return GetWithAuthProject(name);
+                return AuthTemplate(name);
             if(exampleType == ExampleType.WithBus)
-                return GetWithBusProject(name);
+                return BusTemplate(name);
 
             throw new Exception("Example type was not recognized.");
         }
 
-        private static Entity BasicRecipeEntity()
+        private static string BasicTemplate(string name)
         {
-            return new Entity()
-            {
-                Name = "Recipe",
-                Properties = new List<EntityProperty>()
-                {
-                    new()
-                    {
-                        Name = "Title",
-                        Type = "string",
-                        CanFilter = true,
-                    },
-                    new()
-                    {
-                        Name = "Directions",
-                        Type = "string",
-                        CanFilter = true,
-                    },
-                    new()
-                    {
-                        Name = "Favorite",
-                        Type = "bool?",
-                        CanFilter = true,
-                    },
-                    new()
-                    {
-                        Name = "Rating",
-                        Type = "int?",
-                        CanFilter = true,
-                        CanSort = true,
-                    },
-                }
-            };   
+            return $@"DomainName: {name}
+BoundedContexts:
+- ProjectName: RecipeManagement
+  Port: 5375
+  DbContext:
+   ContextName: RecipesDbContext
+   DatabaseName: RecipeManagement
+   Provider: SqlServer
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Title
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Directions
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeSourceLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Description
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: ImageLink
+      Type: string
+      CanFilter: true
+      CanSort: true";
         }
         
-        private static DomainProject GetBasicProject(string name)
+        private static string AuthTemplate(string name)
         {
-            var entity = BasicRecipeEntity();
-            entity.Features.Add(new Feature() { Type = FeatureType.GetList.Name });
-            entity.Features.Add(new Feature() { Type = FeatureType.GetRecord.Name });
-            entity.Features.Add(new Feature() { Type = FeatureType.AddRecord.Name });
-            entity.Features.Add(new Feature() { Type = FeatureType.UpdateRecord.Name });
-            
-            return new DomainProject()
-            {
-                DomainName = name,
-                BoundedContexts = new List<ApiTemplate>()
-                {
-                    new ApiTemplate()
-                    {
-                        ProjectName = "RecipeManagement",
-                        DbContext = new TemplateDbContext()
-                        {
-                            ContextName = "RecipeManagementDbContext",
-                            DatabaseName = "RecipeManagement",
-                            Provider = "Postgres"
-                        },
-                        Entities = new List<Entity>()
-                        {
-                            BasicRecipeEntity()
-                        }
-                    }
-                }
-            };
+            return $@"DomainName: {name}
+BoundedContexts:
+- ProjectName: RecipeManagement
+  Port: 5375
+  DbContext:
+    ContextName: RecipesDbContext
+    DatabaseName: RecipeManagement
+    Provider: SqlServer
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+      Policies:
+      - Name: CanReadRecipes
+        PolicyType: scope
+        PolicyValue: recipes.read
+    - Type: GetRecord
+      Policies:
+      - Name: CanReadRecipes
+        PolicyType: scope
+        PolicyValue: recipes.read
+    - Type: AddRecord
+      Policies:
+      - Name: CanAddRecipes
+        PolicyType: scope
+        PolicyValue: recipes.add
+    - Type: UpdateRecord
+      Policies:
+      - Name: CanUpdateRecipes
+        PolicyType: scope
+        PolicyValue: recipes.update
+    - Type: DeleteRecord
+      Policies:
+      - Name: CanDeleteRecipes
+        PolicyType: scope
+        PolicyValue: recipes.delete
+    Properties:
+    - Name: Title
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Directions
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeSourceLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Description
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: ImageLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+  Environments:
+    - EnvironmentName: Development
+      Authority: https://localhost:5010
+      Audience: recipeManagementDev
+      AuthorizationUrl: https://localhost:5010/connect/authorize
+      TokenUrl: https://localhost:5010/connect/token
+      ClientId: service.client.dev
+    - EnvironmentName: Qa
+      ConnectionString: ""MyQaConnectionString""
+      Authority: https://qaauth.com
+      Audience: recipeManagementQa
+      AuthorizationUrl: https://qaauth.com/connect/authorize
+      TokenUrl: https://qaauth.com/connect/token
+      ClientId: service.client.qa
+    - EnvironmentName: Production
+      ConnectionString: ""MyProdConnectionString""
+      Authority: https://auth.com
+      Audience: recipeManagement
+      AuthorizationUrl: https://auth.com/connect/authorize
+      TokenUrl: https://auth.com/connect/token
+      ClientId: service.client";
         }
 
-        private static DomainProject GetWithAuthProject(string name)
+        private static string BusTemplate(string name)
         {
-            var template = GetBasicProject(name);
-            var boundary = template.BoundedContexts.FirstOrDefault();
-            boundary.Environments = new List<ApiEnvironment>()
-            {
-                new ApiEnvironment()
-                {
-                    EnvironmentName = "Development",
-                    Authority = "https://localhost:5010",
-                    Audience = "recipeManagementDev",
-                    AuthorizationUrl = "https://localhost:5010/connect/authorize",
-                    TokenUrl = "https://localhost:5010/connect/token",
-                    ClientId = "service.client.dev"
-                },
-                new ApiEnvironment()
-                {
-                    EnvironmentName = "QA",
-                    Authority = "https://qaauth.com",
-                    Audience = "recipeManagementQa",
-                    AuthorizationUrl = "https://qaauth.com/connect/authorize",
-                    TokenUrl = "https://qaauth.com/connect/token",
-                    ClientId = "service.client.qa",
-                },
-                new ApiEnvironment()
-                {
-                    EnvironmentName = "Production",
-                    Authority = "https://prodauth.com",
-                    Audience = "recipeManagement",
-                    AuthorizationUrl = "https://prodauth.com/connect/authorize",
-                    TokenUrl = "https://prodauth.com/connect/token",
-                    ClientId = "service.client",
-                }
-            };
-
-            var entity = BasicRecipeEntity();
-            entity.Features.Add(new Feature()
-            {
-                Type = FeatureType.GetList.Name,
-                Policies = new List<Policy>()
-                {
-                    new Policy() { Name = "CanReadRecipes", PolicyType = "scope", PolicyValue = "recipes.read" }
-                }
-            });
-            entity.Features.Add(new Feature()
-            {
-                Type = FeatureType.GetRecord.Name,
-                Policies = new List<Policy>()
-                {
-                    new Policy() { Name = "CanReadRecipes", PolicyType = "scope", PolicyValue = "recipes.read" }
-                }
-            });
-            entity.Features.Add(new Feature()
-            {
-                Type = FeatureType.AddRecord.Name,
-                Policies = new List<Policy>()
-                {
-                    new Policy() { Name = "CanAddRecipes", PolicyType = "scope", PolicyValue = "recipes.add" }
-                }
-            });
-            entity.Features.Add(new Feature()
-            {
-                Type = FeatureType.UpdateRecord.Name,
-                Policies = new List<Policy>()
-                {
-                    new Policy() { Name = "CanUpdateRecipes", PolicyType = "scope", PolicyValue = "recipes.update" }
-                }
-            });
-            
-            boundary.Entities.Clear();
-            boundary.Entities.Add(entity);
-            
-            template.BoundedContexts.Clear();
-            template.BoundedContexts.Add(boundary);
-
-            return template;
-        }
-        
-        private static DomainProject GetWithBusProject(string name)
-        {
-            var boundary = new ApiTemplate();
-            
-            boundary.Environments = new List<ApiEnvironment>()
-            {
-                new ApiEnvironment()
-                {
-                    EnvironmentName = "Development",
-                    BrokerSettings =
-                    {
-                        Host = "localhost",
-                        VirtualHost = "/",
-                        Username = "guest",
-                        Password = "guest",
-                    }
-                }
-            };
-            boundary.Bus.AddBus = true;
-            boundary.Producers = new List<Producer>()
-            {
-                new Producer()
-                {
-                    EndpointRegistrationMethodName = "EmailRequestor",
-                    ExchangeName = "report-requests",
-                    MessageName = "ISendReportRequest",
-                    ExchangeType = "direct",
-                    ProducerName = "EmailWasRequested",
-                    UsesDb = true,
-                }
-            };
-            boundary.Consumers = new List<Consumer>()
-            {
-                new()
-                {
-                    EndpointRegistrationMethodName = "EmailReportsEndpoint",
-                    ConsumerName = "SendRequestedEmail",
-                    ExchangeName = "report-requests",
-                    MessageName = "ISendReportRequest",
-                    QueueName = "email-reports",
-                    ExchangeType = "direct",
-                    RoutingKey = "email",
-                    UsesDb = true,
-                },
-                new()
-                {
-                    EndpointRegistrationMethodName = "FaxReportsEndpoint",
-                    ConsumerName = "SendRequestedFax",
-                    ExchangeName = "report-requests",
-                    MessageName = "ISendReportRequest",
-                    QueueName = "fax-reports",
-                    ExchangeType = "direct",
-                    RoutingKey = "fax",
-                    IsLazy = false,
-                    IsQuorum = false,
-                    UsesDb = false,
-                }
-            };
-            var messages = new List<Message>()
-            {
-                new Message()
-                {
-                    Name = "ISendReportRequest",
-                    Properties = new List<MessageProperty>()
-                    {
-                        new MessageProperty()
-                        {
-                            Name = "ReportId",
-                            Type = "guid"
-                        },
-                        new MessageProperty()
-                        {
-                            Name = "Provider",
-                            Type = "string"
-                        },
-                        new MessageProperty()
-                        {
-                            Name = "Target",
-                            Type = "string"
-                        }
-                    }
-                }
-            };
-
-            var entity = new Entity()
-            {
-                Name = "ReportRequest",
-                Properties = new List<EntityProperty>()
-                {
-                    new EntityProperty()
-                    {
-                        Name = "Provider",
-                        Type = "string"
-                    },
-                    new EntityProperty()
-                    {
-                        Name = "Target",
-                        Type = "string"
-                    }
-                }
-            };
-            
-            boundary.Entities.Clear();
-            boundary.Entities.Add(entity);
-            boundary.ProjectName = "ReportManagement";
-            boundary.DbContext = new TemplateDbContext()
-            {
-                ContextName = "ReportManagementDbContext",
-                DatabaseName = "ReportManagement",
-                Provider = "Postgres"
-            };
-            
-            
-            var template = new DomainProject()
-            {
-                DomainName = name,
-                BoundedContexts = new List<ApiTemplate>() {boundary},
-                Messages = messages
-            };
+            var template = $@"DomainName: {name}
+BoundedContexts:
+- ProjectName: RecipeManagement
+  Port: 5375
+  DbContext:
+   ContextName: RecipesDbContext
+   DatabaseName: RecipeManagement
+   Provider: Postgres
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Title
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Directions
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeSourceLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Description
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: ImageLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+  Environments:
+    - EnvironmentName: Development
+      Host localhost
+      VirtualHost /
+      Username guest
+      Password guest
+  AddBus: true
+  Producers:
+  - EndpointRegistrationMethodName: RecipeAddedEndpoint
+    ProducerName: RecipeAdded
+    ExchangeName: recipe-added
+    MessageName: IRecipeAdded
+    ExchangeType: fanout
+    UsesDb: true
+  Consumers:
+  - EndpointRegistrationMethodName: AddToBookEndpoint
+    ConsumerName: AddToBook
+    ExchangeName: book-additions
+    QueueName: add-recipe-to-book
+    MessageName: IRecipeAdded
+    ExchangeType: fanout
+Messages:
+- Name: IRecipeAdded
+  Properties:
+  - Name: RecipeId
+  - Type: guid";
 
             return template;
         }

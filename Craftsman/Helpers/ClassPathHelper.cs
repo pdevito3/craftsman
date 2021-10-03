@@ -195,6 +195,11 @@
         {
             return new ClassPath(solutionDirectory, MessagesProjName, className);
         }
+        
+        public static ClassPath ExampleYamlRootClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, "", className);
+        }
 
         public static ClassPath FunctionalTestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
         {
