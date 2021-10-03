@@ -121,8 +121,8 @@
                 return BasicTemplate(name);
             if (exampleType == ExampleType.WithAuth)
                 return AuthTemplate(name);
-            // if(exampleType == ExampleType.WithBus)
-            //     return GetWithBusProject(name);
+            if(exampleType == ExampleType.WithBus)
+                return BusTemplate(name);
 
             throw new Exception("Example type was not recognized.");
         }
@@ -250,125 +250,71 @@ BoundedContexts:
       ClientId: service.client";
         }
 
-        private static DomainProject GetWithBusProject(string name)
+        private static string BusTemplate(string name)
         {
-            var boundary = new ApiTemplate();
-            
-            boundary.Environments = new List<ApiEnvironment>()
-            {
-                new ApiEnvironment()
-                {
-                    EnvironmentName = "Development",
-                    BrokerSettings =
-                    {
-                        Host = "localhost",
-                        VirtualHost = "/",
-                        Username = "guest",
-                        Password = "guest",
-                    }
-                }
-            };
-            boundary.Bus.AddBus = true;
-            boundary.Producers = new List<Producer>()
-            {
-                new Producer()
-                {
-                    EndpointRegistrationMethodName = "EmailRequestor",
-                    ExchangeName = "report-requests",
-                    MessageName = "ISendReportRequest",
-                    ExchangeType = "direct",
-                    ProducerName = "EmailWasRequested",
-                    UsesDb = true,
-                }
-            };
-            boundary.Consumers = new List<Consumer>()
-            {
-                new()
-                {
-                    EndpointRegistrationMethodName = "EmailReportsEndpoint",
-                    ConsumerName = "SendRequestedEmail",
-                    ExchangeName = "report-requests",
-                    MessageName = "ISendReportRequest",
-                    QueueName = "email-reports",
-                    ExchangeType = "direct",
-                    RoutingKey = "email",
-                    UsesDb = true,
-                },
-                new()
-                {
-                    EndpointRegistrationMethodName = "FaxReportsEndpoint",
-                    ConsumerName = "SendRequestedFax",
-                    ExchangeName = "report-requests",
-                    MessageName = "ISendReportRequest",
-                    QueueName = "fax-reports",
-                    ExchangeType = "direct",
-                    RoutingKey = "fax",
-                    IsLazy = false,
-                    IsQuorum = false,
-                    UsesDb = false,
-                }
-            };
-            var messages = new List<Message>()
-            {
-                new Message()
-                {
-                    Name = "ISendReportRequest",
-                    Properties = new List<MessageProperty>()
-                    {
-                        new MessageProperty()
-                        {
-                            Name = "ReportId",
-                            Type = "guid"
-                        },
-                        new MessageProperty()
-                        {
-                            Name = "Provider",
-                            Type = "string"
-                        },
-                        new MessageProperty()
-                        {
-                            Name = "Target",
-                            Type = "string"
-                        }
-                    }
-                }
-            };
-
-            var entity = new Entity()
-            {
-                Name = "ReportRequest",
-                Properties = new List<EntityProperty>()
-                {
-                    new EntityProperty()
-                    {
-                        Name = "Provider",
-                        Type = "string"
-                    },
-                    new EntityProperty()
-                    {
-                        Name = "Target",
-                        Type = "string"
-                    }
-                }
-            };
-            
-            boundary.Entities.Clear();
-            boundary.Entities.Add(entity);
-            boundary.ProjectName = "ReportManagement";
-            boundary.DbContext = new TemplateDbContext()
-            {
-                ContextName = "ReportManagementDbContext",
-                DatabaseName = "ReportManagement",
-                Provider = "Postgres"
-            };
-            
-            
-            var template = new DomainProject()
-            {
-                DomainName = name,
-                BoundedContexts = new List<ApiTemplate>() {boundary},
-                Messages = messages
-            };
+            var template = $@"DomainName: {name}
+BoundedContexts:
+- ProjectName: RecipeManagement
+  Port: 5375
+  DbContext:
+   ContextName: RecipesDbContext
+   DatabaseName: RecipeManagement
+   Provider: Postgres
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Title
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Directions
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeSourceLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Description
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: ImageLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+  Environments:
+    - EnvironmentName: Development
+      Host localhost
+      VirtualHost /
+      Username guest
+      Password guest
+  AddBus: true
+  Producers:
+  - EndpointRegistrationMethodName: RecipeAddedEndpoint
+    ProducerName: RecipeAdded
+    ExchangeName: recipe-added
+    MessageName: IRecipeAdded
+    ExchangeType: fanout
+    UsesDb: true
+  Consumers:
+  - EndpointRegistrationMethodName: AddToBookEndpoint
+    ConsumerName: AddToBook
+    ExchangeName: book-additions
+    QueueName: add-recipe-to-book
+    MessageName: IRecipeAdded
+    ExchangeType: fanout
+Messages:
+- Name: IRecipeAdded
+  Properties:
+  - Name: RecipeId
+  - Type: guid";
 
             return template;
         }
