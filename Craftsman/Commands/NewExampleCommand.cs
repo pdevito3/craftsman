@@ -175,9 +175,9 @@ BoundedContexts:
 - ProjectName: RecipeManagement
   Port: 5375
   DbContext:
-   ContextName: RecipesDbContext
-   DatabaseName: RecipeManagement
-   Provider: SqlServer
+    ContextName: RecipesDbContext
+    DatabaseName: RecipeManagement
+    Provider: SqlServer
   Entities:
   - Name: Recipe
     Features:
