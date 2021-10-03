@@ -8,6 +8,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using Builders.Tests.IntegrationTests;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Validators;
@@ -60,7 +61,7 @@
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
 
-                AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory);
+                AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory, fileSystem);
 
                 WriteHelpHeader($"{Environment.NewLine}Your consumer has been successfully added. Keep up the good work!");
             }
@@ -93,7 +94,7 @@
             }
         }
 
-        public static void AddConsumers(List<Consumer> consumers, string projectBaseName, string srcDirectory, string testDirectory)
+        public static void AddConsumers(List<Consumer> consumers, string projectBaseName, string srcDirectory, string testDirectory, IFileSystem fileSystem)
         {
             var validator = new ConsumerValidator();
             foreach (var consumer in consumers)
@@ -110,6 +111,7 @@
                 MassTransitModifier.AddConsumerRegistation(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
 
                 IntegrationTestFixtureModifier.AddMTConsumer(testDirectory, consumer.ConsumerName, projectBaseName, srcDirectory);
+                ConsumerTestBuilder.CreateTests(srcDirectory, consumer, projectBaseName, fileSystem);
             });
         }
     }
