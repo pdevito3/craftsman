@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Added `.DS_Store` and `.env` to gitignore
 * Added Consumer test
 * Added `provider` to test fixture when adding a bus
+* Added a mock `IPublishEndpoint` service to `TestFixture` when using MassTransit
+  * update docs that mediatr handler tests aren't broken when pubilshing anymore
 
 ### Updated
 

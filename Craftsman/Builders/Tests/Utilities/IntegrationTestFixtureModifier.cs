@@ -41,6 +41,8 @@
                 // Consumer Registration -- Do Not Delete Comment
             }}).BuildServiceProvider();
             _harness = _provider.GetRequiredService<InMemoryTestHarness>();
+
+            services.AddScoped(_ => Mock.Of<IPublishEndpoint>());
             await _harness.Start();";
                     }
                     else if (line.Contains($"using System;"))
