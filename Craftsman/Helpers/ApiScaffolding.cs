@@ -116,7 +116,7 @@
                 AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
 
             if (template.Consumers.Count > 0)
-                AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory);
+                AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory, fileSystem);
 
             if (template.Producers.Count > 0)
                 AddProducerCommand.AddProducers(template.Producers, projectBaseName, srcDirectory);
