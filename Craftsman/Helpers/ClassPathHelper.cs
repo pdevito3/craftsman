@@ -97,9 +97,14 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Properties"), className);
         }
 
-        public static ClassPath AuthServerLaunchSettingsClassPath(string solutionDirectory, string className, string authServerProjectName)
+        public static ClassPath AuthServerLaunchSettingsClassPath(string projectDirectory, string className, string authServerProjectName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{authServerProjectName}", "Properties"), className);
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Properties"), className);
+        }
+
+        public static ClassPath AuthServerConfigClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
         }
 
         public static ClassPath FeatureTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)

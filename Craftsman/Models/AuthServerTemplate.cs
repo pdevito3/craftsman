@@ -2,6 +2,7 @@ namespace Craftsman.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Enums;
 
     public class AuthServerTemplate
@@ -12,6 +13,8 @@ namespace Craftsman.Models
         
         public List<AuthClient> Clients { get; set; }
         
+        public List<AuthScope> Scopes { get; set; }
+        
         public int Port { get; set; }
         
         public List<AuthApi> Apis { get; set; }
@@ -20,17 +23,46 @@ namespace Craftsman.Models
 
     public class AuthApi
     {
-        public string ApiName { get; set; }
-        public string ApiDisplayName { get; set; }
-        public List<AuthScope> ScopeNames { get; set; }
-        public List<string> Secrets { get; set; }
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public List<string> ScopeNames { get; set; }
+        public List<string> Secrets { get; set; } = new List<string>(){Guid.NewGuid().ToString()};
+        public List<string> UserClaims { get; set; } = new List<string>() {"openid", "profile"};
+
+        public string GetScopeNameString()
+        {
+            return ScopeNames is not {Count: > 0} 
+                ? null 
+                : string.Join(", ", ScopeNames.Select(claim => $@"""{claim}"""));
+        }
+
+        public string GetSecretsString()
+        {
+            return Secrets is not {Count: > 0} 
+                ? null 
+                : string.Join(", ", Secrets.Select(secret => $@"new Secret(""{secret}"".Sha256())"));
+        }
+
+        public string GetClaimsString()
+        {
+            return UserClaims is not {Count: > 0} 
+                ? null 
+                : string.Join(", ", UserClaims.Select(claim => $@"""{claim}"""));
+        }
     }
 
     public class AuthScope
     {
-        public string ScopeName { get; set; }
-        public string ScopeDisplayName { get; set; }
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
         public List<string> UserClaims { get; set; }
+        
+        public string GetClaimsString()
+        {
+            return UserClaims is not {Count: > 0} 
+                ? null 
+                : string.Join(", ", UserClaims.Select(claim => $@"""{claim}"""));
+        }
     }
 
     /// <summary>
