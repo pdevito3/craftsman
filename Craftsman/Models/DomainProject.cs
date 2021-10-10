@@ -14,5 +14,7 @@
         /// A list of eventing messages to be added to the domain
         /// </summary>
         public List<Message> Messages { get; set; } = new List<Message>();
+
+        public AuthServerTemplate AuthServer { get; set; } = null;
     }
 }

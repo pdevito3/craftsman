@@ -113,14 +113,24 @@
 
         public static void BuildMessagesProject(string solutionDirectory)
         {
-            var messageProjectExists = File.Exists(Path.Combine(solutionDirectory, "Messages", "Messages.csproj"));
-            if (!messageProjectExists)
+            var projectExists = File.Exists(Path.Combine(solutionDirectory, "Messages", "Messages.csproj"));
+            if (!projectExists)
             {
-                var messageProjectClassPath = ClassPathHelper.MessagesProjectRootClassPath(solutionDirectory, "");
+                var projectClassPath = ClassPathHelper.MessagesProjectRootClassPath(solutionDirectory, "");
 
                 MessagesCsProjBuilder.CreateMessagesCsProj(solutionDirectory);
-                Utilities.ExecuteProcess("dotnet", $@"sln add ""{messageProjectClassPath.FullClassPath}""", solutionDirectory);
+                Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
             }
+        }
+
+        public static void BuildAuthServerProject(string solutionDirectory, string authServerProjectName, IFileSystem fileSystem)
+        {
+            var projectExists = File.Exists(Path.Combine(solutionDirectory, authServerProjectName, $"{authServerProjectName}.csproj"));
+            if (projectExists) return;
+            
+            var projectClassPath = ClassPathHelper.AuthServerProjectClassPath(solutionDirectory, authServerProjectName);
+            AuthServerProjBuilder.CreateProject(solutionDirectory, authServerProjectName, fileSystem);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
         }
     }
 

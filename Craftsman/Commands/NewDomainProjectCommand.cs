@@ -97,6 +97,10 @@
             foreach (var bc in domainProject.BoundedContexts)
                 ApiScaffolding.ScaffoldApi(domainDirectory, bc, fileSystem);
 
+            // auth server
+            if (domainProject.AuthServer != null)
+                AddAuthServerCommand.AddAuthServer(domainDirectory, fileSystem, domainProject.AuthServer);
+            
             // messages
             if (domainProject.Messages.Count > 0)
                 AddMessageCommand.AddMessages(domainDirectory, fileSystem, domainProject.Messages);

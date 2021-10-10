@@ -97,6 +97,11 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Properties"), className);
         }
 
+        public static ClassPath AuthServerLaunchSettingsClassPath(string solutionDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine($"{authServerProjectName}", "Properties"), className);
+        }
+
         public static ClassPath FeatureTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "FeatureTests", entityName), className);
@@ -252,6 +257,11 @@
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
             return new ClassPath(projectDirectory, $"{projectBaseName}{withSuffix}", $"{projectBaseName}{withSuffix}.csproj");
+        }
+
+        public static ClassPath AuthServerProjectClassPath(string projectDirectory, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, $"{authServerProjectName}", $"{authServerProjectName}.csproj");
         }
     }
 }
