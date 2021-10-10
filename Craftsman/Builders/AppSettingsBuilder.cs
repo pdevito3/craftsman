@@ -4,14 +4,15 @@
     using Craftsman.Models;
     using System;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Text;
 
-    public class WebApiAppSettingsBuilder
+    public class AppSettingsBuilder
     {
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string projectBaseName)
+        public static void CreateWebApiAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string projectBaseName)
         {
             var appSettingFilename = Utilities.GetAppSettingsName(env.EnvironmentName);
             var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", projectBaseName);
@@ -25,6 +26,16 @@
             using FileStream fs = File.Create(classPath.FullClassPath);
             var data = GetAppSettingsText(env, dbName);
             fs.Write(Encoding.UTF8.GetBytes(data));
+        }
+
+        public static void CreateAuthServerAppSettings(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        {
+            var classPath = ClassPathHelper.AuthServerAppSettingsClassPath(projectDirectory, $"appsettings.json", authServerProjectName);
+            var fileText = @$"{{
+  ""AllowedHosts"": ""*""
+}}
+";
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
         private static string GetAppSettingsText(ApiEnvironment env, string dbName)

@@ -85,26 +85,26 @@ namespace Craftsman.Models
         public int? ClientPort
         {
             get => _port;
-            set => _port = value ?? throw new Exception($"ClientPort required for AuthClient '{ClientName}'");
+            set => _port = value ?? throw new Exception($"ClientPort required for AuthClient '{Name}'");
         }
         
-        public string ClientId { get; set; }
+        public string Id { get; set; }
         
-        public string ClientName { get; set; }
+        public string Name { get; set; }
 
-        public List<string> ClientSecrets { get; set; } = new List<string>(){Guid.NewGuid().ToString()};
+        public List<string> Secrets { get; set; } = new List<string>(){Guid.NewGuid().ToString()};
 
-        private GrantType _grantType { get; set; } = Enums.GrantType.Code;
+        internal GrantType GrantTypeEnum { get; private set; } = Enums.GrantType.Code;
         public string GrantType
         {
-            get => _grantType.Name;
+            get => GrantTypeEnum.Name;
             set
             {
                 if (!Enums.GrantType.TryFromName(value, true, out var parsed))
                 {   
-                    _grantType = Enums.GrantType.Code;
+                    GrantTypeEnum = Enums.GrantType.Code;
                 }
-                _grantType = parsed;
+                GrantTypeEnum = parsed;
             }
         }
 
@@ -144,6 +144,27 @@ namespace Craftsman.Models
 
         public bool AllowPlainTextPkce { get; set; } = false;
 
-        public List<string> AllowedScopes { get; set; } = new() {"openid", "profile"}; // only if `Code` flow
+        private List<string> _allowedScopes = null;
+        public List<string> AllowedScopes 
+        {
+            get => _allowedScopes;
+            set => _allowedScopes = GrantTypeEnum == Enums.GrantType.Code 
+                ? value ?? new List<string>() {"openid", "profile"}
+                : value;
+        }
+        
+        public string GetSecretsString()
+        {
+            return Secrets is not {Count: > 0} 
+                ? null 
+                : string.Join(", ", Secrets.Select(secret => $@"new Secret(""{secret}"".Sha256())"));
+        }
+        
+        public string GetScopeNameString()
+        {
+            return AllowedScopes is not {Count: > 0} 
+                ? null 
+                : string.Join(", ", AllowedScopes.Select(claim => $@"""{claim}"""));
+        }
     }
 }

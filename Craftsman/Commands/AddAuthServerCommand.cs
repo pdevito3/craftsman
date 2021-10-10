@@ -92,9 +92,11 @@
             
             AuthServerLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, template.Name, template.Port, fileSystem);
             StartupBuilder.CreateAuthServerStartup(projectDirectory, template.Name, fileSystem);
-            // program
-            // config
+            ProgramBuilder.CreateAuthServerProgram(projectDirectory, template.Name, fileSystem);
+            AuthServerConfigBuilder.CreateConfig(projectDirectory, template, fileSystem);
             // views from https://github.com/damikun/trouble-training
+
+            AppSettingsBuilder.CreateAuthServerAppSettings(projectDirectory, template.Name, fileSystem);
         }
     }
 }

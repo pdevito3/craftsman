@@ -4,28 +4,25 @@
     using Craftsman.Helpers;
     using System.IO.Abstractions;
     using System.Text;
+    using static Helpers.ConstMessages;
 
     public class ProgramBuilder
     {
-        public static void CreateWebApiProgram(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateWebApiProgram(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, $"Program.cs", projectBaseName);
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetProgramText(classPath.ClassNamespace);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Program.cs", projectBaseName);
+            var fileText = GetWebApiProgramText(classPath.ClassNamespace);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
+        }
+        
+        public static void CreateAuthServerProgram(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        {
+            var classPath = ClassPathHelper.WebApiProjectRootClassPath(projectDirectory, $"Program.cs", authServerProjectName);
+            var fileText = GetWebApiProgramText(classPath.ClassNamespace);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static string GetProgramText(string classNamespace)
+        public static string GetWebApiProgramText(string classNamespace)
         {
             return @$"namespace {classNamespace}
 {{
@@ -87,6 +84,67 @@
                     webBuilder.UseStartup(typeof(Startup).GetTypeInfo().Assembly.FullName)
                     .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseKestrel();
+                }});
+    }}
+}}";
+        }
+
+        
+        public static string GetAuthServerProgramText(string classNamespace)
+        {
+            return @$"{DuendeDisclosure}namespace {classNamespace}
+{{
+    using Autofac.Extensions.DependencyInjection;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Serilog.Sinks.SystemConsole.Themes;
+    using Serilog;
+    using System;
+    using System.IO;
+    using System.Reflection;
+    using System.Threading.Tasks;
+
+    public class Program
+    {{
+        public async static Task Main(string[] args)
+        {{
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override(""Microsoft"", LogEventLevel.Warning)
+                .MinimumLevel.Override(""Microsoft.Hosting.Lifetime"", LogEventLevel.Information)
+                .MinimumLevel.Override(""System"", LogEventLevel.Warning)
+                .MinimumLevel.Override(""Microsoft.AspNetCore.Authentication"", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console(outputTemplate: ""[{{Timestamp:HH:mm:ss}} {{Level}}] {{SourceContext}}{{NewLine}}{{Message:lj}}{{NewLine}}{{Exception}}{{NewLine}}"", theme: AnsiConsoleTheme.Code)
+                .CreateLogger();
+
+            var host = CreateHostBuilder(args).Build();
+
+            try
+            {{
+                Log.Information(""Starting application"");
+                await host.RunAsync();
+            }}
+            catch (Exception e)
+            {{
+                Log.Error(e, ""The application failed to start correctly"");
+                throw;
+            }}
+            finally
+            {{
+                Log.Information(""Shutting down application"");
+                Log.CloseAndFlush();
+            }}
+        }}
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .UseSerilog()
+                .ConfigureWebHostDefaults(webBuilder =>
+                {{
+                    webBuilder.UseStartup(typeof(Startup).GetTypeInfo().Assembly.FullName)
                 }});
     }}
 }}";

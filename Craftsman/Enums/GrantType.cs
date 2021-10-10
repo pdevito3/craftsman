@@ -11,15 +11,18 @@
         protected GrantType(string name, int value) : base(name, value)
         {
         }
+        public abstract string GrantTypeClassAssignment();
         
         private class CodeType : GrantType
         {
             public CodeType() : base(nameof(Code), 1) {}
+            public override string GrantTypeClassAssignment() => "GrantTypes.Code";
         }
 
         private class ClientCredentialsType : GrantType
         {
             public ClientCredentialsType() : base(nameof(ClientCredentials), 2) {}
+            public override string GrantTypeClassAssignment() => "GrantTypes.ClientCredentials";
         }
     }
 }

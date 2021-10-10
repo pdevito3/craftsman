@@ -25,6 +25,7 @@
         {
             var apiResources = authServer.Apis.Aggregate("", (current, api) => current + ApiResourceTextBuilder(api));
             var apiScopes = authServer.Scopes.Aggregate("", (current, scope) => current + ApiScopeTextBuilder(scope));
+            var clients = authServer.Clients.Aggregate("", (current, client) => current + ClientBuilder(client));
 
             return @$"namespace {classNamespace}
 {{
@@ -62,67 +63,41 @@
 
         public static IEnumerable<Client> Clients =>
             new Client[]
-            {{
-                // m2m client credentials flow client
-                new Client
-                {{
-                    ClientId = ""m2m.client"",
-                    ClientName = ""Client Credentials Client"",
-
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets = {{ new Secret(""511536EF-F270-4058-80CA-1C89C192F69A"".Sha256()) }},
-
-                    AllowedScopes = {{ ""scope1"" }}
-                }},
-
-                // interactive client using code flow + pkce
-                new Client
-                {{
-                    ClientId = ""interactive"",
-                    ClientName = ""Interactive Client"",
-                    ClientSecrets = {{ new Secret(""secret"".Sha256()) }},
-                    
-                    AllowedGrantTypes = GrantTypes.Code,
-                    RedirectUris = {{""https://localhost:5375/swagger/oauth2-redirect.html""}},
-                    PostLogoutRedirectUris = {{ ""http://localhost:5375/"" }},
-                    FrontChannelLogoutUri =    ""http://localhost:5375/signout-oidc"",
-                    AllowedCorsOrigins = {{""https://localhost:5375""}},
-                    
-                    AllowOfflineAccess = true,
-                    RequirePkce = true,
-                    RequireClientSecret = true,
-                    AllowedScopes = {{ ""openid"", ""profile"",
-                        ""recipes.read"",
-                        ""recipes.add"",
-                        ""recipes.update"",
-                        ""recipes.delete"" }}
-                }},
-
-                // interactive client using code flow + pkce
-                new Client
-                {{
-                    ClientId = ""interactive.bff"",
-                    ClientName = ""Interactive BFF"",
-                    ClientSecrets = {{ new Secret(""secret"".Sha256()) }},
-                    
-                    AllowedGrantTypes = GrantTypes.Code,
-                    RedirectUris = {{ ""https://localhost:4301/signin-oidc"" }},
-                    FrontChannelLogoutUri = ""https://localhost:4301/signout-oidc"",
-                    PostLogoutRedirectUris = {{ ""https://localhost:4301/signout-callback-oidc"" }},
-                    AllowedCorsOrigins = {{""https://localhost:5375"", ""https://localhost:4301""}},
-                    
-                    AllowOfflineAccess = true,
-                    RequirePkce = true,
-                    RequireClientSecret = true,
-                    AllowedScopes = {{ ""openid"", ""profile"",
-                        ""recipes.read"",
-                        ""recipes.add"",
-                        ""recipes.update"",
-                        ""recipes.delete"" }}
-                }},
+            {{{clients}
             }};
     }}
 }}";
+        }
+
+        private static string ClientBuilder(AuthClient client)
+        {
+            return client.GrantType == GrantType.ClientCredentials.Name 
+                ? @$"{Environment.NewLine}new Client
+                {{
+                    ClientId = ""{client.Id}"",
+                    ClientName = ""{client.Name}"",
+                    ClientSecrets = {{ {client.GetSecretsString()} }},
+                    AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
+                    AllowedScopes = {{ {client.GetScopeNameString()} }}
+                }},"
+                : @$"{Environment.NewLine}new Client
+                {{
+                    ClientId = ""{client.Id}"",
+                    ClientName = ""{client.Name}"",
+                    ClientSecrets = {{ {client.GetSecretsString()} }},
+
+                    AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
+                    RedirectUris = {client.RedirectUris},
+                    PostLogoutRedirectUris = {client.PostLogoutRedirectUris},
+                    FrontChannelLogoutUri = {client.FrontChannelLogoutUri},
+                    AllowedCorsOrigins = {client.AllowedCorsOrigins},
+
+                    AllowOfflineAccess = {client.AllowOfflineAccess},
+                    RequirePkce = {client.RequirePkce},
+                    RequireClientSecret = {client.RequireClientSecret},
+
+                    AllowedScopes = {{ {client.GetScopeNameString()} }}
+                }},";
         }
         
         private static string ApiResourceTextBuilder(AuthApi api)

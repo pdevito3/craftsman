@@ -335,7 +335,7 @@
                 if (env.EnvironmentName != "Production")
                     StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth, projectBaseName);
 
-                WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, env, dbName, projectBaseName);
+                AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, env, dbName, projectBaseName);
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, projectBaseName);
 
                 //services
@@ -345,7 +345,7 @@
 
             // add an integration testing env to make sure that an in memory database is used
             var functionalEnv = new ApiEnvironment() { EnvironmentName = "FunctionalTesting" };
-            WebApiAppSettingsBuilder.CreateAppSettings(solutionDirectory, functionalEnv, "", projectBaseName);
+            AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, functionalEnv, "", projectBaseName);
         }
 
         public static string GetForeignKeyIncludes(Entity entity)

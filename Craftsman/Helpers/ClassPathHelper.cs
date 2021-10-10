@@ -91,6 +91,11 @@
             return new ClassPath(solutionDirectory, $"{projectBaseName}{withSuffix}", className);
         }
 
+        public static ClassPath AuthServerAppSettingsClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, authServerProjectName, className);
+        }
+
         public static ClassPath WebApiLaunchSettingsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
