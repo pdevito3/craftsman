@@ -8,6 +8,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using Builders.AuthServer;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Validators;
@@ -94,9 +95,14 @@
             StartupBuilder.CreateAuthServerStartup(projectDirectory, template.Name, fileSystem);
             ProgramBuilder.CreateAuthServerProgram(projectDirectory, template.Name, fileSystem);
             AuthServerConfigBuilder.CreateConfig(projectDirectory, template, fileSystem);
-            // views from https://github.com/damikun/trouble-training
-
             AppSettingsBuilder.CreateAuthServerAppSettings(projectDirectory, template.Name, fileSystem);
+            
+            AuthServerPackageJsonBuilder.CreatePackageJson(projectDirectory, template.Name, fileSystem);
+            AuthServerTailwindConfigBuilder.CreateTailwindConfig(projectDirectory, template.Name, fileSystem);
+            AuthServerPostCssBuilder.CreatePostCss(projectDirectory, template.Name, fileSystem);
+
+            // controllers
+            // views
         }
     }
 }

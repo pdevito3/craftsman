@@ -31,6 +31,11 @@
     <PackageReference Include=""Serilog.AspNetCore"" Version=""4.1.0"" />
   </ItemGroup>
 
+  <Target Name=""Tailwind"" BeforeTargets=""Build"">
+    <Exec Command=""yarn install"" />
+    <Exec Command=""yarn run css:build"" />
+  </Target>
+
 </Project>";
         }
     }

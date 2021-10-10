@@ -1,15 +1,11 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.AuthServer
 {
     using System;
-    using System.Collections.Generic;
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
-    using System.Text;
+    using Enums;
+    using Helpers;
+    using Models;
     using static Helpers.ConstMessages;
 
     public class AuthServerConfigBuilder

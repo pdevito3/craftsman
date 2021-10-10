@@ -112,6 +112,21 @@
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
         }
 
+        public static ClassPath AuthServerPackageJsonClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
+        }
+
+        public static ClassPath AuthServerPostCssClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
+        }
+
+        public static ClassPath AuthServerTailwindConfigClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
+        }
+
         public static ClassPath FeatureTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "FeatureTests", entityName), className);
