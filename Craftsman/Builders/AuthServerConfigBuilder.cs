@@ -10,6 +10,7 @@
     using System.IO.Abstractions;
     using System.Linq;
     using System.Text;
+    using static Helpers.ConstMessages;
 
     public class AuthServerConfigBuilder
     {
@@ -27,7 +28,7 @@
             var apiScopes = authServer.Scopes.Aggregate("", (current, scope) => current + ApiScopeTextBuilder(scope));
             var clients = authServer.Clients.Aggregate("", (current, client) => current + ClientBuilder(client));
 
-            return @$"namespace {classNamespace}
+            return @$"{DuendeDisclosure}namespace {classNamespace}
 {{
     using Duende.IdentityServer.Models;
     using System.Collections.Generic;

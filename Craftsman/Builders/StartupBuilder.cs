@@ -5,6 +5,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Text;
+    using static Helpers.ConstMessages;
 
     public class StartupBuilder
     {
@@ -29,7 +30,7 @@
         public static void CreateAuthServerStartup(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = Utilities.GetStartupClassPath(null, projectDirectory, authServerProjectName);
-            var fileText = @$"namespace {classPath.ClassNamespace}
+            var fileText = @$"{DuendeDisclosure}namespace {classPath.ClassNamespace}
 {{
     using Duende.IdentityServer;
     using IdentityServerHost.Quickstart.UI;
