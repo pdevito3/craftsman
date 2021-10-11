@@ -122,6 +122,31 @@
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
         }
 
+        public static ClassPath AuthServerControllersClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Controllers"), className);
+        }
+
+        public static ClassPath AuthServerViewModelsClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","ViewModels"), className);
+        }
+
+        public static ClassPath AuthServerModelsClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Models"), className);
+        }
+
+        public static ClassPath AuthServerSeederClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Seeders"), className);
+        }
+
+        public static ClassPath AuthServerViewsClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Views"), className);
+        }
+
         public static ClassPath AuthServerTailwindConfigClassPath(string projectDirectory, string className, string authServerProjectName)
         {
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);

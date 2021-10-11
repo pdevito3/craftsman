@@ -102,7 +102,23 @@
             AuthServerPostCssBuilder.CreatePostCss(projectDirectory, template.Name, fileSystem);
 
             // controllers
+            AuthServerAccountControllerBuilder.CreateAccountController(projectDirectory, template.Name, fileSystem);
+            AuthServerExternalControllerBuilder.CreateExternalController(projectDirectory, template.Name, fileSystem);
+            AuthServerHomeControllerBuilder.CreateHomeController(projectDirectory, template.Name, fileSystem);
+            
+            // view models + models
+            AuthServerAccountViewModelsBuilder.CreateViewModels(projectDirectory, template.Name, fileSystem);
+            AuthServerExternalModelsBuilder.CreateModels(projectDirectory, template.Name, fileSystem);
+            AuthServerAccountModelsBuilder.CreateModels(projectDirectory, template.Name, fileSystem);
+            
+            // -- external VMs all in one file?
+            
             // views
+            AuthServerAccountViewsBuilder.CreateLoginView(projectDirectory, template.Name, fileSystem);
+            AuthServerAccountViewsBuilder.CreateLogoutView(projectDirectory, template.Name, fileSystem);
+            
+            // helpers
+            AuthServerTestUsersBuilder.CreateTestModels(projectDirectory, template.Name, fileSystem);
         }
     }
 }
