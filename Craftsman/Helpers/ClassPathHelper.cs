@@ -132,6 +132,11 @@
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","ViewModels"), className);
         }
 
+        public static ClassPath AuthServerExtensionsClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Extensions"), className);
+        }
+
         public static ClassPath AuthServerModelsClassPath(string projectDirectory, string className, string authServerProjectName)
         {
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Models"), className);

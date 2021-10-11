@@ -13,12 +13,16 @@
         public static void CreateAccountController(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "AccountsController.cs", authServerProjectName);
-            var fileText = GetControllerText(classPath.ClassNamespace);
+            var fileText = GetControllerText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        public static string GetControllerText(string classNamespace)
+        public static string GetControllerText(string classNamespace, string projectDirectory, string authServerProjectName)
         {
+            var modelsClassPath = ClassPathHelper.AuthServerModelsClassPath(projectDirectory, "", authServerProjectName);
+            var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
+            var extClassPath = ClassPathHelper.AuthServerExtensionsClassPath(projectDirectory, "Extensions.cs", authServerProjectName);
+            
             return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
@@ -38,6 +42,9 @@ using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using Duende.IdentityServer.Test;
+using {modelsClassPath.ClassNamespace};
+using {viewModelsClassPath.ClassNamespace};
+using {extClassPath.ClassNamespace};
 
 namespace {classNamespace}
 {{
@@ -247,7 +254,7 @@ namespace {classNamespace}
                 return SignOut(new AuthenticationProperties {{ RedirectUri = url }}, vm.ExternalAuthenticationScheme);
             }}
 
-            return View(""LoggedOut"", vm);
+            return View();
         }}
 
         [HttpGet]

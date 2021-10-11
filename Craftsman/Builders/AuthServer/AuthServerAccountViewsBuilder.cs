@@ -13,24 +13,26 @@
         public static void CreateLoginView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "Login.cshtml", authServerProjectName);
-            var fileText = GetLoginViewText();
+            var fileText = GetLoginViewText(projectDirectory, authServerProjectName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
         public static void CreateLogoutView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "Logout.cshtml", authServerProjectName);
-            var fileText = GetLogoutViewText();
+            var fileText = GetLogoutViewText(projectDirectory, authServerProjectName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        public static string GetLoginViewText()
+        public static string GetLoginViewText(string projectDirectory, string authServerProjectName)
         {
+            var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
+            
             return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
 
-@model LoginViewModel
+@model {viewModelsClassPath.ClassNamespace}.LoginViewModel
 
 <div class=""flex-1 h-full w-full max-h-full max-w-full text-xs md:text-sm relative mt-auto"">
 
@@ -121,14 +123,15 @@
 </div>";
         }
         
-        public static string GetLogoutViewText()
+        public static string GetLogoutViewText(string projectDirectory, string authServerProjectName)
         {
+            var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
             return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
 
 
-@model LogoutViewModel
+@model {viewModelsClassPath.ClassNamespace}.LogoutViewModel
 
 
 <div class=""flex-1 h-full w-full max-h-full max-w-full text-xs md:text-sm relative mt-auto"">

@@ -35,7 +35,6 @@
             var fileText = @$"{DuendeDisclosure}namespace {classPath.ClassNamespace}
 {{
     using Duende.IdentityServer;
-    using IdentityServerHost.Quickstart.UI;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;

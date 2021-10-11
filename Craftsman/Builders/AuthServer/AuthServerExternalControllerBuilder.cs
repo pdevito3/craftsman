@@ -13,12 +13,14 @@
         public static void CreateExternalController(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "ExternalController.cs", authServerProjectName);
-            var fileText = GetControllerText(classPath.ClassNamespace);
+            var fileText = GetControllerText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        public static string GetControllerText(string classNamespace)
+        public static string GetControllerText(string classNamespace, string projectDirectory, string authServerProjectName)
         {
+            var extClassPath = ClassPathHelper.AuthServerExtensionsClassPath(projectDirectory, "", authServerProjectName);
+            
             return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
@@ -39,6 +41,7 @@ using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using Duende.IdentityServer.Test;
+using {extClassPath.ClassNamespace}
 
 namespace {classNamespace}
 {{

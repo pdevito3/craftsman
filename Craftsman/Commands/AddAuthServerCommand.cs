@@ -109,17 +109,17 @@
             
             // view models + models
             AuthServerAccountViewModelsBuilder.CreateViewModels(projectDirectory, template.Name, fileSystem);
+            AuthServerSharedViewModelsBuilder.CreateViewModels(projectDirectory, template.Name, fileSystem);
             AuthServerExternalModelsBuilder.CreateModels(projectDirectory, template.Name, fileSystem);
             AuthServerAccountModelsBuilder.CreateModels(projectDirectory, template.Name, fileSystem);
-            
-            // -- external VMs all in one file?
-            
+
             // views
             AuthServerAccountViewsBuilder.CreateLoginView(projectDirectory, template.Name, fileSystem);
             AuthServerAccountViewsBuilder.CreateLogoutView(projectDirectory, template.Name, fileSystem);
             
             // helpers
             AuthServerTestUsersBuilder.CreateTestModels(projectDirectory, template.Name, fileSystem);
+            AuthServerExtensionsBuilder.CreateExtensions(projectDirectory, template.Name, fileSystem);
         }
     }
 }

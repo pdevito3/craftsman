@@ -13,11 +13,11 @@
         public static void CreateViewModels(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "AccountViewModels.cs", authServerProjectName);
-            var fileText = GetControllerText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
+            var fileText = GetVmText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        private static string GetControllerText(string classNamespace, string projectDirectory, string authServerProjectName)
+        private static string GetVmText(string classNamespace, string projectDirectory, string authServerProjectName)
         {
             var modelsClassPath = ClassPathHelper.AuthServerModelsClassPath(projectDirectory, "", authServerProjectName);
             
@@ -64,7 +64,7 @@ namespace {classNamespace}
 
     public class LogoutViewModel : LogoutInputModel
     {{
-        public string ShowLogoutPrompt {{ get; set; }}
+        public bool ShowLogoutPrompt {{ get; set; }}
     }}
 }}";
         }

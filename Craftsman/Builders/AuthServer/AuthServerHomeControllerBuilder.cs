@@ -13,12 +13,14 @@
         public static void CreateHomeController(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "HomeController.cs", authServerProjectName);
-            var fileText = GetControllerText(classPath.ClassNamespace);
+            var fileText = GetControllerText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        public static string GetControllerText(string classNamespace)
+        public static string GetControllerText(string classNamespace, string projectDirectory, string authServerProjectName)
         {
+            var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
+            
             return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
@@ -30,6 +32,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Duende.IdentityServer.Services;
+using {viewModelsClassPath.ClassNamespace}
 
 namespace {classNamespace}
 {{
