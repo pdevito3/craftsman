@@ -12,14 +12,14 @@
     {
         public static void CreateLoginView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.AuthServerModelsClassPath(projectDirectory, "Login.cshtml", authServerProjectName);
+            var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "Login.cshtml", authServerProjectName);
             var fileText = GetLoginViewText();
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
         public static void CreateLogoutView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.AuthServerModelsClassPath(projectDirectory, "Logout.cshtml", authServerProjectName);
+            var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "Logout.cshtml", authServerProjectName);
             var fileText = GetLogoutViewText();
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
@@ -65,7 +65,7 @@
 
                     <form class=""px-8 pt-2 pb-8 mb-4 space-y-3 bg-white rounded"" asp-route=""Login"">
 
-                        <partial name=""_ValidationSummary"">
+                        <partial name=""_ValidationSummary"" />
 
                         <input type=""hidden"" asp-for=""ReturnUrl"" />
 
@@ -118,7 +118,6 @@
         </div>
       </div>
         }}
-    </div>
 </div>";
         }
         

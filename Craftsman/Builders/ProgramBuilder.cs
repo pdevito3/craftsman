@@ -18,7 +18,7 @@
         public static void CreateAuthServerProgram(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiProjectRootClassPath(projectDirectory, $"Program.cs", authServerProjectName);
-            var fileText = GetWebApiProgramText(classPath.ClassNamespace);
+            var fileText = GetAuthServerProgramText(classPath.ClassNamespace);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
@@ -94,17 +94,14 @@
         {
             return @$"{DuendeDisclosure}namespace {classNamespace}
 {{
-    using Autofac.Extensions.DependencyInjection;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Serilog.Sinks.SystemConsole.Themes;
     using Serilog;
     using System;
-    using System.IO;
     using System.Reflection;
     using System.Threading.Tasks;
+    using Serilog.Events;
 
     public class Program
     {{
@@ -144,7 +141,7 @@
                 .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {{
-                    webBuilder.UseStartup(typeof(Startup).GetTypeInfo().Assembly.FullName)
+                    webBuilder.UseStartup<Startup>();
                 }});
     }}
 }}";

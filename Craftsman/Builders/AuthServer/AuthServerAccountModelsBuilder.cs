@@ -25,6 +25,9 @@
 
 namespace {classNamespace}
 {{  
+    using System;
+    using System.ComponentModel.DataAnnotations;
+
     public class AccountOptions
     {{
         public static bool AllowLocalLogin = true;

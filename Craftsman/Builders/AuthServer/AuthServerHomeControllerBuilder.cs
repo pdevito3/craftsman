@@ -12,7 +12,7 @@
     {
         public static void CreateHomeController(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "AccountsController.cs", authServerProjectName);
+            var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "HomeController.cs", authServerProjectName);
             var fileText = GetControllerText(classPath.ClassNamespace);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }

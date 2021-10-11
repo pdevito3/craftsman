@@ -6,6 +6,7 @@
     using Craftsman.Models;
     using RestSharp;
     using System;
+    using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Linq;
     using System.Reflection;
@@ -66,6 +67,25 @@
                         rootDir = Console.ReadLine();
                     }
                     AddBoundedContextCommand.Run(filePath, rootDir, fileSystem, verbosity);
+                }
+            }
+
+            if (args.Length >= 2 && (args[0] == "add:authserver"))
+            {
+                var filePath = args[1];
+                if (filePath == "-h" || filePath == "--help")
+                    AddAuthServerCommand.Help();
+                else
+                {
+                    CheckForLatestVersion();
+
+                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the root directory.");
+                        rootDir = Console.ReadLine();
+                    }
+                    AddAuthServerCommand.Run(filePath, rootDir, fileSystem);
                 }
             }
 

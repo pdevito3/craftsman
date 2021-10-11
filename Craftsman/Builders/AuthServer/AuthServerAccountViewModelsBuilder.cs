@@ -13,18 +13,25 @@
         public static void CreateViewModels(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "AccountViewModels.cs", authServerProjectName);
-            var fileText = GetControllerText(classPath.ClassNamespace);
+            var fileText = GetControllerText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        private static string GetControllerText(string classNamespace)
+        private static string GetControllerText(string classNamespace, string projectDirectory, string authServerProjectName)
         {
+            var modelsClassPath = ClassPathHelper.AuthServerModelsClassPath(projectDirectory, "", authServerProjectName);
+            
             return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
 
 namespace {classNamespace}
 {{  
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using {modelsClassPath.ClassNamespace};
+
     public class LoggedOutViewModel
     {{
         public string PostLogoutRedirectUri {{ get; set; }}

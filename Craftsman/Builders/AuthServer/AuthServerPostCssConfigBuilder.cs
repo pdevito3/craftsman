@@ -12,7 +12,7 @@
     {
         public static void CreatePostCss(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.AuthServerPostCssClassPath(projectDirectory, "package.json", authServerProjectName);
+            var classPath = ClassPathHelper.AuthServerPostCssClassPath(projectDirectory, "postcss.config.js", authServerProjectName);
             var fileText = GetPostCssText();
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }

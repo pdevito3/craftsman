@@ -69,7 +69,7 @@
         private static string ClientBuilder(AuthClient client)
         {
             return client.GrantType == GrantType.ClientCredentials.Name 
-                ? @$"{Environment.NewLine}new Client
+                ? @$"{Environment.NewLine}                new Client
                 {{
                     ClientId = ""{client.Id}"",
                     ClientName = ""{client.Name}"",
@@ -77,21 +77,21 @@
                     AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
                     AllowedScopes = {{ {client.GetScopeNameString()} }}
                 }},"
-                : @$"{Environment.NewLine}new Client
+                : @$"{Environment.NewLine}                new Client
                 {{
                     ClientId = ""{client.Id}"",
                     ClientName = ""{client.Name}"",
                     ClientSecrets = {{ {client.GetSecretsString()} }},
 
                     AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
-                    RedirectUris = {client.RedirectUris},
-                    PostLogoutRedirectUris = {client.PostLogoutRedirectUris},
-                    FrontChannelLogoutUri = {client.FrontChannelLogoutUri},
-                    AllowedCorsOrigins = {client.AllowedCorsOrigins},
+                    RedirectUris = {{{client.GetRedirectUrisString()}}},
+                    PostLogoutRedirectUris = {{{client.GetPostLogoutRedirectUrisString()}}},
+                    FrontChannelLogoutUri = ""{client.FrontChannelLogoutUri}"",
+                    AllowedCorsOrigins = {{{client.GetAllowedCorsOriginsString()}}},
 
-                    AllowOfflineAccess = {client.AllowOfflineAccess},
-                    RequirePkce = {client.RequirePkce},
-                    RequireClientSecret = {client.RequireClientSecret},
+                    AllowOfflineAccess = {client.AllowOfflineAccess.ToString().LowercaseFirstLetter()},
+                    RequirePkce = {client.RequirePkce.ToString().LowercaseFirstLetter()},
+                    RequireClientSecret = {client.RequireClientSecret.ToString().LowercaseFirstLetter()},
 
                     AllowedScopes = {{ {client.GetScopeNameString()} }}
                 }},";

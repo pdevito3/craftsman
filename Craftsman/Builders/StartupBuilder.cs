@@ -30,6 +30,8 @@
         public static void CreateAuthServerStartup(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = Utilities.GetStartupClassPath(null, projectDirectory, authServerProjectName);
+            var testUsersClassPath = ClassPathHelper.AuthServerSeederClassPath(projectDirectory, "", authServerProjectName);
+            
             var fileText = @$"{DuendeDisclosure}namespace {classPath.ClassNamespace}
 {{
     using Duende.IdentityServer;
@@ -39,6 +41,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using {testUsersClassPath.ClassNamespace};
 
     public class Startup
     {{
@@ -66,7 +69,7 @@
                 options.EmitStaticAudienceClaim = true;
             }});
 
-            if(_env.IsDevelopment)
+            if(_env.IsDevelopment())
             {{
                 identityServerBuilder.AddTestUsers(TestUsers.Users);
                 identityServerBuilder.AddInMemoryIdentityResources(Config.IdentityResources);
@@ -78,9 +81,9 @@
             services.AddAuthentication();
         }}
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {{
-            if (Environment.IsDevelopment())
+            if (_env.IsDevelopment())
             {{
                 app.UseDeveloperExceptionPage();
             }}

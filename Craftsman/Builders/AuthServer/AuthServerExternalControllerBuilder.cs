@@ -12,7 +12,7 @@
     {
         public static void CreateExternalController(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "AccountsController.cs", authServerProjectName);
+            var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "ExternalController.cs", authServerProjectName);
             var fileText = GetControllerText(classPath.ClassNamespace);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }

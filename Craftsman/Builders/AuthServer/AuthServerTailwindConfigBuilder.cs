@@ -12,7 +12,7 @@
     {
         public static void CreateTailwindConfig(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.AuthServerTailwindConfigClassPath(projectDirectory, "package.json", authServerProjectName);
+            var classPath = ClassPathHelper.AuthServerTailwindConfigClassPath(projectDirectory, "tailwind.config.js", authServerProjectName);
             var fileText = GetPostCssText();
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }

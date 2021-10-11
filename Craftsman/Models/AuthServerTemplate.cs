@@ -9,8 +9,6 @@ namespace Craftsman.Models
     {
         public string Name { get; set; }
         
-        public List<Policy> Policies { get; set; }
-        
         public List<AuthClient> Clients { get; set; }
         
         public List<AuthScope> Scopes { get; set; }
@@ -81,13 +79,7 @@ namespace Craftsman.Models
     /// </summary>
     public class AuthClient
     {
-        private int? _port;
-        public int? ClientPort
-        {
-            get => _port;
-            set => _port = value ?? throw new Exception($"ClientPort required for AuthClient '{Name}'");
-        }
-        
+
         public string Id { get; set; }
         
         public string Name { get; set; }
@@ -108,33 +100,13 @@ namespace Craftsman.Models
             }
         }
 
-        private List<string> _redirectUris = null;
-        public List<string> RedirectUris
-        {
-            get => _redirectUris;
-            set => _redirectUris = value ?? new List<string>(){$"https://localhost:{ClientPort}/swagger/oauth2-redirect.html"};
-        }
+        public List<string> RedirectUris { get; set; }
         
-        private List<string> _postLogoutRedirectUris = null;
-        public List<string> PostLogoutRedirectUris
-        {
-            get => _postLogoutRedirectUris;
-            set => _postLogoutRedirectUris = value ?? new List<string>(){$"https://localhost:{ClientPort}"};
-        }
+        public List<string> PostLogoutRedirectUris { get; set; }
 
-        private List<string> _allowedCorsOrigins = null;
-        public List<string> AllowedCorsOrigins
-        {
-            get => _allowedCorsOrigins;
-            set => _allowedCorsOrigins = value ?? new List<string>(){$"https://localhost:{ClientPort}"};
-        }
+        public List<string> AllowedCorsOrigins { get; set; }
 
-        private string _frontChannelLogoutUri = null;
-        public string FrontChannelLogoutUri 
-        {
-            get => _frontChannelLogoutUri;
-            set => _frontChannelLogoutUri = value ?? $"http://localhost:{ClientPort}/signout-oidc";
-        }
+        public string FrontChannelLogoutUri { get; set; }
 
         public bool AllowOfflineAccess { get; set; } = true;
         
@@ -144,13 +116,13 @@ namespace Craftsman.Models
 
         public bool AllowPlainTextPkce { get; set; } = false;
 
-        private List<string> _allowedScopes = null;
+        private List<string> _allowedScopes = new List<string>();
         public List<string> AllowedScopes 
         {
             get => _allowedScopes;
             set => _allowedScopes = GrantTypeEnum == Enums.GrantType.Code 
-                ? value ?? new List<string>() {"openid", "profile"}
-                : value;
+            ? value ?? new List<string>() {"openid", "profile"}
+            : value;
         }
         
         public string GetSecretsString()
@@ -165,6 +137,27 @@ namespace Craftsman.Models
             return AllowedScopes is not {Count: > 0} 
                 ? null 
                 : string.Join(", ", AllowedScopes.Select(claim => $@"""{claim}"""));
+        }
+        
+        public string GetRedirectUrisString()
+        {
+            return RedirectUris is not {Count: > 0} 
+                ? null 
+                : string.Join(", ", RedirectUris.Select(claim => $@"""{claim}"""));
+        }
+        
+        public string GetPostLogoutRedirectUrisString()
+        {
+            return PostLogoutRedirectUris is not {Count: > 0} 
+                ? null 
+                : string.Join(", ", PostLogoutRedirectUris.Select(claim => $@"""{claim}"""));
+        }
+        
+        public string GetAllowedCorsOriginsString()
+        {
+            return AllowedCorsOrigins is not {Count: > 0} 
+                ? null 
+                : string.Join(", ", AllowedCorsOrigins.Select(claim => $@"""{claim}"""));
         }
     }
 }

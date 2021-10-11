@@ -88,7 +88,8 @@
 
         public static void AddAuthServer(string solutionDirectory, IFileSystem fileSystem, AuthServerTemplate template)
         {
-            var projectDirectory = $"{solutionDirectory}{Path.DirectorySeparatorChar}{template.Name}";
+            // var projectDirectory = $"{solutionDirectory}{Path.DirectorySeparatorChar}{template.Name}";
+            var projectDirectory = solutionDirectory;
             SolutionBuilder.BuildAuthServerProject(solutionDirectory, template.Name, fileSystem);
             
             AuthServerLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, template.Name, template.Port, fileSystem);
