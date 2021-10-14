@@ -116,6 +116,12 @@
             // views
             AuthServerAccountViewsBuilder.CreateLoginView(projectDirectory, template.Name, fileSystem);
             AuthServerAccountViewsBuilder.CreateLogoutView(projectDirectory, template.Name, fileSystem);
+            AuthServerSharedViewsBuilder.CreateLayoutView(projectDirectory, template.Name, fileSystem);
+            AuthServerSharedViewsBuilder.CreateStartView(projectDirectory, template.Name, fileSystem);
+            
+            // css files for TW
+            AuthServerCssBuilder.CreateOutputCss(projectDirectory, template.Name, fileSystem);
+            AuthServerCssBuilder.CreateSiteCss(projectDirectory, template.Name, fileSystem);
             
             // helpers
             AuthServerTestUsersBuilder.CreateTestModels(projectDirectory, template.Name, fileSystem);

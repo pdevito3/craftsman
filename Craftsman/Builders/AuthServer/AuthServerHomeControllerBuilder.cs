@@ -33,8 +33,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Duende.IdentityServer.Services;
-using {viewModelsClassPath.ClassNamespace}
-using {attrClassPath.ClassNamespace}
+using {viewModelsClassPath.ClassNamespace};
+using {attrClassPath.ClassNamespace};
 
 namespace {classNamespace}
 {{

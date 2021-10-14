@@ -28,8 +28,8 @@
         {
             var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
             
-            return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
-// See LICENSE in the project root for license information.
+            return @$"@* {DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information. *@
 
 
 @model {viewModelsClassPath.ClassNamespace}.LoginViewModel
@@ -62,7 +62,7 @@
                     </h3>
 
                     <h6 class=""pt-2 my-2 text-center font-bold"">
-                    👋 Hello to identity server
+                    👋 Welcome to identity server
                     </h6>
 
                     <form class=""px-8 pt-2 pb-8 mb-4 space-y-3 bg-white rounded"" asp-route=""Login"">

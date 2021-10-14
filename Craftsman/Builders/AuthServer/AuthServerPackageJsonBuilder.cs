@@ -27,6 +27,7 @@
   ""devDependencies"": {{
     ""autoprefixer"": ""^10.3.4"",
     ""postcss"": ""^8.3.6"",
+    ""@tailwindcss/forms"": ""^0.3.4"",
     ""tailwindcss"": ""^2.2.16""
   }},
   ""author"": ""Built with Craftsman - https://github.com/pdevito3/craftsman""

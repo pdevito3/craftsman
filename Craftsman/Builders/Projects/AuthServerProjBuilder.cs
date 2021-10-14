@@ -32,8 +32,8 @@
   </ItemGroup>
 
   <Target Name=""Tailwind"" BeforeTargets=""Build"">
-    <Exec Command=""yarn install"" />
-    <Exec Command=""yarn run css:build"" />
+    <Exec Command=""npm install"" />
+    <Exec Command=""npm run css:build"" />
   </Target>
 
 </Project>";

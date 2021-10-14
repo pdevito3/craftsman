@@ -152,6 +152,16 @@
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Attributes"), className);
         }
 
+        public static ClassPath AuthServerSharedViewsClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Views", "Shared"), className);
+        }
+
+        public static ClassPath AuthServerCssClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","wwwroot", "css"), className);
+        }
+
         public static ClassPath AuthServerViewsClassPath(string projectDirectory, string className, string authServerProjectName)
         {
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Views"), className);
