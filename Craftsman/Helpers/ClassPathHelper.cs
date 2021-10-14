@@ -147,6 +147,11 @@
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Seeders"), className);
         }
 
+        public static ClassPath AuthServerAttributesClassPath(string projectDirectory, string className, string authServerProjectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Attributes"), className);
+        }
+
         public static ClassPath AuthServerViewsClassPath(string projectDirectory, string className, string authServerProjectName)
         {
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}","Views"), className);

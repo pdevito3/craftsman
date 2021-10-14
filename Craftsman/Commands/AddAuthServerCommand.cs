@@ -120,6 +120,7 @@
             // helpers
             AuthServerTestUsersBuilder.CreateTestModels(projectDirectory, template.Name, fileSystem);
             AuthServerExtensionsBuilder.CreateExtensions(projectDirectory, template.Name, fileSystem);
+            SecurityHeadersAttributeBuilder.CreateAttribute(projectDirectory, template.Name, fileSystem);
         }
     }
 }

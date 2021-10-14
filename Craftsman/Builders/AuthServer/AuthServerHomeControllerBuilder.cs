@@ -20,6 +20,7 @@
         public static string GetControllerText(string classNamespace, string projectDirectory, string authServerProjectName)
         {
             var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
+            var attrClassPath = ClassPathHelper.AuthServerAttributesClassPath(projectDirectory, "", authServerProjectName);
             
             return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
@@ -33,6 +34,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Duende.IdentityServer.Services;
 using {viewModelsClassPath.ClassNamespace}
+using {attrClassPath.ClassNamespace}
 
 namespace {classNamespace}
 {{

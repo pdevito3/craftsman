@@ -20,7 +20,8 @@
         public static string GetControllerText(string classNamespace, string projectDirectory, string authServerProjectName)
         {
             var extClassPath = ClassPathHelper.AuthServerExtensionsClassPath(projectDirectory, "", authServerProjectName);
-            
+            var attrClassPath = ClassPathHelper.AuthServerAttributesClassPath(projectDirectory, "", authServerProjectName);
+
             return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
@@ -42,6 +43,7 @@ using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using Duende.IdentityServer.Test;
 using {extClassPath.ClassNamespace}
+using {attrClassPath.ClassNamespace}
 
 namespace {classNamespace}
 {{
