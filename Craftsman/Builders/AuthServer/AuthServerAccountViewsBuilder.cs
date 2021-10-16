@@ -45,98 +45,65 @@
             var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
             
             return @$"@* {DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
-// See LICENSE in the project root for license information. *@
+// See LICENSE in the project root for license information. 
+
+This file also uses a free template from Tailwind UI as a base.*@
 
 
 @model {viewModelsClassPath.ClassNamespace}.LoginViewModel
 
-<div class=""flex-1 h-full w-full max-h-full max-w-full text-xs md:text-sm relative mt-auto"">
 
-    @if (Model.EnableLocalLogin)
-    {{
-    <div class=""h-full flex-1 flex-wrap w-full max-h-full max-w-full items-center flex-no-wrap"">
-        <div class=""flex p-3 md:p-5 overflow-hidden h-full"">
-          <div class=""flex flex-row w-full max-w-screen-lg mx-auto my-auto shadow-lg rounded-xl border border-gray-300 bg-white overflow-hidden"">
-            <div class=""w-full justify-center h-72 lg:h-80 relative mx-auto hidden md:flex md:w-1/2 bg-cover rounded-l-lg my-auto"">
-                @* <img src=""~/images/LoginLogo.png"" alt=""Sample Photo"" /> *@
-                <div class=""flex login-svg w-8/12 whitespace-pre mx-aut""></div>
-            </div>
-
-            @if (!Model.EnableLocalLogin)
-            {{   
-                <div class=""w-full md:w-1/2 bg-white px-1 my-auto h-full sm:px-2 md:px-5 pt-5 rounded-lg md:rounded-l-none p-2"">
-                    <div class=""alert alert-warning"">
-                        <strong>Invalid login request</strong>
-                        There are no login schemes configured for this request.
-                    </div>
-                </div>
-            }}else{{
-
-                <div class=""w-full md:w-1/2 bg-white px-1 sm:px-2 md:px-5 pt-5 rounded-lg md:rounded-l-none"">
-                    <h3 class=""pt-4 text-2xl text-center font-bold"">
-                    Login
-                    </h3>
-
-                    <h6 class=""pt-2 my-2 text-center font-bold"">
-                    👋 Welcome to identity server
-                    </h6>
-
-                    <form class=""px-8 pt-2 pb-8 mb-4 space-y-3 bg-white rounded"" asp-route=""Login"">
-
-                        <partial name=""_ValidationSummary"" />
-
-                        <input type=""hidden"" asp-for=""ReturnUrl"" />
-
-                        <div class=""flex flex-col space-y-2"">
-                            <label class=""text-sm sm:text-base font-semibold align-items-center pb-2 flex-no-wrap flex-grow-0 break-normal"" asp-for=""Username""></label>
-                            
-                            <div class=""flex flex-row my-auto justify-start align-middle outline content-center p-1 border-2 rounded-md transition duration-200 focus:bg-white focus-within:bg-white border-gray-200 focus-within:border-blue-500 hover:border-blue-500"">
-                                <input class=""mx-2 my-0.5 w-full text-gray-500 focus:text-gray-700 placeholder-gray-500 outline-none border-transparent bg-transparent text-base"" placeholder=""Username"" asp-for=""Username"" autofocus>
-                            </div> 
-                        </div>
-                        <div class=""flex flex-col space-y-2"">
-                            <label class=""text-sm sm:text-base font-semibold align-items-center pb-2 flex-no-wrap flex-grow-0 break-normal"" asp-for=""Password""></label>
-                        
-                            <div type=""password"" class=""flex flex-row my-auto justify-start align-middle outline content-center p-1 border-2 rounded-md transition duration-200 focus:bg-white focus-within:bg-white border-gray-200 focus-within:border-blue-500 hover:border-blue-500"">
-                                <input  type=""password"" class=""mx-2 my-0.5 w-full text-gray-500 focus:text-gray-700 placeholder-gray-500 outline-none border-transparent bg-transparent text-base"" placeholder=""Password"" asp-for=""Password"" autocomplete=""off"">
-                            </div>
-                        </div>
-                        @if (Model.AllowRememberLogin)
-                        {{
-
-                        <div class=""flex mb-5 flex-row space-x-2 items-center"">
-                            <input class=""my-auto "" asp-for=""RememberLogin"">
-                            <label class=""text-sm flex my-auto leading-none justify-center items-center align-items-center flex-no-wrap flex-grow-0 break-normal"" class=""form-check-label"" asp-for=""RememberLogin"">
-                                Remember My Login
-                            </label>
-                        </div>
-                   
-                        }}
-
-                        <div class=""flex flex-row space-x-2"">
-                            <button name=""button"" value=""login"" class="" px-1 h-10 w-16 md:w-20 text-sm rounded-lg md:text-base focus:outline-none font-semibold border border-white outline-none transition duration-200 focus:delay-75 bg-blue-500 text-white focus:ring-blue-500 focus:ring-2 hover:bg-blue-600"">
-                                <div class=""flex flex-row flex-nowrap space-x-2 leading-none justify-center items-center"">
-                                    <div class=""text-center items-center p-1"">
-                                        Login
-                                    </div>
-                                </div>
-                            </button>
-                            <button name=""button"" value=""cancel"" class="" px-1 h-10 md:w-20 text-sm rounded-lg md:text-base focus:outline-none font-semibold border border-white outline-none transition duration-200 focus:delay-75 bg-gray-500 text-white focus:ring-gray-500 focus:ring-2 hover:bg-gray-600"">
-                                <div class=""flex flex-row flex-nowrap space-x-2 leading-none justify-center items-center"">
-                                    <div class=""text-center items-center p-1"">
-                                        Cancel
-                                    </div>
-                                </div>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            }}
+@if (Model.EnableLocalLogin)
+{{
+  <div class=""min-h-screen flex sm:items-center justify-center bg-white sm:bg-gray-50 py-12 sm:px-6 lg:px-8"">
+    <div class=""w-full px-4 space-y-8 bg-white rounded sm:shadow-md sm:p-12 sm:max-w-md "">
+      <div>
+        <img class=""mx-auto h-12 w-auto"" src=""https://tailwindui.com/img/logos/workflow-mark-blue-600.svg"" alt=""Workflow"" />
+        <h2 class=""mt-6 text-center text-3xl font-extrabold text-gray-900"">Sign in to your account</h2>
+      </div>
+      <form class=""mt-8 space-y-6"" action=""#"" method=""POST"">
+        <input type=""hidden"" name=""remember"" value=""true"" />
+        <div class=""rounded-md shadow-sm -space-y-px"">
+          <div>
+            <label asp-for=""Username"" class=""sr-only"">Username</label>
+            <input asp-for=""Username"" id=""Username"" name=""username"" required class=""appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"" placeholder=""Username"" />
+          </div>
+          <div>
+            <label asp-for=""Password"" class=""sr-only"">Password</label>
+            <input asp-for=""Password"" id=""Password"" name=""Password"" type=""password"" autocomplete=""current-password"" required class=""appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"" placeholder=""Password"" />
           </div>
         </div>
-      </div>
-        }}
-</div>";
+
+        <div class=""flex items-center justify-between"">
+          @if (Model.AllowRememberLogin) {{
+            <div class=""flex items-center"">
+              <input asp-for=""RememberLogin"" id=""RememberLogin"" name=""RememberLogin"" type=""checkbox"" class=""h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"" />
+              <label asp-for=""RememberLogin"" class=""ml-2 block text-sm text-gray-900""> Remember me </label>
+            </div>
+          }}
+
+          <!-- <div class=""text-sm"">
+            <a href=""#"" class=""font-medium text-blue-600 hover:text-blue-500"">
+              Forgot your password?
+            </a>
+          </div> -->
+        </div>
+
+        <div>
+          <button type=""submit"" value=""login"" class=""group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"">Sign in</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}}
+
+@if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
+{{
+    <div class=""alert alert-warning"">
+        <strong>Invalid login request</strong>
+        There are no login schemes configured for this request.
+    </div>
+}}";
         }
         
         public static string GetLogoutViewText(string projectDirectory, string authServerProjectName)
