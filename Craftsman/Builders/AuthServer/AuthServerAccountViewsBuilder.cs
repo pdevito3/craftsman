@@ -12,15 +12,31 @@
     {
         public static void CreateLoginView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "Login.cshtml", authServerProjectName);
+            var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
+                "Login.cshtml",
+                authServerProjectName,
+                ClassPathHelper.AuthServerViewSubDir.Account);
             var fileText = GetLoginViewText(projectDirectory, authServerProjectName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
         public static void CreateLogoutView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "Logout.cshtml", authServerProjectName);
+            var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
+                "Logout.cshtml",
+                authServerProjectName,
+                ClassPathHelper.AuthServerViewSubDir.Account);
             var fileText = GetLogoutViewText(projectDirectory, authServerProjectName);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
+        }
+        
+        public static void CreateAccessDeniedView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        {
+            var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
+                "AccessDenied.cshtml",
+                authServerProjectName,
+                ClassPathHelper.AuthServerViewSubDir.Account);
+            var fileText = GetAccessDeniedViewText(projectDirectory, authServerProjectName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
@@ -126,9 +142,8 @@
         public static string GetLogoutViewText(string projectDirectory, string authServerProjectName)
         {
             var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
-            return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
-// See LICENSE in the project root for license information.
-
+            return @$"@* {DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information. *@
 
 
 @model {viewModelsClassPath.ClassNamespace}.LogoutViewModel
@@ -156,6 +171,27 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>";
+        }
+        
+        public static string GetAccessDeniedViewText(string projectDirectory, string authServerProjectName)
+        {
+            var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
+            return @$"@* {DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information. *@
+
+
+<div class=""flex-1 h-full w-full max-h-full max-w-full text-xs md:text-sm relative mt-auto"">
+    <div class=""h-full flex-1 flex-wrap w-full max-h-full max-w-full items-center flex-no-wrap"">
+        <div class=""flex p-3 md:p-5 overflow-hidden h-full"">
+             <div class=""flex flex-col space-y-5 justify-center items-center w-full max-w-screen-lg mx-auto my-auto"">
+                <h1>
+                    <small class=""flex text-2xl md:text-3xl font-semibold text-gray-700"">Access Denied</small>
+                </h1>                
+                <p>You do not have access to that resource.</p>
             </div>
         </div>
     </div>

@@ -105,7 +105,7 @@
             // controllers
             AuthServerAccountControllerBuilder.CreateAccountController(projectDirectory, template.Name, fileSystem);
             AuthServerExternalControllerBuilder.CreateExternalController(projectDirectory, template.Name, fileSystem);
-            AuthServerHomeControllerBuilder.CreateHomeController(projectDirectory, template.Name, fileSystem);
+            // AuthServerHomeControllerBuilder.CreateHomeController(projectDirectory, template.Name, fileSystem);
             
             // view models + models
             AuthServerAccountViewModelsBuilder.CreateViewModels(projectDirectory, template.Name, fileSystem);
@@ -116,6 +116,7 @@
             // views
             AuthServerAccountViewsBuilder.CreateLoginView(projectDirectory, template.Name, fileSystem);
             AuthServerAccountViewsBuilder.CreateLogoutView(projectDirectory, template.Name, fileSystem);
+            AuthServerAccountViewsBuilder.CreateAccessDeniedView(projectDirectory, template.Name, fileSystem);
             AuthServerSharedViewsBuilder.CreateLayoutView(projectDirectory, template.Name, fileSystem);
             AuthServerSharedViewsBuilder.CreateStartView(projectDirectory, template.Name, fileSystem);
             

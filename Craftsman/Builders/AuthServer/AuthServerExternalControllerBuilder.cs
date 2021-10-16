@@ -42,8 +42,8 @@ using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using Duende.IdentityServer.Test;
-using {extClassPath.ClassNamespace}
-using {attrClassPath.ClassNamespace}
+using {extClassPath.ClassNamespace};
+using {attrClassPath.ClassNamespace};
 
 namespace {classNamespace}
 {{

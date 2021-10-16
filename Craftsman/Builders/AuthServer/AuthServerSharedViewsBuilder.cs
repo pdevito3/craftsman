@@ -12,7 +12,7 @@ namespace Craftsman.Builders.AuthServer
     {
         public static void CreateLayoutView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.AuthServerSharedViewsClassPath(projectDirectory, "_Layout.cshtml", authServerProjectName);
+            var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory, "_Layout.cshtml", authServerProjectName, ClassPathHelper.AuthServerViewSubDir.Shared);
             var fileText = GetLayoutText(classPath.ClassNamespace);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
