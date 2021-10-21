@@ -58,11 +58,11 @@ This file also uses a free template from Tailwind UI as a base.*@
   <div class=""min-h-screen flex sm:items-center justify-center bg-white sm:bg-gray-50 py-12 sm:px-6 lg:px-8"">
     <div class=""w-full px-4 space-y-8 bg-white rounded sm:shadow-md sm:p-12 sm:max-w-md "">
       <div>
-        <img class=""mx-auto h-12 w-auto"" src=""https://tailwindui.com/img/logos/workflow-mark-blue-600.svg"" alt=""Workflow"" />
+        <img class=""mx-auto h-12 w-auto"" src=""#"" alt=""Logo"" />
         <h2 class=""mt-6 text-center text-3xl font-extrabold text-gray-900"">Sign in to your account</h2>
       </div>
-      <form class=""mt-8 space-y-6"" action=""#"" method=""POST"">
-        <input type=""hidden"" name=""remember"" value=""true"" />
+      <form class=""mt-8 space-y-6"" asp-route=""Login"">
+        <input type=""hidden"" asp-for=""ReturnUrl"" />
         <div class=""rounded-md shadow-sm -space-y-px"">
           <div>
             <label asp-for=""Username"" class=""sr-only"">Username</label>
@@ -90,7 +90,7 @@ This file also uses a free template from Tailwind UI as a base.*@
         </div>
 
         <div>
-          <button type=""submit"" value=""login"" class=""group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"">Sign in</button>
+          <button name=""button"" type=""submit"" value=""login"" class=""group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"">Sign in</button>
         </div>
       </form>
     </div>

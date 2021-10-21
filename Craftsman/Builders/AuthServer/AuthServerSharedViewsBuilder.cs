@@ -24,11 +24,27 @@ namespace Craftsman.Builders.AuthServer
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
+        public static void CreateViewImports(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        {
+            var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "_ViewImports.cshtml", authServerProjectName);
+            var fileText = GetViewImportsTest(projectDirectory, authServerProjectName);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
+        }
+        
         private static string GetStartViewTest()
         {
             return @$"@{{
     Layout = ""_Layout"";
 }}";
+        }
+        
+        private static string GetViewImportsTest(string projectDirectory, string authServerProjectName)
+        {
+            var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "", authServerProjectName);
+            
+            return @$"@using {classPath.ClassNamespace}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+";
         }
         
         private static string GetLayoutText(string authServerProjectName)

@@ -88,46 +88,45 @@
 
         public static void AddAuthServer(string solutionDirectory, IFileSystem fileSystem, AuthServerTemplate template)
         {
-            // var projectDirectory = $"{solutionDirectory}{Path.DirectorySeparatorChar}{template.Name}";
-            var projectDirectory = solutionDirectory;
             SolutionBuilder.BuildAuthServerProject(solutionDirectory, template.Name, fileSystem);
             
-            AuthServerLaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, template.Name, template.Port, fileSystem);
-            StartupBuilder.CreateAuthServerStartup(projectDirectory, template.Name, fileSystem);
-            ProgramBuilder.CreateAuthServerProgram(projectDirectory, template.Name, fileSystem);
-            AuthServerConfigBuilder.CreateConfig(projectDirectory, template, fileSystem);
-            AppSettingsBuilder.CreateAuthServerAppSettings(projectDirectory, template.Name, fileSystem);
+            AuthServerLaunchSettingsBuilder.CreateLaunchSettings(solutionDirectory, template.Name, template.Port, fileSystem);
+            StartupBuilder.CreateAuthServerStartup(solutionDirectory, template.Name, fileSystem);
+            ProgramBuilder.CreateAuthServerProgram(solutionDirectory, template.Name, fileSystem);
+            AuthServerConfigBuilder.CreateConfig(solutionDirectory, template, fileSystem);
+            AppSettingsBuilder.CreateAuthServerAppSettings(solutionDirectory, template.Name, fileSystem);
             
-            AuthServerPackageJsonBuilder.CreatePackageJson(projectDirectory, template.Name, fileSystem);
-            AuthServerTailwindConfigBuilder.CreateTailwindConfig(projectDirectory, template.Name, fileSystem);
-            AuthServerPostCssBuilder.CreatePostCss(projectDirectory, template.Name, fileSystem);
+            AuthServerPackageJsonBuilder.CreatePackageJson(solutionDirectory, template.Name, fileSystem);
+            AuthServerTailwindConfigBuilder.CreateTailwindConfig(solutionDirectory, template.Name, fileSystem);
+            AuthServerPostCssBuilder.CreatePostCss(solutionDirectory, template.Name, fileSystem);
 
             // controllers
-            AuthServerAccountControllerBuilder.CreateAccountController(projectDirectory, template.Name, fileSystem);
-            AuthServerExternalControllerBuilder.CreateExternalController(projectDirectory, template.Name, fileSystem);
+            AuthServerAccountControllerBuilder.CreateAccountController(solutionDirectory, template.Name, fileSystem);
+            AuthServerExternalControllerBuilder.CreateExternalController(solutionDirectory, template.Name, fileSystem);
             // AuthServerHomeControllerBuilder.CreateHomeController(projectDirectory, template.Name, fileSystem);
             
             // view models + models
-            AuthServerAccountViewModelsBuilder.CreateViewModels(projectDirectory, template.Name, fileSystem);
-            AuthServerSharedViewModelsBuilder.CreateViewModels(projectDirectory, template.Name, fileSystem);
-            AuthServerExternalModelsBuilder.CreateModels(projectDirectory, template.Name, fileSystem);
-            AuthServerAccountModelsBuilder.CreateModels(projectDirectory, template.Name, fileSystem);
+            AuthServerAccountViewModelsBuilder.CreateViewModels(solutionDirectory, template.Name, fileSystem);
+            AuthServerSharedViewModelsBuilder.CreateViewModels(solutionDirectory, template.Name, fileSystem);
+            AuthServerExternalModelsBuilder.CreateModels(solutionDirectory, template.Name, fileSystem);
+            AuthServerAccountModelsBuilder.CreateModels(solutionDirectory, template.Name, fileSystem);
 
             // views
-            AuthServerAccountViewsBuilder.CreateLoginView(projectDirectory, template.Name, fileSystem);
-            AuthServerAccountViewsBuilder.CreateLogoutView(projectDirectory, template.Name, fileSystem);
-            AuthServerAccountViewsBuilder.CreateAccessDeniedView(projectDirectory, template.Name, fileSystem);
-            AuthServerSharedViewsBuilder.CreateLayoutView(projectDirectory, template.Name, fileSystem);
-            AuthServerSharedViewsBuilder.CreateStartView(projectDirectory, template.Name, fileSystem);
+            AuthServerAccountViewsBuilder.CreateLoginView(solutionDirectory, template.Name, fileSystem);
+            AuthServerAccountViewsBuilder.CreateLogoutView(solutionDirectory, template.Name, fileSystem);
+            AuthServerAccountViewsBuilder.CreateAccessDeniedView(solutionDirectory, template.Name, fileSystem);
+            AuthServerSharedViewsBuilder.CreateLayoutView(solutionDirectory, template.Name, fileSystem);
+            AuthServerSharedViewsBuilder.CreateStartView(solutionDirectory, template.Name, fileSystem);
+            AuthServerSharedViewsBuilder.CreateViewImports(solutionDirectory, template.Name, fileSystem);
             
             // css files for TW
-            AuthServerCssBuilder.CreateOutputCss(projectDirectory, template.Name, fileSystem);
-            AuthServerCssBuilder.CreateSiteCss(projectDirectory, template.Name, fileSystem);
+            AuthServerCssBuilder.CreateOutputCss(solutionDirectory, template.Name, fileSystem);
+            AuthServerCssBuilder.CreateSiteCss(solutionDirectory, template.Name, fileSystem);
             
             // helpers
-            AuthServerTestUsersBuilder.CreateTestModels(projectDirectory, template.Name, fileSystem);
-            AuthServerExtensionsBuilder.CreateExtensions(projectDirectory, template.Name, fileSystem);
-            SecurityHeadersAttributeBuilder.CreateAttribute(projectDirectory, template.Name, fileSystem);
+            AuthServerTestUsersBuilder.CreateTestModels(solutionDirectory, template.Name, fileSystem);
+            AuthServerExtensionsBuilder.CreateExtensions(solutionDirectory, template.Name, fileSystem);
+            SecurityHeadersAttributeBuilder.CreateAttribute(solutionDirectory, template.Name, fileSystem);
         }
     }
 }
