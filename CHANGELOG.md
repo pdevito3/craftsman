@@ -22,6 +22,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Added `provider` to test fixture when adding a bus
 * Added a mock `IPublishEndpoint` service to `TestFixture` when using MassTransit
   * update docs that mediatr handler tests aren't broken when pubilshing anymore
+* New policies added to swagger on `add:entity` scaffolding
+* New `add:authserver` command as well as an `AuthServer` option when creating a domain
+  * TODO DOCS
+    * only supports scaffolding for one scope (for now) -- they can still be added manually if you need multiple!
+    * No consent support (yet)
 
 ### Updated
 

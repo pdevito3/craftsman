@@ -103,6 +103,29 @@
             return "InfrastructureServiceExtension";
         }
 
+        public static string GetSwaggerServiceExtensionName()
+        {
+            return "SwaggerServiceExtension";
+        }
+
+        public static List<Policy> GetPoliciesThatDoNotExist(List<Policy> policies, string existingFileFullClassPath)
+        {
+            var nonExistantPolicies = new List<Policy>();
+            nonExistantPolicies.AddRange(policies);
+
+            var fileText = File.ReadAllText(existingFileFullClassPath);
+
+            foreach (var policy in policies)
+            {
+                if (fileText.Contains(policy.Name) || fileText.Contains(policy.PolicyValue))
+                {
+                    nonExistantPolicies.Remove(policy);
+                }
+            }
+
+            return nonExistantPolicies;
+        }
+
         public static string GetAppSettingsName(string envName, bool asJson = true)
         {
             if (String.IsNullOrEmpty(envName))
@@ -286,7 +309,7 @@
             return $@"api/{entityNamePlural.ToLower()}";
         }
 
-        public static string PolicyStringBuilder(Policy policy)
+        public static string PolicyInfraStringBuilder(Policy policy)
         {
             if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
             {
@@ -304,6 +327,24 @@
             // claim ex: options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
             return $@"                options.AddPolicy(""{policy.Name}"",
                     policy => policy.RequireClaim(""{policy.PolicyValue}""));";
+        }
+
+        public static object GetSwaggerPolicies(IEnumerable<Policy> policies)
+        {
+            var policyStrings = "";
+
+            //var uniquePolicies = policies.DistinctBy(); //TODO use with .net6
+            var uniquePolicies = policies
+                .GroupBy(p => new {p.Name, p.PolicyValue, p.PolicyType} )
+                .Select(g => g.First())
+                .ToList();
+            foreach (var policy in uniquePolicies)
+            {
+                policyStrings += $@"
+                                {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},";
+            }
+
+            return policyStrings;
         }
 
         public static string BuildTestAuthorizationString(List<Policy> policies, List<Endpoint> endpoints, string entityName, PolicyType policyType)

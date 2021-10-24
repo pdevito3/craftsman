@@ -63,10 +63,10 @@
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var policiesString = "";
-            var nonExistantPolicies = GetPoliciesThatDoNotExist(policies, classPath.FullClassPath);
+            var nonExistantPolicies = Utilities.GetPoliciesThatDoNotExist(policies, classPath.FullClassPath);
             foreach (var policy in nonExistantPolicies)
             {
-                policiesString += $@"{Environment.NewLine}{Utilities.PolicyStringBuilder(policy)}";
+                policiesString += $@"{Environment.NewLine}{Utilities.PolicyInfraStringBuilder(policy)}";
             }
 
             var tempPath = $"{classPath.FullClassPath}temp";
@@ -115,24 +115,6 @@
             services.AddAuthorization(options =>
             {{
             }});";
-        }
-
-        private static List<Policy> GetPoliciesThatDoNotExist(List<Policy> policies, string existingFileFullClassPath)
-        {
-            var nonExistantPolicies = new List<Policy>();
-            nonExistantPolicies.AddRange(policies);
-
-            var fileText = File.ReadAllText(existingFileFullClassPath);
-
-            foreach (var policy in policies)
-            {
-                if (fileText.Contains(policy.Name) || fileText.Contains(policy.PolicyValue))
-                {
-                    nonExistantPolicies.Remove(policy);
-                }
-            }
-
-            return nonExistantPolicies;
         }
     }
 }

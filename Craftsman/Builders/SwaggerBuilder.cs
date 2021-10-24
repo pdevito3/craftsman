@@ -61,9 +61,9 @@
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        public static void AddSwaggerServiceExtension(string solutionDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, IEnumerable<Policy> policies, IFileSystem fileSystem)
+        public static void AddSwaggerServiceExtension(string srcDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, IEnumerable<Policy> policies, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"SwaggerServiceExtension.cs", projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetSwaggerServiceExtensionName()}.cs", projectBaseName);
 
             if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                 fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
@@ -113,7 +113,7 @@
 
             var licenseText = GetLicenseText(swaggerConfig.LicenseName, LicenseUrlLine);
 
-            var policyScopes = GetPolicies(policies);
+            var policyScopes = Utilities.GetSwaggerPolicies(policies);
             var swaggerAuth = addJwtAuthentication ? $@"
 
                 config.AddSecurityDefinition(""oauth2"", new OpenApiSecurityScheme
@@ -177,24 +177,6 @@
         }}";
 
             return swaggerText;
-        }
-
-        private static object GetPolicies(IEnumerable<Policy> policies)
-        {
-            var policyStrings = "";
-
-            //var uniquePolicies = policies.DistinctBy(); //TODO use with .net6
-            var uniquePolicies = policies
-                .GroupBy(p => new {p.Name, p.PolicyValue, p.PolicyType} )
-                .Select(g => g.First())
-                .ToList();
-            foreach (var policy in uniquePolicies)
-            {
-                policyStrings += $@"
-                                {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},";
-            }
-
-            return policyStrings;
         }
 
         private static string GetLicenseText(string licenseName, string licenseUrlLine)
