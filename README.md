@@ -29,9 +29,11 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 ✅ `example` command to generate example projects with associated templates
 
+✅ Auth Server Scaffolding (In-Memory)
+
 🚧 Better environment variable support
 
-🚧 Auth Server Scaffolding
+🚧 Add Identity to Auth Server
 
 🚧 Auditable Entities
 
@@ -41,7 +43,7 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 🚧 React Scaffolding
 
-🚧 SDK for easier scaffolding
+🚧 Json for easier scaffolding
 
 🚧 More scaffolded test coverage
 

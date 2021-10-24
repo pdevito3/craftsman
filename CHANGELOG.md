@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Added built in features to the `add:feature` command
 * New `AddListByFk` option for the `add:feature`  command and `Feature` property of an entity.
   * TODO: docs
-* New `craftsman example` or `craftsman new:example` command to create an example project with a prompted workflow
+* New `craftsman example` or `craftsman new:example` command to create an example project with a prompted workflow to select. `Basic`, `WithAuth`, `AuthServer`, `WithBus`
 * Added `.DS_Store` and `.env` to gitignore
 * Added Consumer test
 * Added `provider` to test fixture when adding a bus

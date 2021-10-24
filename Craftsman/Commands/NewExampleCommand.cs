@@ -123,6 +123,8 @@
                 return AuthTemplate(name);
             if(exampleType == ExampleType.WithBus)
                 return BusTemplate(name);
+            if(exampleType == ExampleType.WithAuthServer) 
+              return AuthServerTemplate();
 
             throw new Exception("Example type was not recognized.");
         }
@@ -317,6 +319,119 @@ Messages:
   - Type: guid";
 
             return template;
+        }
+
+        private static string AuthServerTemplate()
+        {
+          return $@"DomainName: SafeCarbonKitchenWithAuthServer
+BoundedContexts:
+- ProjectName: RecipeManagement
+  Port: 5375
+  DbContext:
+    ContextName: RecipesDbContext
+    DatabaseName: RecipeManagement
+    Provider: Postgres
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+      Policies:
+      - Name: RecipesReadOnly
+        PolicyType: scope
+        PolicyValue: recipemanagement.readonly
+    - Type: GetRecord
+      Policies:
+      - Name: RecipesReadOnly
+        PolicyType: scope
+        PolicyValue: recipemanagement.readonly
+    - Type: AddRecord
+      Policies:
+      - Name: RecipesReadOnly
+        PolicyType: scope
+        PolicyValue: recipemanagement.readonly
+    - Type: UpdateRecord
+      Policies:
+      - Name: RecipesReadOnly
+        PolicyType: scope
+        PolicyValue: recipemanagement.readonly
+    - Type: DeleteRecord
+      Policies:
+      - Name: RecipesFullAccess
+        PolicyType: scope
+        PolicyValue: recipemanagement.fullaccess
+    Properties:
+    - Name: Title
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Directions
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeSourceLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Description
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: ImageLink
+      Type: string
+      CanFilter: true
+      CanSort: true
+  Environments:
+  - EnvironmentName: Development
+    Authority: https://localhost:3385
+    Audience: recipe_management
+    AuthorizationUrl: https://localhost:3385/connect/authorize
+    TokenUrl: https://localhost:3385/connect/token
+    ClientId: recipemanagement.swagger
+    ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+AuthServer:
+  Name: AuthServerWithDomain
+  Port: 3385
+  Clients:
+    - Id: recipemanagement.swagger
+      Name: RM Swagger
+      Secrets:
+        - 974d6f71-d41b-4601-9a7a-a33081f80687
+      GrantType: Code
+      RedirectUris:
+        - 'https://localhost:5375/swagger/oauth2-redirect.html'
+      PostLogoutRedirectUris:
+        - 'http://localhost:5375/'
+      AllowedCorsOrigins:
+        - 'https://localhost:5375'
+      FrontChannelLogoutUri: 'http://localhost:5375/signout-oidc'
+      AllowOfflineAccess: true
+      RequirePkce: true
+      RequireClientSecret: true
+      AllowPlainTextPkce: false
+      AllowedScopes:
+        - recipemanagement.readonly
+        - recipemangement.fullaccess
+        - openid
+        - profile
+  Scopes:
+    - Name: recipemanagement.readonly
+      DisplayName: Recipes - Read Only
+      UserClaims:
+        - recipes.read
+    - Name: recipemangement.fullaccess
+      DisplayName: Recipes - Full Access
+  Apis:
+    - Name: recipe_management
+      DisplayName: Recipe Management
+      ScopeNames:
+        - recipemanagement.readonly
+        - recipemangement.fullaccess
+      Secrets:
+        - 4653f605-2b36-43eb-bbef-a93480079f20
+      UserClaims:
+        - openid
+        - profile
+";
         }
     }
 }
