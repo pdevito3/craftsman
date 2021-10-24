@@ -19,14 +19,20 @@
         
         public static string GetPostCssText()
         {
-            return @$"module.exports = {{
+            return @$"const colors = require('tailwindcss/colors')
+
+module.exports = {{
   purge: [""./**/*.cshtml"",""../**/*.cshtml"", ""../**/*.html"",""./**/*.html"", ""./**/*.razor""],
   darkMode: false, // or 'media' or 'class'
   theme: {{
-    extend: {{}},
+    extend: {{
+      colors: {{
+        violet: colors.violet,
+      }}
+    }},
   }},
   variants: {{
-    extend: {{}},
+    extend: {{ }},
   }},
   plugins: [
     require('@tailwindcss/forms'),

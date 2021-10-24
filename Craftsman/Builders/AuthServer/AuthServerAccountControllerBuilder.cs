@@ -255,8 +255,11 @@ namespace {classNamespace}
                 // this triggers a redirect to the external provider for sign-out
                 return SignOut(new AuthenticationProperties {{ RedirectUri = url }}, vm.ExternalAuthenticationScheme);
             }}
+            
+            return Redirect(vm.PostLogoutRedirectUri);
 
-            return View();
+            // use this if you want to redirect to an MVC page
+            // return View(""LoggedOut"", vm);
         }}
 
         [HttpGet]
