@@ -8,6 +8,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using System.Linq;
     using System.Text;
 
     public class SwaggerBuilder
@@ -181,10 +182,16 @@
         private static object GetPolicies(IEnumerable<Policy> policies)
         {
             var policyStrings = "";
-            foreach (var policy in policies)
+
+            //var uniquePolicies = policies.DistinctBy(); //TODO use with .net6
+            var uniquePolicies = policies
+                .GroupBy(p => new {p.Name, p.PolicyValue, p.PolicyType} )
+                .Select(g => g.First())
+                .ToList();
+            foreach (var policy in uniquePolicies)
             {
                 policyStrings += $@"
-                                    {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},";
+                                {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},";
             }
 
             return policyStrings;

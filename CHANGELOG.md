@@ -36,7 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Updated FK support to better API
 
-  * TODO: docs
+  * TODO: docs -- `ForeignEntityPlural` defaults to `s` suffix if not provided
 
     ```yaml
         Properties:
@@ -59,6 +59,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Removed error handler comments in controller
 - Empty controller no longer added when no features present (fixes #40)
 - Messages project will be properly referenced when using a bus
+- Swagger policies won't get duplicates
 
 ## [0.11.2] - TBD
 
