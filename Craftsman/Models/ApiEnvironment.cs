@@ -32,6 +32,8 @@
 
         public string ClientId { get; set; }
 
+        public string ClientSecret { get; set; }
+
         public BrokerSettings BrokerSettings { get; set; } = new BrokerSettings();
     }
 }
