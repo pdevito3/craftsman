@@ -43,7 +43,7 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 🚧 React Scaffolding
 
-🚧 Json for easier scaffolding
+🚧 Json Schema for easier file scaffolding
 
 🚧 More scaffolded test coverage
 
