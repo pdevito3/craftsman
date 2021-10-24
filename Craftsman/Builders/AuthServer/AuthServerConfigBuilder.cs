@@ -109,7 +109,9 @@
         
         private static string ApiScopeTextBuilder(AuthScope scope)
         {
-            return $@"{Environment.NewLine}                new ApiScope(""{scope.Name}"", ""{scope.DisplayName}"", new[] {{ { scope.GetClaimsString() } }}),";
+            return scope.UserClaims.Count > 0 
+                ? $@"{Environment.NewLine}                new ApiScope(""{scope.Name}"", ""{scope.DisplayName}"", new[] {{ { scope.GetClaimsString() } }}),"
+                : $@"{Environment.NewLine}                new ApiScope(""{scope.Name}"", ""{scope.DisplayName}""),";
         }
     }
 }

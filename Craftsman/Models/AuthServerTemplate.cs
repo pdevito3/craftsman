@@ -53,7 +53,7 @@ namespace Craftsman.Models
     {
         public string Name { get; set; }
         public string DisplayName { get; set; }
-        public List<string> UserClaims { get; set; }
+        public List<string> UserClaims { get; set; } = new List<string>();
         
         public string GetClaimsString()
         {
