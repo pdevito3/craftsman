@@ -293,11 +293,13 @@ BoundedContexts:
       CanSort: true
   Environments:
     - EnvironmentName: Development
-      Host localhost
-      VirtualHost /
-      Username guest
-      Password guest
-  AddBus: true
+      BrokerSettings:
+        Host: localhost
+        VirtualHost: /
+        Username: guest
+        Password: guest
+  Bus:
+    AddBus: true
   Producers:
   - EndpointRegistrationMethodName: RecipeAddedEndpoint
     ProducerName: RecipeAdded
@@ -316,7 +318,7 @@ Messages:
 - Name: IRecipeAdded
   Properties:
   - Name: RecipeId
-  - Type: guid";
+    Type: guid";
 
             return template;
         }
