@@ -28,12 +28,7 @@
                 while (null != (line = input.ReadLine()))
                 {
                     var newText = $"{line}";
-                    if (line.Contains($"ConnectionStrings:"))
-                    {
-                        newText += $@"
-                        {{ ""UseInMemoryBus"", ""true"" }},";
-                    }
-                    else if (line.Contains($"// MassTransit Setup -- Do Not Delete Comment"))
+                    if (line.Contains($"// MassTransit Setup -- Do Not Delete Comment"))
                     {
                         newText += $@"
             _provider = services.AddMassTransitInMemoryTestHarness(cfg =>

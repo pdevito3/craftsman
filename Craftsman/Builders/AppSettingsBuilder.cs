@@ -48,7 +48,6 @@
 
                 return @$"{{
   ""AllowedHosts"": ""*"",
-  ""UseInMemoryBus"": {bus},
 {serilogSettings}{jwtSettings}
 }}
 ";
@@ -58,7 +57,6 @@
                 var connectionString = String.IsNullOrEmpty(env.ConnectionString) ? "local" : env.ConnectionString.Replace(@"\", @"\\");
                 return @$"{{
   ""AllowedHosts"": ""*"",
-  ""UseInMemoryBus"": false,
   ""ConnectionStrings"": {{
     ""{dbName}"": ""{connectionString}""
   }},

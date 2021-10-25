@@ -10,73 +10,29 @@
         public static void CreateApiVersioningServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"ApiVersioningServiceExtension.cs", projectBaseName);
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetApiVersioningServiceExtensionText(classPath.ClassNamespace);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = GetApiVersioningServiceExtensionText(classPath.ClassNamespace);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static void CreateMassTransitServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateMassTransitServiceExtension(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"{Utilities.GetMassTransitRegistrationName()}.cs", projectBaseName);
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetMassTransitServiceExtensionText(classPath.ClassNamespace);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetMassTransitRegistrationName()}.cs", projectBaseName);
+            var fileText = GetMassTransitServiceExtensionText(classPath.ClassNamespace, srcDirectory, projectBaseName);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
         public static void CreateWebApiServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"WebApiServiceExtension.cs", projectBaseName);
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetWebApiServiceExtensionText(classPath.ClassNamespace);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = GetWebApiServiceExtensionText(classPath.ClassNamespace);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
         public static void CreateCorsServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"CorsServiceExtension.cs", projectBaseName);
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetCorsServiceExtensionText(classPath.ClassNamespace);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = GetCorsServiceExtensionText(classPath.ClassNamespace);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
         public static string GetApiVersioningServiceExtensionText(string classNamespace)
@@ -177,23 +133,29 @@
 }}";
         }
 
-        public static string GetMassTransitServiceExtensionText(string classNamespace)
+        public static string GetMassTransitServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName)
         {
+            var utilsClassPath = ClassPathHelper.WebApiUtilsClassPath(srcDirectory, "", projectBaseName);
+            
             return @$"namespace {classNamespace}
 {{
+    using {utilsClassPath.ClassNamespace};
     using MassTransit;
     using Messages;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using RabbitMQ.Client;
     using System.Reflection;
 
     public static class MassTransitServiceExtension
     {{
-        public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration)
+        public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         {{
-            if (!configuration.GetValue<bool>(""UseInMemoryBus""))
+            if (!env.IsEnvironment(LocalConfig.IntegrationTestingEnvName) 
+                && !env.IsEnvironment(LocalConfig.FunctionalTestingEnvName) 
+                && !env.IsDevelopment())
             {{
                 services.AddMassTransit(mt =>
                 {{

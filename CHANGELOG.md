@@ -45,6 +45,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Remove `UseInMemoryDb` app setting in favor of environment specific checks
 
+* Remove `UseInMemoryBus` app setting in favor of environment specific checks
+
 * Updated FK support to better API
 
   * TODO: docs -- `ForeignEntityPlural` defaults to `s` suffix if not provided
