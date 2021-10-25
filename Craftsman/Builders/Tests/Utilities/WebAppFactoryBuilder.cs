@@ -28,6 +28,7 @@
         {
             var webApiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
+            var utilsClassPath = ClassPathHelper.WebApiUtilsClassPath(solutionDirectory, "", projectBaseName);
 
             var authUsing = addJwtAuthentication ? $@"
     using WebMotions.Fake.Authentication.JwtBearer;" : "";
@@ -45,6 +46,7 @@
 namespace {classPath.ClassNamespace}
 {{
     using {contextClassPath.ClassNamespace};
+    using {utilsClassPath.ClassNamespace};
     using {webApiClassPath.ClassNamespace};{authUsing}
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.Testing;
@@ -55,7 +57,7 @@ namespace {classPath.ClassNamespace}
     {{
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {{
-            builder.UseEnvironment(""FunctionalTesting"");
+            builder.UseEnvironment(LocalConfig.FunctionalTestingEnvName);
 
             builder.ConfigureServices(services =>
             {{{authRegistration}

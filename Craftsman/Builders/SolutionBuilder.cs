@@ -67,6 +67,7 @@
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, fileSystem);
             ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, fileSystem);
             StartupBuilder.CreateWebApiStartup(srcDirectory, "Production", useJwtAuth, projectBaseName);
+            LocalConfigBuilder.CreateLocalConfig(srcDirectory, projectBaseName, fileSystem);
             
             BasePaginationParametersBuilder.CreateBasePaginationParameters(srcDirectory, projectBaseName, fileSystem);
             PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, fileSystem);

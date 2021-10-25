@@ -41,6 +41,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Added `Secret` back to Environment options
 
+* Added local config utilities for testing environments
+
 * Updated FK support to better API
 
   * TODO: docs -- `ForeignEntityPlural` defaults to `s` suffix if not provided

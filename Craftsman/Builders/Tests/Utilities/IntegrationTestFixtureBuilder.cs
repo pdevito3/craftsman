@@ -21,6 +21,7 @@
             var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var testUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
+            var utilsClassPath = ClassPathHelper.WebApiUtilsClassPath(solutionDirectory, "", projectBaseName);
 
             var usingStatement = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"
@@ -52,6 +53,7 @@
     using {contextClassPath.ClassNamespace};
     using {testUtilsClassPath.ClassNamespace};
     using {apiClassPath.ClassNamespace};
+    using {utilsClassPath.ClassNamespace};
     using MediatR;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
@@ -85,13 +87,12 @@
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddInMemoryCollection(new Dictionary<string, string>
                     {{
-                        {{ ""UseInMemoryDatabase"", ""false"" }},
                         {{ ""ConnectionStrings:{dbName}"", dockerConnectionString }}
                     }})
                 .AddEnvironmentVariables();
 
             _configuration = builder.Build();
-            _env = Mock.Of<IWebHostEnvironment>();
+            _env = Mock.Of<IWebHostEnvironment>(e => e.EnvironmentName == LocalConfig.IntegrationTestingEnvName);
 
             var startup = new Startup(_configuration, _env);
 

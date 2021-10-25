@@ -102,7 +102,7 @@
         private static string GetAuthServicesText()
         {
             return $@"
-            if(env.EnvironmentName != ""FunctionalTesting"")
+            if (!env.IsEnvironment(LocalConfig.FunctionalTestingEnvName))
             {{
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
