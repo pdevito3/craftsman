@@ -105,7 +105,7 @@
                         if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                         {
                             newText += @$"
-            if (configuration.GetValue<bool>(""UseInMemoryDatabase""))
+            if (env.IsEnvironment(LocalConfig.FunctionalTestingEnvName) || env.IsDevelopment())
             {{
                 services.AddDbContext<{dbContextName}>(options =>
                     options.UseInMemoryDatabase($""{dbName ?? dbContextName}""));

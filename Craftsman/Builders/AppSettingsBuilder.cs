@@ -49,7 +49,6 @@
                 return @$"{{
   ""AllowedHosts"": ""*"",
   ""UseInMemoryBus"": {bus},
-  ""UseInMemoryDatabase"": true,
 {serilogSettings}{jwtSettings}
 }}
 ";
@@ -60,7 +59,6 @@
                 return @$"{{
   ""AllowedHosts"": ""*"",
   ""UseInMemoryBus"": false,
-  ""UseInMemoryDatabase"": false,
   ""ConnectionStrings"": {{
     ""{dbName}"": ""{connectionString}""
   }},

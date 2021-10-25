@@ -28,7 +28,7 @@
                 while (null != (line = input.ReadLine()))
                 {
                     var newText = $"{line}";
-                    if (line.Contains($"UseInMemoryDatabase"))
+                    if (line.Contains($"ConnectionStrings:"))
                     {
                         newText += $@"
                         {{ ""UseInMemoryBus"", ""true"" }},";
