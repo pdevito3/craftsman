@@ -9,7 +9,7 @@
         [Fact]
         public void GetStartupText_Development_env_returns_expected_text()
         {
-            var fileText = StartupBuilder.GetStartupText("", "WebApi", "Development", false, "MyBc");
+            var fileText = StartupBuilder.GetWebApiStartupText("", "WebApi", false, "MyBc");
 
             var expectedText = @$"namespace WebApi
 {{
@@ -86,7 +86,7 @@
         [InlineData("Local")]
         public void GetStartupText_NonDevlopment_env_returns_expected_text(string env)
         {
-            var fileText = StartupBuilder.GetStartupText("", "WebApi", env, false, "MyBc");
+            var fileText = StartupBuilder.GetWebApiStartupText("", "WebApi", false, "MyBc");
             var suffix = env == "Production" ? "" : env;
 
             var expectedText = @$"namespace WebApi

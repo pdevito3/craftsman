@@ -34,7 +34,7 @@
 
         private static void RegisterAllNewSeeders(string srcDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
         {
-            var classPath = ClassPathHelper.StartupClassPath(srcDirectory, "StartupDevelopment.cs", projectBaseName);
+            var classPath = Utilities.GetStartupClassPath(srcDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
@@ -71,7 +71,7 @@
             var seeders = "";
             foreach (var entity in entities)
             {
-                seeders += @$"                    {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{dbContextName}>());{Environment.NewLine}";
+                seeders += @$"                {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{dbContextName}>());{Environment.NewLine}";
             }
 
             return seeders;

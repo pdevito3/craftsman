@@ -77,7 +77,8 @@
                 template.SwaggerConfig,
                 template.Port,
                 template.AddJwtAuthentication,
-                projectBaseName
+                projectBaseName,
+                fileSystem
             );
 
             // unit tests, test utils, and one offs

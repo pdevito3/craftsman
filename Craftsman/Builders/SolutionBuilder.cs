@@ -66,7 +66,7 @@
             AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, new ApiEnvironment(), dbName, projectBaseName); // empty environment so i can get a blank with all the right keys. don't care about values as they get overriden by env specific settings
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, fileSystem);
             ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, fileSystem);
-            StartupBuilder.CreateWebApiStartup(srcDirectory, "Production", useJwtAuth, projectBaseName);
+            StartupBuilder.CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName, fileSystem);
             LocalConfigBuilder.CreateLocalConfig(srcDirectory, projectBaseName, fileSystem);
             
             BasePaginationParametersBuilder.CreateBasePaginationParameters(srcDirectory, projectBaseName, fileSystem);

@@ -38,11 +38,9 @@
                 return prop;
         }
 
-        public static ClassPath GetStartupClassPath(string envName, string solutionDirectory, string projectBaseName)
+        public static ClassPath GetStartupClassPath(string solutionDirectory, string projectBaseName)
         {
-            return envName == "Production"
-                ? ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", projectBaseName)
-                : ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup{envName}.cs", projectBaseName);
+            return ClassPathHelper.StartupClassPath(solutionDirectory, $"Startup.cs", projectBaseName);
         }
 
         public static string SolutionGuard(string solutionDirectory)
@@ -132,11 +130,6 @@
                 return asJson ? $"appsettings.json" : $"appsettings";
 
             return asJson ? $"appsettings.{envName}.json" : $"appsettings.{envName}";
-        }
-
-        public static string GetStartupName(string envName)
-        {
-            return envName == "Production" ? "Startup" : $"Startup{envName}";
         }
 
         public static string GetProfileName(string entityName)
@@ -360,7 +353,8 @@
             SwaggerConfig swaggerConfig,
             int port,
             bool useJwtAuth,
-            string projectBaseName = "")
+            string projectBaseName,
+            IFileSystem fileSystem)
         {
             // add a development environment by default for local work if none exists
             if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
@@ -368,21 +362,17 @@
 
             if (environments.Where(e => e.EnvironmentName == "Production").Count() == 0)
                 environments.Add(new ApiEnvironment { EnvironmentName = "Production", ProfileName = $"{projectName} (Production)" });
-
+            
             var sortedEnvironments = environments.OrderBy(e => e.EnvironmentName == "Development" ? 1 : 0).ToList(); // sets dev as default profile
             foreach (var env in sortedEnvironments)
             {
-                // default startup is already built in cleanup phase
-                if (env.EnvironmentName != "Production")
-                    StartupBuilder.CreateWebApiStartup(solutionDirectory, env.EnvironmentName, useJwtAuth, projectBaseName);
-
                 AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, env, dbName, projectBaseName);
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, projectBaseName);
 
                 //services
-                if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
-                    SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, env, projectBaseName);
             }
+            if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
+                SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, projectBaseName);
 
             // add an integration testing env to make sure that an in memory database is used
             var functionalEnv = new ApiEnvironment() { EnvironmentName = "FunctionalTesting" };

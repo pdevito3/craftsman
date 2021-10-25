@@ -23,9 +23,9 @@
             }
         }
 
-        public static void RegisterSwaggerInStartup(string solutionDirectory, ApiEnvironment env, string projectBaseName = "")
+        public static void RegisterSwaggerInStartup(string srcDirectory, string projectBaseName = "")
         {
-            var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"{Utilities.GetStartupName(env.EnvironmentName)}.cs", projectBaseName);
+            var classPath = Utilities.GetStartupClassPath(srcDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");

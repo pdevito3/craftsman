@@ -32,9 +32,9 @@
             RegisterAllSeeders(solutionDirectory, entities, dbContextName, projectBaseName);
         }
 
-        private static void RegisterAllSeeders(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
+        private static void RegisterAllSeeders(string srcDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
         {
-            var classPath = ClassPathHelper.StartupClassPath(solutionDirectory, $"StartupDevelopment.cs", projectBaseName);
+            var classPath = Utilities.GetStartupClassPath(srcDirectory, projectBaseName);
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
 
@@ -50,7 +50,7 @@
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
-                        if (line.Contains("Entity Context - Do Not Delete"))
+                        if (line.Contains("UseDeveloperExceptionPage"))
                         {
                             newText += @$"{Environment.NewLine}{GetSeederContextText(entities, dbContextName)}";
                         }
@@ -71,17 +71,14 @@
             foreach (var entity in entities)
             {
                 seeders += @$"
-                    {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{dbContextName}>());";
+                {Utilities.GetSeederName(entity)}.SeedSample{entity.Name}Data(app.ApplicationServices.GetService<{dbContextName}>());";
             }
             return $@"
-            using (var context = app.ApplicationServices.GetService<{dbContextName}>())
-            {{
+                using var context = app.ApplicationServices.GetService<{dbContextName}>();
                 context.Database.EnsureCreated();
 
                 // {dbContextName} Seeders
-{seeders.RemoveLastNewLine()}
-            }}
-";
+{seeders.RemoveLastNewLine()}";
         }
     }
 }
