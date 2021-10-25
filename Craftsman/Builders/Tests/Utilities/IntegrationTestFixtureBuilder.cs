@@ -41,11 +41,9 @@
             }};";
 
             var resetString = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
-                ? $@"using (var conn = new NpgsqlConnection(_configuration.GetConnectionString(""{dbName}"")))
-            {{
-                await conn.OpenAsync();
-                await _checkpoint.Reset(conn);
-            }}"
+                ? $@"using var conn = new NpgsqlConnection(_configuration.GetConnectionString(""{dbName}""));
+            await conn.OpenAsync();
+            await _checkpoint.Reset(conn);"
                 : $@"await _checkpoint.Reset(_configuration.GetConnectionString(""{dbName}""));";
 
             return @$"namespace {classNamespace}
