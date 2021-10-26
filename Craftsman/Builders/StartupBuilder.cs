@@ -138,7 +138,7 @@
         public void ConfigureServices(IServiceCollection services)
         {{
             // TODO update CORS for your env
-            services.AddCorsService(""{corsName}"");
+            services.AddCorsService(""{corsName}"", _env);
             services.AddInfrastructure(_config, _env);
             services.AddControllers()
                 .AddNewtonsoftJson();

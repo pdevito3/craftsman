@@ -28,10 +28,10 @@
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static void CreateCorsServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateCorsServiceExtension(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"CorsServiceExtension.cs", projectBaseName);
-            var fileText = GetCorsServiceExtensionText(classPath.ClassNamespace);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"CorsServiceExtension.cs", projectBaseName);
+            var fileText = GetCorsServiceExtensionText(classPath.ClassNamespace, srcDirectory, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
@@ -69,16 +69,20 @@
 }}";
         }
 
-        public static string GetCorsServiceExtensionText(string classNamespace)
+        public static string GetCorsServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName)
         {
+            var classPath = ClassPathHelper.WebApiUtilsClassPath(srcDirectory, $"ApiVersioningServiceExtension.cs", projectBaseName);
             return @$"namespace {classNamespace}
 {{
+    using {classPath.ClassNamespace};
     using AutoMapper;
     using FluentValidation.AspNetCore;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.OpenApi.Models;
     using System;
     using System.IO;
@@ -87,16 +91,33 @@
 
     public static class CorsServiceExtension
     {{
-        public static void AddCorsService(this IServiceCollection services, string policyName)
+        public static void AddCorsService(this IServiceCollection services, string policyName, IWebHostEnvironment env)
         {{
-            services.AddCors(options =>
+            if (env.IsDevelopment() || env.IsEnvironment(LocalConfig.IntegrationTestingEnvName) ||
+                env.IsEnvironment(LocalConfig.FunctionalTestingEnvName))
             {{
-                options.AddPolicy(policyName,
-                    builder => builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .WithExposedHeaders(""X-Pagination""));
-            }});
+                services.AddCors(options =>
+                {{
+                    options.AddPolicy(policyName, builder => 
+                        builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithExposedHeaders(""X-Pagination""));
+                }});
+                
+            }}
+            else
+            {{
+                //TODO update origins here with env vars or secret
+                //services.AddCors(options =>
+                //{{
+                //    options.AddPolicy(policyName, builder =>
+                //        builder.WithOrigins(origins)
+                //        .AllowAnyMethod()
+                //        .AllowAnyHeader()
+                //        .WithExposedHeaders(""X-Pagination""));
+                //}});
+            }}
         }}
     }}
 }}";

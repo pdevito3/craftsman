@@ -39,6 +39,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Cleaned up test names
 
+* Modified CORS util to take in env
+
 * Added `Secret` back to Environment options
 
 * Added local config utilities for testing environments
