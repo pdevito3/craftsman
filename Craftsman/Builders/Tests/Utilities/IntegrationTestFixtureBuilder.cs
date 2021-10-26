@@ -100,6 +100,17 @@
 
             startup.ConfigureServices(services);
 
+            // add any mock services here, for example:
+            // var httpContextAccessorService = services.FirstOrDefault(d =>
+            //     d.ServiceType == typeof(IHttpContextAccessor));
+            // services.Remove(httpContextAccessorService);
+            // services.AddSingleton<IHttpContextAccessor, TestingAccessor>();
+
+            // var myService = services.FirstOrDefault(d =>
+            //     d.ServiceType == typeof(IService));
+            // services.Remove(myService);
+            // services.AddScoped(_ => Mock.Of<IService>());
+
             _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
 
             {checkpoint}
