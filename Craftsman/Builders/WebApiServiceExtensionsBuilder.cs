@@ -99,7 +99,7 @@
                 services.AddCors(options =>
                 {{
                     options.AddPolicy(policyName, builder => 
-                        builder.AllowAnyOrigin()
+                        builder.SetIsOriginAllowed(_ => true)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .WithExposedHeaders(""X-Pagination""));
