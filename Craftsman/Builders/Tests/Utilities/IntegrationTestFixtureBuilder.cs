@@ -21,7 +21,7 @@
             var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var testUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-            var utilsClassPath = ClassPathHelper.WebApiUtilsClassPath(solutionDirectory, "", projectBaseName);
+            var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(solutionDirectory, "", projectBaseName);
 
             var usingStatement = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"

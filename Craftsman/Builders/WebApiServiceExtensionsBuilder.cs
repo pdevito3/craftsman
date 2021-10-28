@@ -71,7 +71,7 @@
 
         public static string GetCorsServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName)
         {
-            var classPath = ClassPathHelper.WebApiUtilsClassPath(srcDirectory, $"ApiVersioningServiceExtension.cs", projectBaseName);
+            var classPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, $"ApiVersioningServiceExtension.cs", projectBaseName);
             return @$"namespace {classNamespace}
 {{
     using {classPath.ClassNamespace};
@@ -156,7 +156,7 @@
 
         public static string GetMassTransitServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName)
         {
-            var utilsClassPath = ClassPathHelper.WebApiUtilsClassPath(srcDirectory, "", projectBaseName);
+            var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
             
             return @$"namespace {classNamespace}
 {{

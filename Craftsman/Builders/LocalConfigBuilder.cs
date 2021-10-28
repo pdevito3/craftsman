@@ -7,7 +7,7 @@ namespace Craftsman.Builders
     {
         public static void CreateLocalConfig(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiUtilsClassPath(srcDirectory, "LocalConfig.cs", projectBaseName);
+            var classPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "LocalConfig.cs", projectBaseName);
             var fileText = GetConfigText(classPath.ClassNamespace);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }

@@ -28,7 +28,7 @@
         {
             var webApiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-            var utilsClassPath = ClassPathHelper.WebApiUtilsClassPath(solutionDirectory, "", projectBaseName);
+            var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(solutionDirectory, "", projectBaseName);
 
             var authUsing = addJwtAuthentication ? $@"
     using WebMotions.Fake.Authentication.JwtBearer;" : "";
