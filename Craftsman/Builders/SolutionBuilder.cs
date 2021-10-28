@@ -7,6 +7,7 @@
     using System;
     using System.IO;
     using System.IO.Abstractions;
+    using AuthServer;
     using static Helpers.ConsoleWriter;
 
     public class SolutionBuilder
@@ -68,6 +69,7 @@
             ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, fileSystem);
             StartupBuilder.CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName, fileSystem);
             LocalConfigBuilder.CreateLocalConfig(srcDirectory, projectBaseName, fileSystem);
+            LoggingConfigurationBuilder.CreateConfigFile(srcDirectory, projectBaseName, fileSystem);
             
             BasePaginationParametersBuilder.CreateBasePaginationParameters(srcDirectory, projectBaseName, fileSystem);
             PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, fileSystem);

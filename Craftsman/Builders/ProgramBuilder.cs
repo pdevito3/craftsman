@@ -11,7 +11,7 @@
         public static void CreateWebApiProgram(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Program.cs", projectBaseName);
-            var fileText = GetWebApiProgramText(classPath.ClassNamespace);
+            var fileText = GetWebApiProgramText(classPath.ClassNamespace, srcDirectory, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
@@ -22,41 +22,28 @@
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static string GetWebApiProgramText(string classNamespace)
+        public static string GetWebApiProgramText(string classNamespace, string srcDirectory, string projectBaseName)
         {
+            var hostExtClassPath = ClassPathHelper.WebApiHostExtensionsClassPath(srcDirectory, $"", projectBaseName);
+            
             return @$"namespace {classNamespace}
 {{
     using Autofac.Extensions.DependencyInjection;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Serilog;
     using System;
     using System.IO;
     using System.Reflection;
     using System.Threading.Tasks;
+    using {hostExtClassPath.ClassNamespace};
 
     public class Program
     {{
         public async static Task Main(string[] args)
         {{
             var host = CreateHostBuilder(args).Build();
-
-            using var scope = host.Services.CreateScope();
-
-            //Read configuration from appSettings
-            var services = scope.ServiceProvider;
-            var hostEnvironment = services.GetService<IWebHostEnvironment>();
-            var config = new ConfigurationBuilder()
-                .AddJsonFile(""appsettings.json"")
-                .AddJsonFile($""appsettings.{{hostEnvironment.EnvironmentName}}.json"", true)
-                .Build();
-
-            //Initialize Logger
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(config)
-                .CreateLogger();
+            host.AddLoggingConfiguration();
 
             try
             {{

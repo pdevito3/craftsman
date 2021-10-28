@@ -53,6 +53,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Consolidated multiple environments startups to one startup file
 
+* Update logging registration in `Program.cs` to no longer rely on `appsettings`
+
+  * TODO: docs. update logging page
+
 * Updated FK support to better API
 
   * TODO: docs -- `ForeignEntityPlural` defaults to `s` suffix if not provided

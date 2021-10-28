@@ -41,14 +41,11 @@
         private static string GetAppSettingsText(ApiEnvironment env, string dbName)
         {
             var jwtSettings = GetJwtAuthSettings(env);
-            var serilogSettings = GetSerilogSettings(env.EnvironmentName);
-            var bus = env.EnvironmentName == "FunctionalTesting" ? "true" : "false";
 
             if (env.EnvironmentName == "Development" || env.EnvironmentName == "FunctionalTesting")
 
                 return @$"{{
-  ""AllowedHosts"": ""*"",
-{serilogSettings}{jwtSettings}
+  ""AllowedHosts"": ""*""{jwtSettings}
 }}
 ";
             else
@@ -59,8 +56,7 @@
   ""AllowedHosts"": ""*"",
   ""ConnectionStrings"": {{
     ""{dbName}"": ""{connectionString}""
-  }},
-{serilogSettings}{jwtSettings}
+  }}{jwtSettings}
 }}
 ";
             }
@@ -76,32 +72,6 @@
     ""TokenUrl"": ""{env.TokenUrl}"",
     ""ClientId"": ""{env.ClientId}"",
     ""ClientSecret"": ""{env.ClientSecret}""
-  }}";
-        }
-
-        private static string GetSerilogSettings(string envName)
-        {
-            var writeTo = envName == "Development" || envName == "FunctionalTesting" ? $@"
-      {{ ""Name"": ""Console"" }},
-      {{
-        ""Name"": ""Seq"",
-        ""Args"": {{
-          ""serverUrl"": ""http://localhost:5341""
-        }}
-      }}
-    " : "";
-
-            return $@"  ""Serilog"": {{
-    ""Using"": [],
-    ""MinimumLevel"": {{
-      ""Default"": ""Information"",
-      ""Override"": {{
-        ""Microsoft"": ""Warning"",
-        ""System"": ""Warning""
-      }}
-    }},
-    ""Enrich"": [ ""FromLogContext"", ""WithMachineName"", ""WithProcessId"", ""WithThreadId"" ],
-    ""WriteTo"": [{writeTo}]
   }}";
         }
     }

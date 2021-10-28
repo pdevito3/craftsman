@@ -39,6 +39,11 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Wrappers"), className);
         }
 
+        public static ClassPath WebApiHostExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
+        {
+            return new ClassPath(solutionDirectory, Path.Combine(projectBaseName, "Extensions", "Host"), className);
+        }
+
         public static ClassPath WebApiServiceExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
