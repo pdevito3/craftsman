@@ -120,6 +120,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Newtonsoft.Json;
     using Serilog;
 
     public class Startup
@@ -142,7 +143,7 @@
             services.AddCorsService(""{corsName}"", _env);
             services.AddInfrastructure(_config, _env);
             services.AddControllers()
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson(o => o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddApiVersioningExtension();
             services.AddWebApiServices();
             services.AddHealthChecks();
