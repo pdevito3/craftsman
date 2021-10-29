@@ -37,6 +37,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     * only supports scaffolding for one scope (for now) -- they can still be added manually if you need multiple!
     * No consent support (yet)
   
+* Added helper `GetService` method to `TestFixture`
+
 * Added a `NamingConvention` property to the db template
 
   * DOCS

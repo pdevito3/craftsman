@@ -128,6 +128,13 @@
 
             context.Database.Migrate();
         }}
+        
+        public static TScopedService GetService<TScopedService>()
+        {{
+            var scope = _scopeFactory.CreateScope();
+            var service = scope.ServiceProvider.GetService<TScopedService>();
+            return service;
+        }}
 
         public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
         {{
