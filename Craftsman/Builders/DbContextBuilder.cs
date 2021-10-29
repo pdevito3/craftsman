@@ -8,28 +8,27 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using System.Text;
 
     public class DbContextBuilder
     {
-        public static void CreateDbContext(string srcDirectory, List<Entity> entities, string dbContextName, string dbProvider, string dbName, string projectBaseName)
+        public static void CreateDbContext(string srcDirectory,
+            List<Entity> entities,
+            string dbContextName,
+            string dbProvider,
+            string dbName,
+            NamingConventionEnum namingConventionEnum,
+            string projectBaseName,
+            IFileSystem fileSystem
+        )
         {
             var classPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{dbContextName}.cs", projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, srcDirectory, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
-
-            RegisterContext(srcDirectory, dbProvider, dbContextName, dbName, projectBaseName);
+            var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, srcDirectory, projectBaseName);
+            Utilities.CreateFile(classPath, data, fileSystem);
+            
+            RegisterContext(srcDirectory, dbProvider, dbContextName, dbName, namingConventionEnum, projectBaseName);
         }
 
         public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
@@ -80,7 +79,7 @@
             return dbSetText;
         }
 
-        private static void RegisterContext(string srcDirectory, string dbProvider, string dbContextName, string dbName, string projectBaseName)
+        private static void RegisterContext(string srcDirectory, string dbProvider, string dbContextName, string dbName, NamingConventionEnum namingConventionEnum, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetInfraRegistrationName()}.cs", projectBaseName);
 
@@ -93,6 +92,12 @@
             var usingDbStatement = GetDbUsingStatement(dbProvider);
             InstallDbProviderNugetPackages(dbProvider, srcDirectory);
 
+            //TODO test for class and another for anything else
+            var namingConvention = namingConventionEnum == NamingConventionEnum.Class
+                ? ""
+                : @$".{namingConventionEnum.ExtensionMethod()}()
+                            ";
+            
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
             {
@@ -115,7 +120,7 @@
                 services.AddDbContext<{dbContextName}>(options =>
                     options.{usingDbStatement}(
                         configuration.GetConnectionString(""{dbName}""),
-                        builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)));
+                        builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});
             }}";
                         }
 

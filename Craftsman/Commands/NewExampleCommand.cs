@@ -139,6 +139,7 @@ BoundedContexts:
    ContextName: RecipesDbContext
    DatabaseName: RecipeManagement
    Provider: SqlServer
+   NamingConvention: class
   Entities:
   - Name: Recipe
     Features:

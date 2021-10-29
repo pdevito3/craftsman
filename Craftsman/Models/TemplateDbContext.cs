@@ -33,5 +33,22 @@
                 _provider = parsed;
             }
         }
+
+        public NamingConventionEnum NamingConventionEnum { get; set; } = NamingConventionEnum.SnakeCase;
+        /// <summary>
+        /// The naming convention for your database
+        /// </summary>
+        public string NamingConvention
+        {
+            get => NamingConventionEnum.Name;
+            set
+            {
+                if (!NamingConventionEnum.TryFromName(value, true, out var parsed))
+                {
+                    NamingConventionEnum = NamingConventionEnum.SnakeCase;
+                }
+                NamingConventionEnum = parsed;
+            }
+        }
     }
 }

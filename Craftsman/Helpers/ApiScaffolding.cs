@@ -56,7 +56,15 @@
             Utilities.IsSolutionDirectoryGuard(solutionDirectory);
 
             // base files needed before below is ran
-            DbContextBuilder.CreateDbContext(srcDirectory, template.Entities, template.DbContext.ContextName, template.DbContext.Provider, template.DbContext.DatabaseName, projectBaseName);
+            DbContextBuilder.CreateDbContext(srcDirectory,
+                template.Entities,
+                template.DbContext.ContextName,
+                template.DbContext.Provider,
+                template.DbContext.DatabaseName,
+                template.DbContext.NamingConventionEnum,
+                projectBaseName,
+                fileSystem
+            );
             ApiRoutesBuilder.CreateClass(testDirectory, projectBaseName, fileSystem);
 
             //entities

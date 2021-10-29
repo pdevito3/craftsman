@@ -48,7 +48,7 @@
             var entity = new Entity();
             entity.Name = "SingularName";
 
-            var annotation = EntityBuilder.TableAnnotationBuilder(entity);
+            var annotation = EntityBuilder.EntityAnnotationBuilder(entity);
             annotation.Should().Be(@"[Table(""SingularName"")]");            
         }
 
@@ -59,7 +59,7 @@
             entity.Name = "SinglularName";
             entity.TableName = "TableName";
 
-            var annotation = EntityBuilder.TableAnnotationBuilder(entity);
+            var annotation = EntityBuilder.EntityAnnotationBuilder(entity);
             annotation.Should().Be(@"[Table(""TableName"")]");
         }
 
@@ -71,7 +71,7 @@
             entity.TableName = "TableName";
             entity.Schema = "Schema";
 
-            var annotation = EntityBuilder.TableAnnotationBuilder(entity);
+            var annotation = EntityBuilder.EntityAnnotationBuilder(entity);
             annotation.Should().Be(@"[Table(""TableName"", Schema=""Schema"")]");
         }
     }

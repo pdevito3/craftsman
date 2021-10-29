@@ -29,7 +29,7 @@
         {
             var propString = EntityPropBuilder(entity.Properties);
             var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}    using Sieve.Attributes;" : "";
-            var tableAnnotation = TableAnnotationBuilder(entity);
+            var tableAnnotation = EntityAnnotationBuilder(entity);
             
             var foreignEntityUsings = "";
             var foreignProps = entity.Properties.Where(e => e.IsForeignKey).ToList();
@@ -72,10 +72,13 @@
 }}";
         }
 
-        public static string TableAnnotationBuilder(Entity entity)
+        public static string EntityAnnotationBuilder(Entity entity)
         {
-            var tableName = entity.TableName ?? entity.Name;
-
+            if (string.IsNullOrEmpty(entity.TableName))
+                return null;
+            
+            // must have table name to have a schema :-(
+            var tableName = entity.TableName;
             return entity.Schema != null ? @$"[Table(""{tableName}"", Schema=""{entity.Schema}"")]" : @$"[Table(""{tableName}"")]";
         }
 
