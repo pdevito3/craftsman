@@ -29,27 +29,26 @@
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", feature.ParentEntity, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
-            return @$"namespace {classPath.ClassNamespace}
-{{
-    using {dtoUtilClassPath.ClassNamespace};
-    using {fakerClassPath.ClassNamespace};
-    using {parentFakerClassPath.ClassNamespace};
-    using {testUtilClassPath.ClassNamespace};
-    using {featuresClassPath.ClassNamespace};
-    using {exceptionsClassPath.ClassNamespace};
-    using FluentAssertions;
-    using Microsoft.EntityFrameworkCore;
-    using NUnit.Framework;
-    using System.Threading.Tasks;
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using static {testFixtureName};
+            return @$"namespace {classPath.ClassNamespace};
 
-    public class {commandName}Tests : TestBase
-    {{
-        {GetAddListCommandTest(entity, feature)}
-    }}
+using {dtoUtilClassPath.ClassNamespace};
+using {fakerClassPath.ClassNamespace};
+using {parentFakerClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
+using {featuresClassPath.ClassNamespace};
+using {exceptionsClassPath.ClassNamespace};
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
+using System.Threading.Tasks;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using static {testFixtureName};
+
+public class {commandName}Tests : TestBase
+{{
+    {GetAddListCommandTest(entity, feature)}
 }}";
         }
 
@@ -62,24 +61,24 @@
             var fakeParentEntity = $"fake{feature.ParentEntity}";
 
             return $@"[Test]
-        public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()
-        {{
-            // Arrange
-            var {fakeParentEntity} = new Fake{feature.ParentEntity} {{ }}.Generate();
-            await InsertAsync({fakeParentEntity});
-            var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
+    public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()
+    {{
+        // Arrange
+        var {fakeParentEntity} = new Fake{feature.ParentEntity} {{ }}.Generate();
+        await InsertAsync({fakeParentEntity});
+        var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
 
-            // Act
-            var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableName}}}, {fakeParentEntity}.Id);
-            var {lowercaseEntityName}Returned = await SendAsync(command);
-            var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+        // Act
+        var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableName}}}, {fakeParentEntity}.Id);
+        var {lowercaseEntityName}Returned = await SendAsync(command);
+        var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
 
-            // Assert
-            {lowercaseEntityName}Returned.FirstOrDefault().Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-                options.ExcludingMissingMembers());
-            {lowercaseEntityName}Created.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-                options.ExcludingMissingMembers());
-        }}";
+        // Assert
+        {lowercaseEntityName}Returned.FirstOrDefault().Should().BeEquivalentTo({fakeEntityVariableName}, options =>
+            options.ExcludingMissingMembers());
+        {lowercaseEntityName}Created.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
+            options.ExcludingMissingMembers());
+    }}";
         }
     }
 }

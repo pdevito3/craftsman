@@ -36,23 +36,22 @@
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
 
-            return @$"namespace {classPath.ClassNamespace}
-{{
-    using {fakerClassPath.ClassNamespace};
-    using {testUtilClassPath.ClassNamespace};
-    using FluentAssertions;
-    using Microsoft.EntityFrameworkCore;
-    using NUnit.Framework;
-    using System.Collections.Generic;
-    using System;
-    using System.Threading.Tasks;
-    using {featuresClassPath.ClassNamespace};
-    using static {testFixtureName};
+            return @$"namespace {classPath.ClassNamespace};
 
-    public class {commandName}Tests : TestBase
-    {{
-        {GetDeleteTest(commandName, entity, featureName)}{GetDeleteWithoutKeyTest(commandName, entity, featureName)}
-    }}
+using {fakerClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
+using {featuresClassPath.ClassNamespace};
+using static {testFixtureName};
+
+public class {commandName}Tests : TestBase
+{{
+    {GetDeleteTest(commandName, entity, featureName)}{GetDeleteWithoutKeyTest(commandName, entity, featureName)}
 }}";
         }
 
@@ -66,22 +65,22 @@
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
             return $@"[Test]
-        public async Task can_delete_{entity.Name.ToLower()}_from_db()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            await InsertAsync({fakeEntityVariableName});
-            var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
-            var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
+    public async Task can_delete_{entity.Name.ToLower()}_from_db()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        await InsertAsync({fakeEntityVariableName});
+        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+        var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
-            // Act
-            var command = new {featureName}.{commandName}({lowercaseEntityPk});
-            await SendAsync(command);
-            var {dbResponseVariableName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
+        // Act
+        var command = new {featureName}.{commandName}({lowercaseEntityPk});
+        await SendAsync(command);
+        var {dbResponseVariableName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
 
-            // Assert
-            {dbResponseVariableName}.Count.Should().Be(0);
-        }}";
+        // Assert
+        {dbResponseVariableName}.Count.Should().Be(0);
+    }}";
         }
 
         private static string GetDeleteWithoutKeyTest(string commandName, Entity entity, string featureName)
@@ -90,19 +89,19 @@
 
             return badId == "" ? "" : $@"
 
-        [Test]
-        public async Task delete_{entity.Name.ToLower()}_throws_keynotfoundexception_when_record_does_not_exist()
-        {{
-            // Arrange
-            var badId = {badId};
+    [Test]
+    public async Task delete_{entity.Name.ToLower()}_throws_keynotfoundexception_when_record_does_not_exist()
+    {{
+        // Arrange
+        var badId = {badId};
 
-            // Act
-            var command = new {featureName}.{commandName}(badId);
-            Func<Task> act = () => SendAsync(command);
+        // Act
+        var command = new {featureName}.{commandName}(badId);
+        Func<Task> act = () => SendAsync(command);
 
-            // Assert
-            act.Should().Throw<KeyNotFoundException>();
-        }}";
+        // Assert
+        act.Should().Throw<KeyNotFoundException>();
+    }}";
         }
     }
 }

@@ -52,28 +52,27 @@
             if (myProp == null)
                 return "// no patch tests were created";
 
-            return @$"namespace {classPath.ClassNamespace}
-{{
-    using {fakerClassPath.ClassNamespace};
-    using {testUtilClassPath.ClassNamespace};
-    using {dtoClassPath.ClassNamespace};
-    using {exceptionClassPath.ClassNamespace};
-    using {featuresClassPath.ClassNamespace};
-    using FluentAssertions;
-    using Microsoft.EntityFrameworkCore;
-    using NUnit.Framework;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.JsonPatch;
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using static {testFixtureName};
+            return @$"namespace {classPath.ClassNamespace};
 
-    public class {commandName}Tests : TestBase
-    {{
-        {GetAddCommandTest(commandName, entity, featureName, lookupVal, myProp)}
-        {BadKey(commandName, entity, featureName)}{NullPatchDoc(commandName, entity, featureName)}
-    }}
+using {fakerClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
+using {exceptionClassPath.ClassNamespace};
+using {featuresClassPath.ClassNamespace};
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.JsonPatch;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using static {testFixtureName};
+
+public class {commandName}Tests : TestBase
+{{
+    {GetAddCommandTest(commandName, entity, featureName, lookupVal, myProp)}
+    {BadKey(commandName, entity, featureName)}{NullPatchDoc(commandName, entity, featureName)}
 }}";
         }
 
@@ -87,26 +86,26 @@
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
             return $@"[Test]
-        public async Task can_patch_existing_{entity.Name.ToLower()}_in_db()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            await InsertAsync({fakeEntityVariableName});
-            var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
-            var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
+    public async Task can_patch_existing_{entity.Name.ToLower()}_in_db()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        await InsertAsync({fakeEntityVariableName});
+        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+        var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
-            var patchDoc = new JsonPatchDocument<{updateDto}>();
-            var newValue = {lookupVal};
-            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{prop.Name}, newValue);
+        var patchDoc = new JsonPatchDocument<{updateDto}>();
+        var newValue = {lookupVal};
+        patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{prop.Name}, newValue);
 
-            // Act
-            var command = new {featureName}.{commandName}({lowercaseEntityPk}, patchDoc);
-            await SendAsync(command);
-            var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
+        // Act
+        var command = new {featureName}.{commandName}({lowercaseEntityPk}, patchDoc);
+        await SendAsync(command);
+        var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
 
-            // Assert
-            updated{entity.Name}.{prop.Name}.Should().Be(newValue);
-        }}";
+        // Assert
+        updated{entity.Name}.{prop.Name}.Should().Be(newValue);
+    }}";
         }
 
         private static string NullPatchDoc(string commandName, Entity entity, string featureName)
@@ -115,19 +114,19 @@
 
             return randomId == "" ? "" : $@"
 
-        [Test]
-        public async Task passing_null_patchdoc_throws_apiexception()
-        {{
-            // Arrange
-            var randomId = {randomId};
+    [Test]
+    public async Task passing_null_patchdoc_throws_apiexception()
+    {{
+        // Arrange
+        var randomId = {randomId};
 
-            // Act
-            var command = new {featureName}.{commandName}(randomId, null);
-            Func<Task> act = () => SendAsync(command);
+        // Act
+        var command = new {featureName}.{commandName}(randomId, null);
+        Func<Task> act = () => SendAsync(command);
 
-            // Assert
-            act.Should().Throw<ApiException>();
-        }}";
+        // Assert
+        act.Should().Throw<ApiException>();
+    }}";
         }
 
         private static string BadKey(string commandName, Entity entity, string featureName)
@@ -136,20 +135,20 @@
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
 
             return badId == "" ? "" : $@"
-        [Test]
-        public async Task patch_{entity.Name.ToLower()}_throws_keynotfound_exception_when_record_does_not_exist()
-        {{
-            // Arrange
-            var badId = {badId};
-            var patchDoc = new JsonPatchDocument<{updateDto}>();
+    [Test]
+    public async Task patch_{entity.Name.ToLower()}_throws_keynotfound_exception_when_record_does_not_exist()
+    {{
+        // Arrange
+        var badId = {badId};
+        var patchDoc = new JsonPatchDocument<{updateDto}>();
 
-            // Act
-            var command = new {featureName}.{commandName}(badId, patchDoc);
-            Func<Task> act = () => SendAsync(command);
+        // Act
+        var command = new {featureName}.{commandName}(badId, patchDoc);
+        Func<Task> act = () => SendAsync(command);
 
-            // Assert
-            act.Should().Throw<KeyNotFoundException>();
-        }}";
+        // Assert
+        act.Should().Throw<KeyNotFoundException>();
+    }}";
         }
     }
 }

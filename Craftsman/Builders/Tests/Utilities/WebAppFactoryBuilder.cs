@@ -43,48 +43,47 @@
 " : "";
 
             return @$"
-namespace {classPath.ClassNamespace}
+namespace {classPath.ClassNamespace};
+
+using {contextClassPath.ClassNamespace};
+using {utilsClassPath.ClassNamespace};
+using {webApiClassPath.ClassNamespace};{authUsing}
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
+public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebApplicationFactory<Startup>
 {{
-    using {contextClassPath.ClassNamespace};
-    using {utilsClassPath.ClassNamespace};
-    using {webApiClassPath.ClassNamespace};{authUsing}
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc.Testing;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
-
-    public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebApplicationFactory<Startup>
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {{
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {{
-            builder.UseEnvironment(LocalConfig.FunctionalTestingEnvName);
+        builder.UseEnvironment(LocalConfig.FunctionalTestingEnvName);
 
-            builder.ConfigureServices(services =>
-            {{{authRegistration}
-                // Create a new service provider.
-                var provider = services.BuildServiceProvider();
+        builder.ConfigureServices(services =>
+        {{{authRegistration}
+            // Create a new service provider.
+            var provider = services.BuildServiceProvider();
 
-                // Add a database context ({dbContextName}) using an in-memory database for testing.
-                services.AddDbContext<{dbContextName}>(options =>
-                {{
-                    options.UseInMemoryDatabase(""InMemoryDbForTesting"");
-                    options.UseInternalServiceProvider(provider);
-                }});
-
-                // Build the service provider.
-                var sp = services.BuildServiceProvider();
-
-                // Create a scope to obtain a reference to the database context ({dbContextName}).
-                using (var scope = sp.CreateScope())
-                {{
-                    var scopedServices = scope.ServiceProvider;
-                    var db = scopedServices.GetRequiredService<{dbContextName}>();
-
-                    // Ensure the database is created.
-                    db.Database.EnsureCreated();
-                }}
+            // Add a database context ({dbContextName}) using an in-memory database for testing.
+            services.AddDbContext<{dbContextName}>(options =>
+            {{
+                options.UseInMemoryDatabase(""InMemoryDbForTesting"");
+                options.UseInternalServiceProvider(provider);
             }});
-        }}
+
+            // Build the service provider.
+            var sp = services.BuildServiceProvider();
+
+            // Create a scope to obtain a reference to the database context ({dbContextName}).
+            using (var scope = sp.CreateScope())
+            {{
+                var scopedServices = scope.ServiceProvider;
+                var db = scopedServices.GetRequiredService<{dbContextName}>();
+
+                // Ensure the database is created.
+                db.Database.EnsureCreated();
+            }}
+        }});
     }}
 }}";
         }

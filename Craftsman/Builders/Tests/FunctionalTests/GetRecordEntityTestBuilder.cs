@@ -27,9 +27,9 @@
             {GetEntityTestUnauthorized(entity)}
             {GetEntityTestForbidden(entity)}" : "";
 
-            return @$"namespace {classPath.ClassNamespace}
-{{
-    using {fakerClassPath.ClassNamespace};
+            return @$"namespace {classPath.ClassNamespace};
+
+using {fakerClassPath.ClassNamespace};
     using {testUtilClassPath.ClassNamespace};
     using FluentAssertions;
     using NUnit.Framework;

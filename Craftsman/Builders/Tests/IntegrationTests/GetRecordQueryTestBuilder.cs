@@ -35,23 +35,22 @@
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
 
-            return @$"namespace {classPath.ClassNamespace}
-{{
-    using {fakerClassPath.ClassNamespace};
-    using {testUtilClassPath.ClassNamespace};
-    using FluentAssertions;
-    using Microsoft.EntityFrameworkCore;
-    using NUnit.Framework;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using {featuresClassPath.ClassNamespace};
-    using static {testFixtureName};
+            return @$"namespace {classPath.ClassNamespace};
 
-    public class {queryName}Tests : TestBase
-    {{
-        {GetTest(queryName, entity, featureName)}{GetWithoutKeyTest(queryName, entity, featureName)}
-    }}
+using {fakerClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using {featuresClassPath.ClassNamespace};
+using static {testFixtureName};
+
+public class {queryName}Tests : TestBase
+{{
+    {GetTest(queryName, entity, featureName)}{GetWithoutKeyTest(queryName, entity, featureName)}
 }}";
         }
 
@@ -63,20 +62,20 @@
             var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"[Test]
-        public async Task can_get_existing_{entity.Name.ToLower()}_with_accurate_props()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            await InsertAsync({fakeEntityVariableName});
+    public async Task can_get_existing_{entity.Name.ToLower()}_with_accurate_props()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var query = new {featureName}.{queryName}({fakeEntityVariableName}.{pkName});
-            var {lowercaseEntityPluralName} = await SendAsync(query);
+        // Act
+        var query = new {featureName}.{queryName}({fakeEntityVariableName}.{pkName});
+        var {lowercaseEntityPluralName} = await SendAsync(query);
 
-            // Assert
-            {lowercaseEntityPluralName}.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-                options.ExcludingMissingMembers());
-        }}";
+        // Assert
+        {lowercaseEntityPluralName}.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
+            options.ExcludingMissingMembers());
+    }}";
         }
 
         private static string GetWithoutKeyTest(string queryName, Entity entity, string featureName)
@@ -85,19 +84,19 @@
 
             return badId == "" ? "" : $@"
 
-        [Test]
-        public async Task get_{entity.Name.ToLower()}_throws_keynotfound_exception_when_record_does_not_exist()
-        {{
-            // Arrange
-            var badId = {badId};
+    [Test]
+    public async Task get_{entity.Name.ToLower()}_throws_keynotfound_exception_when_record_does_not_exist()
+    {{
+        // Arrange
+        var badId = {badId};
 
-            // Act
-            var query = new {featureName}.{queryName}(badId);
-            Func<Task> act = () => SendAsync(query);
+        // Act
+        var query = new {featureName}.{queryName}(badId);
+        Func<Task> act = () => SendAsync(query);
 
-            // Assert
-            act.Should().Throw<KeyNotFoundException>();
-        }}";
+        // Assert
+        act.Should().Throw<KeyNotFoundException>();
+    }}";
         }
     }
 }

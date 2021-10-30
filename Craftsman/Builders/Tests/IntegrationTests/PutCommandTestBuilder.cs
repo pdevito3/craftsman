@@ -56,42 +56,41 @@
                 lookupVal = "999999";
             }
 
-            return @$"namespace {classPath.ClassNamespace}
+            return @$"namespace {classPath.ClassNamespace};
+
+using {fakerClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.JsonPatch;
+using System.Linq;
+using {featuresClassPath.ClassNamespace};
+using static {testFixtureName};
+
+public class {commandName}Tests : TestBase
 {{
-    using {fakerClassPath.ClassNamespace};
-    using {testUtilClassPath.ClassNamespace};
-    using {dtoClassPath.ClassNamespace};
-    using FluentAssertions;
-    using Microsoft.EntityFrameworkCore;
-    using NUnit.Framework;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.JsonPatch;
-    using System.Linq;
-    using {featuresClassPath.ClassNamespace};
-    using static {testFixtureName};
-
-    public class {commandName}Tests : TestBase
+    [Test]
+    public async Task can_update_existing_{entity.Name.ToLower()}_in_db()
     {{
-        [Test]
-        public async Task can_update_existing_{entity.Name.ToLower()}_in_db()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            var updated{entity.Name}Dto = new {fakeUpdateDto} {{ }}.Generate();
-            await InsertAsync({fakeEntityVariableName});
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        var updated{entity.Name}Dto = new {fakeUpdateDto} {{ }}.Generate();
+        await InsertAsync({fakeEntityVariableName});
 
-            var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
-            var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
+        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+        var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
-            // Act
-            var command = new {featureName}.{commandName}({lowercaseEntityPk}, updated{entity.Name}Dto);
-            await SendAsync(command);
-            var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
+        // Act
+        var command = new {featureName}.{commandName}({lowercaseEntityPk}, updated{entity.Name}Dto);
+        await SendAsync(command);
+        var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
 
-            // Assert
-            updated{entity.Name}.Should().BeEquivalentTo(updated{entity.Name}Dto, options =>
-                options.ExcludingMissingMembers());
-        }}
+        // Assert
+        updated{entity.Name}.Should().BeEquivalentTo(updated{entity.Name}Dto, options =>
+            options.ExcludingMissingMembers());
     }}
 }}";
         }

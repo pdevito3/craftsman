@@ -20,9 +20,9 @@
         {
             var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
 
-            return @$"namespace {classPath.ClassNamespace}
-{{
-    using {testUtilClassPath.ClassNamespace};
+            return @$"namespace {classPath.ClassNamespace};
+
+using {testUtilClassPath.ClassNamespace};
     using FluentAssertions;
     using NUnit.Framework;
     using System.Net.Http;

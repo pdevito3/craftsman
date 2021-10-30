@@ -30,9 +30,9 @@
             {CreateEntityTestUnauthorized(entity)}
             {CreateEntityTestForbidden(entity)}" : "";
 
-            return @$"namespace {classPath.ClassNamespace}
-{{
-    using {dtoUtilClassPath.ClassNamespace};
+            return @$"namespace {classPath.ClassNamespace};
+
+using {dtoUtilClassPath.ClassNamespace};
     using {fakerClassPath.ClassNamespace};
     using {parentFakerClassPath.ClassNamespace};
     using {testUtilClassPath.ClassNamespace};

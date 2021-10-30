@@ -34,23 +34,22 @@
             var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
-            return @$"namespace {classPath.ClassNamespace}
-{{
-    using {fakerClassPath.ClassNamespace};
-    using {testUtilClassPath.ClassNamespace};
-    using FluentAssertions;
-    using Microsoft.EntityFrameworkCore;
-    using NUnit.Framework;
-    using System.Threading.Tasks;
-    using {featuresClassPath.ClassNamespace};
-    using static {testFixtureName};
-    using System;
-    using {exceptionsClassPath.ClassNamespace};
+            return @$"namespace {classPath.ClassNamespace};
 
-    public class {commandName}Tests : TestBase
-    {{
-        {GetAddCommandTest(commandName, entity, featureName)}
-    }}
+using {fakerClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
+using System.Threading.Tasks;
+using {featuresClassPath.ClassNamespace};
+using static {testFixtureName};
+using System;
+using {exceptionsClassPath.ClassNamespace};
+
+public class {commandName}Tests : TestBase
+{{
+    {GetAddCommandTest(commandName, entity, featureName)}
 }}";
         }
 
@@ -61,22 +60,22 @@
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
 
             return $@"[Test]
-        public async Task can_add_new_{entity.Name.ToLower()}_to_db()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
+    public async Task can_add_new_{entity.Name.ToLower()}_to_db()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
 
-            // Act
-            var command = new {featureName}.{commandName}({fakeEntityVariableName});
-            var {lowercaseEntityName}Returned = await SendAsync(command);
-            var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+        // Act
+        var command = new {featureName}.{commandName}({fakeEntityVariableName});
+        var {lowercaseEntityName}Returned = await SendAsync(command);
+        var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
 
-            // Assert
-            {lowercaseEntityName}Returned.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-                options.ExcludingMissingMembers());
-            {lowercaseEntityName}Created.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-                options.ExcludingMissingMembers());
-        }}";
+        // Assert
+        {lowercaseEntityName}Returned.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
+            options.ExcludingMissingMembers());
+        {lowercaseEntityName}Created.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
+            options.ExcludingMissingMembers());
+    }}";
         }
     }
 }

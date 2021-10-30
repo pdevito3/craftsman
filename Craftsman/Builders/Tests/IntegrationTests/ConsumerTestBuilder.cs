@@ -23,25 +23,24 @@
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(solutionDirectory, "", projectBaseName);
             
-            return @$"namespace {classPath.ClassNamespace}
-{{
-    using FluentAssertions;
-    using NUnit.Framework;
-    using System.Threading.Tasks;
-    using System;
-    using MassTransit;
-    using MassTransit.Testing;
-    using Messages;
-    using Microsoft.Extensions.DependencyInjection;
-    using Moq;
-    using {consumerClassPath.ClassNamespace};
-    using {testUtilClassPath.ClassNamespace};
-    using static {testFixtureName};
+            return @$"namespace {classPath.ClassNamespace};
 
-    public class {consumer.ConsumerName}Tests : TestBase
-    {{
-        {ConsumerTest(consumer)}
-    }}
+using FluentAssertions;
+using NUnit.Framework;
+using System.Threading.Tasks;
+using System;
+using MassTransit;
+using MassTransit.Testing;
+using Messages;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using {consumerClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
+using static {testFixtureName};
+
+public class {consumer.ConsumerName}Tests : TestBase
+{{
+    {ConsumerTest(consumer)}
 }}";
         }
 
@@ -51,25 +50,25 @@
             var messageName = consumer.MessageName;
 
             return $@"[Test]
-        public async Task {lowerConsumerName}_can_consume_{consumer.MessageName}_message()
-        {{
-            // Arrange
-            var message = new Mock<{messageName}>();
+    public async Task {lowerConsumerName}_can_consume_{consumer.MessageName}_message()
+    {{
+        // Arrange
+        var message = new Mock<{messageName}>();
 
-            // Act
-            await PublishMessage<{messageName}>(message);
+        // Act
+        await PublishMessage<{messageName}>(message);
 
-            // Assert
-            // did the endpoint consume the message
-            (await _harness.Consumed.Any<{messageName}>()).Should().Be(true);
+        // Assert
+        // did the endpoint consume the message
+        (await _harness.Consumed.Any<{messageName}>()).Should().Be(true);
 
-            // ensure that no faults were published by the consumer
-            (await _harness.Published.Any<Fault<{messageName}>>()).Should().Be(false);
-            
-            // the desired consumer consumed the message
-            var consumerHarness = _provider.GetRequiredService<IConsumerTestHarness<{consumer.ConsumerName}>>();
-            (await consumerHarness.Consumed.Any<{messageName}>()).Should().Be(true);
-        }}";
+        // ensure that no faults were published by the consumer
+        (await _harness.Published.Any<Fault<{messageName}>>()).Should().Be(false);
+        
+        // the desired consumer consumed the message
+        var consumerHarness = _provider.GetRequiredService<IConsumerTestHarness<{consumer.ConsumerName}>>();
+        (await consumerHarness.Consumed.Any<{messageName}>()).Should().Be(true);
+    }}";
         }
     }
 }
