@@ -46,20 +46,19 @@
 
             // this... is super fragile. Should really refactor this
             var usingStatement = objectToFakeClassName.Contains("DTO", StringComparison.InvariantCultureIgnoreCase) ? @$"using {dtoClassPath.ClassNamespace};" : $"using {entitiesClassPath.ClassNamespace};";
-            return @$"namespace {classNamespace}
-{{
-    using AutoBogus;
-    {usingStatement}
+            return @$"namespace {classNamespace};
 
-    // or replace 'AutoFaker' with 'Faker' along with your own rules if you don't want all fields to be auto faked
-    public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
+using AutoBogus;
+{usingStatement}
+
+// or replace 'AutoFaker' with 'Faker' along with your own rules if you don't want all fields to be auto faked
+public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
+{{
+    public Fake{objectToFakeClassName}()
     {{
-        public Fake{objectToFakeClassName}()
-        {{
-            // if you want default values on any of your properties (e.g. an int between a certain range or a date always in the past), you can add `RuleFor` lines describing those defaults
-            //RuleFor({entity.Lambda} => {entity.Lambda}.ExampleIntProperty, {entity.Lambda} => {entity.Lambda}.Random.Number(50, 100000));
-            //RuleFor({entity.Lambda} => {entity.Lambda}.ExampleDateProperty, {entity.Lambda} => {entity.Lambda}.Date.Past());
-        }}
+        // if you want default values on any of your properties (e.g. an int between a certain range or a date always in the past), you can add `RuleFor` lines describing those defaults
+        //RuleFor({entity.Lambda} => {entity.Lambda}.ExampleIntProperty, {entity.Lambda} => {entity.Lambda}.Random.Number(50, 100000));
+        //RuleFor({entity.Lambda} => {entity.Lambda}.ExampleDateProperty, {entity.Lambda} => {entity.Lambda}.Date.Past());
     }}
 }}";
         }

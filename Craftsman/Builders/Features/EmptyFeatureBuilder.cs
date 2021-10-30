@@ -46,38 +46,37 @@
                 _db = db;
             }}";
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using {exceptionsClassPath.ClassNamespace};
+using {contextClassPath.ClassNamespace};
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+public static class {featureClassName}
 {{
-    using {exceptionsClassPath.ClassNamespace};
-    using {contextClassPath.ClassNamespace};
-    using AutoMapper;
-    using AutoMapper.QueryableExtensions;
-    using MediatR;
-    using Microsoft.EntityFrameworkCore;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.Collections.Generic;
-
-    public static class {featureClassName}
+    public class {commandName} : IRequest<{returnPropType}>
     {{
-        public class {commandName} : IRequest<{returnPropType}>
+        public {commandName}()
         {{
-            public {commandName}()
-            {{
-            }}
         }}
+    }}
 
-        public class Handler : IRequestHandler<{commandName}, {returnPropType}>
+    public class Handler : IRequestHandler<{commandName}, {returnPropType}>
+    {{
+        {handlerCtor}
+
+        public async Task<{returnPropType}> Handle({commandName} request, CancellationToken cancellationToken)
         {{
-            {handlerCtor}
+            // Add your command logic for your feature here!
 
-            public async Task<{returnPropType}> Handle({commandName} request, CancellationToken cancellationToken)
-            {{
-                // Add your command logic for your feature here!
-
-                return {returnValue};
-            }}
+            return {returnValue};
         }}
     }}
 }}";

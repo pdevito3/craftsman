@@ -14,13 +14,11 @@ namespace Craftsman.Builders
         
         private static string GetConfigText(string classNamespace)
         {
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+public static class LocalConfig
 {{
-    public static class LocalConfig
-    {{
-        public const string IntegrationTestingEnvName = ""LocalIntegrationTesting"";
-        public const string FunctionalTestingEnvName = ""LocalFunctionalTesting"";
-    }}
+    public const string IntegrationTestingEnvName = ""LocalIntegrationTesting"";
+    public const string FunctionalTestingEnvName = ""LocalFunctionalTesting"";
 }}";
         }
     }

@@ -46,61 +46,60 @@
                     throw new KeyNotFoundException($""No {feature.BatchPropertyName} found with an id of '{{request.{feature.BatchPropertyName}}}'"");"
                 : "";
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using {entityClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
+using {exceptionsClassPath.ClassNamespace};
+using {contextClassPath.ClassNamespace};
+using {validatorsClassPath.ClassNamespace};
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+
+public static class {className}
 {{
-    using {entityClassPath.ClassNamespace};
-    using {dtoClassPath.ClassNamespace};
-    using {exceptionsClassPath.ClassNamespace};
-    using {contextClassPath.ClassNamespace};
-    using {validatorsClassPath.ClassNamespace};
-    using AutoMapper;
-    using AutoMapper.QueryableExtensions;
-    using MediatR;
-    using Microsoft.EntityFrameworkCore;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    public static class {className}
+    public class {addCommandName} : IRequest<{readDto}>
     {{
-        public class {addCommandName} : IRequest<{readDto}>
-        {{
-            public {createDto} {commandProp} {{ get; set; }}
-            public {feature.BatchPropertyType} {feature.BatchPropertyName} {{ get; set; }}
+        public {createDto} {commandProp} {{ get; set; }}
+        public {feature.BatchPropertyType} {feature.BatchPropertyName} {{ get; set; }}
 
-            public {addCommandName}({createDto} {newEntityProp}, {feature.BatchPropertyType} {featurePropNameLowerFirst})
-            {{
-                {commandProp} = {newEntityProp};
-                {feature.BatchPropertyName} = {featurePropNameLowerFirst};
-            }}
+        public {addCommandName}({createDto} {newEntityProp}, {feature.BatchPropertyType} {featurePropNameLowerFirst})
+        {{
+            {commandProp} = {newEntityProp};
+            {feature.BatchPropertyName} = {featurePropNameLowerFirst};
+        }}
+    }}
+
+    public class Handler : IRequestHandler<{addCommandName}, {readDto}>
+    {{
+        private readonly {contextName} _db;
+        private readonly IMapper _mapper;
+
+        public Handler({contextName} db, IMapper mapper)
+        {{
+            _mapper = mapper;
+            _db = db;
         }}
 
-        public class Handler : IRequestHandler<{addCommandName}, {readDto}>
+        public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
         {{
-            private readonly {contextName} _db;
-            private readonly IMapper _mapper;
+            var {entityNameLowercase} = _mapper.Map<IEnumerable<{entityName}>> (request.{commandProp});
+            {entityNameLowercase} = {entityNameLowercase}.ToList().Select({entity.Lambda} => {{ {entity.Lambda}.{feature.BatchPropertyName} = request.{feature.BatchPropertyName}; return {entity.Lambda}; }});
+            {batchFkCheck}
+            
+            _db.{entity.Plural}.AddRange({entityNameLowercase});
 
-            public Handler({contextName} db, IMapper mapper)
-            {{
-                _mapper = mapper;
-                _db = db;
-            }}
+            await _db.SaveChangesAsync();
 
-            public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
-            {{
-                var {entityNameLowercase} = _mapper.Map<IEnumerable<{entityName}>> (request.{commandProp});
-                {entityNameLowercase} = {entityNameLowercase}.ToList().Select({entity.Lambda} => {{ {entity.Lambda}.{feature.BatchPropertyName} = request.{feature.BatchPropertyName}; return {entity.Lambda}; }});
-                {batchFkCheck}
-                
-                _db.{entity.Plural}.AddRange({entityNameLowercase});
-
-                await _db.SaveChangesAsync();
-
-                var result = _db.{entity.Plural}.Where({entity.Lambda} => {entityNameLowercase}.Select({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName}).Contains({entity.Lambda}.{primaryKeyPropName}));
-                return _mapper.Map<{readDto}>(result);
-            }}
+            var result = _db.{entity.Plural}.Where({entity.Lambda} => {entityNameLowercase}.Select({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName}).Contains({entity.Lambda}.{primaryKeyPropName}));
+            return _mapper.Map<{readDto}>(result);
         }}
     }}
 }}";

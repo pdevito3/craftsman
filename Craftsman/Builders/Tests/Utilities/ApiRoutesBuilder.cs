@@ -27,15 +27,13 @@
 
         private static string GetBaseText(string classNamespace)
         {
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+public class ApiRoutes
 {{
-    public class ApiRoutes
-    {{
-        public const string Base = ""api"";
-        public const string Health = Base + ""/health"";
+    public const string Base = ""api"";
+    public const string Health = Base + ""/health"";
 
-        // new api route marker - do not delete
-    }}
+    // new api route marker - do not delete
 }}";
         }
     }

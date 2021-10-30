@@ -41,71 +41,70 @@
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using {entityClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
+using {exceptionsClassPath.ClassNamespace};
+using {contextClassPath.ClassNamespace};
+using {wrapperClassPath.ClassNamespace};
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using MediatR;
+using Sieve.Models;
+using Sieve.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+public static class {className}
 {{
-    using {entityClassPath.ClassNamespace};
-    using {dtoClassPath.ClassNamespace};
-    using {exceptionsClassPath.ClassNamespace};
-    using {contextClassPath.ClassNamespace};
-    using {wrapperClassPath.ClassNamespace};
-    using AutoMapper;
-    using AutoMapper.QueryableExtensions;
-    using MediatR;
-    using Sieve.Models;
-    using Sieve.Services;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    public static class {className}
+    public class {queryListName} : IRequest<PagedList<{readDto }>>
     {{
-        public class {queryListName} : IRequest<PagedList<{readDto }>>
-        {{
-            public {paramsDto} QueryParameters {{ get; set; }}
+        public {paramsDto} QueryParameters {{ get; set; }}
 
-            public {queryListName}({paramsDto} queryParameters)
-            {{
-                QueryParameters = queryParameters;
-            }}
+        public {queryListName}({paramsDto} queryParameters)
+        {{
+            QueryParameters = queryParameters;
+        }}
+    }}
+
+    public class Handler : IRequestHandler<{queryListName}, PagedList<{readDto}>>
+    {{
+        private readonly {contextName} _db;
+        private readonly SieveProcessor _sieveProcessor;
+        private readonly IMapper _mapper;
+
+        public Handler({contextName} db, IMapper mapper, SieveProcessor sieveProcessor)
+        {{
+            _mapper = mapper;
+            _db = db;
+            _sieveProcessor = sieveProcessor;
         }}
 
-        public class Handler : IRequestHandler<{queryListName}, PagedList<{readDto}>>
+        public async Task<PagedList<{readDto}>> Handle({queryListName} request, CancellationToken cancellationToken)
         {{
-            private readonly {contextName} _db;
-            private readonly SieveProcessor _sieveProcessor;
-            private readonly IMapper _mapper;
+            if (request.QueryParameters == null)
+                throw new ApiException(""Invalid query parameters."");
 
-            public Handler({contextName} db, IMapper mapper, SieveProcessor sieveProcessor)
+            var collection = _db.{entity.Plural}
+                as IQueryable<{entity.Name}>;
+
+            var sieveModel = new SieveModel
             {{
-                _mapper = mapper;
-                _db = db;
-                _sieveProcessor = sieveProcessor;
-            }}
+                Sorts = request.QueryParameters.SortOrder ?? ""{primaryKeyPropName}"",
+                Filters = request.QueryParameters.Filters
+            }};
 
-            public async Task<PagedList<{readDto}>> Handle({queryListName} request, CancellationToken cancellationToken)
-            {{
-                if (request.QueryParameters == null)
-                    throw new ApiException(""Invalid query parameters."");
+            var appliedCollection = _sieveProcessor.Apply(sieveModel, collection);
+            var dtoCollection = appliedCollection
+                .ProjectTo<{readDto}>(_mapper.ConfigurationProvider);
 
-                var collection = _db.{entity.Plural}
-                    as IQueryable<{entity.Name}>;
-
-                var sieveModel = new SieveModel
-                {{
-                    Sorts = request.QueryParameters.SortOrder ?? ""{primaryKeyPropName}"",
-                    Filters = request.QueryParameters.Filters
-                }};
-
-                var appliedCollection = _sieveProcessor.Apply(sieveModel, collection);
-                var dtoCollection = appliedCollection
-                    .ProjectTo<{readDto}>(_mapper.ConfigurationProvider);
-
-                return await PagedList<{readDto}>.CreateAsync(dtoCollection,
-                    request.QueryParameters.PageNumber,
-                    request.QueryParameters.PageSize);
-            }}
+            return await PagedList<{readDto}>.CreateAsync(dtoCollection,
+                request.QueryParameters.PageNumber,
+                request.QueryParameters.PageSize);
         }}
     }}
 }}";

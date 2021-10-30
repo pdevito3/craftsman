@@ -13,22 +13,21 @@
         {
             var sharedDtoClassPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, "", projectBaseName);
 
-            return @$"namespace {classNamespace}
-{{
-    using {sharedDtoClassPath.ClassNamespace};
+            return @$"namespace {classNamespace};
 
-    public class {Utilities.GetDtoName(entity.Name, dto)} : BasePaginationParameters
-    {{
-        public string Filters {{ get; set; }}
-        public string SortOrder {{ get; set; }}
-    }}
+using {sharedDtoClassPath.ClassNamespace};
+
+public class {Utilities.GetDtoName(entity.Name, dto)} : BasePaginationParameters
+{{
+    public string Filters {{ get; set; }}
+    public string SortOrder {{ get; set; }}
 }}";
         }
 
         public static string GetDtoText(IClassPath dtoClassPath, Entity entity, Dto dto)
         {
             var propString = dto is Dto.Read ? $@"
-        public Guid Id {{ get; set; }}" : "";
+    public Guid Id {{ get; set; }}" : "";
             propString += DtoPropBuilder(entity.Properties, dto);
             if (dto is Dto.Update or Dto.Creation)
                 propString = "";
@@ -39,16 +38,15 @@
             if (dto is Dto.Creation or Dto.Update)
                 inheritanceString = $": {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}";
 
-            return @$"namespace {dtoClassPath.ClassNamespace}
-{{
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
+            return @$"namespace {dtoClassPath.ClassNamespace};
 
-    public {abstractString}class {Utilities.GetDtoName(entity.Name, dto)} {inheritanceString}
-    {{
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+public {abstractString}class {Utilities.GetDtoName(entity.Name, dto)} {inheritanceString}
+{{
 {propString}
-    }}
 }}";
         }
 
@@ -57,7 +55,7 @@
             var dtoFileName = $"{Utilities.GetDtoName(prop.Type, dto)}.cs";
             var fkClasspath = ClassPathHelper.DtoClassPath(dtoClassPath.SolutionDirectory, dtoFileName, prop.Type, projectBaseName);
 
-            fkUsingStatements += $"{Environment.NewLine}    using {fkClasspath.ClassNamespace};";
+            fkUsingStatements += $"{Environment.NewLine}using {fkClasspath.ClassNamespace};";
 
             return fkUsingStatements;
         }
@@ -74,7 +72,7 @@
                     : "";
 
                 string newLine = eachProp == props.Count - 1 ? "" : Environment.NewLine;
-                propString += $@"        public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{guidDefault}{newLine}";
+                propString += $@"   public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{guidDefault}{newLine}";
             }
 
             return propString;

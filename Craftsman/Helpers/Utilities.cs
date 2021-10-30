@@ -307,7 +307,7 @@
             if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
             {
                 // ex: options.AddPolicy("CanRead", policy => policy.RequireClaim("scope", "detailedrecipes.read"));
-                return $@"                options.AddPolicy(""{policy.Name}"",
+                return $@"            options.AddPolicy(""{policy.Name}"",
                     policy => policy.RequireClaim(""scope"", ""{policy.PolicyValue}""));";
             }
             //else if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Role))
@@ -318,7 +318,7 @@
             //}
 
             // claim ex: options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
-            return $@"                options.AddPolicy(""{policy.Name}"",
+            return $@"            options.AddPolicy(""{policy.Name}"",
                     policy => policy.RequireClaim(""{policy.PolicyValue}""));";
         }
 
@@ -334,7 +334,7 @@
             foreach (var policy in uniquePolicies)
             {
                 policyStrings += $@"
-                                {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},";
+                            {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},";
             }
 
             return policyStrings;
@@ -579,16 +579,16 @@
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
             var pkName = Entity.PrimaryKeyProperty.Name;
 
-            entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}        public static class {entity.Plural}
-        {{
-            public const string {pkName} = ""{{{pkName.LowercaseFirstLetter()}}}"";
-            public const string GetList = Base + ""/{lowercaseEntityPluralName}"";
-            public const string GetRecord = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
-            public const string Create = Base + ""/{lowercaseEntityPluralName}"";
-            public const string Delete = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
-            public const string Put = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
-            public const string Patch = Base + ""/{lowercaseEntityPluralName}/"" + {pkName};
-        }}";
+            entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}public static class {entity.Plural}
+    {{
+        public const string {pkName} = ""{{{pkName.LowercaseFirstLetter()}}}"";
+        public const string GetList = $""{{Base}}/{lowercaseEntityPluralName}"";
+        public const string GetRecord = $""{{Base}}/{lowercaseEntityPluralName}/ + {pkName}"";
+        public const string Create = $""{{Base}}/{lowercaseEntityPluralName}"";
+        public const string Delete = $""{{Base}}/{lowercaseEntityPluralName}/ + {pkName}"";
+        public const string Put = $""{{Base}}/{lowercaseEntityPluralName}/ + {pkName}"";
+        public const string Patch = $""{{Base}}/{lowercaseEntityPluralName}/ + {pkName}"";
+    }}";
 
             return entityRouteClasses;
         }

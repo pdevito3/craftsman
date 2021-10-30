@@ -79,24 +79,23 @@
 
         public static string GetSwaggerServiceExtensionText(string classNamespace, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, IEnumerable<Policy> policies)
         {
-            return @$"namespace {classNamespace}
-{{
-    using AutoMapper;
-    using FluentValidation.AspNetCore;
-    using MediatR;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.OpenApi.Models;
-    using System;
-    using System.IO;
-    using System.Collections.Generic;
-    using System.Reflection;
+            return @$"namespace {classNamespace};
 
-    public static class SwaggerServiceExtension
-    {{
-        {GetSwaggerServiceExtensionText(swaggerConfig, projectName, addJwtAuthentication, policies)}
-    }}
+using AutoMapper;
+using FluentValidation.AspNetCore;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Reflection;
+
+public static class SwaggerServiceExtension
+{{
+    {GetSwaggerServiceExtensionText(swaggerConfig, projectName, addJwtAuthentication, policies)}
 }}";
         }
 
@@ -116,65 +115,65 @@
             var policyScopes = Utilities.GetSwaggerPolicies(policies);
             var swaggerAuth = addJwtAuthentication ? $@"
 
-                config.AddSecurityDefinition(""oauth2"", new OpenApiSecurityScheme
+            config.AddSecurityDefinition(""oauth2"", new OpenApiSecurityScheme
+            {{
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
                 {{
-                    Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows
+                    AuthorizationCode = new OpenApiOAuthFlow
                     {{
-                        AuthorizationCode = new OpenApiOAuthFlow
-                        {{
-                            AuthorizationUrl = new Uri(configuration[""JwtSettings:AuthorizationUrl""]),
-                            TokenUrl = new Uri(configuration[""JwtSettings:TokenUrl""]),
-                            Scopes = new Dictionary<string, string>
-                            {{{policyScopes}
-                            }}
+                        AuthorizationUrl = new Uri(configuration[""JwtSettings:AuthorizationUrl""]),
+                        TokenUrl = new Uri(configuration[""JwtSettings:TokenUrl""]),
+                        Scopes = new Dictionary<string, string>
+                        {{{policyScopes}
                         }}
                     }}
-                }});
+                }}
+            }});
 
-                config.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            config.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            {{
                 {{
+                    new OpenApiSecurityScheme
                     {{
-                        new OpenApiSecurityScheme
+                        Reference = new OpenApiReference
                         {{
-                            Reference = new OpenApiReference
-                            {{
-                                Type = ReferenceType.SecurityScheme,
-                                Id = ""oauth2""
-                            }},
-                            Scheme = ""oauth2"",
-                            Name = ""oauth2"",
-                            In = ParameterLocation.Header
+                            Type = ReferenceType.SecurityScheme,
+                            Id = ""oauth2""
                         }},
-                        new List<string>()
-                    }}
-                }}); " : $@"";
+                        Scheme = ""oauth2"",
+                        Name = ""oauth2"",
+                        In = ParameterLocation.Header
+                    }},
+                    new List<string>()
+                }}
+            }}); " : $@"";
 
             var swaggerXmlComments = "";
             if (swaggerConfig.AddSwaggerComments)
                 swaggerXmlComments = $@"
 
-                config.IncludeXmlComments(string.Format(@$""{{AppDomain.CurrentDomain.BaseDirectory}}{{Path.DirectorySeparatorChar}}{projectName}.WebApi.xml""));";
+            config.IncludeXmlComments(string.Format(@$""{{AppDomain.CurrentDomain.BaseDirectory}}{{Path.DirectorySeparatorChar}}{projectName}.WebApi.xml""));";
 
             var swaggerText = $@"public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
+    {{
+        services.AddSwaggerGen(config =>
         {{
-            services.AddSwaggerGen(config =>
-            {{
-                config.SwaggerDoc(
-                    ""v1"",
-                    new OpenApiInfo
+            config.SwaggerDoc(
+                ""v1"",
+                new OpenApiInfo
+                {{
+                    Version = ""v1"",
+                    Title = ""{swaggerConfig.Title}"",
+                    Description = ""{swaggerConfig.Description}"",
+                    Contact = new OpenApiContact
                     {{
-                        Version = ""v1"",
-                        Title = ""{swaggerConfig.Title}"",
-                        Description = ""{swaggerConfig.Description}"",
-                        Contact = new OpenApiContact
-                        {{
-                            Name = ""{swaggerConfig.ApiContact.Name}"",
-                            Email = ""{swaggerConfig.ApiContact.Email}"",{contactUrlLine}
-                        }},{licenseText}
-                    }});{swaggerAuth}{swaggerXmlComments}
-            }});
-        }}";
+                        Name = ""{swaggerConfig.ApiContact.Name}"",
+                        Email = ""{swaggerConfig.ApiContact.Email}"",{contactUrlLine}
+                    }},{licenseText}
+                }});{swaggerAuth}{swaggerXmlComments}
+        }});
+    }}";
 
             return swaggerText;
         }
@@ -183,11 +182,11 @@
         {
             if (licenseName?.Length > 0 || licenseUrlLine?.Length > 0)
                 return $@"
-                            License = new OpenApiLicense()
-                            {{
-                                Name = ""{licenseName}"",
-                                Url = ""{licenseUrlLine}"",
-                            }}";
+                        License = new OpenApiLicense()
+                        {{
+                            Name = ""{licenseName}"",
+                            Url = ""{licenseUrlLine}"",
+                        }}";
             return "";
         }
 

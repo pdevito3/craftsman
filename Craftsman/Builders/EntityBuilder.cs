@@ -28,7 +28,7 @@
         public static string GetEntityFileText(string classNamespace, string srcDirectory, Entity entity, string projectBaseName)
         {
             var propString = EntityPropBuilder(entity.Properties);
-            var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}    using Sieve.Attributes;" : "";
+            var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
             var tableAnnotation = EntityAnnotationBuilder(entity);
             
             var foreignEntityUsings = "";
@@ -41,34 +41,32 @@
             }
 
 
-            return @$"namespace {classNamespace}
-{{
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{foreignEntityUsings}
+            return @$"namespace {classNamespace};
 
-    {tableAnnotation}
-    public class {entity.Name} : BaseEntity
-    {{
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{foreignEntityUsings}
+
+{tableAnnotation}
+public class {entity.Name} : BaseEntity
+{{
 {propString}
-    }}
 }}";
         }
 
         public static string GetBaseEntityFileText(string classNamespace)
         {
-            return @$"namespace {classNamespace}
-{{
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
+            return @$"namespace {classNamespace};
 
-    public abstract class BaseEntity
-    {{
-        [Key] 
-        [Column(""id"")]
-        public Guid Id {{ get; set; }} = Guid.NewGuid();
-    }}
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+public abstract class BaseEntity
+{{
+    [Key] 
+    [Column(""id"")]
+    public Guid Id {{ get; set; }} = Guid.NewGuid();
 }}";
         }
 
@@ -91,7 +89,7 @@
                 propString += attributes;
                 var defaultValue = Utilities.GetDefaultValueText(property.DefaultValue, property);
                 var newLine = property == props.LastOrDefault() ? "" : $"{Environment.NewLine}{Environment.NewLine}";
-                propString += $@"        public {property.Type} {property.Name} {{ get; set; }}{defaultValue}{newLine}";
+                propString += $@"    public {property.Type} {property.Name} {{ get; set; }}{defaultValue}{newLine}";
                 propString += GetForeignProp(property);
             }
 
@@ -102,13 +100,13 @@
         {
             var attributeString = "";
             if (entityProperty.IsRequired)
-                attributeString += @$"        [Required]{Environment.NewLine}";
+                attributeString += @$"    [Required]{Environment.NewLine}";
             if (entityProperty.IsForeignKey)
-                attributeString += @$"        [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
+                attributeString += @$"    [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)
-                attributeString += @$"        [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
+                attributeString += @$"    [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
             if (!string.IsNullOrEmpty(entityProperty.ColumnName))
-                attributeString += @$"        [Column(""{entityProperty.ColumnName}"")]{Environment.NewLine}";
+                attributeString += @$"    [Column(""{entityProperty.ColumnName}"")]{Environment.NewLine}";
 
             return attributeString;
         }
@@ -116,7 +114,7 @@
         private static string GetForeignProp(EntityProperty prop)
         {
             return !string.IsNullOrEmpty(prop.ForeignEntityName) ? $@"
-        public {prop.ForeignEntityName} {prop.ForeignEntityName} {{ get; set; }}" : "";
+    public {prop.ForeignEntityName} {prop.ForeignEntityName} {{ get; set; }}" : "";
         }
     }
 }

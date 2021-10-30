@@ -15,26 +15,24 @@
                 throw new ArgumentNullException(nameof(dbContextName));
             }
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using AutoBogus;
+using {entitiesClassPath.ClassNamespace};
+using {dbContextClassPath.ClassNamespace};
+using System.Linq;
+
+public static class {Utilities.GetSeederName(entity)}
 {{
-
-    using AutoBogus;
-    using {entitiesClassPath.ClassNamespace};
-    using {dbContextClassPath.ClassNamespace};
-    using System.Linq;
-
-    public static class {Utilities.GetSeederName(entity)}
+    public static void SeedSample{entity.Name}Data({dbContextName} context)
     {{
-        public static void SeedSample{entity.Name}Data({dbContextName} context)
+        if (!context.{entity.Plural}.Any())
         {{
-            if (!context.{entity.Plural}.Any())
-            {{
-                context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
-                context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
-                context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
+            context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
+            context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
+            context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
 
-                context.SaveChanges();
-            }}
+            context.SaveChanges();
         }}
     }}
 }}";

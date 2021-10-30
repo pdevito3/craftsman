@@ -32,23 +32,22 @@
             var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
-            return @$"namespace {classNamespace}
-{{
-    using {dtoClassPath.ClassNamespace};
-    using AutoMapper;
-    using {entitiesClassPath.ClassNamespace};
+            return @$"namespace {classNamespace};
 
-    public class {Utilities.GetProfileName(entity.Name)} : Profile
+using {dtoClassPath.ClassNamespace};
+using AutoMapper;
+using {entitiesClassPath.ClassNamespace};
+
+public class {Utilities.GetProfileName(entity.Name)} : Profile
+{{
+    public {Utilities.GetProfileName(entity.Name)}()
     {{
-        public {Utilities.GetProfileName(entity.Name)}()
-        {{
-            //createmap<to this, from this>
-            CreateMap<{entity.Name}, {Utilities.GetDtoName(entity.Name, Dto.Read)}>()
-                .ReverseMap();
-            CreateMap<{Utilities.GetDtoName(entity.Name, Dto.Creation)}, {entity.Name}>();
-            CreateMap<{Utilities.GetDtoName(entity.Name, Dto.Update)}, {entity.Name}>()
-                .ReverseMap();
-        }}
+        //createmap<to this, from this>
+        CreateMap<{entity.Name}, {Utilities.GetDtoName(entity.Name, Dto.Read)}>()
+            .ReverseMap();
+        CreateMap<{Utilities.GetDtoName(entity.Name, Dto.Creation)}, {entity.Name}>();
+        CreateMap<{Utilities.GetDtoName(entity.Name, Dto.Update)}, {entity.Name}>()
+            .ReverseMap();
     }}
 }}";
         }

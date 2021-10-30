@@ -33,30 +33,29 @@
             var equivalency = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"
 
-            // close to equivalency required to reconcile precision differences between EF and Postgres
-            AssertionOptions.AssertEquivalencyUsing(options =>
-              options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTime>()
-            );
-            AssertionOptions.AssertEquivalencyUsing(options =>
-              options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTimeOffset>()
-            );"
+        // close to equivalency required to reconcile precision differences between EF and Postgres
+        AssertionOptions.AssertEquivalencyUsing(options =>
+          options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTime>()
+        );
+        AssertionOptions.AssertEquivalencyUsing(options =>
+          options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTimeOffset>()
+        );"
                 : null;
 
-            return @$"namespace {classNamespace}
-{{
-    using FluentAssertions;
-    using NUnit.Framework;
-    using System;
-    using System.Threading.Tasks;
-    using static {testFixtureName};
+            return @$"namespace {classNamespace};
 
-    public class TestBase
+using FluentAssertions;
+using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
+using static {testFixtureName};
+
+public class TestBase
+{{
+    [SetUp]
+    public async Task TestSetUp()
     {{
-        [SetUp]
-        public async Task TestSetUp()
-        {{
-            await ResetState();{equivalency}
-        }}
+        await ResetState();{equivalency}
     }}
 }}";
         }

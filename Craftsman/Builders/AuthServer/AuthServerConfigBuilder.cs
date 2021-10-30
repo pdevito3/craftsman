@@ -24,45 +24,44 @@
             var apiScopes = authServer.Scopes.Aggregate("", (current, scope) => current + ApiScopeTextBuilder(scope));
             var clients = authServer.Clients.Aggregate("", (current, client) => current + ClientBuilder(client));
 
-            return @$"{DuendeDisclosure}namespace {classNamespace}
+            return @$"{DuendeDisclosure}namespace {classNamespace};
+
+using Duende.IdentityServer.Models;
+using System.Collections.Generic;
+
+public static class Config
 {{
-    using Duende.IdentityServer.Models;
-    using System.Collections.Generic;
+    public static IEnumerable<IdentityResource> IdentityResources =>
+        new IdentityResource[]
+        {{
+            new IdentityResources.OpenId(),
+            new IdentityResources.Profile(),
+        }};
 
-    public static class Config
-    {{
-        public static IEnumerable<IdentityResource> IdentityResources =>
-            new IdentityResource[]
-            {{
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
-            }};
+    // Api Resource is your Api as a whole. 
+    // Api with multiple endpoints has a name that clients can ask for
+    // we can have an api with various resources
+    // have multiple scopes for the api (e.g. full_access, readr_only
+    // when someone asks for a token for one of these scopes, which claims should be included in the scope
+    // You can add these `UserClaims` to the Api level so that, regardless of which scope you are asking for, they will be included (e.g. name, email)
+    // You can then add specific claims that will be included when requesting that particular scope
+    // ***Be aware, that scopes are purely for authorizing clients, not users.**
+    public static IEnumerable<ApiResource> ApiResources =>
+        new List<ApiResource>
+        {{{apiResources}
+        }};
+    
+    // allow access to identity information. client level rules of who can access what (e.g. read:sample, read:order, create:order, read:report)
+    // this will be in the audience claim and will be checked by the jwt middleware to grant access or not
+    public static IEnumerable<ApiScope> ApiScopes =>
+        new ApiScope[]
+        {{{apiScopes}
+        }};
 
-        // Api Resource is your Api as a whole. 
-        // Api with multiple endpoints has a name that clients can ask for
-        // we can have an api with various resources
-        // have multiple scopes for the api (e.g. full_access, readr_only
-        // when someone asks for a token for one of these scopes, which claims should be included in the scope
-        // You can add these `UserClaims` to the Api level so that, regardless of which scope you are asking for, they will be included (e.g. name, email)
-        // You can then add specific claims that will be included when requesting that particular scope
-        // ***Be aware, that scopes are purely for authorizing clients, not users.**
-        public static IEnumerable<ApiResource> ApiResources =>
-            new List<ApiResource>
-            {{{apiResources}
-            }};
-        
-        // allow access to identity information. client level rules of who can access what (e.g. read:sample, read:order, create:order, read:report)
-        // this will be in the audience claim and will be checked by the jwt middleware to grant access or not
-        public static IEnumerable<ApiScope> ApiScopes =>
-            new ApiScope[]
-            {{{apiScopes}
-            }};
-
-        public static IEnumerable<Client> Clients =>
-            new Client[]
-            {{{clients}
-            }};
-    }}
+    public static IEnumerable<Client> Clients =>
+        new Client[]
+        {{{clients}
+        }};
 }}";
         }
 

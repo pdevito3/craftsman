@@ -56,42 +56,40 @@
 
         public static string GetApiExceptionFileText(string classNamespace)
         {
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using System;
+using System.Globalization;
+
+public class ApiException : Exception
 {{
-    using System;
-    using System.Globalization;
+    public ApiException() : base() {{ }}
 
-    public class ApiException : Exception
+    public ApiException(string message) : base(message) {{ }}
+
+    public ApiException(string message, params object[] args)
+        : base(string.Format(CultureInfo.CurrentCulture, message, args))
     {{
-        public ApiException() : base() {{ }}
-
-        public ApiException(string message) : base(message) {{ }}
-
-        public ApiException(string message, params object[] args)
-            : base(string.Format(CultureInfo.CurrentCulture, message, args))
-        {{
-        }}
     }}
 }}";
         }
 
         public static string GetConflictExceptionFileText(string classNamespace)
         {
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using System;
+using System.Globalization;
+
+public class ConflictException : Exception
 {{
-    using System;
-    using System.Globalization;
+    public ConflictException() : base() {{ }}
 
-    public class ConflictException : Exception
+    public ConflictException(string message) : base(message) {{ }}
+
+    public ConflictException(string message, params object[] args)
+        : base(string.Format(CultureInfo.CurrentCulture, message, args))
     {{
-        public ConflictException() : base() {{ }}
-
-        public ConflictException(string message) : base(message) {{ }}
-
-        public ConflictException(string message, params object[] args)
-            : base(string.Format(CultureInfo.CurrentCulture, message, args))
-        {{
-        }}
     }}
 }}";
         }
@@ -116,26 +114,25 @@
 
         public static string GetValidationExceptionFileText(string classNamespace)
         {
-            return @$"namespace {classNamespace}
-{{
-    using FluentValidation.Results;
-    using System;
-    using System.Collections.Generic;
+            return @$"namespace {classNamespace};
 
-    public class ValidationException : Exception
+using FluentValidation.Results;
+using System;
+using System.Collections.Generic;
+
+public class ValidationException : Exception
+{{
+    public ValidationException() : base(""One or more validation failures have occurred."")
     {{
-        public ValidationException() : base(""One or more validation failures have occurred."")
+        Errors = new List<string>();
+    }}
+    public List<string> Errors {{ get; }}
+    public ValidationException(IEnumerable<ValidationFailure> failures)
+        : this()
+    {{
+        foreach (var failure in failures)
         {{
-            Errors = new List<string>();
-        }}
-        public List<string> Errors {{ get; }}
-        public ValidationException(IEnumerable<ValidationFailure> failures)
-            : this()
-        {{
-            foreach (var failure in failures)
-            {{
-                Errors.Add(failure.ErrorMessage);
-            }}
+            Errors.Add(failure.ErrorMessage);
         }}
     }}
 }}";

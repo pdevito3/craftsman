@@ -35,36 +35,35 @@
             var contextUsing = consumer.UsesDb ? $@"
     using {contextClassPath.ClassNamespace};" : "";
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using AutoMapper;
+using MassTransit;
+using Messages;
+using System.Threading.Tasks;{contextUsing}
+
+public class {consumer.ConsumerName} : IConsumer<{consumer.MessageName}>
 {{
-    using AutoMapper;
-    using MassTransit;
-    using Messages;
-    using System.Threading.Tasks;{contextUsing}
+    private readonly IMapper _mapper;{dbReadOnly}
 
-    public class {consumer.ConsumerName} : IConsumer<{consumer.MessageName}>
+    public {consumer.ConsumerName}({dbProp}IMapper mapper)
     {{
-        private readonly IMapper _mapper;{dbReadOnly}
+        _mapper = mapper;{assignDb}
+    }}
 
-        public {consumer.ConsumerName}({dbProp}IMapper mapper)
+    public class {consumer.ConsumerName}Profile : Profile
+    {{
+        public {consumer.ConsumerName}Profile()
         {{
-            _mapper = mapper;{assignDb}
+            //createmap<to this, from this>
         }}
+    }}
 
-        public class {consumer.ConsumerName}Profile : Profile
-        {{
-            public {consumer.ConsumerName}Profile()
-            {{
-                //createmap<to this, from this>
-            }}
-        }}
+    public Task Consume(ConsumeContext<{consumer.MessageName}> context)
+    {{
+        // do work here
 
-        public Task Consume(ConsumeContext<{consumer.MessageName}> context)
-        {{
-            // do work here
-
-            return Task.CompletedTask;
-        }}
+        return Task.CompletedTask;
     }}
 }}";
         }

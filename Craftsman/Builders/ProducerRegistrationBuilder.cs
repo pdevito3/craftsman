@@ -37,47 +37,46 @@
         {
             var exchangeType = Enum.GetName(typeof(ExchangeType), ExchangeType.Direct) == producer.ExchangeType ? "ExchangeType.Direct" : "ExchangeType.Topic";
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using MassTransit;
+using MassTransit.RabbitMqTransport;
+using Messages;
+using RabbitMQ.Client;
+
+public static class {className}
 {{
-    using MassTransit;
-    using MassTransit.RabbitMqTransport;
-    using Messages;
-    using RabbitMQ.Client;
-
-    public static class {className}
+    public static void {producer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg)
     {{
-        public static void {producer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg)
-        {{
-            cfg.Message<{producer.MessageName}>(e => e.SetEntityName(""{producer.ExchangeName}"")); // name of the primary exchange
-            cfg.Publish<{producer.MessageName}>(e => e.ExchangeType = {exchangeType}); // primary exchange type
+        cfg.Message<{producer.MessageName}>(e => e.SetEntityName(""{producer.ExchangeName}"")); // name of the primary exchange
+        cfg.Publish<{producer.MessageName}>(e => e.ExchangeType = {exchangeType}); // primary exchange type
 
-            // configuration for the exchange and routing key
-            cfg.Send<{producer.MessageName}>(e =>
-            {{
-                // **Use the `UseRoutingKeyFormatter` to configure what to use for the routing key when sending a message of type `{producer.MessageName}`**
-                /* Examples
-                *
-                * Direct example: uses the `ProductType` message property as a key
-                * e.UseRoutingKeyFormatter(context => context.Message.ProductType.ToString());
-                *
-                * Topic example: uses the VIP Status and ClientType message properties to make a key.
-                * e.UseRoutingKeyFormatter(context =>
-                * {{
-                *     var vipStatus = context.Message.IsVip ? ""vip"" : ""normal"";
-                *     return $""{{vipStatus}}.{{context.Message.ClientType}}"";
-                * }});
-                */
-            }});
-        }}
+        // configuration for the exchange and routing key
+        cfg.Send<{producer.MessageName}>(e =>
+        {{
+            // **Use the `UseRoutingKeyFormatter` to configure what to use for the routing key when sending a message of type `{producer.MessageName}`**
+            /* Examples
+            *
+            * Direct example: uses the `ProductType` message property as a key
+            * e.UseRoutingKeyFormatter(context => context.Message.ProductType.ToString());
+            *
+            * Topic example: uses the VIP Status and ClientType message properties to make a key.
+            * e.UseRoutingKeyFormatter(context =>
+            * {{
+            *     var vipStatus = context.Message.IsVip ? ""vip"" : ""normal"";
+            *     return $""{{vipStatus}}.{{context.Message.ClientType}}"";
+            * }});
+            */
+        }});
     }}
 }}";
         }
 
         public static string GetFanoutProducerRegistration(string classNamespace, string className, Producer producer)
         {
-            return @$"namespace {classNamespace}
-{{
-    using MassTransit;
+            return @$"namespace {classNamespace};
+
+using MassTransit;
     using MassTransit.RabbitMqTransport;
     using Messages;
     using RabbitMQ.Client;

@@ -40,57 +40,56 @@
             var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using {entityClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
+using {exceptionsClassPath.ClassNamespace};
+using {contextClassPath.ClassNamespace};
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+public static class {className}
 {{
-    using {entityClassPath.ClassNamespace};
-    using {dtoClassPath.ClassNamespace};
-    using {exceptionsClassPath.ClassNamespace};
-    using {contextClassPath.ClassNamespace};
-    using AutoMapper;
-    using AutoMapper.QueryableExtensions;
-    using MediatR;
-    using Microsoft.EntityFrameworkCore;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.Collections.Generic;
-
-    public static class {className}
+    public class {deleteCommandName} : IRequest<bool>
     {{
-        public class {deleteCommandName} : IRequest<bool>
-        {{
-            public {primaryKeyPropType} {primaryKeyPropName} {{ get; set; }}
+        public {primaryKeyPropType} {primaryKeyPropName} {{ get; set; }}
 
-            public {deleteCommandName}({primaryKeyPropType} {entityNameLowercase})
-            {{
-                {primaryKeyPropName} = {entityNameLowercase};
-            }}
+        public {deleteCommandName}({primaryKeyPropType} {entityNameLowercase})
+        {{
+            {primaryKeyPropName} = {entityNameLowercase};
+        }}
+    }}
+
+    public class Handler : IRequestHandler<{deleteCommandName}, bool>
+    {{
+        private readonly {contextName} _db;
+        private readonly IMapper _mapper;
+
+        public Handler({contextName} db, IMapper mapper)
+        {{
+            _mapper = mapper;
+            _db = db;
         }}
 
-        public class Handler : IRequestHandler<{deleteCommandName}, bool>
+        public async Task<bool> Handle({deleteCommandName} request, CancellationToken cancellationToken)
         {{
-            private readonly {contextName} _db;
-            private readonly IMapper _mapper;
+            var recordToDelete = await _db.{entity.Plural}
+                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
 
-            public Handler({contextName} db, IMapper mapper)
-            {{
-                _mapper = mapper;
-                _db = db;
-            }}
+            if (recordToDelete == null)
+                throw new KeyNotFoundException();
 
-            public async Task<bool> Handle({deleteCommandName} request, CancellationToken cancellationToken)
-            {{
-                var recordToDelete = await _db.{entity.Plural}
-                    .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
+            _db.{entity.Plural}.Remove(recordToDelete);
+            await _db.SaveChangesAsync();
 
-                if (recordToDelete == null)
-                    throw new KeyNotFoundException();
-
-                _db.{entity.Plural}.Remove(recordToDelete);
-                await _db.SaveChangesAsync();
-
-                return true;
-            }}
+            return true;
         }}
     }}
 }}";

@@ -30,68 +30,67 @@
             var wrappersClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
             var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using {exceptionsClassPath.ClassNamespace};
+using {wrappersClassPath.ClassNamespace};
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+public class ErrorHandlerMiddleware
 {{
-    using {exceptionsClassPath.ClassNamespace};
-    using {wrappersClassPath.ClassNamespace};
-    using Microsoft.AspNetCore.Http;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Text.Json;
-    using System.Threading.Tasks;
+    private readonly RequestDelegate _next;
 
-    public class ErrorHandlerMiddleware
+    public ErrorHandlerMiddleware(RequestDelegate next)
     {{
-        private readonly RequestDelegate _next;
+        _next = next;
+    }}
 
-        public ErrorHandlerMiddleware(RequestDelegate next)
+    public async Task Invoke(HttpContext context)
+    {{
+        try
         {{
-            _next = next;
+            await _next(context);
         }}
-
-        public async Task Invoke(HttpContext context)
+        catch (Exception error)
         {{
-            try
-            {{
-                await _next(context);
+            var response = context.Response;
+            response.ContentType = ""application/json"";
+            var responseModel = new Response<string>() {{ Succeeded = false, Message = error?.Message }};
+
+            switch (error)
+        {{
+                case ConflictException:
+                    response.StatusCode = (int)HttpStatusCode.Conflict;
+                    break;
+
+                case ApiException:
+                    // custom application error
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    break;
+
+                case ValidationException e:
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    responseModel.Errors = e.Errors;
+                    break;
+
+                case KeyNotFoundException:
+                    response.StatusCode = (int)HttpStatusCode.NotFound;
+                    break;
+
+                default:
+                    // unhandled error
+                    response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    break;
             }}
-            catch (Exception error)
-            {{
-                var response = context.Response;
-                response.ContentType = ""application/json"";
-                var responseModel = new Response<string>() {{ Succeeded = false, Message = error?.Message }};
+            var result = JsonSerializer.Serialize(responseModel);
 
-                switch (error)
-            {{
-                    case ConflictException:
-                        response.StatusCode = (int)HttpStatusCode.Conflict;
-                        break;
-
-                    case ApiException:
-                        // custom application error
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        break;
-
-                    case ValidationException e:
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        responseModel.Errors = e.Errors;
-                        break;
-
-                    case KeyNotFoundException:
-                        response.StatusCode = (int)HttpStatusCode.NotFound;
-                        break;
-
-                    default:
-                        // unhandled error
-                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        break;
-                }}
-                var result = JsonSerializer.Serialize(responseModel);
-
-                await response.WriteAsync(result);
-            }}
+            await response.WriteAsync(result);
         }}
     }}
 }}";

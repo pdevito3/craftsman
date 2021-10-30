@@ -52,18 +52,17 @@
         public static string GetCreationValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
         {
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            return @$"namespace {classNamespace}
-{{
-    using {dtoClassPath.ClassNamespace};
-    using FluentValidation;
+            return @$"namespace {classNamespace};
 
-    public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.GetDtoName(entity.Name, Dto.Creation)}>
+using {dtoClassPath.ClassNamespace};
+using FluentValidation;
+
+public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.GetDtoName(entity.Name, Dto.Creation)}>
+{{
+    public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}()
     {{
-        public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}()
-        {{
-            // add fluent validation rules that should only be run on creation operations here
-            //https://fluentvalidation.net/
-        }}
+        // add fluent validation rules that should only be run on creation operations here
+        //https://fluentvalidation.net/
     }}
 }}";
         }
@@ -71,18 +70,17 @@
         public static string GetUpdateValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
         {
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            return @$"namespace {classNamespace}
-{{
-    using {dtoClassPath.ClassNamespace};
-    using FluentValidation;
+            return @$"namespace {classNamespace};
 
-    public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.GetDtoName(entity.Name, Dto.Update)}>
+using {dtoClassPath.ClassNamespace};
+using FluentValidation;
+
+public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{Utilities.GetDtoName(entity.Name, Dto.Update)}>
+{{
+    public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}()
     {{
-        public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}()
-        {{
-            // add fluent validation rules that should only be run on update operations here
-            //https://fluentvalidation.net/
-        }}
+        // add fluent validation rules that should only be run on update operations here
+        //https://fluentvalidation.net/
     }}
 }}";
         }
@@ -90,19 +88,18 @@
         public static string GetManipulationValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
         {
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            return @$"namespace {classNamespace}
-{{
-    using {dtoClassPath.ClassNamespace};
-    using FluentValidation;
-    using System;
+            return @$"namespace {classNamespace};
 
-    public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}
+using {dtoClassPath.ClassNamespace};
+using FluentValidation;
+using System;
+
+public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}
+{{
+    public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}()
     {{
-        public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}()
-        {{
-            // add fluent validation rules that should be shared between creation and update operations here
-            //https://fluentvalidation.net/
-        }}
+        // add fluent validation rules that should be shared between creation and update operations here
+        //https://fluentvalidation.net/
     }}
 }}";
         }

@@ -37,34 +37,33 @@
 
         public static string GetApiVersioningServiceExtensionText(string classNamespace)
         {
-            return @$"namespace {classNamespace}
-{{
-    using AutoMapper;
-    using FluentValidation.AspNetCore;
-    using MediatR;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.OpenApi.Models;
-    using System;
-    using System.IO;
-    using System.Collections.Generic;
-    using System.Reflection;
+            return @$"namespace {classNamespace};
 
-    public static class ApiVersioningServiceExtension
+using AutoMapper;
+using FluentValidation.AspNetCore;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Reflection;
+
+public static class ApiVersioningServiceExtension
+{{
+    public static void AddApiVersioningExtension(this IServiceCollection services)
     {{
-        public static void AddApiVersioningExtension(this IServiceCollection services)
+        services.AddApiVersioning(config =>
         {{
-            services.AddApiVersioning(config =>
-            {{
-                // Default API Version
-                config.DefaultApiVersion = new ApiVersion(1, 0);
-                // use default version when version is not specified
-                config.AssumeDefaultVersionWhenUnspecified = true;
-                // Advertise the API versions supported for the particular endpoint
-                config.ReportApiVersions = true;
-            }});
-        }}
+            // Default API Version
+            config.DefaultApiVersion = new ApiVersion(1, 0);
+            // use default version when version is not specified
+            config.AssumeDefaultVersionWhenUnspecified = true;
+            // Advertise the API versions supported for the particular endpoint
+            config.ReportApiVersions = true;
+        }});
     }}
 }}";
         }
@@ -72,52 +71,51 @@
         public static string GetCorsServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, $"ApiVersioningServiceExtension.cs", projectBaseName);
-            return @$"namespace {classNamespace}
-{{
-    using {classPath.ClassNamespace};
-    using AutoMapper;
-    using FluentValidation.AspNetCore;
-    using MediatR;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.OpenApi.Models;
-    using System;
-    using System.IO;
-    using System.Collections.Generic;
-    using System.Reflection;
+            return @$"namespace {classNamespace};
 
-    public static class CorsServiceExtension
+using {classPath.ClassNamespace};
+using AutoMapper;
+using FluentValidation.AspNetCore;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Reflection;
+
+public static class CorsServiceExtension
+{{
+    public static void AddCorsService(this IServiceCollection services, string policyName, IWebHostEnvironment env)
     {{
-        public static void AddCorsService(this IServiceCollection services, string policyName, IWebHostEnvironment env)
+        if (env.IsDevelopment() || env.IsEnvironment(LocalConfig.IntegrationTestingEnvName) ||
+            env.IsEnvironment(LocalConfig.FunctionalTestingEnvName))
         {{
-            if (env.IsDevelopment() || env.IsEnvironment(LocalConfig.IntegrationTestingEnvName) ||
-                env.IsEnvironment(LocalConfig.FunctionalTestingEnvName))
+            services.AddCors(options =>
             {{
-                services.AddCors(options =>
-                {{
-                    options.AddPolicy(policyName, builder => 
-                        builder.SetIsOriginAllowed(_ => true)
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .WithExposedHeaders(""X-Pagination""));
-                }});
-                
-            }}
-            else
-            {{
-                //TODO update origins here with env vars or secret
-                //services.AddCors(options =>
-                //{{
-                //    options.AddPolicy(policyName, builder =>
-                //        builder.WithOrigins(origins)
-                //        .AllowAnyMethod()
-                //        .AllowAnyHeader()
-                //        .WithExposedHeaders(""X-Pagination""));
-                //}});
-            }}
+                options.AddPolicy(policyName, builder => 
+                    builder.SetIsOriginAllowed(_ => true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithExposedHeaders(""X-Pagination""));
+            }});
+            
+        }}
+        else
+        {{
+            //TODO update origins here with env vars or secret
+            //services.AddCors(options =>
+            //{{
+            //    options.AddPolicy(policyName, builder =>
+            //        builder.WithOrigins(origins)
+            //        .AllowAnyMethod()
+            //        .AllowAnyHeader()
+            //        .WithExposedHeaders(""X-Pagination""));
+            //}});
         }}
     }}
 }}";
@@ -125,31 +123,30 @@
 
         public static string GetWebApiServiceExtensionText(string classNamespace)
         {
-            return @$"namespace {classNamespace}
-{{
-    using AutoMapper;
-    using FluentValidation.AspNetCore;
-    using MediatR;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.OpenApi.Models;
-    using Sieve.Services;
-    using System;
-    using System.IO;
-    using System.Collections.Generic;
-    using System.Reflection;
+            return @$"namespace {classNamespace};
 
-    public static class WebApiServiceExtension
+using AutoMapper;
+using FluentValidation.AspNetCore;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+using Sieve.Services;
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Reflection;
+
+public static class WebApiServiceExtension
+{{
+    public static void AddWebApiServices(this IServiceCollection services)
     {{
-        public static void AddWebApiServices(this IServiceCollection services)
-        {{
-            services.AddMediatR(typeof(Startup));
-            services.AddScoped<SieveProcessor>();
-            services.AddMvc()
-                .AddFluentValidation(cfg => {{ cfg.RegisterValidatorsFromAssemblyContaining<Startup>(); }});
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-        }}
+        services.AddMediatR(typeof(Startup));
+        services.AddScoped<SieveProcessor>();
+        services.AddMvc()
+            .AddFluentValidation(cfg => {{ cfg.RegisterValidatorsFromAssemblyContaining<Startup>(); }});
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
     }}
 }}";
         }
@@ -158,44 +155,43 @@
         {
             var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
             
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using {utilsClassPath.ClassNamespace};
+using MassTransit;
+using Messages;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using RabbitMQ.Client;
+using System.Reflection;
+
+public static class MassTransitServiceExtension
 {{
-    using {utilsClassPath.ClassNamespace};
-    using MassTransit;
-    using Messages;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-    using RabbitMQ.Client;
-    using System.Reflection;
-
-    public static class MassTransitServiceExtension
+    public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {{
-        public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+        if (!env.IsEnvironment(LocalConfig.IntegrationTestingEnvName) 
+            && !env.IsEnvironment(LocalConfig.FunctionalTestingEnvName) 
+            && !env.IsDevelopment())
         {{
-            if (!env.IsEnvironment(LocalConfig.IntegrationTestingEnvName) 
-                && !env.IsEnvironment(LocalConfig.FunctionalTestingEnvName) 
-                && !env.IsDevelopment())
+            services.AddMassTransit(mt =>
             {{
-                services.AddMassTransit(mt =>
+                mt.AddConsumers(Assembly.GetExecutingAssembly());
+                mt.UsingRabbitMq((context, cfg) =>
                 {{
-                    mt.AddConsumers(Assembly.GetExecutingAssembly());
-                    mt.UsingRabbitMq((context, cfg) =>
+                    cfg.Host(configuration[""RMQ:Host""], configuration[""RMQ:VirtualHost""], h =>
                     {{
-                        cfg.Host(configuration[""RMQ:Host""], configuration[""RMQ:VirtualHost""], h =>
-                        {{
-                            h.Username(configuration[""RMQ:Username""]);
-                            h.Password(configuration[""RMQ:Password""]);
-                        }});
-
-                        // Producers -- Do Not Delete This Comment
-
-                        // Consumers -- Do Not Delete This Comment
+                        h.Username(configuration[""RMQ:Username""]);
+                        h.Password(configuration[""RMQ:Password""]);
                     }});
+
+                    // Producers -- Do Not Delete This Comment
+
+                    // Consumers -- Do Not Delete This Comment
                 }});
-                services.AddMassTransitHostedService();
-            }}
+            }});
+            services.AddMassTransitHostedService();
         }}
     }}
 }}";

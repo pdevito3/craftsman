@@ -28,26 +28,26 @@
             var providerPort = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider ? "5432" : "1433";
             var envList = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@".WithEnvironment(
-                        $""POSTGRES_DB={{DB_NAME}}"",
-                        $""POSTGRES_PASSWORD={{DB_PASSWORD}}"")"
+                    $""POSTGRES_DB={{DB_NAME}}"",
+                    $""POSTGRES_PASSWORD={{DB_PASSWORD}}"")"
                 : @$".WithEnvironment(
-                        ""ACCEPT_EULA=Y"",
-                        $""SA_PASSWORD={{DB_PASSWORD}}"")";
+                    ""ACCEPT_EULA=Y"",
+                    $""SA_PASSWORD={{DB_PASSWORD}}"")";
 
             var constants = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? @$"public const string DB_PASSWORD = ""#testingDockerPassword#"";
-        private const string DB_USER = ""postgres"";
-        private const string DB_NAME = ""{projectBaseName}"";
-        private const string DB_IMAGE = ""postgres"";
-        private const string DB_IMAGE_TAG = ""latest"";
-        private const string DB_CONTAINER_NAME = ""IntegrationTesting_{projectBaseName}"";
-        private const string DB_VOLUME_NAME = ""IntegrationTesting_{projectBaseName}"";"
+    private const string DB_USER = ""postgres"";
+    private const string DB_NAME = ""{projectBaseName}"";
+    private const string DB_IMAGE = ""postgres"";
+    private const string DB_IMAGE_TAG = ""latest"";
+    private const string DB_CONTAINER_NAME = ""IntegrationTesting_{projectBaseName}"";
+    private const string DB_VOLUME_NAME = ""IntegrationTesting_{projectBaseName}"";"
                 : @$"private const string DB_PASSWORD = ""#testingDockerPassword#"";
-        private const string DB_USER = ""SA"";
-        private const string DB_IMAGE = ""mcr.microsoft.com/mssql/server"";
-        private const string DB_IMAGE_TAG = ""2019-latest"";
-        private const string DB_CONTAINER_NAME = ""IntegrationTesting_{projectBaseName}"";
-        private const string DB_VOLUME_NAME = ""IntegrationTesting_{projectBaseName}"";";
+    private const string DB_USER = ""SA"";
+    private const string DB_IMAGE = ""mcr.microsoft.com/mssql/server"";
+    private const string DB_IMAGE_TAG = ""2019-latest"";
+    private const string DB_CONTAINER_NAME = ""IntegrationTesting_{projectBaseName}"";
+    private const string DB_VOLUME_NAME = ""IntegrationTesting_{projectBaseName}"";";
 
             var mountedVol = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? @$"""/var/lib/postgresql/data""" 
@@ -57,61 +57,60 @@
                 ? $@"DockerUtilities.GetSqlConnectionString(port, DB_PASSWORD, DB_USER, DB_NAME);"
                 : $@"DockerUtilities.GetSqlConnectionString(port, DB_PASSWORD, DB_USER);";
             
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using System.Linq;
+using System.Threading.Tasks;
+using Ductus.FluentDocker.Builders;
+using Ductus.FluentDocker.Model.Builders;
+using Ductus.FluentDocker.Services;
+using Ductus.FluentDocker.Services.Extensions;
+
+public static class DockerDatabaseUtilities
 {{
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Ductus.FluentDocker.Builders;
-    using Ductus.FluentDocker.Model.Builders;
-    using Ductus.FluentDocker.Services;
-    using Ductus.FluentDocker.Services.Extensions;
+    {constants}
 
-    public static class DockerDatabaseUtilities
+    public static async Task<int> EnsureDockerStartedAndGetPortPortAsync()
     {{
-        {constants}
+        await DockerUtilities.CleanupRunningContainers(DB_CONTAINER_NAME);
+        await DockerUtilities.CleanupRunningVolumes(DB_CONTAINER_NAME);
+        var freePort = DockerUtilities.GetFreePort();
 
-        public static async Task<int> EnsureDockerStartedAndGetPortPortAsync()
+        var hosts = new Hosts().Discover();
+        var docker = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == ""default"");     
+
+        // create a volume, if one doesn't already exist
+        var volume = docker?.GetVolumes().FirstOrDefault(v => v.Name == DB_VOLUME_NAME) ?? new Builder()
+            .UseVolume()
+            .WithName(DB_VOLUME_NAME)
+            .Build();
+
+        // create container, if one doesn't already exist
+        var existingContainer = docker?.GetContainers().FirstOrDefault(c => c.Name == DB_CONTAINER_NAME);
+
+        if (existingContainer == null)
         {{
-            await DockerUtilities.CleanupRunningContainers(DB_CONTAINER_NAME);
-            await DockerUtilities.CleanupRunningVolumes(DB_CONTAINER_NAME);
-            var freePort = DockerUtilities.GetFreePort();
-
-            var hosts = new Hosts().Discover();
-            var docker = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == ""default"");     
-
-            // create a volume, if one doesn't already exist
-            var volume = docker?.GetVolumes().FirstOrDefault(v => v.Name == DB_VOLUME_NAME) ?? new Builder()
-                .UseVolume()
-                .WithName(DB_VOLUME_NAME)
+            var container = new Builder().UseContainer()
+                .WithName(DB_CONTAINER_NAME)
+                .UseImage($""{{DB_IMAGE}}:{{DB_IMAGE_TAG}}"")
+                .ExposePort(freePort, {providerPort})
+                {envList}
+                .WaitForPort(""{providerPort}/tcp"", 30000 /*30s*/)
+                .MountVolume(volume, {mountedVol}, MountType.ReadWrite)
                 .Build();
+    
+            container.Start();
 
-            // create container, if one doesn't already exist
-            var existingContainer = docker?.GetContainers().FirstOrDefault(c => c.Name == DB_CONTAINER_NAME);
-
-            if (existingContainer == null)
-            {{
-                var container = new Builder().UseContainer()
-                    .WithName(DB_CONTAINER_NAME)
-                    .UseImage($""{{DB_IMAGE}}:{{DB_IMAGE_TAG}}"")
-                    .ExposePort(freePort, {providerPort})
-                    {envList}
-                    .WaitForPort(""{providerPort}/tcp"", 30000 /*30s*/)
-                    .MountVolume(volume, {mountedVol}, MountType.ReadWrite)
-                    .Build();
-        
-                container.Start();
-
-                await DockerUtilities.WaitUntilDatabaseAvailableAsync(GetSqlConnectionString(freePort.ToString()));
-                return freePort;
-            }}
-
-            return existingContainer.ToHostExposedEndpoint(""{providerPort}/tcp"").Port;
+            await DockerUtilities.WaitUntilDatabaseAvailableAsync(GetSqlConnectionString(freePort.ToString()));
+            return freePort;
         }}
 
-        public static string GetSqlConnectionString(string port)
-        {{
-            return {dbConnection}
-        }}
+        return existingContainer.ToHostExposedEndpoint(""{providerPort}/tcp"").Port;
+    }}
+
+    public static string GetSqlConnectionString(string port)
+    {{
+        return {dbConnection}
     }}
 }}";
         }
@@ -124,166 +123,165 @@
 
             var dbConnectionStringMethod = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"public static string GetSqlConnectionString(string port, string password, string user, string dbName)
+    {{
+        return new NpgsqlConnectionStringBuilder()
         {{
-            return new NpgsqlConnectionStringBuilder()
-            {{
-                Host = ""localhost"",
-                Password = password,
-                Username = user,
-                Database = dbName,
-                Port = int.Parse(port)
-            }}.ToString();
-        }}"
-                : $@"public static string GetSqlConnectionString(string port, string password, string user)
-        {{
-            return $""Data Source=localhost,{{port}};"" +
-                ""Integrated Security=False;"" +
-                $""User ID={{user}};"" +
-                $""Password={{password}}"";
-        }}";
+            Host = ""localhost"",
+            Password = password,
+            Username = user,
+            Database = dbName,
+            Port = int.Parse(port)
+        }}.ToString();
+    }}"
+            : $@"public static string GetSqlConnectionString(string port, string password, string user)
+    {{
+        return $""Data Source=localhost,{{port}};"" +
+            ""Integrated Security=False;"" +
+            $""User ID={{user}};"" +
+            $""Password={{password}}"";
+    }}";
             
             var usingStatement = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"
-    using Npgsql;"
+using Npgsql;"
                 : @$"
-    using Microsoft.Data.SqlClient;";
+using Microsoft.Data.SqlClient;";
 
             return @$"// based on https://blog.dangl.me/archive/running-sql-server-integration-tests-in-net-core-projects-via-docker/
 
-namespace {classNamespace}
+namespace {classNamespace};
+
+using Docker.DotNet;
+using Docker.DotNet.Models;{usingStatement}
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+
+public static class DockerUtilities
 {{
-    using Docker.DotNet;
-    using Docker.DotNet.Models;{usingStatement}
-    using System;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Threading.Tasks;
-
-    public static class DockerUtilities
+    private static bool IsRunningOnWindows()
     {{
-        private static bool IsRunningOnWindows()
+        return Environment.OSVersion.Platform == PlatformID.Win32NT;
+    }}
+
+    public static DockerClient GetDockerClient()
+    {{
+        var dockerUri = IsRunningOnWindows()
+            ? ""npipe://./pipe/docker_engine""
+            : ""unix:///var/run/docker.sock"";
+        return new DockerClientConfiguration(new Uri(dockerUri))
+            .CreateClient();
+    }}
+
+    public static async Task CleanupRunningContainers( string containerName, int hoursTillExpiration = -24)
+    {{
+        var dockerClient = GetDockerClient();
+
+        var runningContainers = await dockerClient.Containers
+            .ListContainersAsync(new ContainersListParameters());
+
+        foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(containerName))))
         {{
-            return Environment.OSVersion.Platform == PlatformID.Win32NT;
-        }}
-
-        public static DockerClient GetDockerClient()
-        {{
-            var dockerUri = IsRunningOnWindows()
-                ? ""npipe://./pipe/docker_engine""
-                : ""unix:///var/run/docker.sock"";
-            return new DockerClientConfiguration(new Uri(dockerUri))
-                .CreateClient();
-        }}
-
-        public static async Task CleanupRunningContainers( string containerName, int hoursTillExpiration = -24)
-        {{
-            var dockerClient = GetDockerClient();
-
-            var runningContainers = await dockerClient.Containers
-                .ListContainersAsync(new ContainersListParameters());
-
-            foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(containerName))))
-            {{
-                // Stopping all test containers that are older than 24 hours
-                var expiration = hoursTillExpiration > 0
-                    ? hoursTillExpiration * -1
-                    : hoursTillExpiration;
-                if (runningContainer.Created < DateTime.UtcNow.AddHours(expiration))
-                {{
-                    try
-                    {{
-                        await EnsureDockerContainersStoppedAndRemovedAsync(runningContainer.ID);
-                    }}
-                    catch
-                    {{
-                        // Ignoring failures to stop running containers
-                    }}
-                }}
-            }}
-        }}
-
-        public static async Task CleanupRunningVolumes(string volumeName, int hoursTillExpiration = -24)
-        {{
-            var dockerClient = GetDockerClient();
-
-            var runningVolumes = await dockerClient.Volumes.ListAsync();
-
-            foreach (var runningVolume in runningVolumes.Volumes.Where(v => v.Name == volumeName))
-            {{
-                // Stopping all test volumes that are older than 24 hours
-                var expiration = hoursTillExpiration > 0
-                    ? hoursTillExpiration * -1
-                    : hoursTillExpiration;
-                if (DateTime.Parse(runningVolume.CreatedAt) < DateTime.UtcNow.AddHours(expiration))
-                {{
-                    try
-                    {{
-                        await EnsureDockerVolumesRemovedAsync(runningVolume.Name);
-                    }}
-                    catch
-                    {{
-                        // Ignoring failures to stop running containers
-                    }}
-                }}
-            }}
-        }}
-
-        public static async Task EnsureDockerContainersStoppedAndRemovedAsync(string dockerContainerId)
-        {{
-            var dockerClient = GetDockerClient();
-            await dockerClient.Containers
-                .StopContainerAsync(dockerContainerId, new ContainerStopParameters());
-            await dockerClient.Containers
-                .RemoveContainerAsync(dockerContainerId, new ContainerRemoveParameters());
-        }}
-
-        public static async Task EnsureDockerVolumesRemovedAsync(string volumeName)
-        {{
-            var dockerClient = GetDockerClient();
-            await dockerClient.Volumes.RemoveAsync(volumeName);
-        }}
-
-        public static async Task WaitUntilDatabaseAvailableAsync(string dbConnection)
-        {{
-            var start = DateTime.UtcNow;
-            const int maxWaitTimeSeconds = 60;
-            var connectionEstablished = false;
-            while (!connectionEstablished && start.AddSeconds(maxWaitTimeSeconds) > DateTime.UtcNow)
+            // Stopping all test containers that are older than 24 hours
+            var expiration = hoursTillExpiration > 0
+                ? hoursTillExpiration * -1
+                : hoursTillExpiration;
+            if (runningContainer.Created < DateTime.UtcNow.AddHours(expiration))
             {{
                 try
                 {{
-                    using var sqlConnection = {dbConnection}
-                    await sqlConnection.OpenAsync();
-                    connectionEstablished = true;
+                    await EnsureDockerContainersStoppedAndRemovedAsync(runningContainer.ID);
                 }}
                 catch
                 {{
-                    // If opening the SQL connection fails, SQL Server is not ready yet
-                    await Task.Delay(500);
+                    // Ignoring failures to stop running containers
                 }}
             }}
-
-            if (!connectionEstablished)
-            {{
-                throw new Exception($""Connection to the SQL docker database could not be established within {{maxWaitTimeSeconds}} seconds."");
-            }}
-
-            return;
         }}
-
-        public static int GetFreePort()
-        {{
-            // From https://stackoverflow.com/a/150974/4190785
-            var tcpListener = new TcpListener(IPAddress.Loopback, 0);
-            tcpListener.Start();
-            var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
-            tcpListener.Stop();
-            return port;
-        }}
-
-        {dbConnectionStringMethod}
     }}
+
+    public static async Task CleanupRunningVolumes(string volumeName, int hoursTillExpiration = -24)
+    {{
+        var dockerClient = GetDockerClient();
+
+        var runningVolumes = await dockerClient.Volumes.ListAsync();
+
+        foreach (var runningVolume in runningVolumes.Volumes.Where(v => v.Name == volumeName))
+        {{
+            // Stopping all test volumes that are older than 24 hours
+            var expiration = hoursTillExpiration > 0
+                ? hoursTillExpiration * -1
+                : hoursTillExpiration;
+            if (DateTime.Parse(runningVolume.CreatedAt) < DateTime.UtcNow.AddHours(expiration))
+            {{
+                try
+                {{
+                    await EnsureDockerVolumesRemovedAsync(runningVolume.Name);
+                }}
+                catch
+                {{
+                    // Ignoring failures to stop running containers
+                }}
+            }}
+        }}
+    }}
+
+    public static async Task EnsureDockerContainersStoppedAndRemovedAsync(string dockerContainerId)
+    {{
+        var dockerClient = GetDockerClient();
+        await dockerClient.Containers
+            .StopContainerAsync(dockerContainerId, new ContainerStopParameters());
+        await dockerClient.Containers
+            .RemoveContainerAsync(dockerContainerId, new ContainerRemoveParameters());
+    }}
+
+    public static async Task EnsureDockerVolumesRemovedAsync(string volumeName)
+    {{
+        var dockerClient = GetDockerClient();
+        await dockerClient.Volumes.RemoveAsync(volumeName);
+    }}
+
+    public static async Task WaitUntilDatabaseAvailableAsync(string dbConnection)
+    {{
+        var start = DateTime.UtcNow;
+        const int maxWaitTimeSeconds = 60;
+        var connectionEstablished = false;
+        while (!connectionEstablished && start.AddSeconds(maxWaitTimeSeconds) > DateTime.UtcNow)
+        {{
+            try
+            {{
+                using var sqlConnection = {dbConnection}
+                await sqlConnection.OpenAsync();
+                connectionEstablished = true;
+            }}
+            catch
+            {{
+                // If opening the SQL connection fails, SQL Server is not ready yet
+                await Task.Delay(500);
+            }}
+        }}
+
+        if (!connectionEstablished)
+        {{
+            throw new Exception($""Connection to the SQL docker database could not be established within {{maxWaitTimeSeconds}} seconds."");
+        }}
+
+        return;
+    }}
+
+    public static int GetFreePort()
+    {{
+        // From https://stackoverflow.com/a/150974/4190785
+        var tcpListener = new TcpListener(IPAddress.Loopback, 0);
+        tcpListener.Start();
+        var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
+        tcpListener.Stop();
+        return port;
+    }}
+
+    {dbConnectionStringMethod}
 }}";
         }
     }

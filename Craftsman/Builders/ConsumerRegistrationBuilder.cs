@@ -24,14 +24,14 @@
 
             var quorumText = consumer.IsQuorum ? $@"
 
-                // a replicated queue to provide high availability and data safety. available in RMQ 3.8+
-                re.SetQuorumQueue();" : "";
+            // a replicated queue to provide high availability and data safety. available in RMQ 3.8+
+            re.SetQuorumQueue();" : "";
 
             var lazyText = consumer.IsLazy ? $@"
 
-                // enables a lazy queue for more stable cluster with better predictive performance.
-                // Please note that you should disable lazy queues if you require really high performance, if the queues are always short, or if you have set a max-length policy.
-                re.SetQueueArgument(""declare"", ""lazy"");" : "";
+            // enables a lazy queue for more stable cluster with better predictive performance.
+            // Please note that you should disable lazy queues if you require really high performance, if the queues are always short, or if you have set a max-length policy.
+            re.SetQueueArgument(""declare"", ""lazy"");" : "";
             //re.Lazy = true;" : "";
 
             using FileStream fs = File.Create(classPath.FullClassPath);
@@ -50,65 +50,63 @@
         {
             var exchangeType = Enum.GetName(typeof(ExchangeType), ExchangeType.Direct) == consumer.ExchangeType ? "ExchangeType.Direct" : "ExchangeType.Topic";
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using MassTransit;
+using MassTransit.RabbitMqTransport;
+using RabbitMQ.Client;
+using {consumerFeatureUsing};
+
+public static class {className}
 {{
-    using MassTransit;
-    using MassTransit.RabbitMqTransport;
-    using RabbitMQ.Client;
-    using {consumerFeatureUsing};
-
-    public static class {className}
+    public static void {consumer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
     {{
-        public static void {consumer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
+        cfg.ReceiveEndpoint(""{consumer.QueueName}"", re =>
         {{
-            cfg.ReceiveEndpoint(""{consumer.QueueName}"", re =>
+            // turns off default fanout settings
+            re.ConfigureConsumeTopology = false;{quorumText}{lazyText}
+
+            // the consumers that are subscribed to the endpoint
+            re.ConfigureConsumer<{consumer.ConsumerName}>(context);
+
+            // the binding of the intermediary exchange and the primary exchange
+            re.Bind(""{consumer.ExchangeName}"", e =>
             {{
-                // turns off default fanout settings
-                re.ConfigureConsumeTopology = false;{quorumText}{lazyText}
-
-                // the consumers that are subscribed to the endpoint
-                re.ConfigureConsumer<{consumer.ConsumerName}>(context);
-
-                // the binding of the intermediary exchange and the primary exchange
-                re.Bind(""{consumer.ExchangeName}"", e =>
-                {{
-                    e.RoutingKey = ""{consumer.RoutingKey}"";
-                    e.ExchangeType = {exchangeType};
-                }});
+                e.RoutingKey = ""{consumer.RoutingKey}"";
+                e.ExchangeType = {exchangeType};
             }});
-        }}
+        }});
     }}
 }}";
         }
 
         public static string GetFanoutConsumerRegistration(string classNamespace, string className, Consumer consumer, string lazyText, string quorumText, string consumerFeatureUsing)
         {
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using MassTransit;
+using MassTransit.RabbitMqTransport;
+using RabbitMQ.Client;
+using {consumerFeatureUsing};
+
+public static class {className}
 {{
-    using MassTransit;
-    using MassTransit.RabbitMqTransport;
-    using RabbitMQ.Client;
-    using {consumerFeatureUsing};
-
-    public static class {className}
+    public static void {consumer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
     {{
-        public static void {consumer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
+        cfg.ReceiveEndpoint(""{consumer.QueueName}"", re =>
         {{
-            cfg.ReceiveEndpoint(""{consumer.QueueName}"", re =>
+            // turns off default fanout settings
+            re.ConfigureConsumeTopology = false;{quorumText}{lazyText}
+
+            // the consumers that are subscribed to the endpoint
+            re.ConfigureConsumer<{consumer.ConsumerName}>(context);
+
+            // the binding of the intermediary exchange and the primary exchange
+            re.Bind(""{consumer.ExchangeName}"", e =>
             {{
-                // turns off default fanout settings
-                re.ConfigureConsumeTopology = false;{quorumText}{lazyText}
-
-                // the consumers that are subscribed to the endpoint
-                re.ConfigureConsumer<{consumer.ConsumerName}>(context);
-
-                // the binding of the intermediary exchange and the primary exchange
-                re.Bind(""{consumer.ExchangeName}"", e =>
-                {{
-                    e.ExchangeType = ExchangeType.Fanout;
-                }});
+                e.ExchangeType = ExchangeType.Fanout;
             }});
-        }}
+        }});
     }}
 }}";
         }

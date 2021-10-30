@@ -27,27 +27,25 @@
         {
             var dbContextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
             var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using {dbContextClassPath.ClassNamespace};
+using {utilsClassPath.ClassNamespace};
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+public static class ServiceRegistration
 {{
-    using {dbContextClassPath.ClassNamespace};
-    using {utilsClassPath.ClassNamespace};
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-
-    public static class ServiceRegistration
+    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {{
-        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
-        {{
-            // DbContext -- Do Not Delete
+        // DbContext -- Do Not Delete
 
-            // Auth -- Do Not Delete
-        }}
+        // Auth -- Do Not Delete
     }}
-}}
-";
+}}";
         }
     }
 }

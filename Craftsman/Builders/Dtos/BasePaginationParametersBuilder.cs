@@ -27,25 +27,23 @@
 
         public static string GetBasePaginationParametersText(string classNamespace)
         {
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+public abstract class BasePaginationParameters
 {{
-    public abstract class BasePaginationParameters
+    internal virtual int MaxPageSize {{ get; }} = 20;
+    internal virtual int DefaultPageSize {{ get; set; }} = 10;
+
+    public virtual int PageNumber {{ get; set; }} = 1;
+
+    public int PageSize
     {{
-        internal virtual int MaxPageSize {{ get; }} = 20;
-        internal virtual int DefaultPageSize {{ get; set; }} = 10;
-
-        public virtual int PageNumber {{ get; set; }} = 1;
-
-        public int PageSize
+        get
         {{
-            get
-            {{
-                return DefaultPageSize;
-            }}
-            set
-            {{
-                DefaultPageSize = value > MaxPageSize ? MaxPageSize : value;
-            }}
+            return DefaultPageSize;
+        }}
+        set
+        {{
+            DefaultPageSize = value > MaxPageSize ? MaxPageSize : value;
         }}
     }}
 }}";

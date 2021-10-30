@@ -40,60 +40,59 @@
             var propTypeToReturn = "bool";
             var commandName = $"{producer.ProducerName}Command";
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using MassTransit;
+using Messages;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;{contextUsing}
+
+public static class {producer.ProducerName}
 {{
-    using AutoMapper;
-    using AutoMapper.QueryableExtensions;
-    using MassTransit;
-    using Messages;
-    using MediatR;
-    using Microsoft.EntityFrameworkCore;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;{contextUsing}
-
-    public static class {producer.ProducerName}
+    public class {commandName} : IRequest<{propTypeToReturn}>
     {{
-        public class {commandName} : IRequest<{propTypeToReturn}>
-        {{
-            public string {commandProp} {{ get; set; }}
+        public string {commandProp} {{ get; set; }}
 
-            public {commandName}(string {commandPropLower})
+        public {commandName}(string {commandPropLower})
+        {{
+            {commandProp} = {commandPropLower};
+        }}
+    }}
+
+    public class Handler : IRequestHandler<{commandName}, {propTypeToReturn}>
+    {{
+        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IMapper _mapper;{dbReadOnly}
+
+        public Handler({dbProp}IMapper mapper, IPublishEndpoint publishEndpoint)
+        {{
+            _publishEndpoint = publishEndpoint;
+            _mapper = mapper;{assignDb}
+        }}
+
+        public class {commandName}Profile : Profile
+        {{
+            public {commandName}Profile()
             {{
-                {commandProp} = {commandPropLower};
+                //createmap<to this, from this>
             }}
         }}
 
-        public class Handler : IRequestHandler<{commandName}, {propTypeToReturn}>
+        public async Task<{propTypeToReturn}> Handle({commandName} request, CancellationToken cancellationToken)
         {{
-            private readonly IPublishEndpoint _publishEndpoint;
-            private readonly IMapper _mapper;{dbReadOnly}
-
-            public Handler({dbProp}IMapper mapper, IPublishEndpoint publishEndpoint)
+            var message = new
             {{
-                _publishEndpoint = publishEndpoint;
-                _mapper = mapper;{assignDb}
-            }}
+                // map content to message here or with automapper
+            }};
+            await _publishEndpoint.Publish<{producer.MessageName}>(message);
 
-            public class {commandName}Profile : Profile
-            {{
-                public {commandName}Profile()
-                {{
-                    //createmap<to this, from this>
-                }}
-            }}
-
-            public async Task<{propTypeToReturn}> Handle({commandName} request, CancellationToken cancellationToken)
-            {{
-                var message = new
-                {{
-                    // map content to message here or with automapper
-                }};
-                await _publishEndpoint.Publish<{producer.MessageName}>(message);
-
-                return true;
-            }}
+            return true;
         }}
     }}
 }}";

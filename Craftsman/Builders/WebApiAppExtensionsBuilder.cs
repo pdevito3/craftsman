@@ -29,18 +29,17 @@
         public static string GetErrorHandlerAppExtensionText(string classNamespace, string solutionDirectory, string projectName)
         {
             var webApiClassPath = ClassPathHelper.WebApiMiddlewareClassPath(solutionDirectory, "", projectName);
-            return @$"namespace {classNamespace}
-{{
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.Configuration;
-    using {webApiClassPath.ClassNamespace};
+            return @$"namespace {classNamespace};
 
-    public static class ErrorHandlerAppExtension
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using {webApiClassPath.ClassNamespace};
+
+public static class ErrorHandlerAppExtension
+{{
+    public static void UseErrorHandlingMiddleware(this IApplicationBuilder app)
     {{
-        public static void UseErrorHandlingMiddleware(this IApplicationBuilder app)
-        {{
-            app.UseMiddleware<ErrorHandlerMiddleware>();
-        }}
+        app.UseMiddleware<ErrorHandlerMiddleware>();
     }}
 }}";
         }
@@ -66,34 +65,33 @@
         public static string GetSwaggerAppExtensionText(string classNamespace, string solutionDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication, string projectBaseName)
         {
             var webApiClassPath = ClassPathHelper.WebApiMiddlewareClassPath(solutionDirectory, "", projectBaseName);
-            return @$"namespace {classNamespace}
-{{
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.Configuration;
-    using {webApiClassPath.ClassNamespace};
+            return @$"namespace {classNamespace};
 
-    public static class SwaggerAppExtension
-    {{
-        {GetSwaggerAppExtensionText(swaggerConfig, addJwtAuthentication)}
-    }}
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using {webApiClassPath.ClassNamespace};
+
+public static class SwaggerAppExtension
+{{
+    {GetSwaggerAppExtensionText(swaggerConfig, addJwtAuthentication)}
 }}";
         }
 
         private static string GetSwaggerAppExtensionText(SwaggerConfig swaggerConfig, bool addJwtAuthentication)
         {
             var swaggerAuth = addJwtAuthentication ? $@"
-                config.OAuthClientId(configuration[""JwtSettings:ClientId""]);
-                config.OAuthClientSecret(configuration[""JwtSettings:ClientSecret""]);
-                config.OAuthUsePkce();" : "";
+            config.OAuthClientId(configuration[""JwtSettings:ClientId""]);
+            config.OAuthClientSecret(configuration[""JwtSettings:ClientSecret""]);
+            config.OAuthUsePkce();" : "";
 
             var swaggerText = $@"public static void UseSwaggerExtension(this IApplicationBuilder app, IConfiguration configuration)
+    {{
+        app.UseSwagger();
+        app.UseSwaggerUI(config =>
         {{
-            app.UseSwagger();
-            app.UseSwaggerUI(config =>
-            {{
-                config.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");{swaggerAuth}
-            }});
-        }}";
+            config.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");{swaggerAuth}
+        }});
+    }}";
 
             return swaggerText;
         }

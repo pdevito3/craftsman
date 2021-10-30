@@ -29,18 +29,17 @@
         {
             var propString = MessagePropBuilder(message.Properties);
 
-            return @$"namespace {classNamespace}
-{{
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+            return @$"namespace {classNamespace};
 
-    public interface {message.Name}
-    {{
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+public interface {message.Name}
+{{
 {propString}
 
-        // add-on property marker - Do Not Delete This Comment
-    }}
+    // add-on property marker - Do Not Delete This Comment
 }}";
         }
 
@@ -50,7 +49,7 @@
             for (var eachProp = 0; eachProp < props.Count; eachProp++)
             {
                 string newLine = eachProp == props.Count - 1 ? "" : $"{Environment.NewLine}{Environment.NewLine}";
-                propString += $@"        {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
+                propString += $@"    {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
             }
 
             return propString;

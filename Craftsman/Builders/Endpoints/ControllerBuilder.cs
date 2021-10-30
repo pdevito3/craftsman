@@ -36,35 +36,34 @@
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
             var featureClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, "", entityPlural, projectBaseName);
 
-            return @$"namespace {classNamespace}
+            return @$"namespace {classNamespace};
+
+using {featureClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
+using {wrapperClassPath.ClassNamespace};
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using System.Threading;
+using MediatR;
+
+[ApiController]
+[Route(""{endpointBase}"")]
+[ApiVersion(""1.0"")]
+public class {entityPlural}Controller: ControllerBase
 {{
-    using {featureClassPath.ClassNamespace};
-    using {dtoClassPath.ClassNamespace};
-    using {wrapperClassPath.ClassNamespace};
-    using System;
-    using System.Collections.Generic;
-    using System.Text.Json;
-    using Microsoft.AspNetCore.JsonPatch;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Authorization;
-    using System.Threading.Tasks;
-    using System.Threading;
-    using MediatR;
+    private readonly IMediator _mediator;
 
-    [ApiController]
-    [Route(""{endpointBase}"")]
-    [ApiVersion(""1.0"")]
-    public class {entityPlural}Controller: ControllerBase
+    public {entityPlural}Controller(IMediator mediator)
     {{
-        private readonly IMediator _mediator;
-
-        public {entityPlural}Controller(IMediator mediator)
-        {{
-            _mediator = mediator;
-        }}
-        
-        // endpoint marker - do not delete this comment
+        _mediator = mediator;
     }}
+    
+    // endpoint marker - do not delete this comment
 }}";
         }
     }
