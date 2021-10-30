@@ -99,9 +99,148 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
             ForeignEntityPlural: Events
     ```
     
-    Can not have fk in manipulation DTO. will need to add manually and adjust feature accordingly (currently assumes it's from query param)
+    Can not have fk in manipulation DTO with scaffolding. will need to add manually and adjust feature accordingly (currently assumes it's from query param)
     
     > TODO: add `RelationshipToParentEntity` to allow for appropriate prop to be added to entity (`Many` adds a list with a prop using the plural, Single adds a prop with a singular type and name)
+    
+    The above API is for adding a `1` based relationship. if you want to add a many, you can just give it a name and a navigationc ollection type like `ICollection<>`. Here are examples of the three types of relationships and what htye will make:
+    
+    #### 1:1
+    
+    template:
+    
+    ```yaml
+    #User Props
+    Properties:
+      - Name: UserProfileId
+        Type: Guid
+        ForeignEntityName: UserProfile
+        ForeignEntityPlural: UserProfiles #<- for using statement
+        
+    #UserProfile Props
+    Properties:
+      - Name: UserId
+        Type: Guid
+        ForeignEntityName: User
+        ForeignEntityPlural: Users #<- for using statement
+    ```
+    
+    makes:
+    
+    ```csharp
+    public class User : BaseEntity
+    {
+      public string Email { get; private set; }
+      
+      [ForeignKey("UserProfile")]
+      public Guid UserProfileId { get; set; }
+      
+      [JsonIgnore] 
+      [IgnoreDataMember] 
+      public UserProfile UserProfile { get; private set; }
+    }
+    
+    public class UserProfile : BaseEntity
+    {
+      public string FirstName { get; set; }
+    
+      [ForeignKey("User")]
+      public Guid UserId { get; set; }
+    
+      [JsonIgnore] 
+      [IgnoreDataMember] 
+      public User User { get; set; }
+    }
+    ```
+    
+    #### 1:many
+    
+    template:
+    
+    ```yaml
+    #Blog Props
+    Properties:
+      - Name: PostId
+        Type: Guid
+        ForeignEntityName: Post
+        ForeignEntityPlural: Posts #<- for using statement
+        
+    #Post Props
+    Properties:
+      - Name: Blogs
+        Type: ICollection<Blog>
+    ```
+    
+    makes:
+    
+    ```csharp
+    public class Blog
+    {
+        public int BlogId { get; set; }
+        public string Url { get; set; }
+    
+        [JsonIgnore] 
+        [IgnoreDataMember] 
+        public ICollection<Post> Posts { get; set; }
+    }
+    
+    public class Post
+    {
+        public int PostId { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+    
+        [ForeignKey("Blog")]
+        public Guid BlogId { get; set; }
+    
+        [JsonIgnore] 
+        [IgnoreDataMember] 
+        public Blog Blog { get; set; }
+    }
+    ```
+    
+    #### many:many
+    
+    template:
+    
+    ```yaml
+    #Book Props
+    Properties:
+      - Name: Categories
+        Type: ICollection<Category>
+        
+    #Category Props
+    Properties:
+      - Name: Books
+        Type: ICollection<Book>
+    ```
+    
+    makes:
+    
+    ```csharp
+    public class Book
+    {
+        public int BookId { get; set; }
+        public string Title { get; set; }
+        public Author Author { get; set; }
+    
+        [JsonIgnore] //???
+        [IgnoreDataMember] //???
+        public ICollection<Category> Categories { get; set; }
+    }  
+     
+    public class Category
+    {
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+    
+        [JsonIgnore] //???
+        [IgnoreDataMember] //???
+        public ICollection<Book> Books { get; set; }
+    }
+    ```
+    
+    
 
 ### Fixed
 
