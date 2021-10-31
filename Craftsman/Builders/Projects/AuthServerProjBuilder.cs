@@ -22,12 +22,12 @@
             return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include=""Duende.IdentityServer"" Version=""5.2.1"" />    
-    <PackageReference Include=""Microsoft.AspNetCore.Authentication.Google"" Version=""3.1.0"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Authentication.Google"" Version=""6.0.0-rc.2.*"" />
     <PackageReference Include=""Serilog.AspNetCore"" Version=""4.1.0"" />
   </ItemGroup>
 

@@ -38,7 +38,7 @@
             return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition=""'$(Configuration)|$(Platform)'=='Debug|AnyCPU'"">
@@ -59,15 +59,15 @@
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""10.1.0"" />
     <PackageReference Include=""MediatR"" Version=""9.0.0"" />
     <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""9.0.0"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""5.0.6"" />
-    <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""5.0.6"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.NewtonsoftJson"" Version=""5.0.6"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.0.0"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""6.0.0-rc.2.*"" />
+    <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""6.0.0-rc.2.*"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Mvc.NewtonsoftJson"" Version=""6.0.0-rc.2.*"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""6.0.0-rc.2.*"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""5.0.6"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""5.0.6"" />
     {sqlPackage}
-    <PackageReference Include=""Microsoft.Extensions.Configuration.Binder"" Version=""5.0.0"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Authentication.JwtBearer"" Version=""5.0.6"" />
+    <PackageReference Include=""Microsoft.Extensions.Configuration.Binder"" Version=""6.0.0-rc.2.*"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Authentication.JwtBearer"" Version=""6.0.0-rc.2.*"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.Design"" Version=""5.0.6"">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
