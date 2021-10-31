@@ -50,6 +50,8 @@ using {utilsClassPath.ClassNamespace};
 using {webApiClassPath.ClassNamespace};{authUsing}
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebApplicationFactory<Startup>
 {{

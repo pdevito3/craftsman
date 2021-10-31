@@ -55,6 +55,9 @@ using {utilsClassPath.ClassNamespace};
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;{usingStatement}
 using NUnit.Framework;
 using Respawn;
@@ -122,7 +125,7 @@ public class TestFixture
 
         context.Database.Migrate();
     }}
-    
+
     public static TScopedService GetService<TScopedService>()
     {{
         var scope = _scopeFactory.CreateScope();

@@ -34,7 +34,7 @@
                 sqlPackage = @$"<PackageReference Include=""npgsql.entityframeworkcore.postgresql"" Version=""5.0.6"" />";
             //else if (Enum.GetName(typeof(DbProvider), DbProvider.MySql) == provider)
             //    return "UseMySql";
-            
+
             return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>
@@ -63,7 +63,7 @@
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""6.0.0-rc.2.*"" />
     <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""6.0.0-rc.2.*"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.NewtonsoftJson"" Version=""6.0.0-rc.2.*"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""6.0.0-rc.2.*"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.0.0*"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""5.0.6"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""5.0.6"" />
     {sqlPackage}
