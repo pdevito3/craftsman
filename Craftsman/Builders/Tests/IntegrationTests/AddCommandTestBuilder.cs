@@ -44,7 +44,6 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using {featuresClassPath.ClassNamespace};
 using static {testFixtureName};
-using System;
 using {exceptionsClassPath.ClassNamespace};
 
 public class {commandName}Tests : TestBase

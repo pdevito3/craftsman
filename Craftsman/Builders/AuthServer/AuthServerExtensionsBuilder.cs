@@ -26,7 +26,6 @@
 
 
 namespace {classNamespace};  
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Duende.IdentityServer.Models;
 using {viewModelClassPath.ClassNamespace};

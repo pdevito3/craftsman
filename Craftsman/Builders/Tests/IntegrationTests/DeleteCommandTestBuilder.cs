@@ -43,8 +43,6 @@ using {testUtilClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System;
 using System.Threading.Tasks;
 using {featuresClassPath.ClassNamespace};
 using static {testFixtureName};

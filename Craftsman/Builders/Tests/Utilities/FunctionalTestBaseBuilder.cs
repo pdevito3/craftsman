@@ -36,11 +36,7 @@ using {contextClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 public class TestBase

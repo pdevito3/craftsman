@@ -59,7 +59,6 @@
             
             return @$"namespace {classNamespace};
 
-using System.Linq;
 using System.Threading.Tasks;
 using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Model.Builders;

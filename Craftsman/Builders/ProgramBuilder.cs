@@ -29,11 +29,7 @@
             return @$"namespace {classNamespace};
 
 using Autofac.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Serilog;
-using System;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using {hostExtClassPath.ClassNamespace};

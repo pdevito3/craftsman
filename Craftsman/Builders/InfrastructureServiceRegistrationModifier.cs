@@ -19,7 +19,7 @@
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var authUsings = $@"
-    using Microsoft.AspNetCore.Authentication.JwtBearer;";
+using Microsoft.AspNetCore.Authentication.JwtBearer;";
             var authServices = GetAuthServicesText();
 
             var tempPath = $"{classPath.FullClassPath}temp";

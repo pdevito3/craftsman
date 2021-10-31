@@ -66,7 +66,6 @@ using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
-using System.Linq;
 using {featuresClassPath.ClassNamespace};
 using static {testFixtureName};
 

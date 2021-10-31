@@ -40,7 +40,6 @@ public class {Utilities.GetDtoName(entity.Name, dto)} : BasePaginationParameters
 
             return @$"namespace {dtoClassPath.ClassNamespace};
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

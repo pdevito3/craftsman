@@ -56,10 +56,8 @@ using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 public static class {className}
 {{

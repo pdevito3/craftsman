@@ -41,9 +41,6 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using static {testFixtureName};
 
 public class {commandName}Tests : TestBase

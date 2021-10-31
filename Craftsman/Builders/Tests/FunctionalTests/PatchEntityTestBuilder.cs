@@ -33,18 +33,16 @@
             return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-    using {dtoClassPath.ClassNamespace};
-    using {testUtilClassPath.ClassNamespace};
-    using Microsoft.AspNetCore.JsonPatch;
-    using FluentAssertions;
-    using NUnit.Framework;
-    using System.Net.Http;
-    using System.Threading.Tasks;
+using {dtoClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
+using Microsoft.AspNetCore.JsonPatch;
+using FluentAssertions;
+using NUnit.Framework;
+using System.Threading.Tasks;
 
-    public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
-    {{
-        {PatchEntityTest(entity, hasRestrictedEndpoints, policies)}{authOnlyTests}
-    }}
+public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
+{{
+    {PatchEntityTest(entity, hasRestrictedEndpoints, policies)}{authOnlyTests}
 }}";
         }
 

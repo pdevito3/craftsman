@@ -15,6 +15,7 @@ namespace Craftsman.Builders
         private static string GetConfigText(string classNamespace)
         {
             return @$"namespace {classNamespace};
+
 public static class LocalConfig
 {{
     public const string IntegrationTestingEnvName = ""LocalIntegrationTesting"";

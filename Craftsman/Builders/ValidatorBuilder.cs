@@ -92,7 +92,6 @@ public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: 
 
 using {dtoClassPath.ClassNamespace};
 using FluentValidation;
-using System;
 
 public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}
 {{

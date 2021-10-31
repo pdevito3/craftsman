@@ -30,16 +30,14 @@
             return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-    using {testUtilClassPath.ClassNamespace};
-    using FluentAssertions;
-    using NUnit.Framework;
-    using System.Net.Http;
-    using System.Threading.Tasks;
+using {testUtilClassPath.ClassNamespace};
+using FluentAssertions;
+using NUnit.Framework;
+using System.Threading.Tasks;
 
-    public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
-    {{
-        {DeleteEntityTest(entity, hasRestrictedEndpoints, policies)}{authOnlyTests}
-    }}
+public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
+{{
+    {DeleteEntityTest(entity, hasRestrictedEndpoints, policies)}{authOnlyTests}
 }}";
         }
 

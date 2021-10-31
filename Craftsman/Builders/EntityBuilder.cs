@@ -37,13 +37,12 @@
             {
                 var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", entityProperty.ForeignEntityPlural, projectBaseName);
                 foreignEntityUsings += $@"
-    using {classPath.ClassNamespace};";
+using {classPath.ClassNamespace};";
             }
 
 
             return @$"namespace {classNamespace};
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{foreignEntityUsings}
 

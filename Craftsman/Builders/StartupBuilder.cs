@@ -24,10 +24,6 @@
             var fileText = @$"{DuendeDisclosure}namespace {classPath.ClassNamespace};
 using Duende.IdentityServer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using {testUsersClassPath.ClassNamespace};
 
 public class Startup

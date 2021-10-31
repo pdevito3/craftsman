@@ -58,7 +58,6 @@
         {
             return @$"namespace {classNamespace};
 
-using System;
 using System.Globalization;
 
 public class ApiException : Exception

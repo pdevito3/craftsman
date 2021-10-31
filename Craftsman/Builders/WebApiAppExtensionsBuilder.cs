@@ -32,7 +32,6 @@
             return @$"namespace {classNamespace};
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using {webApiClassPath.ClassNamespace};
 
 public static class ErrorHandlerAppExtension

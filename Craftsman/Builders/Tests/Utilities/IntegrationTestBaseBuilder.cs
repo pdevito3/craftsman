@@ -46,7 +46,6 @@
 
 using FluentAssertions;
 using NUnit.Framework;
-using System;
 using System.Threading.Tasks;
 using static {testFixtureName};
 

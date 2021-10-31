@@ -64,9 +64,6 @@ using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using static {testFixtureName};
 
 public class {commandName}Tests : TestBase

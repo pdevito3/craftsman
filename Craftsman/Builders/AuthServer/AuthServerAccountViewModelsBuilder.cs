@@ -27,9 +27,6 @@
 
 namespace {classNamespace};
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using {modelsClassPath.ClassNamespace};
 
 public class LoggedOutViewModel

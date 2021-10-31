@@ -41,8 +41,6 @@
 using {featureClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;

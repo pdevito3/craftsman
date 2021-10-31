@@ -33,22 +33,18 @@
             return @$"namespace {classPath.ClassNamespace};
 
 using {dtoUtilClassPath.ClassNamespace};
-    using {fakerClassPath.ClassNamespace};
-    using {parentFakerClassPath.ClassNamespace};
-    using {testUtilClassPath.ClassNamespace};
-    using FluentAssertions;
-    using NUnit.Framework;
-    using System;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using System.Collections.Generic;
+using {fakerClassPath.ClassNamespace};
+using {parentFakerClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
+using FluentAssertions;
+using NUnit.Framework;
+using System.Threading.Tasks;
 
-    public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
-    {{
-        {CreateEntityTest(entity, feature, hasRestrictedEndpoints, policies)}
-        {NotFoundCreationTest(entity, feature, hasRestrictedEndpoints, policies)}
-        {InvalidCreationTest(entity, feature, hasRestrictedEndpoints, policies)}{authOnlyTests}
-    }}
+public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
+{{
+    {CreateEntityTest(entity, feature, hasRestrictedEndpoints, policies)}
+    {NotFoundCreationTest(entity, feature, hasRestrictedEndpoints, policies)}
+    {InvalidCreationTest(entity, feature, hasRestrictedEndpoints, policies)}{authOnlyTests}
 }}";
         }
 

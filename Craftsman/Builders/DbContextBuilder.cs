@@ -37,30 +37,30 @@
             foreach (var entity in entities)
             {
                 var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
-                entitiesUsings += $"{Environment.NewLine}    using {classPath.ClassNamespace};";
+                entitiesUsings += $"{Environment.NewLine}using {classPath.ClassNamespace};";
             }
             
             return @$"namespace {classNamespace};{entitiesUsings}
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.ChangeTracking;
-    using System.Threading;
-    using System.Threading.Tasks;
 
-    public class {dbContextName} : DbContext
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class {dbContextName} : DbContext
+{{
+    public {dbContextName}(
+        DbContextOptions<{dbContextName}> options) : base(options)
     {{
-        public {dbContextName}(
-            DbContextOptions<{dbContextName}> options) : base(options)
-        {{
-        }}
+    }}
 
-        #region DbSet Region - Do Not Delete
+    #region DbSet Region - Do Not Delete
 
 {GetDbSetText(entities)}
-        #endregion DbSet Region - Do Not Delete
+    #endregion DbSet Region - Do Not Delete
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {{
-        }}
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {{
     }}
 }}";
         }
@@ -72,7 +72,7 @@
             foreach (var entity in entities)
             {
                 var newLine = entity == entities.LastOrDefault() ? "" : $"{Environment.NewLine}";
-                dbSetText += @$"        public DbSet<{entity.Name}> {entity.Plural} {{ get; set; }}{newLine}";
+                dbSetText += @$"    public DbSet<{entity.Name}> {entity.Plural} {{ get; set; }}{newLine}";
             }
 
             return dbSetText;

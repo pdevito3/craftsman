@@ -31,7 +31,7 @@
             var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(solutionDirectory, "", projectBaseName);
 
             var authUsing = addJwtAuthentication ? $@"
-    using WebMotions.Fake.Authentication.JwtBearer;" : "";
+using WebMotions.Fake.Authentication.JwtBearer;" : "";
 
             var authRegistration = addJwtAuthentication ? $@"
                 // add authentication using a fake jwt bearer
@@ -48,10 +48,8 @@ namespace {classPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
 using {webApiClassPath.ClassNamespace};{authUsing}
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebApplicationFactory<Startup>
 {{
