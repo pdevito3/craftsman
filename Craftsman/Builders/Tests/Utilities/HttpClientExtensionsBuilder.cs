@@ -26,13 +26,13 @@
 
         private static string CreateHttpClientExtensionsText(ClassPath classPath)
         {
-            return @$"
-namespace {classPath.ClassNamespace};
+            return @$"namespace {classPath.ClassNamespace};
 
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
 using System.Dynamic;
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
