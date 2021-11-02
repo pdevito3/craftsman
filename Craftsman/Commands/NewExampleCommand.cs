@@ -20,20 +20,14 @@
         public static void Help()
         {
             WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   Scaffolds out an example project.{Environment.NewLine}");
+            WriteHelpText(@$"   Scaffolds out an example project via CLI prompts into the current directory.{Environment.NewLine}");
 
             WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman new:example [options] arguments{Environment.NewLine}");
-
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Options:");
-            WriteHelpText(@$"   -h, --help          Display this help message.");
+            WriteHelpText(@$"   craftsman new:example{Environment.NewLine}");
 
             WriteHelpText(Environment.NewLine);
             WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"   craftsman new:example --type basic --name MyExampleProjectName");
-            WriteHelpText(@$"   craftsman new:example --type withauth --name MyExampleProjectName");
-            WriteHelpText(@$"   craftsman new:example --type withbus --name MyExampleProjectName{Environment.NewLine}");
+            WriteHelpText(@$"   craftsman new:example");
         }
 
         public static void Run(string buildSolutionDirectory, IFileSystem fileSystem)
