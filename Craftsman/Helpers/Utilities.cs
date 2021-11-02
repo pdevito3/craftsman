@@ -356,15 +356,7 @@
             string projectBaseName,
             IFileSystem fileSystem)
         {
-            // add a development environment by default for local work if none exists
-            if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
-                environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{projectName} (Development)" });
-
-            if (environments.Where(e => e.EnvironmentName == "Production").Count() == 0)
-                environments.Add(new ApiEnvironment { EnvironmentName = "Production", ProfileName = $"{projectName} (Production)" });
-            
-            var sortedEnvironments = environments.OrderBy(e => e.EnvironmentName == "Development" ? 1 : 0).ToList(); // sets dev as default profile
-            foreach (var env in sortedEnvironments)
+            foreach (var env in environments)
             {
                 AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, env, dbName, projectBaseName);
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, projectBaseName);
@@ -373,10 +365,6 @@
             }
             if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
                 SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, projectBaseName);
-
-            // add an integration testing env to make sure that an in memory database is used
-            var functionalEnv = new ApiEnvironment() { EnvironmentName = "FunctionalTesting" };
-            AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, functionalEnv, "", projectBaseName);
         }
 
         public static string GetForeignKeyIncludes(Entity entity)
