@@ -45,6 +45,7 @@
 {{
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{foreignEntityUsings}
 
     {tableAnnotation}
@@ -103,7 +104,7 @@
             var attributeString = "";
             if (entityProperty.IsRequired)
                 attributeString += @$"        [Required]{Environment.NewLine}";
-            if (entityProperty.IsForeignKey)
+            if (entityProperty.IsForeignKey && !entityProperty.IsMany)
                 attributeString += @$"        [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)
                 attributeString += @$"        [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";

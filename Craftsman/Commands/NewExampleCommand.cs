@@ -118,9 +118,66 @@
             if(exampleType == ExampleType.WithBus)
                 return BusTemplate(name);
             if(exampleType == ExampleType.WithAuthServer) 
-              return AuthServerTemplate();
+              return AuthServerTemplate(name);
+            if(exampleType == ExampleType.WithForeignKey) 
+              return ForeignKeyTemplate(name);
 
             throw new Exception("Example type was not recognized.");
+        }
+        
+        private static string ForeignKeyTemplate(string name)
+        {
+          return $@"DomainName: {name}
+BoundedContexts:
+- ProjectName: RecipeManagement
+  Port: 5375
+  DbContext:
+   ContextName: RecipesDbContext
+   DatabaseName: RecipeManagement
+   Provider: Postgres
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Title
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Directions
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Ingredients
+      Type: ICollection<Ingredient>
+      ForeignEntityPlural: Ingredients
+  - Name: Ingredient
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Name
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Quantity
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Measure
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeId
+      Type: Guid
+      ForeignEntityName: Recipe";
         }
 
         private static string BasicTemplate(string name)
@@ -318,9 +375,9 @@ Messages:
             return template;
         }
 
-        private static string AuthServerTemplate()
+        private static string AuthServerTemplate(string name)
         {
-          return $@"DomainName: SafeCarbonKitchenWithAuthServer
+          return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement
   Port: 5375
