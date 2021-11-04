@@ -43,10 +43,12 @@
 
             return @$"namespace {classNamespace}
 {{
+    using Newtonsoft.Json;
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;{usingSieve}{foreignEntityUsings}
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Runtime.Serialization;{usingSieve}{foreignEntityUsings}
 
     {tableAnnotation}
     public class {entity.Name} : BaseEntity
@@ -105,7 +107,12 @@
             if (entityProperty.IsRequired)
                 attributeString += @$"        [Required]{Environment.NewLine}";
             if (entityProperty.IsForeignKey && !entityProperty.IsMany)
-                attributeString += @$"        [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
+                attributeString += @$"        [JsonIgnore] 
+        [IgnoreDataMember] 
+        [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
+            if(entityProperty.IsMany)
+                attributeString += $@"        [JsonIgnore] 
+        [IgnoreDataMember] ";
             if (entityProperty.CanFilter || entityProperty.CanSort)
                 attributeString += @$"        [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
             if (!string.IsNullOrEmpty(entityProperty.ColumnName))
@@ -116,7 +123,7 @@
 
         private static string GetForeignProp(EntityProperty prop)
         {
-            return !string.IsNullOrEmpty(prop.ForeignEntityName) ? $@"
+            return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"
         public {prop.ForeignEntityName} {prop.ForeignEntityName} {{ get; set; }}" : "";
         }
     }
