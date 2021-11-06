@@ -579,11 +579,11 @@
     {{
         public const string {pkName} = ""{{{pkName.LowercaseFirstLetter()}}}"";
         public const string GetList = $""{{Base}}/{lowercaseEntityPluralName}"";
-        public const string GetRecord = $""{{Base}}/{lowercaseEntityPluralName}/ + {pkName}"";
+        public const string GetRecord = $""{{Base}}/{lowercaseEntityPluralName}/{{pkName}}"";
         public const string Create = $""{{Base}}/{lowercaseEntityPluralName}"";
-        public const string Delete = $""{{Base}}/{lowercaseEntityPluralName}/ + {pkName}"";
-        public const string Put = $""{{Base}}/{lowercaseEntityPluralName}/ + {pkName}"";
-        public const string Patch = $""{{Base}}/{lowercaseEntityPluralName}/ + {pkName}"";
+        public const string Delete = $""{{Base}}/{lowercaseEntityPluralName}/{{pkName}}"";
+        public const string Put = $""{{Base}}/{lowercaseEntityPluralName}/{{pkName}}"";
+        public const string Patch = $""{{Base}}/{lowercaseEntityPluralName}/{{pkName}}"";
     }}";
 
             return entityRouteClasses;
