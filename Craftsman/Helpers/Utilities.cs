@@ -28,6 +28,14 @@
                 return "DateTime";
             else if (prop.ToLower() == "datetime?")
                 return "DateTime?";
+            else if (prop.ToLower() == "dateonly?")
+                return "DateOnly?";
+            else if (prop.ToLower() == "dateonly")
+                return "DateOnly";
+            else if (prop.ToLower() == "timeonly?")
+                return "TimeOnly?";
+            else if (prop.ToLower() == "timeonly")
+                return "TimeOnly";
             else if (prop.ToLower() == "datetimeoffset")
                 return "DateTimeOffset";
             else if (prop.ToLower() == "datetimeoffset?")
