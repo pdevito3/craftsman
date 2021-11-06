@@ -38,6 +38,7 @@ using {testUtilClassPath.ClassNamespace};
 using Microsoft.AspNetCore.JsonPatch;
 using FluentAssertions;
 using NUnit.Framework;
+using System.Net;
 using System.Threading.Tasks;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
@@ -87,7 +88,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var result = await _client.PatchJsonRequestAsync(route, patchDoc);
 
             // Assert
-            result.StatusCode.Should().Be(204);
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }}";
         }
 
@@ -116,7 +117,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var result = await _client.PatchJsonRequestAsync(route, patchDoc);
 
             // Assert
-            result.StatusCode.Should().Be(401);
+            result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }}";
         }
 
@@ -146,7 +147,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var result = await _client.PatchJsonRequestAsync(route, patchDoc);
 
             // Assert
-            result.StatusCode.Should().Be(403);
+            result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }}";
         }
     }

@@ -93,7 +93,7 @@ public class {queryName}Tests : TestBase
         Func<Task> act = () => SendAsync(query);
 
         // Assert
-        act.Should().Throw<KeyNotFoundException>();
+        await act.Should().ThrowAsync<KeyNotFoundException>();
     }}";
         }
     }

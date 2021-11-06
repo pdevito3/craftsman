@@ -353,7 +353,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         Func<Task> act = () => SendAsync(query);
 
         // Assert
-        act.Should().Throw<ApiException>();
+        await act.Should().ThrowAsync<ApiException>();
     }}";
         }
     }

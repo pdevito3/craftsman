@@ -25,6 +25,7 @@
 using {testUtilClassPath.ClassNamespace};
 using FluentAssertions;
 using NUnit.Framework;
+using System.Net;
 using System.Threading.Tasks;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
@@ -45,7 +46,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var result = await _client.GetRequestAsync(ApiRoutes.Health);
 
             // Assert
-            result.StatusCode.Should().Be(200);
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
         }}";
         }
     }

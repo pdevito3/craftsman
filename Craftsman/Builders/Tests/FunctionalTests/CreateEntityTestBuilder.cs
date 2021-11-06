@@ -34,6 +34,7 @@ using {fakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};
 using FluentAssertions;
 using NUnit.Framework;
+using System.Net;
 using System.Threading.Tasks;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
@@ -66,7 +67,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
             // Assert
-            result.StatusCode.Should().Be(201);
+            result.StatusCode.Should().Be(HttpStatusCode.Created);
         }}";
         }
 
@@ -89,7 +90,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
             // Assert
-            result.StatusCode.Should().Be(401);
+            result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }}";
         }
 
@@ -114,7 +115,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
             // Assert
-            result.StatusCode.Should().Be(403);
+            result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }}";
         }
     }

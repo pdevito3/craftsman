@@ -122,7 +122,7 @@ public class {commandName}Tests : TestBase
         Func<Task> act = () => SendAsync(command);
 
         // Assert
-        act.Should().Throw<ApiException>();
+        await act.Should().ThrowAsync<ApiException>();
     }}";
         }
 
@@ -144,7 +144,7 @@ public class {commandName}Tests : TestBase
         Func<Task> act = () => SendAsync(command);
 
         // Assert
-        act.Should().Throw<KeyNotFoundException>();
+        await act.Should().ThrowAsync<KeyNotFoundException>();
     }}";
         }
     }

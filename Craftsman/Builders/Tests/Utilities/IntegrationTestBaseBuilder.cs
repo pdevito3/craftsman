@@ -35,10 +35,10 @@
 
         // close to equivalency required to reconcile precision differences between EF and Postgres
         AssertionOptions.AssertEquivalencyUsing(options =>
-          options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTime>()
+          options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTime>()
         );
         AssertionOptions.AssertEquivalencyUsing(options =>
-          options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTimeOffset>()
+          options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTimeOffset>()
         );"
                 : null;
 
@@ -47,6 +47,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using FluentAssertions.Extensions;
 using static {testFixtureName};
 
 public class TestBase

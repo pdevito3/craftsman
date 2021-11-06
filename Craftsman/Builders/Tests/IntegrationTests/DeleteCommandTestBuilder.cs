@@ -98,7 +98,7 @@ public class {commandName}Tests : TestBase
         Func<Task> act = () => SendAsync(command);
 
         // Assert
-        act.Should().Throw<KeyNotFoundException>();
+        await act.Should().ThrowAsync<KeyNotFoundException>();
     }}";
         }
     }
