@@ -189,7 +189,7 @@ BoundedContexts:
   DbContext:
    ContextName: RecipesDbContext
    DatabaseName: RecipeManagement
-   Provider: SqlServer
+   Provider: postgres
    NamingConvention: class
   Entities:
   - Name: Recipe
