@@ -37,8 +37,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include=""AutoBogus"" Version=""2.*"" />
-    <PackageReference Include=""Bogus"" Version=""33.*"" />
+    <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
+    <PackageReference Include=""Bogus"" Version=""33.1.1"" />
   </ItemGroup>
 
   <ItemGroup>
