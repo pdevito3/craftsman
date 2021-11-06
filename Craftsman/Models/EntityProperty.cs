@@ -58,7 +58,23 @@ namespace Craftsman.Models
         /// <summary>
         /// Designates the property as a foreign key for the entity
         /// </summary>
-        public bool IsForeignKey => !string.IsNullOrEmpty(ForeignEntityName);
+        public bool IsForeignKey
+        {
+            get => !string.IsNullOrEmpty(ForeignEntityName) 
+                   || IsMany;
+        }
+
+        public bool IsMany
+        {
+            get => Type.StartsWith("Collection<")
+                   || Type.StartsWith("ICollection<")
+                   || Type.StartsWith("IEnumerable<")
+                   || Type.StartsWith("Enumerable<")
+                   || Type.StartsWith("Hashset<")
+                   || Type.StartsWith("Dictionary<")
+                   || Type.StartsWith("IDictionary<")
+                   || Type.StartsWith("List<");
+        }
 
         /// <summary>
         /// Captures the name of the entity this property is linked to as a foreign key.

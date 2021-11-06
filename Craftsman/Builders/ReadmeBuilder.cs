@@ -7,7 +7,7 @@
 
     public class ReadmeBuilder
     {
-        public static void CreateReadme(string solutionDirectory, string projectName, IFileSystem fileSystem)
+        public static void CreateReadme(string solutionDirectory, string domainName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"README.md");
 
@@ -20,14 +20,14 @@
             using (var fs = fileSystem.File.Create(classPath.FullClassPath))
             {
                 var data = "";
-                data = GetReadmeFileText(projectName);
+                data = GetReadmeFileText(domainName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        public static string GetReadmeFileText(string projectName)
+        public static string GetReadmeFileText(string domainName)
         {
-            return @$"# {projectName}
+            return @$"# {domainName}
 
 This project was created with [Craftsman](https://github.com/pdevito3/craftsman).
 
@@ -36,13 +36,13 @@ This project was created with [Craftsman](https://github.com/pdevito3/craftsman)
 Go to your solution directory:
 
 ```shell
-cd {projectName}
+cd {domainName}
 ```
 
 Run your solution:
 
 ```shell
-dotnet run --project YourBoundedContextName.WebApi
+dotnet run --project YourBoundedContextName
 ```
 
 ## Running Integration Tests
@@ -50,12 +50,30 @@ To run integration tests:
 
 1. Ensure that you have docker installed.
 2. Go to your src directory for the bounded context that you want to test.
-3. Confirm that you have migrations in your infrastructure project. If not you can add them by doing the following:
-    1. Set an environment variable. It doesn't matter what that environment name is for these purposes.
-        - Powershell: `$Env:ASPNETCORE_ENVIRONMENT = ""IntegrationTesting""`
-        - Bash: export `ASPNETCORE_ENVIRONMENT = IntegrationTesting`
-    2. Run a Migration:`dotnet ef migrations add ""InitialMigration"" --project YourBoundedContextName.Infrastructure --startup-project YourBoundedContextName.WebApi --output-dir Migrations`
-4. Run the tests. They will take some time on the first run in the last 24 hours in order to set up the docker configuration.
+3. Confirm that you have migrations in your infrastructure project. If you need to add them, see the [instructions below](#running-migrations).
+4. Run the tests
+
+> ⏳ If you don't have the database image pulled down to your machine, they will take some time on the first run.
+
+### Troubleshooting
+-If you have trouble with your tests, try removing the container and volume marked for your integration tests.
+- If your entity has foreign keys, you'll likely need to adjust some of your tests after scaffolding to accomodate them.
+
+## Running Migrations
+
+To create a new migration, run the following:
+
+```shell
+cd YourBoundedContextName/src
+dotnet ef migrations add ""your-description-here"" --project YourBoundedContextName
+```
+
+To apply your migrations to your local db, run the following:
+
+```bash
+cd YourBoundedContextName/src
+dotnet ef database update --project YourBoundedContextName
+```
 ";
         }
     }

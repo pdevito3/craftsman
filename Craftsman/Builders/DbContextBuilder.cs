@@ -94,8 +94,8 @@ public class {dbContextName} : DbContext
             //TODO test for class and another for anything else
             var namingConvention = namingConventionEnum == NamingConventionEnum.Class
                 ? ""
-                : @$".{namingConventionEnum.ExtensionMethod()}()
-                            ";
+                : @$"
+                            .{namingConventionEnum.ExtensionMethod()}()";
             
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
