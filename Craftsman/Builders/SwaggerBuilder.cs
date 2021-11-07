@@ -44,11 +44,11 @@
                         var newText = $"{line}";
                         if (line.Contains("Dynamic Services"))
                         {
-                            newText += $"{Environment.NewLine}            services.AddSwaggerExtension(_config);";
+                            newText += $"{Environment.NewLine}        services.AddSwaggerExtension(_config);";
                         }
                         else if (line.Contains("Dynamic App"))
                         {
-                            newText += $"{Environment.NewLine}            app.UseSwaggerExtension(_config);";
+                            newText += $"{Environment.NewLine}        app.UseSwaggerExtension(_config);";
                         }
 
                         output.WriteLine(newText);

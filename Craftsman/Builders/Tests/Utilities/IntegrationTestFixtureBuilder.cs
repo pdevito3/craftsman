@@ -25,25 +25,25 @@
 
             var usingStatement = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"
-    using Npgsql;"
+using Npgsql;"
                 : null;
 
             var checkpoint = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"_checkpoint = new Checkpoint
-            {{
-                TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
-                SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
-                DbAdapter = DbAdapter.Postgres
-            }};"
+        {{
+            TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
+            SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
+            DbAdapter = DbAdapter.Postgres
+        }};"
                 : $@"_checkpoint = new Checkpoint
-            {{
-                TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
-            }};";
+        {{
+            TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
+        }};";
 
             var resetString = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"using var conn = new NpgsqlConnection(_configuration.GetConnectionString(""{dbName}""));
-            await conn.OpenAsync();
-            await _checkpoint.Reset(conn);"
+        await conn.OpenAsync();
+        await _checkpoint.Reset(conn);"
                 : $@"await _checkpoint.Reset(_configuration.GetConnectionString(""{dbName}""));";
 
             return @$"namespace {classNamespace};

@@ -132,12 +132,9 @@
             return nonExistantPolicies;
         }
 
-        public static string GetAppSettingsName(string envName, bool asJson = true)
+        public static string GetAppSettingsName(bool asJson = true)
         {
-            if (String.IsNullOrEmpty(envName))
-                return asJson ? $"appsettings.json" : $"appsettings";
-
-            return asJson ? $"appsettings.{envName}.json" : $"appsettings.{envName}";
+            return asJson ? $"appsettings.json" : $"appsettings";
         }
 
         public static string GetProfileName(string entityName)

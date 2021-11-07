@@ -14,7 +14,7 @@
         /// </summary>
         public static void CreateWebApiAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string projectBaseName)
         {
-            var appSettingFilename = Utilities.GetAppSettingsName(env.EnvironmentName);
+            var appSettingFilename = Utilities.GetAppSettingsName();
             var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
@@ -42,24 +42,15 @@
         {
             var jwtSettings = GetJwtAuthSettings(env);
 
-            if (env.EnvironmentName == "Development" || env.EnvironmentName == "FunctionalTesting")
-
-                return @$"{{
-  ""AllowedHosts"": ""*""{jwtSettings}
-}}
-";
-            else
-            {
-                // won't build properly if it has an empty string
-                var connectionString = String.IsNullOrEmpty(env.ConnectionString) ? "local" : env.ConnectionString.Replace(@"\", @"\\");
-                return @$"{{
+            // won't build properly if it has an empty string
+            var connectionString = String.IsNullOrEmpty(env.ConnectionString) ? "local" : env.ConnectionString.Replace(@"\", @"\\");
+            return @$"{{
   ""AllowedHosts"": ""*"",
   ""ConnectionStrings"": {{
     ""{dbName}"": ""{connectionString}""
   }}{jwtSettings}
 }}
 ";
-            }
         }
 
         private static string GetJwtAuthSettings(ApiEnvironment env)

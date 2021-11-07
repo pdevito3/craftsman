@@ -231,7 +231,7 @@ BoundedContexts:
   DbContext:
     ContextName: RecipesDbContext
     DatabaseName: RecipeManagement
-    Provider: SqlServer
+    Provider: postgres
   Entities:
   - Name: Recipe
     Features:

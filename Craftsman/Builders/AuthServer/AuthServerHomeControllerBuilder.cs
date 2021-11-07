@@ -26,6 +26,8 @@
 // See LICENSE in the project root for license information.
 
 
+namespace {classNamespace};
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -33,7 +35,6 @@ using Duende.IdentityServer.Services;
 using {viewModelsClassPath.ClassNamespace};
 using {attrClassPath.ClassNamespace};
 
-namespace {classNamespace};
 [SecurityHeaders]
 [AllowAnonymous]
 public class HomeController : Controller

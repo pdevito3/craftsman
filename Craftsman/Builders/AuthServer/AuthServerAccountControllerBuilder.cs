@@ -28,6 +28,8 @@
 // See LICENSE in the project root for license information.
 
 
+namespace {classNamespace};
+
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -46,7 +48,6 @@ using {viewModelsClassPath.ClassNamespace};
 using {extClassPath.ClassNamespace};
 using {attrClassPath.ClassNamespace};
 
-namespace {classNamespace};
 /// <summary>
 /// This sample controller implements a typical login/logout/provision workflow for local and external accounts.
 /// The login service encapsulates the interactions with the user data store. This data store is in-memory only and cannot be used for production!

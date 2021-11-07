@@ -40,8 +40,9 @@
                 entitiesUsings += $"{Environment.NewLine}using {classPath.ClassNamespace};";
             }
             
-            return @$"namespace {classNamespace};{entitiesUsings}
+            return @$"namespace {classNamespace};
 
+{entitiesUsings}
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Threading;

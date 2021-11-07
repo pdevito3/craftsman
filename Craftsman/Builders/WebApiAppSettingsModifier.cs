@@ -11,7 +11,7 @@
     {
         public static void AddRmq(string solutionDirectory, ApiEnvironment env, string projectBaseName, IFileSystem fileSystem)
         {
-            var appSettingFilename = Utilities.GetAppSettingsName(env.EnvironmentName);
+            var appSettingFilename = Utilities.GetAppSettingsName();
             var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", projectBaseName);
 
             if (!fileSystem.Directory.Exists(classPath.ClassDirectory))

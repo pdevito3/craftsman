@@ -26,6 +26,8 @@
 // See LICENSE in the project root for license information.
 
 
+namespace {classNamespace};
+
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -41,7 +43,6 @@ using Duende.IdentityServer.Test;
 using {extClassPath.ClassNamespace};
 using {attrClassPath.ClassNamespace};
 
-namespace {classNamespace};
 [SecurityHeaders]
 [AllowAnonymous]
 public class ExternalController : Controller

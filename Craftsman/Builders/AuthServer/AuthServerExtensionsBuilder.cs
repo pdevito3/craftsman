@@ -25,7 +25,8 @@
 // See LICENSE in the project root for license information.
 
 
-namespace {classNamespace};  
+namespace {classNamespace};
+
 using Microsoft.AspNetCore.Mvc;
 using Duende.IdentityServer.Models;
 using {viewModelClassPath.ClassNamespace};

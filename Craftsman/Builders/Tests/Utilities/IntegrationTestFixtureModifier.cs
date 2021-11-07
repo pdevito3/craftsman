@@ -20,6 +20,7 @@
 
             var consumerFeatureClassPath = ClassPathHelper.ConsumerFeaturesClassPath(testDirectory, $"", projectBaseName);
 
+            var usingsAdded = false;
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
             {
@@ -31,40 +32,40 @@
                     if (line.Contains($"// MassTransit Setup -- Do Not Delete Comment"))
                     {
                         newText += $@"
-            _provider = services.AddMassTransitInMemoryTestHarness(cfg =>
-            {{
-                // Consumer Registration -- Do Not Delete Comment
-            }}).BuildServiceProvider();
-            _harness = _provider.GetRequiredService<InMemoryTestHarness>();
+        _provider = services.AddMassTransitInMemoryTestHarness(cfg =>
+        {{
+            // Consumer Registration -- Do Not Delete Comment
+        }}).BuildServiceProvider();
+        _harness = _provider.GetRequiredService<InMemoryTestHarness>();
 
-            services.AddScoped(_ => Mock.Of<IPublishEndpoint>());
-            await _harness.Start();";
+        services.AddScoped(_ => Mock.Of<IPublishEndpoint>());
+        await _harness.Start();";
                     }
-                    else if (line.Contains($"using System;"))
+                    else if (line.Contains($"using") && !usingsAdded)
                     {
-                        newText += $@"
-    using MassTransit.Testing;
-    using MassTransit;";
+                        newText += $@"{Environment.NewLine}using MassTransit.Testing;
+using MassTransit;";
+                        usingsAdded = true;
                     }
                     else if (line.Contains($"// MassTransit Teardown -- Do Not Delete Comment"))
                     {
                         newText += $@"
-            await _harness.Stop();";
+        await _harness.Stop();";
                     }
                     else if (line.Contains($"// MassTransit Methods -- Do Not Delete Comment"))
                     {
                         newText += $@"
-        public static async Task PublishMessage<T>(object message)
-            where T : class
-        {{
-            await _harness.Bus.Publish<T>(message);
-        }}";
+    public static async Task PublishMessage<T>(object message)
+        where T : class
+    {{
+        await _harness.Bus.Publish<T>(message);
+    }}";
                     }
                     else if (line.Contains($"private static Checkpoint _checkpoint;"))
                     {
                         newText += $@"
-        public static InMemoryTestHarness _harness;
-        public static ServiceProvider _provider;";
+    public static InMemoryTestHarness _harness;
+    public static ServiceProvider _provider;";
                     }
 
                     output.WriteLine(newText);

@@ -24,6 +24,7 @@
 
 
 namespace {classNamespace};  
+
 using System;
 using System.ComponentModel.DataAnnotations;
 

@@ -23,7 +23,8 @@
 // See LICENSE in the project root for license information.
 
 
-namespace {classNamespace};  
+namespace {classNamespace};
+
 using Duende.IdentityServer.Models;
 
 public class ErrorViewModel

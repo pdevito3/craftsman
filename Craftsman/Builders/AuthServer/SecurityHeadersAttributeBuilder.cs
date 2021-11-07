@@ -23,10 +23,11 @@ namespace Craftsman.Builders.AuthServer
 // See LICENSE in the project root for license information.
 
 
+namespace {classNamespace};
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace {classNamespace};  
 public class SecurityHeadersAttribute : ActionFilterAttribute
 {{
     public override void OnResultExecuting(ResultExecutingContext context)

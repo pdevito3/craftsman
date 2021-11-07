@@ -68,49 +68,49 @@ public static class Config
         private static string ClientBuilder(AuthClient client)
         {
             return client.GrantType == GrantType.ClientCredentials.Name 
-                ? @$"{Environment.NewLine}                new Client
-                {{
-                    ClientId = ""{client.Id}"",
-                    ClientName = ""{client.Name}"",
-                    ClientSecrets = {{ {client.GetSecretsString()} }},
-                    AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
-                    AllowedScopes = {{ {client.GetScopeNameString()} }}
-                }},"
-                : @$"{Environment.NewLine}                new Client
-                {{
-                    ClientId = ""{client.Id}"",
-                    ClientName = ""{client.Name}"",
-                    ClientSecrets = {{ {client.GetSecretsString()} }},
+                ? @$"{Environment.NewLine}            new Client
+            {{
+                ClientId = ""{client.Id}"",
+                ClientName = ""{client.Name}"",
+                ClientSecrets = {{ {client.GetSecretsString()} }},
+                AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
+                AllowedScopes = {{ {client.GetScopeNameString()} }}
+            }},"
+            : @$"{Environment.NewLine}                new Client
+            {{
+                ClientId = ""{client.Id}"",
+                ClientName = ""{client.Name}"",
+                ClientSecrets = {{ {client.GetSecretsString()} }},
 
-                    AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
-                    RedirectUris = {{{client.GetRedirectUrisString()}}},
-                    PostLogoutRedirectUris = {{{client.GetPostLogoutRedirectUrisString()}}},
-                    FrontChannelLogoutUri = ""{client.FrontChannelLogoutUri}"",
-                    AllowedCorsOrigins = {{{client.GetAllowedCorsOriginsString()}}},
+                AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
+                RedirectUris = {{{client.GetRedirectUrisString()}}},
+                PostLogoutRedirectUris = {{{client.GetPostLogoutRedirectUrisString()}}},
+                FrontChannelLogoutUri = ""{client.FrontChannelLogoutUri}"",
+                AllowedCorsOrigins = {{{client.GetAllowedCorsOriginsString()}}},
 
-                    AllowOfflineAccess = {client.AllowOfflineAccess.ToString().LowercaseFirstLetter()},
-                    RequirePkce = {client.RequirePkce.ToString().LowercaseFirstLetter()},
-                    RequireClientSecret = {client.RequireClientSecret.ToString().LowercaseFirstLetter()},
+                AllowOfflineAccess = {client.AllowOfflineAccess.ToString().LowercaseFirstLetter()},
+                RequirePkce = {client.RequirePkce.ToString().LowercaseFirstLetter()},
+                RequireClientSecret = {client.RequireClientSecret.ToString().LowercaseFirstLetter()},
 
-                    AllowedScopes = {{ {client.GetScopeNameString()} }}
-                }},";
+                AllowedScopes = {{ {client.GetScopeNameString()} }}
+            }},";
         }
         
         private static string ApiResourceTextBuilder(AuthApi api)
         {
-            return $@"{Environment.NewLine}                new ApiResource(""{api.Name}"", ""{api.DisplayName}"")
-                {{
-                    Scopes = {{ { api.GetScopeNameString() } }},
-                    ApiSecrets = {{ { api.GetSecretsString() } }},
-                    UserClaims = {{ { api.GetClaimsString() } }},
-                }},";
+            return $@"{Environment.NewLine}            new ApiResource(""{api.Name}"", ""{api.DisplayName}"")
+            {{
+                Scopes = {{ { api.GetScopeNameString() } }},
+                ApiSecrets = {{ { api.GetSecretsString() } }},
+                UserClaims = {{ { api.GetClaimsString() } }},
+            }},";
         }
         
         private static string ApiScopeTextBuilder(AuthScope scope)
         {
             return scope.UserClaims.Count > 0 
-                ? $@"{Environment.NewLine}                new ApiScope(""{scope.Name}"", ""{scope.DisplayName}"", new[] {{ { scope.GetClaimsString() } }}),"
-                : $@"{Environment.NewLine}                new ApiScope(""{scope.Name}"", ""{scope.DisplayName}""),";
+                ? $@"{Environment.NewLine}            new ApiScope(""{scope.Name}"", ""{scope.DisplayName}"", new[] {{ { scope.GetClaimsString() } }}),"
+                : $@"{Environment.NewLine}            new ApiScope(""{scope.Name}"", ""{scope.DisplayName}""),";
         }
     }
 }

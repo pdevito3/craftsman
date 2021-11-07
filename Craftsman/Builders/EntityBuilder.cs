@@ -59,7 +59,6 @@ public class {entity.Name} : BaseEntity
         {
             return @$"namespace {classNamespace};
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

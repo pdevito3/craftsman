@@ -61,11 +61,23 @@ To run integration tests:
 
 ## Running Migrations
 
-To create a new migration, run the following:
+To create a new migration, make sure your environment is *not* set to `Development`:
+
+### Powershell
+```powershell
+$Env:ASPNETCORE_ENVIRONMENT = ""anything""
+```
+
+### Bash
+```bash
+export ASPNETCORE_ENVIRONMENT=anything
+```
+
+Then run the following:
 
 ```shell
-cd YourBoundedContextName/src
-dotnet ef migrations add ""your-description-here"" --project YourBoundedContextName
+cd YourBoundedContextName/src/YourBoundedContextName
+dotnet ef migrations add ""your-description-here""
 ```
 
 To apply your migrations to your local db, run the following:

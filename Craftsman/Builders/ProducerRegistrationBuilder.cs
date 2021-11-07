@@ -77,17 +77,16 @@ public static class {className}
             return @$"namespace {classNamespace};
 
 using MassTransit;
-    using MassTransit.RabbitMqTransport;
-    using Messages;
-    using RabbitMQ.Client;
+using MassTransit.RabbitMqTransport;
+using Messages;
+using RabbitMQ.Client;
 
-    public static class {className}
+public static class {className}
+{{
+    public static void {producer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg)
     {{
-        public static void {producer.EndpointRegistrationMethodName}(this IRabbitMqBusFactoryConfigurator cfg)
-        {{
-            cfg.Message<{producer.MessageName}>(e => e.SetEntityName(""{producer.ExchangeName}"")); // name of the primary exchange
-            cfg.Publish<{producer.MessageName}>(e => e.ExchangeType = ExchangeType.Fanout); // primary exchange type
-        }}
+        cfg.Message<{producer.MessageName}>(e => e.SetEntityName(""{producer.ExchangeName}"")); // name of the primary exchange
+        cfg.Publish<{producer.MessageName}>(e => e.ExchangeType = ExchangeType.Fanout); // primary exchange type
     }}
 }}";
         }

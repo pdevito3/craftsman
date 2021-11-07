@@ -29,13 +29,15 @@
         {
             var propString = MessagePropBuilder(message.Properties);
 
-            return @$"namespace {classNamespace};
-
-using System.Text;
-
-public interface {message.Name}
+            return @$"namespace {classNamespace}
 {{
-{propString}
+    using System;
+    using System.Text;
+
+    public interface {message.Name}
+    {{
+        {propString}
+    }}
 
     // add-on property marker - Do Not Delete This Comment
 }}";

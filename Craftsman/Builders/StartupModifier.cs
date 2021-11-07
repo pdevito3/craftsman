@@ -25,7 +25,7 @@
                 {
                     var newText = $"{line}";
                     if (line.Contains($"services.AddInfrastructure"))
-                        newText += @$"{Environment.NewLine}            services.AddMassTransitServices(_config, _env);";
+                        newText += @$"{Environment.NewLine}        services.AddMassTransitServices(_config, _env);";
 
                     //if (line.Contains($@"{infraClassPath.ClassNamespace};"))
                     //    newText += @$"{ Environment.NewLine}    using { serviceRegistrationsClassPath.ClassNamespace}; ";

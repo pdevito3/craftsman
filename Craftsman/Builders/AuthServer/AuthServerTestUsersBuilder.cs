@@ -23,13 +23,14 @@ namespace Craftsman.Builders.AuthServer
 // See LICENSE in the project root for license information.
 
 
+namespace {classNamespace};
+
 using IdentityModel;
 using System.Security.Claims;
 using System.Text.Json;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Test;
 
-namespace {classNamespace};  
 public class TestUsers
 {{
     public static List<TestUser> Users

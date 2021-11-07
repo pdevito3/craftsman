@@ -24,6 +24,7 @@
 
 
 namespace {classNamespace};  
+
 public class ExternalProvider
 {{
     public string DisplayName {{ get; set; }}
