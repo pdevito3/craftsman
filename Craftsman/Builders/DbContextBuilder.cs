@@ -119,7 +119,7 @@ public class {dbContextName} : DbContext
             {{
                 services.AddDbContext<{dbContextName}>(options =>
                     options.{usingDbStatement}(
-                        configuration.GetConnectionString(""{dbName}""),
+                        Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"") ?? ""placeholder-for-migrations"",
                         builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});
             }}";
                         }

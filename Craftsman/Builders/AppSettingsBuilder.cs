@@ -12,7 +12,7 @@
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateWebApiAppSettings(string solutionDirectory, ApiEnvironment env, string dbName, string projectBaseName)
+        public static void CreateWebApiAppSettings(string solutionDirectory, string dbName, string projectBaseName)
         {
             var appSettingFilename = Utilities.GetAppSettingsName();
             var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", projectBaseName);
@@ -24,7 +24,7 @@
                 File.Delete(classPath.FullClassPath);
 
             using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = GetAppSettingsText(env, dbName);
+            var data = GetAppSettingsText(dbName);
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
@@ -38,17 +38,11 @@
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string GetAppSettingsText(ApiEnvironment env, string dbName)
+        private static string GetAppSettingsText(string dbName)
         {
-            var jwtSettings = GetJwtAuthSettings(env);
-
             // won't build properly if it has an empty string
-            var connectionString = String.IsNullOrEmpty(env.ConnectionString) ? "local" : env.ConnectionString.Replace(@"\", @"\\");
             return @$"{{
   ""AllowedHosts"": ""*"",
-  ""ConnectionStrings"": {{
-    ""{dbName}"": ""{connectionString}""
-  }}{jwtSettings}
 }}
 ";
         }
@@ -62,7 +56,7 @@
     ""AuthorizationUrl"": ""{env.AuthorizationUrl}"",
     ""TokenUrl"": ""{env.TokenUrl}"",
     ""ClientId"": ""{env.ClientId}"",
-    ""ClientSecret"": ""{env.ClientSecret}""
+    ""ClientSecret"": ""{env.ClientSecret}"",
   }}";
         }
     }

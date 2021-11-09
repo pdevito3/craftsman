@@ -106,11 +106,11 @@ public static class SwaggerServiceExtension
                             Url = new Uri(""{ swaggerConfig.ApiContact.Url }""),"
                 : "";
 
-            var LicenseUrlLine = IsCleanUri(swaggerConfig.LicenseUrl)
+            var licenseUrlLine = IsCleanUri(swaggerConfig.LicenseUrl)
                 ? $@"Url = new Uri(""{ swaggerConfig.LicenseUrl }""),"
                 : "";
 
-            var licenseText = GetLicenseText(swaggerConfig.LicenseName, LicenseUrlLine);
+            var licenseText = GetLicenseText(swaggerConfig.LicenseName, licenseUrlLine);
 
             var policyScopes = Utilities.GetSwaggerPolicies(policies);
             var swaggerAuth = addJwtAuthentication ? $@"
@@ -122,8 +122,8 @@ public static class SwaggerServiceExtension
                 {{
                     AuthorizationCode = new OpenApiOAuthFlow
                     {{
-                        AuthorizationUrl = new Uri(configuration[""JwtSettings:AuthorizationUrl""]),
-                        TokenUrl = new Uri(configuration[""JwtSettings:TokenUrl""]),
+                        AuthorizationUrl = new Uri(Environment.GetEnvironmentVariable(""AUTH_AUTHORIZATION_URL"")),
+                        TokenUrl = new Uri(Environment.GetEnvironmentVariable(""AUTH_TOKEN_URL"")),
                         Scopes = new Dictionary<string, string>
                         {{{policyScopes}
                         }}

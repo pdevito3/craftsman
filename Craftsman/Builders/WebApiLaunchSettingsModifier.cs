@@ -1,5 +1,6 @@
 ﻿namespace Craftsman.Builders
 {
+    using System;
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System.IO;
@@ -42,13 +43,26 @@
 
         private static string GetProfileText(ApiEnvironment env, int port)
         {
+            var connectionString = String.IsNullOrEmpty(env.ConnectionString) ? "local" : env.ConnectionString.Replace(@"\", @"\\");
+            
                 return $@"
-    ""{env.ProfileName ?? env.EnvironmentName ?? "Development"}"": {{
+    ""{env.ProfileName ?? env.EnvironmentName}"": {{
       ""commandName"": ""Project"",
       ""launchBrowser"": true,
       ""launchUrl"": ""swagger"",
       ""environmentVariables"": {{
-        ""ASPNETCORE_ENVIRONMENT"": ""{env.EnvironmentName}""
+        ""ASPNETCORE_ENVIRONMENT"": ""{env.EnvironmentName}"",
+        ""AUTH_AUDIENCE"": ""{env.Audience}"",
+        ""AUTH_AUTHORITY"": ""{env.Authority}"",
+        ""AUTH_AUTHORIZATION_URL"": ""{env.AuthorizationUrl}"",
+        ""AUTH_TOKEN_URL"": ""{env.TokenUrl}"",
+        ""AUTH_CLIENT_ID"": ""{env.ClientId}"",
+        ""AUTH_CLIENT_SECRET"": ""{env.ClientSecret}"",
+        ""DB_CONNECTION_STRING"": ""{connectionString}"",
+        ""RMQ_HOST"": ""{env.BrokerSettings.Host}"",
+        ""RMQ_VIRTUAL_HOST"": ""{env.BrokerSettings.VirtualHost}"",
+        ""RMQ_USERNAME"": ""{env.BrokerSettings.Username}"",
+        ""RMQ_PASSWORD"": ""{env.BrokerSettings.Password}""        
       }},
       ""applicationUrl"": ""https://localhost:{port}""
     }},";

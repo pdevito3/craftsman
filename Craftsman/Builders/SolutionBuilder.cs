@@ -64,7 +64,7 @@
             WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(srcDirectory, projectBaseName, fileSystem);
             WebApiAppExtensionsBuilder.CreateErrorHandlerWebApiAppExtension(srcDirectory, projectBaseName, fileSystem);
             ErrorHandlerMiddlewareBuilder.CreateErrorHandlerMiddleware(srcDirectory, projectBaseName, fileSystem);
-            AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, new ApiEnvironment(), dbName, projectBaseName); // empty environment so i can get a blank with all the right keys. don't care about values as they get overriden by env specific settings
+            AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, fileSystem);
             ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, fileSystem);
             StartupBuilder.CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName, fileSystem);

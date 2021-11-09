@@ -107,8 +107,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;";
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {{
-                        options.Authority = configuration[""JwtSettings:Authority""];
-                        options.Audience = configuration[""JwtSettings:Audience""];
+                        options.Authority = Environment.GetEnvironmentVariable(""AUTH_AUDIENCE"");
+                        options.Audience = Environment.GetEnvironmentVariable(""AUTH_AUTHORITY"");
                     }});
             }}
 

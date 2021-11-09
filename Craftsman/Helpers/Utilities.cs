@@ -361,26 +361,13 @@
             string projectBaseName,
             IFileSystem fileSystem)
         {
+            AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, dbName, projectBaseName);
             foreach (var env in environments)
             {
-                AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, env, dbName, projectBaseName);
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, projectBaseName);
-
-                //services
             }
             if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
                 SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, projectBaseName);
-        }
-
-        public static string GetForeignKeyIncludes(Entity entity)
-        {
-            var fkIncludes = "";
-            foreach (var fk in entity.Properties.Where(p => p.IsForeignKey))
-            {
-                fkIncludes += $@"{Environment.NewLine}                .Include({fk.Name.ToLower().Substring(0, 1)} => {fk.Name.ToLower().Substring(0, 1)}.{fk.Name})";
-            }
-
-            return fkIncludes;
         }
 
         public static void CreateFile(ClassPath classPath, string fileText, IFileSystem fileSystem)

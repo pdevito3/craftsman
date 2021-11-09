@@ -41,10 +41,10 @@ using Npgsql;"
         }};";
 
             var resetString = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
-                ? $@"using var conn = new NpgsqlConnection(_configuration.GetConnectionString(""{dbName}""));
+                ? $@"using var conn = new NpgsqlConnection(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
         await conn.OpenAsync();
         await _checkpoint.Reset(conn);"
-                : $@"await _checkpoint.Reset(_configuration.GetConnectionString(""{dbName}""));";
+                : $@"await _checkpoint.Reset(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));";
 
             return @$"namespace {classNamespace};
 
@@ -77,13 +77,11 @@ public class TestFixture
     {{
         var dockerDbPort = await DockerDatabaseUtilities.EnsureDockerStartedAndGetPortPortAsync();
         var dockerConnectionString = DockerDatabaseUtilities.GetSqlConnectionString(dockerDbPort.ToString());
+        Environment.SetEnvironmentVariable(""DB_CONNECTION_STRING"", dockerConnectionString);
 
         var builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddInMemoryCollection(new Dictionary<string, string>
-                {{
-                    {{ ""ConnectionStrings:{dbName}"", dockerConnectionString }}
-                }})
+            .AddInMemoryCollection(new Dictionary<string, string> {{ }})
             .AddEnvironmentVariables();
 
         _configuration = builder.Build();

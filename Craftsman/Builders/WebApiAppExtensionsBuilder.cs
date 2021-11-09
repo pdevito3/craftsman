@@ -79,8 +79,8 @@ public static class SwaggerAppExtension
         private static string GetSwaggerAppExtensionText(SwaggerConfig swaggerConfig, bool addJwtAuthentication)
         {
             var swaggerAuth = addJwtAuthentication ? $@"
-            config.OAuthClientId(configuration[""JwtSettings:ClientId""]);
-            config.OAuthClientSecret(configuration[""JwtSettings:ClientSecret""]);
+            config.OAuthClientId(Environment.GetEnvironmentVariable(""AUTH_CLIENT_ID""));
+            config.OAuthClientSecret(Environment.GetEnvironmentVariable(""AUTH_CLIENT_SECRET""));
             config.OAuthUsePkce();" : "";
 
             var swaggerText = $@"public static void UseSwaggerExtension(this IApplicationBuilder app, IConfiguration configuration)
