@@ -31,7 +31,7 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 ✅ Auth Server Scaffolding (In-Memory)
 
-🚧 Better environment variable support
+✅ Better environment variable support
 
 🚧 Add Identity to Auth Server
 
