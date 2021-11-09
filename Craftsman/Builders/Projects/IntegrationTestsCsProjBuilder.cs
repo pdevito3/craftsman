@@ -46,7 +46,7 @@
     <PackageReference Include=""Ductus.FluentDocker"" Version=""2.10.40"" />
     <PackageReference Include=""FluentAssertions"" Version=""6.2.0"" />
     <PackageReference Include=""MediatR"" Version=""9.0.0"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""6.0.0-rc.2.*"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""6.0.0"" />
     <PackageReference Include=""Moq"" Version=""4.16.1"" />
     <PackageReference Include=""Npgsql"" Version=""5.0.10"" />
     <PackageReference Include=""Newtonsoft.Json"" Version=""13.0.1"" />
