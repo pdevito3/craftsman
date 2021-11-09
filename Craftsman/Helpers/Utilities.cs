@@ -362,6 +362,10 @@
             IFileSystem fileSystem)
         {
             AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, dbName, projectBaseName);
+            
+            if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
+                environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{projectName} (Development)" });
+            
             foreach (var env in environments)
             {
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, projectBaseName);
