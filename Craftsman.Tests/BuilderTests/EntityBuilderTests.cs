@@ -1,78 +1,81 @@
 ﻿namespace Craftsman.Tests.FileTextTests
 {
+    using System.Collections.Generic;
     using Craftsman.Builders;
     using Craftsman.Models;
     using Craftsman.Tests.Fakes;
     using FluentAssertions;
     using Xunit;
     using System.IO.Abstractions.TestingHelpers;
+    using AutoBogus;
+    using Bogus;
     using Craftsman.Helpers;
     using Craftsman.Exceptions;
 
+    
+    
     public class EntityBuilderTests
     {
         [Fact]
-        public void EntityBuilder_CreateEntity_createsEntityFile()
+        public void two_one_type_props_formatted_properly()
         {
-            var solutionDirectory = @"c:\myrepo";
-            var fileSystem = new MockFileSystem();
-            fileSystem.AddDirectory(solutionDirectory);
+            var orgProp = new EntityProperty()
+            {
+                Name = "OrganizationId",
+                Type = "Guid",
+                ForeignEntityName = "Organization",
+                ForeignEntityPlural = "Organizations"
+            };
+            var roleProp = new EntityProperty()
+            {
+                Name = "RoleId",
+                Type = "Guid",
+                ForeignEntityName = "Role",
+                ForeignEntityPlural = "Roles"
+            };
 
-            var entity = CannedGenerator.FakeBasicProduct();
-            var expectedFilePath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs", entity.Plural, "").FullClassPath;
+            var file = EntityBuilder.EntityPropBuilder(new List<EntityProperty>() { orgProp, roleProp });
+            var expected = $@"    [JsonIgnore]
+    [IgnoreDataMember]
+    [ForeignKey(""Organization"")]
+    public Guid OrganizationId {{ get; set; }}
+    public Organization Organization {{ get; set; }}
 
-            EntityBuilder.CreateEntity(solutionDirectory, entity, "", fileSystem);
+    [JsonIgnore]
+    [IgnoreDataMember]
+    [ForeignKey(""Role"")]
+    public Guid RoleId {{ get; set; }}
+    public Role Role {{ get; set; }}";
 
-            var exists = fileSystem.FileExists(expectedFilePath);
-
-            exists.Should().BeTrue();
+            file.Should().Be(expected);
         }
-
+        
         [Fact]
-        public void EntityBuilder_CreateEntity_throws_error_if_file_exists()
+        public void one_prop_and_normal_prop()
         {
-            var solutionDirectory = @"c:\myrepo";
-            var fileSystem = new MockFileSystem();
-            fileSystem.AddDirectory(solutionDirectory);
+            var orgProp = new EntityProperty()
+            {
+                Name = "test",
+                Type = "string",
+            };
+            var roleProp = new EntityProperty()
+            {
+                Name = "RoleId",
+                Type = "Guid",
+                ForeignEntityName = "Role",
+                ForeignEntityPlural = "Roles"
+            };
 
-            var entity = CannedGenerator.FakeBasicProduct();
-            var expectedFilePath = ClassPathHelper.EntityClassPath(solutionDirectory, $"{entity.Name}.cs", entity.Plural, "").FullClassPath;
-            fileSystem.AddFile(expectedFilePath, new MockFileData("content doesn't matter"));
+            var file = EntityBuilder.EntityPropBuilder(new List<EntityProperty>() { orgProp, roleProp });
+            var expected = $@"    public string Test {{ get; set; }}
 
-            Assert.Throws<FileAlreadyExistsException>(() => EntityBuilder.CreateEntity(solutionDirectory, entity, "", fileSystem));
-        }
+    [JsonIgnore]
+    [IgnoreDataMember]
+    [ForeignKey(""Role"")]
+    public Guid RoleId {{ get; set; }}
+    public Role Role {{ get; set; }}";
 
-        [Fact]
-        public void EntityBuilder_TableAnnotationBuilder_creates_plural_name_when_no_schema_or_table_given()
-        {
-            var entity = new Entity();
-            entity.Name = "SingularName";
-
-            var annotation = EntityBuilder.EntityAnnotationBuilder(entity);
-            annotation.Should().Be(@"[Table(""SingularName"")]");            
-        }
-
-        [Fact]
-        public void EntityBuilder_TableAnnotationBuilder_creates_table_name_table_given()
-        {
-            var entity = new Entity();
-            entity.Name = "SinglularName";
-            entity.TableName = "TableName";
-
-            var annotation = EntityBuilder.EntityAnnotationBuilder(entity);
-            annotation.Should().Be(@"[Table(""TableName"")]");
-        }
-
-        [Fact]
-        public void EntityBuilder_TableAnnotationBuilder_creates_table_name_with_schema()
-        {
-            var entity = new Entity();
-            entity.Name = "SinglularName";
-            entity.TableName = "TableName";
-            entity.Schema = "Schema";
-
-            var annotation = EntityBuilder.EntityAnnotationBuilder(entity);
-            annotation.Should().Be(@"[Table(""TableName"", Schema=""Schema"")]");
+            file.Should().Be(expected);
         }
     }
 }

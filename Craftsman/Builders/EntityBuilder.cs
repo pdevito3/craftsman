@@ -88,12 +88,14 @@ public abstract class BaseEntity
                 var attributes = AttributeBuilder(property);
                 propString += attributes;
                 var defaultValue = Utilities.GetDefaultValueText(property.DefaultValue, property);
-                var newLine = property == props.LastOrDefault() ? "" : $"{Environment.NewLine}{Environment.NewLine}";
+                var newLine = (property.IsForeignKey && !property.IsMany)
+                    ? Environment.NewLine
+                    : $"{Environment.NewLine}{Environment.NewLine}";
                 propString += $@"    public {property.Type} {property.Name} {{ get; set; }}{defaultValue}{newLine}";
                 propString += GetForeignProp(property);
             }
 
-            return propString;
+            return propString.RemoveLastNewLine().RemoveLastNewLine();
         }
 
         private static string AttributeBuilder(EntityProperty entityProperty)
@@ -102,12 +104,12 @@ public abstract class BaseEntity
             if (entityProperty.IsRequired)
                 attributeString += @$"    [Required]{Environment.NewLine}";
             if (entityProperty.IsForeignKey && !entityProperty.IsMany)
-                attributeString += @$"    [JsonIgnore] 
-    [IgnoreDataMember] 
+                attributeString += @$"    [JsonIgnore]
+    [IgnoreDataMember]
     [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
             if(entityProperty.IsMany)
-                attributeString += $@"    [JsonIgnore] 
-    [IgnoreDataMember] ";
+                attributeString += $@"    [JsonIgnore]
+    [IgnoreDataMember]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)
                 attributeString += @$"    [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
             if (!string.IsNullOrEmpty(entityProperty.ColumnName))
@@ -118,8 +120,7 @@ public abstract class BaseEntity
 
         private static string GetForeignProp(EntityProperty prop)
         {
-            return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"
-    public {prop.ForeignEntityName} {prop.ForeignEntityName} {{ get; set; }}" : "";
+            return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public {prop.ForeignEntityName} {prop.ForeignEntityName} {{ get; set; }}{Environment.NewLine}{Environment.NewLine}" : "";
         }
     }
 }
