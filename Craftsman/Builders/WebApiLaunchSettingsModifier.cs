@@ -43,7 +43,7 @@
 
         private static string GetProfileText(ApiEnvironment env, int port)
         {
-            var connectionString = String.IsNullOrEmpty(env.ConnectionString) ? "local" : env.ConnectionString.Replace(@"\", @"\\");
+            var connectionString = env.ConnectionString.Replace(@"\", @"\\");
             
                 return $@"
     ""{env.ProfileName ?? env.EnvironmentName}"": {{

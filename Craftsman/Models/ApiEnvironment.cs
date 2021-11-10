@@ -18,7 +18,7 @@
             }
         }
 
-        public string ConnectionString { get; set; }
+        public string ConnectionString { get; set; } = "local";
 
         public string ProfileName { get; set; }
 
