@@ -48,10 +48,10 @@
     <PackageReference Include=""MediatR"" Version=""9.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""6.0.0"" />
     <PackageReference Include=""Moq"" Version=""4.16.1"" />
-    <PackageReference Include=""Npgsql"" Version=""5.0.10"" />
+    <PackageReference Include=""Npgsql"" Version=""6.0.0"" />
     <PackageReference Include=""Newtonsoft.Json"" Version=""13.0.1"" />
     <PackageReference Include=""NUnit"" Version=""3.13.2"" />
-    <PackageReference Include=""NUnit3TestAdapter"" Version=""4.0.0"" />
+    <PackageReference Include=""NUnit3TestAdapter"" Version=""4.1.0"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.0.0"" />
     <PackageReference Include=""Respawn"" Version=""4.0.0"" />
   </ItemGroup>
