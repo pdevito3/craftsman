@@ -64,8 +64,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 public abstract class BaseEntity
 {{
-    [Key] 
-    [Column(""id"")]
+    [Key]
     public Guid Id {{ get; set; }} = Guid.NewGuid();
 }}";
         }
