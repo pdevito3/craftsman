@@ -56,7 +56,7 @@
     <PackageReference Include=""Bogus"" Version=""33.1.1"" />
     <PackageReference Include=""Autofac.Extensions.DependencyInjection"" Version=""7.2.0"" />
     <PackageReference Include=""AutoMapper.Extensions.Microsoft.DependencyInjection"" Version=""8.1.1"" />
-    <PackageReference Include=""EFCore.NamingConventions"" Version=""5.0.2"" />
+    <PackageReference Include=""EFCore.NamingConventions"" Version=""6.0.0-rc.1"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""10.3.4"" />
     <PackageReference Include=""MediatR"" Version=""9.0.0"" />
     <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""9.0.0"" />
