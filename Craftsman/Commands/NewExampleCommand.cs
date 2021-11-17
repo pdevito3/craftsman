@@ -464,7 +464,7 @@ AuthServer:
       AllowPlainTextPkce: false
       AllowedScopes:
         - recipemanagement.readonly
-        - recipemangement.fullaccess
+        - recipemanagement.fullaccess
         - openid
         - profile
   Scopes:
@@ -472,14 +472,14 @@ AuthServer:
       DisplayName: Recipes - Read Only
       UserClaims:
         - recipes.read
-    - Name: recipemangement.fullaccess
+    - Name: recipemanagement.fullaccess
       DisplayName: Recipes - Full Access
   Apis:
     - Name: recipe_management
       DisplayName: Recipe Management
       ScopeNames:
         - recipemanagement.readonly
-        - recipemangement.fullaccess
+        - recipemanagement.fullaccess
       Secrets:
         - 4653f605-2b36-43eb-bbef-a93480079f20
       UserClaims:
