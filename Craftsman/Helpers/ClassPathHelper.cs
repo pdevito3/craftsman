@@ -268,6 +268,11 @@
             return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Resources"), className);
         }
 
+        public static ClassPath WebApiServicesClassPath(string srcDirectory, string className, string projectBaseName)
+        {
+            return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Services"), className);
+        }
+
         public static ClassPath WebApiProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";

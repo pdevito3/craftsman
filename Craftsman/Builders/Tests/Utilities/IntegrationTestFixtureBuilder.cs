@@ -22,6 +22,7 @@
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var testUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(solutionDirectory, "", projectBaseName);
+            var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(solutionDirectory, "", projectBaseName);
 
             var usingStatement = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"
@@ -52,6 +53,7 @@ using {contextClassPath.ClassNamespace};
 using {testUtilsClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
+using {servicesClassPath.ClassNamespace};
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -95,16 +97,16 @@ public class TestFixture
 
         startup.ConfigureServices(services);
 
-        // add any mock services here, for example:
-        // var httpContextAccessorService = services.FirstOrDefault(d =>
-        //     d.ServiceType == typeof(IHttpContextAccessor));
-        // services.Remove(httpContextAccessorService);
-        // services.AddSingleton<IHttpContextAccessor, TestingAccessor>();
+        // add any mock services here
+        var httpContextAccessorService = services.FirstOrDefault(d =>
+            d.ServiceType == typeof(IHttpContextAccessor));
+        services.Remove(httpContextAccessorService);
+        services.AddScoped(_ => Mock.Of<IHttpContextAccessor>());
 
-        // var myService = services.FirstOrDefault(d =>
-        //     d.ServiceType == typeof(IService));
-        // services.Remove(myService);
-        // services.AddScoped(_ => Mock.Of<IService>());
+        var currentUserService = services.FirstOrDefault(d =>
+            d.ServiceType == typeof(ICurrentUserService));
+        services.Remove(currentUserService);
+        services.AddScoped(_ => Mock.Of<ICurrentUserService>());
 
         _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
 

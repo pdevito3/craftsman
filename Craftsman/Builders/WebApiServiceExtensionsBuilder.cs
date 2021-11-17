@@ -21,10 +21,10 @@
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static void CreateWebApiServiceExtension(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateWebApiServiceExtension(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"WebApiServiceExtension.cs", projectBaseName);
-            var fileText = GetWebApiServiceExtensionText(classPath.ClassNamespace);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"WebApiServiceExtension.cs", projectBaseName);
+            var fileText = GetWebApiServiceExtensionText(classPath.ClassNamespace, srcDirectory, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
@@ -116,10 +116,13 @@ public static class CorsServiceExtension
 }}";
         }
 
-        public static string GetWebApiServiceExtensionText(string classNamespace)
+        public static string GetWebApiServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName)
         {
+            var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
+            
             return @$"namespace {classNamespace};
 
+using {servicesClassPath.ClassNamespace};
 using AutoMapper;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -137,6 +140,9 @@ public static class WebApiServiceExtension
 {{
     public static void AddWebApiServices(this IServiceCollection services)
     {{
+        services.AddSingleton<ICurrentUserService, CurrentUserService>();
+        services.AddHttpContextAccessor();
+
         services.AddMediatR(typeof(Startup));
         services.AddScoped<SieveProcessor>();
         services.AddMvc()

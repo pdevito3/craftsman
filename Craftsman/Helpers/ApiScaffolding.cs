@@ -100,11 +100,14 @@
             HealthTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
             HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
             EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, fileSystem);
+            CurrentUserServiceTestBuilder.CreateTests(srcDirectory, projectBaseName, fileSystem);
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, projectBaseName);
 
             //services
+            CurrentUserServiceBuilder.GetCurrentUserService(srcDirectory, projectBaseName, fileSystem);
+            
             // TODO move the auth stuff to a modifier to make it SOLID so i can add it to an add auth command
             var policies = template.Entities
                 .SelectMany(entity => entity.Features)
