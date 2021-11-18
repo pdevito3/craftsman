@@ -65,6 +65,7 @@ using NUnit.Framework;
 using Respawn;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 [SetUpFixture]
 public class TestFixture
