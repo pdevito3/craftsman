@@ -31,17 +31,21 @@
             RegisterContext(srcDirectory, dbProvider, dbContextName, dbName, namingConventionEnum, projectBaseName);
         }
 
-        public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
+        public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string srcDirectory, string projectBaseName)
         {
             var entitiesUsings = "";
             foreach (var entity in entities)
             {
-                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+                var classPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
                 entitiesUsings += $"{Environment.NewLine}using {classPath.ClassNamespace};";
             }
+            var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
+            var baseEntityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", "", projectBaseName);
             
             return @$"namespace {classNamespace};
 
+using {baseEntityClassPath.ClassNamespace};
+using {servicesClassPath.ClassNamespace};
 {entitiesUsings}
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -50,9 +54,12 @@ using System.Threading.Tasks;
 
 public class {dbContextName} : DbContext
 {{
+    private readonly ICurrentUserService _currentUserService;
+
     public {dbContextName}(
-        DbContextOptions<{dbContextName}> options) : base(options)
+        DbContextOptions<{dbContextName}> options, ICurrentUserService currentUserService) : base(options)
     {{
+        _currentUserService = currentUserService;
     }}
 
     #region DbSet Region - Do Not Delete
@@ -62,6 +69,44 @@ public class {dbContextName} : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {{
+    }}
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
+    {{
+        UpdateAuditFields();
+        return base.SaveChangesAsync(cancellationToken);
+    }}
+
+    public override int SaveChanges()
+    {{
+        UpdateAuditFields();
+        return base.SaveChanges();
+    }}
+        
+    private void UpdateAuditFields()
+    {{
+        var now = DateTime.UtcNow;
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {{
+            switch (entry.State)
+            {{
+                case EntityState.Added:
+                    entry.Entity.CreatedBy = _currentUserService?.UserId;
+                    entry.Entity.CreatedOn = now;
+                    entry.Entity.LastModifiedBy = _currentUserService?.UserId;
+                    entry.Entity.LastModifiedOn = now;
+                    break;
+
+                case EntityState.Modified:
+                    entry.Entity.LastModifiedBy = _currentUserService?.UserId;
+                    entry.Entity.LastModifiedOn = now;
+                    break;
+                
+                case EntityState.Deleted:
+                    // deleted_at
+                    break;
+            }}
+        }}
     }}
 }}";
         }
@@ -134,7 +179,7 @@ public class {dbContextName} : DbContext
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        private static void InstallDbProviderNugetPackages(string provider, string solutionDirectory)
+        private static void InstallDbProviderNugetPackages(string provider, string srcDirectory)
         {
             var installCommand = $"add Infrastructure.Persistence{Path.DirectorySeparatorChar}Infrastructure.Persistence.csproj package Microsoft.EntityFrameworkCore.SqlServer --version 5.0.0";
 
@@ -153,7 +198,7 @@ public class {dbContextName} : DbContext
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = false,
-                    WorkingDirectory = solutionDirectory
+                    WorkingDirectory = srcDirectory
                 }
             };
 
@@ -169,97 +214,6 @@ public class {dbContextName} : DbContext
             //    return "UseMySql";
 
             return "UseSqlServer";
-        }
-
-        public static string GetAuditableSaveOverride(string classNamespace, List<Entity> entities, string dbContextName, string solutionDirectory, string projectBaseName)
-        {
-            var entitiesUsings = "";
-            foreach (var entity in entities)
-            {
-                var classPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
-                entitiesUsings += $"{Environment.NewLine}using {classPath.ClassNamespace};";
-            }
-            // notice domain.common that would need to be added and looked up. possibly interfaces too
-            return @$"namespace {classNamespace};{entitiesUsings};
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Threading;
-using System.Threading.Tasks;
-using Domain.Common;
-using System.Reflection;
-
-public class {dbContextName} : DbContext
-{{
-    private readonly IDateTimeService _dateTimeService;
-    private readonly ICurrentUserService _currentUserService;
-
-    public {dbContextName}(
-        DbContextOptions<{dbContextName}> options,
-        ICurrentUserService currentUserService,
-        IDateTimeService dateTimeService) : base(options)
-    {{
-        _currentUserService = currentUserService;
-        _dateTimeService = dateTimeService;
-    }}
-
-    #region DbSet Region - Do Not Delete
-
-{GetDbSetText(entities)}
-    #endregion DbSet Region - Do Not Delete
-
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
-    {{
-        foreach (EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())
-        {{
-            switch (entry.State)
-            {{
-                case EntityState.Added:
-                    entry.Entity.CreatedBy = _currentUserService.UserId;
-                    entry.Entity.CreatedOn = _dateTimeService.NowUtc;
-                    break;
-
-                case EntityState.Modified:
-                    entry.Entity.LastModifiedBy = _currentUserService.UserId;
-                    entry.Entity.LastModifiedOn = _dateTimeService.NowUtc;
-                    break;
-            }}
-        }}
-
-        int result = await base.SaveChangesAsync(cancellationToken);
-
-        return result;
-    }}
-
-    public override int SaveChanges()
-    {{
-        foreach (EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())
-        {{
-            switch (entry.State)
-            {{
-                case EntityState.Added:
-                    entry.Entity.CreatedBy = _currentUserService.UserId;
-                    entry.Entity.CreatedOn = _dateTimeService.NowUtc;
-                    break;
-
-                case EntityState.Modified:
-                    entry.Entity.LastModifiedBy = _currentUserService.UserId;
-                    entry.Entity.LastModifiedOn = _dateTimeService.NowUtc;
-                    break;
-            }}
-        }}
-
-        int result = base.SaveChanges();
-
-        return result;
-    }}
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {{
-        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        base.OnModelCreating(builder);
-    }}
-}}";
         }
     }
 }
