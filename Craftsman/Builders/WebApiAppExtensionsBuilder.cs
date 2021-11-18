@@ -68,6 +68,7 @@ public static class ErrorHandlerAppExtension
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using {webApiClassPath.ClassNamespace};
 
 public static class SwaggerAppExtension
@@ -88,7 +89,8 @@ public static class SwaggerAppExtension
         app.UseSwagger();
         app.UseSwaggerUI(config =>
         {{
-            config.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");{swaggerAuth}
+            config.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");
+            config.DocExpansion(DocExpansion.None);{swaggerAuth}
         }});
     }}";
 
