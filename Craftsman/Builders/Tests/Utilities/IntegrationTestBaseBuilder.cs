@@ -34,12 +34,17 @@
                 ? $@"
 
         // close to equivalency required to reconcile precision differences between EF and Postgres
-        AssertionOptions.AssertEquivalencyUsing(options =>
-          options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTime>()
-        );
-        AssertionOptions.AssertEquivalencyUsing(options =>
-          options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTimeOffset>()
-        );"
+        AssertionOptions.AssertEquivalencyUsing(options => 
+        {{
+            options.Using<DateTime>(ctx => ctx.Subject
+                .Should()
+                .BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTime>();
+            options.Using<DateTimeOffset>(ctx => ctx.Subject
+                .Should()
+                .BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTimeOffset>();
+
+            return options;
+        }});"
                 : null;
 
             return @$"namespace {classNamespace};
