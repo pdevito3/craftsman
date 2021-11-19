@@ -10,10 +10,10 @@
 
     public class ConsumerTestBuilder
     {
-        public static void CreateTests(string srcDirectory, Consumer consumer, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string testDirectory, Consumer consumer, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.FeatureTestClassPath(srcDirectory, $"{consumer.ConsumerName}Tests.cs", "EventHandlers", projectBaseName);
-            var fileText = WriteTestFileText(srcDirectory, classPath, consumer, projectBaseName);
+            var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{consumer.ConsumerName}Tests.cs", "EventHandlers", projectBaseName);
+            var fileText = WriteTestFileText(testDirectory, classPath, consumer, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 

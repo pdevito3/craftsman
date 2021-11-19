@@ -111,7 +111,7 @@
                 MassTransitModifier.AddConsumerRegistation(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
 
                 IntegrationTestFixtureModifier.AddMTConsumer(testDirectory, consumer.ConsumerName, projectBaseName, srcDirectory);
-                ConsumerTestBuilder.CreateTests(srcDirectory, consumer, projectBaseName, fileSystem);
+                ConsumerTestBuilder.CreateTests(testDirectory, consumer, projectBaseName, fileSystem);
             });
         }
     }

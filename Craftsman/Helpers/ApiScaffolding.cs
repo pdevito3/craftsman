@@ -100,7 +100,7 @@
             HealthTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
             HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
             EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, fileSystem);
-            CurrentUserServiceTestBuilder.CreateTests(srcDirectory, projectBaseName, fileSystem);
+            CurrentUserServiceTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
 
             //seeders
             SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, projectBaseName);
