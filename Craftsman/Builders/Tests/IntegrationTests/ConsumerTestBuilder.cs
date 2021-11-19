@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using MassTransit;
 using MassTransit.Testing;
 using Messages;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using {consumerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};
