@@ -11,7 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-* Added BaseEntity that all entities will inherit from.
+* Added `BaseEntity` that all entities will inherit from.
+
+  * Contains a `Guid` of `Id` marked as the primary key
+  * Contains `CreatedOn`, `CreatedBy`, `LastModifiedOn`, and `LastModifiedBy` properties
+
+* Added a `CurrentUserService` to add a user to the `CreatedBy` and `LastModifiedBy` properties if a user is found. Built into db context
 
 * Added built in features to the `add:feature` command
 
@@ -27,7 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Added a mock `IPublishEndpoint` service to `TestFixture` when using MassTransit
   * update docs that mediatr handler tests aren't broken when pubilshing anymore
-  
+
 * New policies added to swagger on `add:entity` scaffolding
 
 * New `add:authserver` command as well as an `AuthServer` option when creating a domain

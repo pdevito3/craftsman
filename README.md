@@ -31,13 +31,13 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 ✅ Auth Server Scaffolding (In-Memory)
 
-✅ Better environment variable support
+✅ First class environment variable usage
+
+✅ Auditable entities
+
+✅ Current user service
 
 🚧 Add Identity to Auth Server
-
-🚧 Auditable Entities
-
-🚧 Current user service
 
 🚧 BFF Scaffolding
 
