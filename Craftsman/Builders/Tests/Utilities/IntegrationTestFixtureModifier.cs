@@ -102,8 +102,8 @@ using MassTransit;";
                     {
                         newText += $@"
 
-                cfg.AddConsumer<{consumerName}>();
-                cfg.AddConsumerTestHarness<{consumerName}>();";
+            cfg.AddConsumer<{consumerName}>();
+            cfg.AddConsumerTestHarness<{consumerName}>();";
                     }
                     if (line.Contains(consumerClassPath.ClassNamespace))
                         hasUsingForConsumerNamespace = true;
@@ -126,7 +126,7 @@ using MassTransit;";
                     {
                         var newText = $"{line}";
                         if (line.Contains($"using MassTransit;"))
-                            newText += @$"{Environment.NewLine}    using {consumerClassPath.ClassNamespace};";
+                            newText += @$"{Environment.NewLine}using {consumerClassPath.ClassNamespace};";
 
                         output.WriteLine(newText);
                     }
