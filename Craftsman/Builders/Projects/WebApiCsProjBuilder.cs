@@ -53,10 +53,10 @@
 
   <ItemGroup>
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
-    <PackageReference Include=""Bogus"" Version=""33.1.1"" />
+    <PackageReference Include=""Bogus"" Version=""34.0.1"" />
     <PackageReference Include=""Autofac.Extensions.DependencyInjection"" Version=""7.2.0"" />
     <PackageReference Include=""AutoMapper.Extensions.Microsoft.DependencyInjection"" Version=""8.1.1"" />
-    <PackageReference Include=""EFCore.NamingConventions"" Version=""6.0.0-rc.1"" />
+    <PackageReference Include=""EFCore.NamingConventions"" Version=""6.0.0"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""10.3.4"" />
     <PackageReference Include=""MediatR"" Version=""9.0.0"" />
     <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""9.0.0"" />
@@ -83,8 +83,8 @@
     <PackageReference Include=""Serilog.Enrichers.Process"" Version=""2.0.2"" />
     <PackageReference Include=""Serilog.Enrichers.Thread"" Version=""3.1.0"" />
     <PackageReference Include=""Serilog.Settings.Configuration"" Version=""3.3.0"" />
-    <PackageReference Include=""Serilog.Sinks.Console"" Version=""4.0.0"" />
-    <PackageReference Include=""Serilog.Sinks.Seq"" Version=""5.0.1"" />
+    <PackageReference Include=""Serilog.Sinks.Console"" Version=""4.0.1"" />
+    <PackageReference Include=""Serilog.Sinks.Seq"" Version=""5.1.0"" />
   </ItemGroup>
 
 </Project>";

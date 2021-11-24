@@ -98,10 +98,10 @@
             var messagesDirectory = Path.Combine(solutionDirectory, "Messages");
 
             var massTransitPackages = new Dictionary<string, string>{
-                    { "MassTransit", "7.1.8" },
-                    { "MassTransit.AspNetCore", "7.1.8" },
-                    { "MassTransit.Extensions.DependencyInjection", "7.1.8" },
-                    { "MassTransit.RabbitMQ", "7.1.8" }
+                    { "MassTransit", "7.2.4" },
+                    { "MassTransit.AspNetCore", "7.2.4" },
+                    { "MassTransit.Extensions.DependencyInjection", "7.2.4" },
+                    { "MassTransit.RabbitMQ", "7.2.4" }
                 };
             var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
             Utilities.AddPackages(webApiClassPath, massTransitPackages);

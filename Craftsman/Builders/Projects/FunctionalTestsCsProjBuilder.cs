@@ -42,7 +42,7 @@
   <ItemGroup>
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""6.0.0"" />
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
-    <PackageReference Include=""Bogus"" Version=""33.1.1"" />
+    <PackageReference Include=""Bogus"" Version=""34.0.1"" />
     <PackageReference Include=""Docker.DotNet"" Version=""3.125.5"" />
     <PackageReference Include=""FluentAssertions"" Version=""5.10.3"" />
     <PackageReference Include=""MediatR"" Version=""9.0.0"" />
