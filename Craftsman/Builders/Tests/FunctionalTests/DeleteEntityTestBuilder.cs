@@ -57,19 +57,19 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             " : "";
 
             return $@"[Test]
-        public async Task {testName}()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();{clientAuth}
-            await InsertAsync({fakeEntityVariableName});
+    public async Task {testName}()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();{clientAuth}
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Delete.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.DeleteRequestAsync(route);
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Delete.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var result = await _client.DeleteRequestAsync(route);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }}";
         }
 
         private static string DeleteEntityTestUnauthorized(Entity entity)

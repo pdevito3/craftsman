@@ -64,20 +64,20 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             _client.AddAuth(new[] {scopes});" : "";
 
             return $@"[Test]
-        public async Task {testName}()
-        {{
-            // Arrange
-            var {fakeParentEntity} = new Fake{feature.ParentEntity}() {{ }}.Generate();
-            await InsertAsync({fakeParentEntity});
-            var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
+    public async Task {testName}()
+    {{
+        // Arrange
+        var {fakeParentEntity} = new Fake{feature.ParentEntity}() {{ }}.Generate();
+        await InsertAsync({fakeParentEntity});
+        var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Create;
-            var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.ParentEntity.LowercaseFirstLetter()}={{{fakeParentEntity}.Id}}"", {fakeEntityVariableName});
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Create;
+        var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.ParentEntity.LowercaseFirstLetter()}={{{fakeParentEntity}.Id}}"", {fakeEntityVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Created);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+    }}";
         }
 
         private static string NotFoundCreationTest(Entity entity, Feature feature, bool hasRestrictedEndpoints, List<Policy> policies)
@@ -94,18 +94,18 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             _client.AddAuth(new[] {scopes});" : "";
 
             return $@"[Test]
-        public async Task {testName}()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
+    public async Task {testName}()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Create;
-            var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.ParentEntity.LowercaseFirstLetter()}={{Guid.NewGuid()}}"", {fakeEntityVariableName});
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Create;
+        var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.ParentEntity.LowercaseFirstLetter()}={{Guid.NewGuid()}}"", {fakeEntityVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }}";
         }
 
         private static string InvalidCreationTest(Entity entity, Feature feature, bool hasRestrictedEndpoints, List<Policy> policies)
@@ -122,17 +122,17 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             _client.AddAuth(new[] {scopes});" : "";
 
             return $@"[Test]
-        public async Task {testName}()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
+    public async Task {testName}()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
 
-            // Act
-            var result = await _client.PostJsonRequestAsync(ApiRoutes.{entity.Plural}.Create, {fakeEntityVariableName});
+        // Act
+        var result = await _client.PostJsonRequestAsync(ApiRoutes.{entity.Plural}.Create, {fakeEntityVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }}";
         }
 
         private static string CreateEntityTestUnauthorized(Entity entity)
@@ -141,21 +141,21 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var fakeEntityVariableName = $"fake{entity.Name}";
 
             return $@"
-        [Test]
-        public async Task create_{entity.Name.ToLower()}_list_returns_unauthorized_without_valid_token()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+    [Test]
+    public async Task create_{entity.Name.ToLower()}_list_returns_unauthorized_without_valid_token()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
 
-            await InsertAsync({fakeEntityVariableName});
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Create;
-            var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Create;
+        var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }}";
         }
 
         private static string CreateEntityTestForbidden(Entity entity)
@@ -164,22 +164,22 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var fakeEntityVariableName = $"fake{entity.Name}";
 
             return $@"
-        [Test]
-        public async Task create_{entity.Name.ToLower()}_list_returns_forbidden_without_proper_scope()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            _client.AddAuth();
+    [Test]
+    public async Task create_{entity.Name.ToLower()}_list_returns_forbidden_without_proper_scope()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        _client.AddAuth();
 
-            await InsertAsync({fakeEntityVariableName});
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Create;
-            var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Create;
+        var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }}";
         }
     }
 }

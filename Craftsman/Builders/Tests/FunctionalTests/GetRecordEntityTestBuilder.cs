@@ -57,19 +57,19 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             " : "";
 
             return $@"[Test]
-        public async Task {testName}()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();{clientAuth}
-            await InsertAsync({fakeEntityVariableName});
+    public async Task {testName}()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();{clientAuth}
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.GetRequestAsync(route);
+        // Act
+        var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var result = await _client.GetRequestAsync(route);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.OK);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+    }}";
         }
 
         private static string GetEntityTestUnauthorized(Entity entity)
@@ -79,21 +79,21 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
-        [Test]
-        public async Task get_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+    [Test]
+    public async Task get_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
 
-            await InsertAsync({fakeEntityVariableName});
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.GetRequestAsync(route);
+        // Act
+        var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var result = await _client.GetRequestAsync(route);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }}";
         }
 
         private static string GetEntityTestForbidden(Entity entity)
@@ -103,22 +103,22 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
-        [Test]
-        public async Task get_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            _client.AddAuth();
+    [Test]
+    public async Task get_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        _client.AddAuth();
 
-            await InsertAsync({fakeEntityVariableName});
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.GetRequestAsync(route);
+        // Act
+        var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var result = await _client.GetRequestAsync(route);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }}";
         }
     }
 }

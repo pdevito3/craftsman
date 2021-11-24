@@ -57,18 +57,18 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             _client.AddAuth(new[] {scopes});" : "";
 
             return $@"[Test]
-        public async Task {testName}()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntityForCreation} {{ }}.Generate();{clientAuth}
+    public async Task {testName}()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntityForCreation} {{ }}.Generate();{clientAuth}
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Create;
-            var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Create;
+        var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Created);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+    }}";
         }
 
         private static string CreateEntityTestUnauthorized(Entity entity)
@@ -77,21 +77,21 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var fakeEntityVariableName = $"fake{entity.Name}";
 
             return $@"
-        [Test]
-        public async Task create_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+    [Test]
+    public async Task create_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
 
-            await InsertAsync({fakeEntityVariableName});
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Create;
-            var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Create;
+        var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }}";
         }
 
         private static string CreateEntityTestForbidden(Entity entity)
@@ -101,22 +101,22 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
-        [Test]
-        public async Task create_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            _client.AddAuth();
+    [Test]
+    public async Task create_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        _client.AddAuth();
 
-            await InsertAsync({fakeEntityVariableName});
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Create;
-            var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Create;
+        var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }}";
         }
     }
 }

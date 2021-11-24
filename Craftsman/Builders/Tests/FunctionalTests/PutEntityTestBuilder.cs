@@ -60,20 +60,20 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             " : "";
 
             return $@"[Test]
-        public async Task {testName}()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();{clientAuth}
-            await InsertAsync({fakeEntityVariableName});
+    public async Task {testName}()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();{clientAuth}
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
+        // Act
+        var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }}";
         }
 
         private static string EntityTestUnauthorized(Entity entity)
@@ -85,22 +85,22 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
-        [Test]
-        public async Task put_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();
+    [Test]
+    public async Task put_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();
 
-            await InsertAsync({fakeEntityVariableName});
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
+        // Act
+        var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }}";
         }
 
         private static string EntityTestForbidden(Entity entity)
@@ -112,23 +112,23 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var pkName = Entity.PrimaryKeyProperty.Name;
 
             return $@"
-        [Test]
-        public async Task put_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();
-            _client.AddAuth();
+    [Test]
+    public async Task put_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();
+        _client.AddAuth();
 
-            await InsertAsync({fakeEntityVariableName});
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
+        // Act
+        var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }}";
         }
     }
 }

@@ -37,17 +37,17 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         private static string HealthTest()
         {
             return $@"[Test]
-        public async Task health_check_returns_ok()
-        {{
-            // Arrange
-            // N/A
+    public async Task health_check_returns_ok()
+    {{
+        // Arrange
+        // N/A
 
-            // Act
-            var result = await _client.GetRequestAsync(ApiRoutes.Health);
+        // Act
+        var result = await _client.GetRequestAsync(ApiRoutes.Health);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.OK);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+    }}";
         }
     }
 }

@@ -75,21 +75,21 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
                 return "// no patch tests were created";
 
             return $@"[Test]
-        public async Task {testName}()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            var patchDoc = new JsonPatchDocument<{updateDto}>();
-            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});{clientAuth}
-            await InsertAsync({fakeEntityVariableName});
+    public async Task {testName}()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        var patchDoc = new JsonPatchDocument<{updateDto}>();
+        patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});{clientAuth}
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.PatchJsonRequestAsync(route, patchDoc);
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var result = await _client.PatchJsonRequestAsync(route, patchDoc);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }}";
         }
 
         private static string EntityTestUnauthorized(Entity entity)

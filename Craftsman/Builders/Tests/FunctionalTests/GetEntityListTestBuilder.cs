@@ -50,51 +50,51 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var clientAuth = hasRestrictedEndpoints ? @$"_client.AddAuth(new[] {scopes});" : null;
 
             return $@"[Test]
-        public async Task {testName}()
-        {{
-            // Arrange
-            {clientAuth ?? "// N/A"}
+    public async Task {testName}()
+    {{
+        // Arrange
+        {clientAuth ?? "// N/A"}
 
-            // Act
-            var result = await _client.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
+        // Act
+        var result = await _client.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.OK);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+    }}";
         }
 
         private static string GetEntityTestUnauthorized(Entity entity)
         {
             return $@"
-        [Test]
-        public async Task get_{entity.Name.ToLower()}_list_returns_unauthorized_without_valid_token()
-        {{
-            // Arrange
-            // N/A
+    [Test]
+    public async Task get_{entity.Name.ToLower()}_list_returns_unauthorized_without_valid_token()
+    {{
+        // Arrange
+        // N/A
 
-            // Act
-            var result = await _client.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
+        // Act
+        var result = await _client.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }}";
         }
 
         private static string GetEntityTestForbidden(Entity entity)
         {
             return $@"
-        [Test]
-        public async Task get_{entity.Name.ToLower()}_list_returns_forbidden_without_proper_scope()
-        {{
-            // Arrange
-            _client.AddAuth();
+    [Test]
+    public async Task get_{entity.Name.ToLower()}_list_returns_forbidden_without_proper_scope()
+    {{
+        // Arrange
+        _client.AddAuth();
 
-            // Act
-            var result = await _client.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
+        // Act
+        var result = await _client.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }}";
         }
     }
 }
