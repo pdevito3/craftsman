@@ -13,14 +13,8 @@
         public static void CreateValidators(string solutionDirectory, string projectBaseName, Entity entity)
         {
             BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Manipulation);
-
-            // not building the creation and update ones anymore to KISS. Mainipulation can server as
-            // shared validation. If there is shared validation required for just updates or just adds
-            // then they can copy manipulation and make it themselves. I think this will be a rarity
-            // enough that we can feel comfortable with this. even manip is possibly sharing prematurely
-
-            //BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Creation);
-            //BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Update);
+            BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Creation);
+            BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Update);
         }
 
         private static void BuildValidatorClass(string solutionDirectory, string projectBaseName, Entity entity, Validator validator)
@@ -33,20 +27,16 @@
             if (File.Exists(classPath.FullClassPath))
                 throw new FileAlreadyExistsException(classPath.FullClassPath);
 
-            using (FileStream fs = File.Create(classPath.FullClassPath))
+            using FileStream fs = File.Create(classPath.FullClassPath);
+            var data = validator switch
             {
-                var data = "";
-                if (validator == Validator.Creation)
-                    data = GetCreationValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity);
-                else if (validator == Validator.Update)
-                    data = GetUpdateValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity);
-                else if (validator == Validator.Manipulation)
-                    data = GetManipulationValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity);
-                else
-                    throw new Exception("Unrecognized validator exception."); // this shouldn't really be possible, so not adding a special validator, but putting here for good measure
+                Validator.Creation => GetCreationValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity),
+                Validator.Update => GetUpdateValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity),
+                Validator.Manipulation => GetManipulationValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity),
+                _ => throw new Exception("Unrecognized validator exception.")
+            };
 
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
         public static string GetCreationValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
@@ -84,7 +74,7 @@ public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: 
     }}
 }}";
         }
-
+        
         public static string GetManipulationValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
         {
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
@@ -100,6 +90,14 @@ public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulati
         // add fluent validation rules that should be shared between creation and update operations here
         //https://fluentvalidation.net/
     }}
+
+    // want to do some kind of db check to see if something is unique? try something like this with the `MustAsync` prop
+    // source: https://github.com/jasontaylordev/CleanArchitecture/blob/413fb3a68a0467359967789e347507d7e84c48d4/src/Application/TodoLists/Commands/CreateTodoList/CreateTodoListCommandValidator.cs
+    // public async Task<bool> BeUniqueTitle(string title, CancellationToken cancellationToken)
+    // {{
+    //     return await _context.TodoLists
+    //         .AllAsync(l => l.Title != title, cancellationToken);
+    // }}
 }}";
         }
     }

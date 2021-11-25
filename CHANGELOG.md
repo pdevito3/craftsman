@@ -40,6 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Added helper `GetService` method to `TestFixture`
 
+* Added Creation and Update Validators back to scaffolding. Easy enough to delete if you aren't using them
+
 * Added a `NamingConvention` property to the db template
 
   * options are:
