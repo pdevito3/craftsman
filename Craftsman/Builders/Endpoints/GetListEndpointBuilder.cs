@@ -20,33 +20,33 @@
             var getListAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetList(entity, addSwaggerComments, listResponse, getListAuthorizations.Length > 0)}{getListAuthorizations}
-        [Consumes(""application/json"")]
-        [Produces(""application/json"")]
-        [HttpGet(Name = ""{getListEndpointName}"")]
-        public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
+    [Consumes(""application/json"")]
+    [Produces(""application/json"")]
+    [HttpGet(Name = ""{getListEndpointName}"")]
+    public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
+    {{
+        var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryListMethodName}({lowercaseEntityVariable}ParametersDto);
+        var queryResponse = await _mediator.Send(query);
+
+        var paginationMetadata = new
         {{
-            var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryListMethodName}({lowercaseEntityVariable}ParametersDto);
-            var queryResponse = await _mediator.Send(query);
+            totalCount = queryResponse.TotalCount,
+            pageSize = queryResponse.PageSize,
+            currentPageSize = queryResponse.CurrentPageSize,
+            currentStartIndex = queryResponse.CurrentStartIndex,
+            currentEndIndex = queryResponse.CurrentEndIndex,
+            pageNumber = queryResponse.PageNumber,
+            totalPages = queryResponse.TotalPages,
+            hasPrevious = queryResponse.HasPrevious,
+            hasNext = queryResponse.HasNext
+        }};
 
-            var paginationMetadata = new
-            {{
-                totalCount = queryResponse.TotalCount,
-                pageSize = queryResponse.PageSize,
-                currentPageSize = queryResponse.CurrentPageSize,
-                currentStartIndex = queryResponse.CurrentStartIndex,
-                currentEndIndex = queryResponse.CurrentEndIndex,
-                pageNumber = queryResponse.PageNumber,
-                totalPages = queryResponse.TotalPages,
-                hasPrevious = queryResponse.HasPrevious,
-                hasNext = queryResponse.HasNext
-            }};
+        Response.Headers.Add(""X-Pagination"",
+            JsonSerializer.Serialize(paginationMetadata));
 
-            Response.Headers.Add(""X-Pagination"",
-                JsonSerializer.Serialize(paginationMetadata));
-
-            var response = new {listResponse}(queryResponse);
-            return Ok(response);
-        }}";
+        var response = new {listResponse}(queryResponse);
+        return Ok(response);
+    }}";
         }
         
     }

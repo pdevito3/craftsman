@@ -22,16 +22,16 @@
 
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetRecord(entity, addSwaggerComments, singleResponse, getRecordAuthorizations.Length > 0)}{getRecordAuthorizations}
-        [Produces(""application/json"")]
-        [HttpGet(""{{{lowercasePrimaryKey}}}"", Name = ""{getRecordEndpointName}"")]
-        public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercasePrimaryKey})
-        {{
-            var query = new {Utilities.GetEntityFeatureClassName(entity.Name)}.{queryRecordMethodName}({lowercasePrimaryKey});
-            var queryResponse = await _mediator.Send(query);
+    [Produces(""application/json"")]
+    [HttpGet(""{{{lowercasePrimaryKey}:{primaryKeyProp.Type.ToLower()}}}"", Name = ""{getRecordEndpointName}"")]
+    public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercasePrimaryKey})
+    {{
+        var query = new {Utilities.GetEntityFeatureClassName(entity.Name)}.{queryRecordMethodName}({lowercasePrimaryKey});
+        var queryResponse = await _mediator.Send(query);
 
-            var response = new {singleResponse}(queryResponse);
-            return Ok(response);
-        }}";
+        var response = new {singleResponse}(queryResponse);
+        return Ok(response);
+    }}";
         }
     }
 }
