@@ -49,7 +49,7 @@ public class TestBase
     public static HttpClient _client;
 
     [SetUp]
-    public async Task TestSetUp()
+    public void TestSetUp()
     {{
         _factory = new {Utilities.GetWebHostFactoryName()}();
         _configuration = _factory.Services.GetRequiredService<IConfiguration>();
