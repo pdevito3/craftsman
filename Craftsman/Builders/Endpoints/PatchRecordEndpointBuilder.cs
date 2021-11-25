@@ -20,7 +20,7 @@
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_PatchRecord(entity, addSwaggerComments, updatePartialAuthorizations.Length > 0)}{updatePartialAuthorizations}
     [Consumes(""application/json"")]
     [Produces(""application/json"")]
-    [HttpPatch(""{{{lowercasePrimaryKey}:{primaryKeyProp.Type.ToLower()}}}"", Name = ""PartiallyUpdate{entityName}"")]
+    [HttpPatch(""{{{lowercasePrimaryKey}}}"", Name = ""PartiallyUpdate{entityName}"")]
     public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {lowercasePrimaryKey}, JsonPatchDocument<{updateDto}> patchDoc)
     {{
         var command = new {Utilities.PatchEntityFeatureClassName(entity.Name)}.{patchRecordCommandMethodName}({lowercasePrimaryKey}, patchDoc);
