@@ -54,10 +54,13 @@ public class PagedList<T> : List<T>
         return new PagedList<T>(items, count, pageNumber, pageSize);
     }}
 
-    public static async Task<PagedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
+    public static async Task<PagedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {{
         var count = source.Count();
-        var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        var items = await source
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
         return new PagedList<T>(items, count, pageNumber, pageSize);
     }}
 }}";

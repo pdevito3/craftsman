@@ -79,13 +79,13 @@ public static class {className}
         public async Task<bool> Handle({deleteCommandName} request, CancellationToken cancellationToken)
         {{
             var recordToDelete = await _db.{entity.Plural}
-                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
+                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName}, cancellationToken);
 
             if (recordToDelete == null)
                 throw new KeyNotFoundException();
 
             _db.{entity.Plural}.Remove(recordToDelete);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(cancellationToken);
 
             return true;
         }}

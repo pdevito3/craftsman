@@ -89,14 +89,14 @@ public static class {className}
         public async Task<bool> Handle({updateCommandName} request, CancellationToken cancellationToken)
         {{
             var {updatedEntityProp} = await _db.{entity.Plural}
-                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
+                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName}, cancellationToken);
 
             if ({updatedEntityProp} == null)
                 throw new KeyNotFoundException();
 
             _mapper.Map(request.{commandProp}, {updatedEntityProp});
 
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(cancellationToken);
 
             return true;
         }}

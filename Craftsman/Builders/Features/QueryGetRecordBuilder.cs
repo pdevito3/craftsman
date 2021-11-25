@@ -79,8 +79,9 @@ public static class {className}
         public async Task<{readDto}> Handle({queryRecordName} request, CancellationToken cancellationToken)
         {{
             var result = await _db.{entity.Plural}
+                .AsNoTracking()
                 .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
+                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName}, cancellationToken);
 
             if (result == null)
                 throw new KeyNotFoundException();

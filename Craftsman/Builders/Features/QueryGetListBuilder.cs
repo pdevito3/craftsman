@@ -101,7 +101,8 @@ public static class {className}
 
             return await PagedList<{readDto}>.CreateAsync(dtoCollection,
                 request.QueryParameters.PageNumber,
-                request.QueryParameters.PageSize);
+                request.QueryParameters.PageSize,
+                cancellationToken);
         }}
     }}
 }}";

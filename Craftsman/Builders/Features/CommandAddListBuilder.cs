@@ -93,7 +93,7 @@ public static class {className}
             
             _db.{entity.Plural}.AddRange({entityNameLowercase});
 
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(cancellationToken);
 
             var result = _db.{entity.Plural}.Where({entity.Lambda} => {entityNameLowercase}.Select({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName}).Contains({entity.Lambda}.{primaryKeyPropName}));
             return _mapper.Map<{readDto}>(result);

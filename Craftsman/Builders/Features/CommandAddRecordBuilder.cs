@@ -89,11 +89,12 @@ public static class {className}
             var {entityNameLowercase} = _mapper.Map<{entityName}> (request.{commandProp});
             _db.{entity.Plural}.Add({entityNameLowercase});
 
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(cancellationToken);
 
             return await _db.{entity.Plural}
+                .AsNoTracking()
                 .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName});
+                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName}, cancellationToken);
         }}
     }}
 }}";

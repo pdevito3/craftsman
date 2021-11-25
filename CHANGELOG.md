@@ -78,6 +78,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Updated FK support to better API
 * Moved env config from appsettings to environment variables
 * Production env no longer added by default
+* Features now include missing cancellation tokens as well as `AsNoTracking` properties
 
 
 ### Fixed
