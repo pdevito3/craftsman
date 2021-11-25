@@ -98,7 +98,6 @@ public static class CorsServiceExtension
                     .AllowAnyHeader()
                     .WithExposedHeaders(""X-Pagination""));
             }});
-            
         }}
         else
         {{

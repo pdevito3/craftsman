@@ -44,9 +44,9 @@
             
             return @$"namespace {classNamespace};
 
+{entitiesUsings}
 using {baseEntityClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
-{entitiesUsings}
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Threading;
@@ -155,18 +155,18 @@ public class {dbContextName} : DbContext
                         if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                         {
                             newText += @$"
-            if (env.IsEnvironment(LocalConfig.FunctionalTestingEnvName) || env.IsDevelopment())
-            {{
-                services.AddDbContext<{dbContextName}>(options =>
-                    options.UseInMemoryDatabase($""{dbName ?? dbContextName}""));
-            }}
-            else
-            {{
-                services.AddDbContext<{dbContextName}>(options =>
-                    options.{usingDbStatement}(
-                        Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"") ?? ""placeholder-for-migrations"",
-                        builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});
-            }}";
+        if (env.IsEnvironment(LocalConfig.FunctionalTestingEnvName) || env.IsDevelopment())
+        {{
+            services.AddDbContext<{dbContextName}>(options =>
+                options.UseInMemoryDatabase($""{dbName ?? dbContextName}""));
+        }}
+        else
+        {{
+            services.AddDbContext<{dbContextName}>(options =>
+                options.{usingDbStatement}(
+                    Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"") ?? ""placeholder-for-migrations"",
+                    builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});
+        }}";
                         }
 
                         output.WriteLine(newText);
