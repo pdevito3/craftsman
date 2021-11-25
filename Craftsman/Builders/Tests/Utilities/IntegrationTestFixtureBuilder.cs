@@ -104,11 +104,6 @@ public class TestFixture
         services.Remove(httpContextAccessorService);
         services.AddScoped(_ => Mock.Of<IHttpContextAccessor>());
 
-        var currentUserService = services.FirstOrDefault(d =>
-            d.ServiceType == typeof(ICurrentUserService));
-        services.Remove(currentUserService);
-        services.AddScoped(_ => Mock.Of<ICurrentUserService>());
-
         _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
 
         {checkpoint}
