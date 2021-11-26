@@ -53,6 +53,7 @@ using {contextClassPath.ClassNamespace};
 using {validatorsClassPath.ClassNamespace};
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
@@ -87,13 +88,17 @@ public static class {className}
         public async Task<bool> Handle({patchCommandName} request, CancellationToken cancellationToken)
         {{
             if (request.PatchDoc == null)
-                throw new ApiException(""Invalid patch document."");
+                throw new ValidationException(
+                    new List<ValidationFailure>()
+                    {{
+                        new ValidationFailure(""Patch Document"",""Invalid patch doc."")
+                    }});
 
             var {updatedEntityProp} = await _db.{entity.Plural}
                 .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
 
             if ({updatedEntityProp} == null)
-                throw new KeyNotFoundException();
+                throw new NotFoundException(""{entity.Name}"", request.{primaryKeyPropName});
 
             var {patchedEntityProp} = _mapper.Map<{updateDto}>({updatedEntityProp}); // map the {entityNameLowercase} we got from the database to an updatable {entityNameLowercase} model
             request.PatchDoc.ApplyTo({patchedEntityProp}); // apply patchdoc updates to the updatable {entityNameLowercase}

@@ -82,7 +82,7 @@ public static class {className}
                 .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName}, cancellationToken);
 
             if (recordToDelete == null)
-                throw new KeyNotFoundException();
+                throw new NotFoundException(""{entity.Name}"", request.{primaryKeyPropName});
 
             _db.{entity.Plural}.Remove(recordToDelete);
             await _db.SaveChangesAsync(cancellationToken);

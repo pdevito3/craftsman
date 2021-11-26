@@ -41,6 +41,7 @@
 using {fakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};
 using FluentAssertions;
+using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -88,7 +89,7 @@ public class {commandName}Tests : TestBase
             return badId == "" ? "" : $@"
 
     [Test]
-    public async Task delete_{entity.Name.ToLower()}_throws_keynotfoundexception_when_record_does_not_exist()
+    public async Task delete_{entity.Name.ToLower()}_throws_notfoundexception_when_record_does_not_exist()
     {{
         // Arrange
         var badId = {badId};
@@ -98,7 +99,7 @@ public class {commandName}Tests : TestBase
         Func<Task> act = () => SendAsync(command);
 
         // Assert
-        await act.Should().ThrowAsync<KeyNotFoundException>();
+        await act.Should().ThrowAsync<NotFoundException>();
     }}";
         }
     }

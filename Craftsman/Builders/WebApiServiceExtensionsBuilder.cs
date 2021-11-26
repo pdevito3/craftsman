@@ -118,10 +118,12 @@ public static class CorsServiceExtension
         public static string GetWebApiServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName)
         {
             var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
+            var middlewareClassPath = ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, $"", projectBaseName);
             
             return @$"namespace {classNamespace};
 
 using {servicesClassPath.ClassNamespace};
+using {middlewareClassPath.ClassNamespace};
 using AutoMapper;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -144,8 +146,8 @@ public static class WebApiServiceExtension
 
         services.AddMediatR(typeof(Startup));
         services.AddScoped<SieveProcessor>();
-        services.AddMvc()
-            .AddFluentValidation(cfg => {{ cfg.RegisterValidatorsFromAssemblyContaining<Startup>(); }});
+        services.AddMvc(options => options.Filters.Add<ErrorHandlerFilterAttribute>())
+            .AddFluentValidation(cfg => {{ cfg.AutomaticValidationEnabled = false; }});
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
     }}
 }}";

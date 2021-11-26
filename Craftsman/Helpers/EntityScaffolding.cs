@@ -106,7 +106,7 @@
             if (feature.Type == FeatureType.PatchRecord.Name)
             {
                 CommandPatchRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                PatchCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                PatchCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName, fileSystem);
                 PatchEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);

@@ -168,7 +168,6 @@ public class Startup
         app.UseSerilogRequestLogging();
         app.UseRouting();{appAuth}
 
-        app.UseErrorHandlingMiddleware();
         app.UseEndpoints(endpoints =>
         {{
             endpoints.MapHealthChecks(""/api/health"");

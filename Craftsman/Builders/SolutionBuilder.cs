@@ -62,8 +62,7 @@
             WebApiServiceExtensionsBuilder.CreateApiVersioningServiceExtension(srcDirectory, projectBaseName, fileSystem);
             WebApiServiceExtensionsBuilder.CreateCorsServiceExtension(srcDirectory, projectBaseName, fileSystem);
             WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(srcDirectory, projectBaseName, fileSystem);
-            WebApiAppExtensionsBuilder.CreateErrorHandlerWebApiAppExtension(srcDirectory, projectBaseName, fileSystem);
-            ErrorHandlerMiddlewareBuilder.CreateErrorHandlerMiddleware(srcDirectory, projectBaseName, fileSystem);
+            ErrorHandlerFilterAttributeBuilder.CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName, fileSystem);
             AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, fileSystem);
             ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, fileSystem);
@@ -74,7 +73,7 @@
             BasePaginationParametersBuilder.CreateBasePaginationParameters(srcDirectory, projectBaseName, fileSystem);
             PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, fileSystem);
             ResponseBuilder.CreateResponse(srcDirectory, projectBaseName, fileSystem);
-            CoreExceptionsBuilder.CreateExceptions(srcDirectory, projectBaseName);
+            CoreExceptionsBuilder.CreateExceptions(srcDirectory, projectBaseName, fileSystem);
             InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(srcDirectory, projectBaseName, fileSystem);
         }
 

@@ -37,6 +37,8 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 ✅ Current user service
 
+✅ Refactor error handling pipeline
+
 🚧 Add Identity to Auth Server
 
 🚧 BFF Scaffolding
@@ -47,11 +49,9 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 🚧 More scaffolded test coverage
 
-🚧 Refactor error handling pipeline
-
 🚧 Performance Upgrades
 
-🚧 Pub/Sub Tests
+🚧 MassTransit Producer Tests
 
 🚧 Logging Updates and OpenTelemetry additions 
 

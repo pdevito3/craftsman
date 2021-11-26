@@ -5,26 +5,18 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using System.Text;
 
     public class PatchCommandTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, Entity entity, string projectBaseName)
+        public static void CreateTests(string solutionDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"Patch{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = WriteTestFileText(solutionDirectory, classPath, entity, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = WriteTestFileText(solutionDirectory, classPath, entity, projectBaseName);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
         private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, string projectBaseName)
@@ -60,6 +52,7 @@ using {dtoClassPath.ClassNamespace};
 using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
+using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -112,7 +105,7 @@ public class {commandName}Tests : TestBase
             return randomId == "" ? "" : $@"
 
     [Test]
-    public async Task passing_null_patchdoc_throws_apiexception()
+    public async Task passing_null_patchdoc_throws_validationexception()
     {{
         // Arrange
         var randomId = {randomId};
@@ -122,7 +115,7 @@ public class {commandName}Tests : TestBase
         Func<Task> act = () => SendAsync(command);
 
         // Assert
-        await act.Should().ThrowAsync<ApiException>();
+        await act.Should().ThrowAsync<ValidationException>();
     }}";
         }
 
@@ -133,7 +126,7 @@ public class {commandName}Tests : TestBase
 
             return badId == "" ? "" : $@"
     [Test]
-    public async Task patch_{entity.Name.ToLower()}_throws_keynotfound_exception_when_record_does_not_exist()
+    public async Task patch_{entity.Name.ToLower()}_throws_notfound_exception_when_record_does_not_exist()
     {{
         // Arrange
         var badId = {badId};
@@ -144,7 +137,7 @@ public class {commandName}Tests : TestBase
         Func<Task> act = () => SendAsync(command);
 
         // Assert
-        await act.Should().ThrowAsync<KeyNotFoundException>();
+        await act.Should().ThrowAsync<NotFoundException>();
     }}";
         }
     }

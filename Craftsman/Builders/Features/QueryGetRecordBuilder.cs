@@ -84,7 +84,7 @@ public static class {className}
                 .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName}, cancellationToken);
 
             if (result == null)
-                throw new KeyNotFoundException();
+                throw new NotFoundException(""{entity.Name}"", request.{primaryKeyPropName});
 
             return result;
         }}

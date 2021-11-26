@@ -66,7 +66,6 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 {{
     {GetEntitiesTest(entity)}
     {GetEntitiesWithPageSizeAndNumberTest(entity)}
-    {GetListWithoutParams(queryName, entity)}
     {sortTests}
     {filterTests}
 }}";
@@ -337,24 +336,6 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             .Should().BeEquivalentTo(fake{entity.Name}Two, options =>
                 options.ExcludingMissingMembers());
     }}{Environment.NewLine}";
-        }
-
-        private static string GetListWithoutParams(string queryName, Entity entity)
-        {
-            return $@"
-    [Test]
-    public async Task get_{entity.Name.ToLower()}_list_throws_apiexception_when_query_parameters_are_null()
-    {{
-        // Arrange
-        // N/A
-
-        // Act
-        var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(null);
-        Func<Task> act = () => SendAsync(query);
-
-        // Assert
-        await act.Should().ThrowAsync<ApiException>();
-    }}";
         }
     }
 }

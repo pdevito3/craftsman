@@ -57,28 +57,59 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Updated to .NET 6
+
 * Updated nuget packages
 
   * Inlcudes a major release of Fluent Assertions that required updates to:
     * Functional test assertions (use `HttpStatusCode.XXX`)
     * Integration tests `TestBase` update for postgresto include `1.Seconds()`
     * Integration test updates to `await act.Should().ThrowAsync<` where appropriate
+  
 * Moved Policies to Feature
+
 * There is no more primary key property. A Guid with a name `Id` will be inherited by all entities.
+
 * Docker utilities for integration test refactored to use Fluent Docker wherever possible for better readability. Some enhancements were made as well (e.g. better container/volume naming, proper volume mounting).
+
+* Removed `ErrorHandlerMiddleware` and replaced it with `ErrorHandlerFilterAttribute`
+
+  * Updated built in Exceptions
+  * Updated thrown errors and associated tests in the features
+
 * Cleaned up test names
+
 * Modified CORS util to take in env
+
 * Added `Secret` back to Environment options
+
 * Added local config utilities for testing environments
+
 * Remove `UseInMemoryDb` app setting in favor of environment specific checks
+
 * Remove `UseInMemoryBus` app setting in favor of environment specific checks
+
 * Using statement shortening for reset function in test fixture
+
 * Consolidated multiple environments startups to one startup file
+
 * Update logging registration in `Program.cs` to no longer rely on `appsettings`
+
 * Updated FK support to better API
+
 * Moved env config from appsettings to environment variables
+
 * Production env no longer added by default
+
 * Features now include missing cancellation tokens as well as `AsNoTracking` properties
+
+* Removed automatic fluent validation to allow more control in domain operations. For example:
+
+  ```csharp
+  var validator = new RecipeForCreationDtoValidator();
+  validator.ValidateAndThrow(recipeForCreationDto);
+  ```
+
+  * this can be turned back on in `WebApiServiceExtension` by updating `.AddFluentValidation(cfg => { cfg.AutomaticValidationEnabled = false; });`
 
 
 ### Fixed
