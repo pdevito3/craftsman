@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Removed unused response class and endpoint reference
+* Removed `Consumes` from Get list
+
 ## [0.12.0] - 11/28/2021
 
 ### Added

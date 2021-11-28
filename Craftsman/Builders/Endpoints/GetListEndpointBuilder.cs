@@ -20,7 +20,6 @@
             var getListAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetList(entity, addSwaggerComments, listResponse, getListAuthorizations.Length > 0)}{getListAuthorizations}
-    [Consumes(""application/json"")]
     [Produces(""application/json"")]
     [HttpGet(Name = ""{getListEndpointName}"")]
     public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
