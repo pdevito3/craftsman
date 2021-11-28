@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Nothing yet!
 
+## [0.12.1] - 11/28/2021
+
+### Updated
+
+* Removed unused response class and endpoint reference
 ## [0.12.0] - 11/28/2021
 
 ### Added

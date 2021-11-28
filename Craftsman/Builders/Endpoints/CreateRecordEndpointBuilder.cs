@@ -15,7 +15,7 @@
             var creationDto = Utilities.GetDtoName(entityName, Dto.Creation);
             var primaryKeyProp = Entity.PrimaryKeyProperty;
             var addRecordCommandMethodName = Utilities.CommandAddName(entityName);
-            var singleResponse = $@"Response<{readDto}>";
+            var singleResponse = $@"{readDto}";
             var addRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
             var creationPropName = $"{lowercaseEntityVariable}ForCreation";
 
@@ -27,11 +27,10 @@
     {{
         var command = new {Utilities.AddEntityFeatureClassName(entity.Name)}.{addRecordCommandMethodName}({creationPropName});
         var commandResponse = await _mediator.Send(command);
-        var response = new {singleResponse}(commandResponse);
 
         return CreatedAtRoute(""Get{entityName}"",
             new {{ commandResponse.{primaryKeyProp.Name} }},
-            response);
+            commandResponse);
     }}";
         }
         
@@ -42,7 +41,7 @@
             var readDto = Utilities.GetDtoName(entityName, Dto.Read);
             var creationDto = $"IEnumerable<{Utilities.GetDtoName(entityName, Dto.Creation)}>";
             var primaryKeyProp = Entity.PrimaryKeyProperty;
-            var responseObj = $@"Response<IEnumerable<{readDto}>>";
+            var responseObj = $@"IEnumerable<{readDto}>";
             var addRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
             var batchPropNameLower = feature.BatchPropertyName.LowercaseFirstLetter();
             var creationPropName = $"{lowercaseEntityVariable}ForCreation";

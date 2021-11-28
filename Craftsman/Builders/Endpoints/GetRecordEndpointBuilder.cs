@@ -16,7 +16,7 @@
             var primaryKeyProp = Entity.PrimaryKeyProperty;
             var queryRecordMethodName = Utilities.QueryRecordName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
-            var singleResponse = $@"Response<{readDto}>";
+            var singleResponse = $@"{readDto}";
             var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";
             var getRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
 
@@ -29,8 +29,7 @@
         var query = new {Utilities.GetEntityFeatureClassName(entity.Name)}.{queryRecordMethodName}({lowercasePrimaryKey});
         var queryResponse = await _mediator.Send(query);
 
-        var response = new {singleResponse}(queryResponse);
-        return Ok(response);
+        return Ok(queryResponse);
     }}";
         }
     }

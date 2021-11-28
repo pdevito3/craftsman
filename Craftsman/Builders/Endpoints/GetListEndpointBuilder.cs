@@ -15,7 +15,7 @@
             var readDto = Utilities.GetDtoName(entityName, Dto.Read);
             var readParamDto = Utilities.GetDtoName(entityName, Dto.ReadParamaters);
             var queryListMethodName = Utilities.QueryListName(entityName);
-            var listResponse = $@"Response<IEnumerable<{readDto}>>";
+            var listResponse = $@"IEnumerable<{readDto}>";
             var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
             var getListAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
 
@@ -44,8 +44,7 @@
         Response.Headers.Add(""X-Pagination"",
             JsonSerializer.Serialize(paginationMetadata));
 
-        var response = new {listResponse}(queryResponse);
-        return Ok(response);
+        return Ok(queryResponse);
     }}";
         }
         

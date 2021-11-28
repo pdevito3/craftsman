@@ -43,7 +43,7 @@
     ///    | `_=`     | Starts with                   |  `!_=*`   | Case-insensitive string does not Starts with |
     /// </remarks>
     [ProducesResponseType(typeof({listResponse}), 200)]
-    [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
+    [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]";
 
             return "";
@@ -62,7 +62,7 @@
     /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
     /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
     [ProducesResponseType(typeof({singleResponse}), 200)]
-    [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
+    [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
         }
 
@@ -78,7 +78,7 @@
     /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
     /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
     [ProducesResponseType(typeof({singleResponse}), 201)]
-    [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
+    [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
         }
 
@@ -94,7 +94,7 @@
     /// <response code=""400"">{entity.Name} List has missing/invalid values.</response>{authCommentResponses}
     /// <response code=""500"">There was an error on the server while creating the list of {entity.Name}.</response>
     [ProducesResponseType(typeof({singleResponse}), 201)]
-    [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
+    [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
         }
 
@@ -110,7 +110,7 @@
     /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
     /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
     [ProducesResponseType(204)]
-    [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
+    [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
         }
 
@@ -126,7 +126,7 @@
     /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
     /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
     [ProducesResponseType(204)]
-    [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
+    [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
         }
 
@@ -142,7 +142,7 @@
     /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
     /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
     [ProducesResponseType(204)]
-    [ProducesResponseType(typeof(Response<>), 400)]{authResponses}
+    [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
         }
 
@@ -171,8 +171,8 @@
             if (hasAuthentications)
             {
                 authResponses = $@"
-    [ProducesResponseType(typeof(Response<>), 401)]
-    [ProducesResponseType(typeof(Response<>), 403)]";
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]";
             }
 
             return authResponses;
@@ -184,7 +184,7 @@
             if (hasConflictResponse)
             {
                 conflictResponses = $@"
-    [ProducesResponseType(typeof(Response<>), 409)]";
+    [ProducesResponseType(409)]";
             }
 
             return conflictResponses;

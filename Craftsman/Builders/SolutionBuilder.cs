@@ -72,7 +72,6 @@
             
             BasePaginationParametersBuilder.CreateBasePaginationParameters(srcDirectory, projectBaseName, fileSystem);
             PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, fileSystem);
-            ResponseBuilder.CreateResponse(srcDirectory, projectBaseName, fileSystem);
             CoreExceptionsBuilder.CreateExceptions(srcDirectory, projectBaseName, fileSystem);
             InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(srcDirectory, projectBaseName, fileSystem);
         }
