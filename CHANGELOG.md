@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+* Nothing yet!
+
+## [0.12.0] - 11/28/2021
+
 ### Added
 
 * Added `BaseEntity` that all entities will inherit from.

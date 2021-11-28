@@ -13,13 +13,33 @@ Craftsman is the workhorse behind the [Wrapt](https://wrapt.dev) framework and p
 
 For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wrapt.dev).
 
-## Upcoming Features in v0.12
+## Upcoming Features in v0.13
 
-v0.11 had a lot of little cleanup items, but I want to bring in some of the big heavy hitting wins in v0.12. Below are some items I have on the docket for the upcoming release. I surely won't get to everything below and this could be reprioritized a bit over time, but want to make sure I let everyone know what's on the horizon! 
+v0.12. brought a ton of new features, but there are still several items I want to address before I slap the v1.0 sticker on things. I have some of the larger lifts below, but this is certainly not an exhaustive list of everything and there are lots of underlying items here that will be produced as well.
 
-Have a request for something you don't see below? Shoot me a message and let's talk about it!
+Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-✅ docker utility updates for integration tests using [Fluent Docker](https://github.com/mariotoffia/FluentDocker) 🐳
+🚧 Add Identity to Auth Server
+
+🚧 BFF Scaffolding
+
+🚧 React Scaffolding
+
+🚧 Json Schema for easier file scaffolding
+
+🚧 Performance Upgrades
+
+🚧 Logging Updates and OpenTelemetry additions 
+
+🚧 Supporting infrastructure scaffolding
+
+
+
+### Some of the v0.12 highlights
+
+✅ .NET 6 Scaffolding
+
+✅ Docker utility updates for integration tests using [Fluent Docker](https://github.com/mariotoffia/FluentDocker) 🐳
 
 ✅  `add:feature` enhancement to add more than just ad-hoc features
 
@@ -39,21 +59,11 @@ Have a request for something you don't see below? Shoot me a message and let's t
 
 ✅ Refactor error handling pipeline
 
-🚧 Add Identity to Auth Server
+✅ Startup Consolidation
 
-🚧 BFF Scaffolding
+✅ More test scaffolding
 
-🚧 React Scaffolding
-
-🚧 Json Schema for easier file scaffolding
-
-🚧 More scaffolded test coverage
-
-🚧 Performance Upgrades
-
-🚧 MassTransit Producer Tests
-
-🚧 Logging Updates and OpenTelemetry additions 
+✅ Db naming conventions
 
 ## Support
 
@@ -65,4 +75,4 @@ Time is of the essence. Before developing a Pull Request I recommend opening a n
 
 ## Contact Me
 
-Sometimes Github notifications get lost in the shuffle. If you file an issue and don't hear from me in 24-48 hours feel free to ping me on [twitter](https://twitter.com/pdevito3) or Discord (pdevito3#4244).
+Sometimes Github notifications get lost in the shuffle. If you file an issue and don't hear from me in 24-48 hours feel free to ping me on [twitter](https://twitter.com/pdevito3) or Discord (pdevito3#4244). We also have [own discord channel](https://discord.gg/TBq2rVkSEj) now for easy contact with me and larger community discussions!
