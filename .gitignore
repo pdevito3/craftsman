@@ -307,3 +307,7 @@ __pycache__/
 # NuGet v3's project.json files produces more ignoreable files
 *.nuget.props
 *.nuget.targets
+
+#DS Store
+.DS_Store
+.env
