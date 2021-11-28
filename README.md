@@ -19,11 +19,13 @@ For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wra
 
 ## Upcoming Features in v0.13
 
-v0.12 brought a ton of new features, but there are still several items I want to address before I slap the v1.0 sticker on things. I have some of the larger lifts below, but this is certainly not an exhaustive list of everything and there are lots of underlying items here that will be produced as well.
+v0.12 brought a ton of new features, but there are still several items I want to address before I slap the v1.0 sticker on things. I have some of the larger lifts below. Not everything here will be in the next release and this is certainly not an exhaustive list of everything, but I want to be open about what's on the horizon. 🌅
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
 🚧 Add Identity to Auth Server
+
+🚧 Better Role/Policy support
 
 🚧 BFF Scaffolding
 
