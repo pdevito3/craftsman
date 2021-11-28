@@ -5,7 +5,11 @@ Craftsman is the workhorse behind the [Wrapt](https://wrapt.dev) framework and p
 <p>
     <a href="https://github.com/pdevito3/craftsman/releases"><img src="https://img.shields.io/nuget/v/craftsman.svg" alt="Latest Release"></a>   
     <a href="https://github.com/pdevito3/craftsman/blob/master/LICENSE.txt"><img src ="https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000" alt="License"></a>
+  <a href="https://discord.gg/TBq2rVkSEj" target="\_parent">
+    <img alt="" src="https://img.shields.io/badge/Discord-Wrapt-%235865F2" />
+  </a>
 </p>
+
 
 ------
 
@@ -15,7 +19,7 @@ For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wra
 
 ## Upcoming Features in v0.13
 
-v0.12. brought a ton of new features, but there are still several items I want to address before I slap the v1.0 sticker on things. I have some of the larger lifts below, but this is certainly not an exhaustive list of everything and there are lots of underlying items here that will be produced as well.
+v0.12 brought a ton of new features, but there are still several items I want to address before I slap the v1.0 sticker on things. I have some of the larger lifts below, but this is certainly not an exhaustive list of everything and there are lots of underlying items here that will be produced as well.
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
