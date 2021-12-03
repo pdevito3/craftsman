@@ -73,7 +73,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Create;
-        var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.ParentEntity.LowercaseFirstLetter()}={{{fakeParentEntity}.Id}}"", {fakeEntityVariableName});
+        var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.BatchPropertyName.ToLower()}={{{fakeParentEntity}.Id}}"", {fakeEntityVariableName});
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -101,7 +101,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Create;
-        var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.ParentEntity.LowercaseFirstLetter()}={{Guid.NewGuid()}}"", {fakeEntityVariableName});
+        var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.BatchPropertyName.ToLower()}={{Guid.NewGuid()}}"", {fakeEntityVariableName});
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);

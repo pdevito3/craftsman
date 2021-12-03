@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Nothing yet!
 
+## [0.12.2] - 12/03/2021
+
+### Fixed
+
+* Fixed bulk add file and variable names 
+
 ## [0.12.1] - 11/28/2021
 
 ### Updated

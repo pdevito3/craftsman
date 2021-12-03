@@ -55,11 +55,10 @@
     {{
         var command = new {feature.Name}.{feature.Command}({creationPropName}, {batchPropNameLower});
         var commandResponse = await _mediator.Send(command);
-        var response = new {responseObj}(commandResponse);
 
         return CreatedAtRoute(""Get{entityName}"",
             new {{ {primaryKeyProp.Name} = commandResponse.Select({entity.Lambda} => {entity.Lambda}.{primaryKeyProp.Name}) }},
-            response);
+            commandResponse);
     }}";
         }
     }
