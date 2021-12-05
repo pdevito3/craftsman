@@ -1,5 +1,6 @@
 ﻿namespace Craftsman.Builders.Features
 {
+    using System;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
@@ -28,10 +29,11 @@
             var featurePropNameLowerFirst = feature.BatchPropertyName.LowercaseFirstLetter();
 
             var entityName = entity.Name;
-            var entityNameLowercase = $"{entity.Name.LowercaseFirstLetter()}List";
+            var entityNameLowercase = entity.Name.LowercaseFirstLetter();
+            var entityNameLowercaseListVar = $"{entity.Name.LowercaseFirstLetter()}List";
             var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
             var commandProp = $"{entityName}ListToAdd";
-            var newEntityProp = $"{entityNameLowercase}ListToAdd";
+            var newEntityProp = $"{entityNameLowercaseListVar}ListToAdd";
 
             var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
@@ -41,9 +43,8 @@
 
             var batchFkCheck = !string.IsNullOrEmpty(feature.BatchPropertyDbSetName)
                 ? @$"var fkEntity = await _db.{feature.BatchPropertyDbSetName}.Where(x => x.Id == request.{feature.BatchPropertyName}).FirstOrDefaultAsync(cancellationToken);
-                 
-                if (fkEntity == null)
-                    throw new KeyNotFoundException($""No {feature.BatchPropertyName} found with an id of '{{request.{feature.BatchPropertyName}}}'"");"
+            if (fkEntity == null)
+                throw new NotFoundException($""No {feature.BatchPropertyName} found with an id of '{{request.{feature.BatchPropertyName}}}'"");{Environment.NewLine}{Environment.NewLine}"
                 : "";
 
             return @$"namespace {classNamespace};
@@ -87,15 +88,17 @@ public static class {className}
 
         public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
         {{
-            var {entityNameLowercase} = _mapper.Map<IEnumerable<{entityName}>> (request.{commandProp});
-            {entityNameLowercase} = {entityNameLowercase}.ToList().Select({entity.Lambda} => {{ {entity.Lambda}.{feature.BatchPropertyName} = request.{feature.BatchPropertyName}; return {entity.Lambda}; }});
-            {batchFkCheck}
+            {batchFkCheck}var {entityNameLowercaseListVar}ToAdd = request.{commandProp}
+                .Select({entity.Lambda} => {{ {entity.Lambda}.{feature.BatchPropertyName} = request.{feature.BatchPropertyName}; return {entity.Lambda}; }})
+                .ToList();
+            var {entityNameLowercaseListVar} = new List<{entityName}>();
+            {entityNameLowercaseListVar}ToAdd.ForEach({entityNameLowercase} => {entityNameLowercaseListVar}.Add(Ingredient.Create({entityNameLowercase})));
             
-            _db.{entity.Plural}.AddRange({entityNameLowercase});
+            _db.{entity.Plural}.AddRange({entityNameLowercaseListVar});
 
             await _db.SaveChangesAsync(cancellationToken);
 
-            var result = _db.{entity.Plural}.Where({entity.Lambda} => {entityNameLowercase}.Select({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName}).Contains({entity.Lambda}.{primaryKeyPropName}));
+            var result = _db.{entity.Plural}.Where({entity.Lambda} => {entityNameLowercaseListVar}.Select({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName}).Contains({entity.Lambda}.{primaryKeyPropName}));
             return _mapper.Map<{readDto}>(result);
         }}
     }}

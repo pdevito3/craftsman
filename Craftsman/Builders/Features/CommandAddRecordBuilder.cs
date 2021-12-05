@@ -86,7 +86,7 @@ public static class {className}
 
         public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
         {{
-            var {entityNameLowercase} = _mapper.Map<{entityName}> (request.{commandProp});
+            var {entityNameLowercase} = {entityName}.Create(request.{commandProp});
             _db.{entity.Plural}.Add({entityNameLowercase});
 
             await _db.SaveChangesAsync(cancellationToken);
