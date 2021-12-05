@@ -45,6 +45,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Threading.Tasks;
 using System.Threading;
 using MediatR;

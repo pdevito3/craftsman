@@ -49,7 +49,7 @@
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_CreateList(entity, addSwaggerComments, responseObj, addRecordAuthorizations.Length > 0)}{addRecordAuthorizations}
     [Consumes(""application/json"")]
     [Produces(""application/json"")]
-    [HttpPost(Name = ""Add{entityName}List"")]
+    [HttpPost(""batch"", Name = ""Add{entityName}List"")]
     public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {creationPropName},
         [FromQuery(Name = ""{batchPropNameLower}""), BindRequired] {feature.BatchPropertyType} {batchPropNameLower})
     {{
