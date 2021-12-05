@@ -23,6 +23,8 @@ v0.12 brought a ton of new features, but there are still several items I want to
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
+✅ DDD promoted entities (private setters, factory methods, associated fakers)
+
 🚧 Add Identity to Auth Server
 
 🚧 Better Role/Policy support
