@@ -55,6 +55,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
             var lookupVal = $@"""Easily Identified Value For Test""";
+            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
 
             var testName = $"patch_{entity.Name.ToLower()}_returns_nocontent_when_using_valid_patchdoc_on_existing_entity";
             testName += hasRestrictedEndpoints ? "_and__valid_auth_credentials" : "";
@@ -78,7 +79,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     public async Task {testName}()
     {{
         // Arrange
-        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
         var patchDoc = new JsonPatchDocument<{updateDto}>();
         patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});{clientAuth}
         await InsertAsync({fakeEntityVariableName});
@@ -100,25 +101,26 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
             var lookupVal = $@"""Easily Identified Value For Test""";
+            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
 
             return $@"
-        [Test]
-        public async Task patch_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            var patchDoc = new JsonPatchDocument<{updateDto}>();
-            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});
+    [Test]
+    public async Task patch_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
+        var patchDoc = new JsonPatchDocument<{updateDto}>();
+        patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});
 
-            await InsertAsync({fakeEntityVariableName});
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.PatchJsonRequestAsync(route, patchDoc);
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var result = await _client.PatchJsonRequestAsync(route, patchDoc);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }}";
         }
 
         private static string EntityTestForbidden(Entity entity)
@@ -129,26 +131,27 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
             var lookupVal = $@"""Easily Identified Value For Test""";
+            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
 
             return $@"
-        [Test]
-        public async Task patch_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
-        {{
-            // Arrange
-            var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-            var patchDoc = new JsonPatchDocument<{updateDto}>();
-            patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});
-            _client.AddAuth();
+    [Test]
+    public async Task patch_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
+    {{
+        // Arrange
+        var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
+        var patchDoc = new JsonPatchDocument<{updateDto}>();
+        patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});
+        _client.AddAuth();
 
-            await InsertAsync({fakeEntityVariableName});
+        await InsertAsync({fakeEntityVariableName});
 
-            // Act
-            var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-            var result = await _client.PatchJsonRequestAsync(route, patchDoc);
+        // Act
+        var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var result = await _client.PatchJsonRequestAsync(route, patchDoc);
 
-            // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        }}";
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }}";
         }
     }
 }

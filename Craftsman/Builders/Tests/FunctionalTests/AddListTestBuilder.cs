@@ -55,6 +55,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var fakeEntityForCreation = $"Fake{createDto}";
             var fakeEntityVariableName = $"fake{entity.Name}List";
             var fakeParentEntity = $"fake{feature.ParentEntity}";
+            var fakeParentCreationDto = Utilities.FakerName(Utilities.GetDtoName(feature.ParentEntity, Dto.Creation));
 
             var testName = $"create_{entity.Name.ToLower()}_list_returns_created_using_valid_dto";
             testName += hasRestrictedEndpoints ? "_and_valid_auth_credentials" : "";
@@ -67,12 +68,12 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     public async Task {testName}()
     {{
         // Arrange
-        var {fakeParentEntity} = new Fake{feature.ParentEntity}() {{ }}.Generate();
+        var {fakeParentEntity} = Fake{feature.ParentEntity}.Generate(new {fakeParentCreationDto}().Generate());
         await InsertAsync({fakeParentEntity});
         var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.Create;
+        var route = ApiRoutes.{entity.Plural}.CreateBatch;
         var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.BatchPropertyName.ToLower()}={{{fakeParentEntity}.Id}}"", {fakeEntityVariableName});
 
         // Assert
@@ -100,7 +101,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.Create;
+        var route = ApiRoutes.{entity.Plural}.CreateBatch;
         var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.BatchPropertyName.ToLower()}={{Guid.NewGuid()}}"", {fakeEntityVariableName});
 
         // Assert
@@ -128,7 +129,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
 
         // Act
-        var result = await _client.PostJsonRequestAsync(ApiRoutes.{entity.Plural}.Create, {fakeEntityVariableName});
+        var result = await _client.PostJsonRequestAsync(ApiRoutes.{entity.Plural}.CreateBatch, {fakeEntityVariableName});
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -150,7 +151,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableName});
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.Create;
+        var route = ApiRoutes.{entity.Plural}.CreateBatch;
         var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
         // Assert
@@ -174,7 +175,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableName});
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.Create;
+        var route = ApiRoutes.{entity.Plural}.CreateBatch;
         var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
         // Assert

@@ -10,25 +10,28 @@
 
     public class AddListCommandTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, Entity entity, Feature feature, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, Feature feature, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"{feature.Command}Tests.cs", entity.Name, projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, classPath, entity, feature, projectBaseName);
+            var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{feature.Command}Tests.cs", entity.Name, projectBaseName);
+            var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, feature, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, Feature feature, string projectBaseName)
+        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, Feature feature, string projectBaseName)
         {
             var featureName = Utilities.AddEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
-            var commandName = Utilities.CommandAddName(entity.Name);
+            var commandName = feature.Command;
 
-            var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-            var dtoUtilClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
-            var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", feature.ParentEntity, projectBaseName);
-            var featuresClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
+            var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
+            var dtoUtilClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "", projectBaseName);
+            var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", feature.ParentEntity, projectBaseName);
+            var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
+            
+            var foreignEntityUsings = Utilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
+            
             return @$"namespace {classPath.ClassNamespace};
 
 using {dtoUtilClassPath.ClassNamespace};
@@ -41,7 +44,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using static {testFixtureName};
+using static {testFixtureName};{foreignEntityUsings}
 
 public class {commandName}Tests : TestBase
 {{
@@ -56,14 +59,15 @@ public class {commandName}Tests : TestBase
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
             var fakeParentEntity = $"fake{feature.ParentEntity}";
+            var fakeParentCreationDto = Utilities.FakerName(Utilities.GetDtoName(feature.ParentEntity, Dto.Creation));
 
             return $@"[Test]
     public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()
     {{
         // Arrange
-        var {fakeParentEntity} = new Fake{feature.ParentEntity} {{ }}.Generate();
+        var {fakeParentEntity} = Fake{feature.ParentEntity}.Generate(new {fakeParentCreationDto}().Generate());
         await InsertAsync({fakeParentEntity});
-        var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
+        var {fakeEntityVariableName} = new {fakeCreationDto}().Generate();
 
         // Act
         var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableName}}}, {fakeParentEntity}.Id);

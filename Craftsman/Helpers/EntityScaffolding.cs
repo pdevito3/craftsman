@@ -46,7 +46,7 @@
                 }
 
                 // Shared Tests
-                FakesBuilder.CreateFakes(testDirectory, projectBaseName, entity);
+                FakesBuilder.CreateFakes(testDirectory, projectBaseName, entity, fileSystem);
             }
         }
 
@@ -61,7 +61,7 @@
             if (feature.Type == FeatureType.AddRecord.Name)
             {
                 CommandAddRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                AddCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                AddCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
                 CreateEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
@@ -70,7 +70,7 @@
             if (feature.Type == FeatureType.GetRecord.Name)
             {
                 QueryGetRecordBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
-                GetRecordQueryTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                GetRecordQueryTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
                 GetEntityRecordTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
@@ -79,7 +79,7 @@
             if (feature.Type == FeatureType.GetList.Name)
             {
                 QueryGetListBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
-                GetListQueryTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                GetListQueryTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
                 GetEntityListTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
@@ -88,7 +88,7 @@
             if (feature.Type == FeatureType.DeleteRecord.Name)
             {
                 CommandDeleteRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                DeleteCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                DeleteCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
                 DeleteEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
@@ -97,7 +97,7 @@
             if (feature.Type == FeatureType.UpdateRecord.Name)
             {
                 CommandUpdateRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                PutCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName);
+                PutCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
                 PutEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.UpdateRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
@@ -106,7 +106,7 @@
             if (feature.Type == FeatureType.PatchRecord.Name)
             {
                 CommandPatchRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                PatchCommandTestBuilder.CreateTests(testDirectory, entity, projectBaseName, fileSystem);
+                PatchCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName, fileSystem);
                 PatchEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
@@ -115,7 +115,7 @@
             if (feature.Type == FeatureType.AddListByFk.Name)
             {
                 CommandAddListBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName, feature, fileSystem);
-                AddListCommandTestBuilder.CreateTests(testDirectory, entity, feature, projectBaseName, fileSystem);
+                AddListCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, feature, projectBaseName, fileSystem);
                 AddListTestBuilder.CreateTests(testDirectory, entity, policies, feature, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddListByFk, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);

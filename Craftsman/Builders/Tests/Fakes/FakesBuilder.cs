@@ -6,11 +6,12 @@
     using Craftsman.Models;
     using System;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Text;
 
     public static class FakesBuilder
     {
-        public static void CreateFakes(string solutionDirectory, string projectName, Entity entity)
+        public static void CreateFakes(string solutionDirectory, string projectName, Entity entity, IFileSystem fileSystem)
         {
             // ****this class path will have an invalid FullClassPath. just need the directory
             var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, $"", entity.Name, projectName);
@@ -18,25 +19,18 @@
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
 
-            CreateFakerFile(solutionDirectory, entity.Name, entity, projectName);
-            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Creation), entity, projectName);
-            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Read), entity, projectName);
-            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Update), entity, projectName);
+            CreateFakerEntityFile(solutionDirectory, entity.Name, entity, projectName, fileSystem);
+            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Creation), entity, projectName, fileSystem);
+            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Read), entity, projectName, fileSystem);
+            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Update), entity, projectName, fileSystem);
         }
 
-        private static void CreateFakerFile(string solutionDirectory, string objectToFakeClassName, Entity entity, string projectName)
+        private static void CreateFakerFile(string solutionDirectory, string objectToFakeClassName, Entity entity, string projectName, IFileSystem fileSystem)
         {
             var fakeFilename = $"Fake{objectToFakeClassName}.cs";
             var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, fakeFilename, entity.Name, projectName);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = GetFakeFileText(classPath.ClassNamespace, objectToFakeClassName, entity, solutionDirectory, projectName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = GetFakeFileText(classPath.ClassNamespace, objectToFakeClassName, entity, solutionDirectory, projectName);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
         private static string GetFakeFileText(string classNamespace, string objectToFakeClassName, Entity entity, string solutionDirectory, string projectBaseName)
@@ -62,5 +56,36 @@ public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
     }}
 }}";
         }
+
+        private static void CreateFakerEntityFile(string solutionDirectory, string objectToFakeClassName, Entity entity, string projectName, IFileSystem fileSystem)
+        {
+            var fakeFilename = $"Fake{objectToFakeClassName}.cs";
+            var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, fakeFilename, entity.Name, projectName);
+            var fileText = GetFakeEntityFileText(classPath.ClassNamespace, objectToFakeClassName, entity, solutionDirectory, projectName);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
+        }
+
+        private static string GetFakeEntityFileText(string classNamespace, string objectToFakeClassName, Entity entity, string solutionDirectory, string projectBaseName)
+        {
+            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var creationDtoName = Utilities.GetDtoName(entity.Name, Dto.Creation);
+
+            return @$"namespace {classNamespace};
+
+using AutoBogus;
+using {entitiesClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
+
+public class Fake{objectToFakeClassName}
+{{
+    public static {entity.Name} Generate({creationDtoName} {creationDtoName.LowercaseFirstLetter()})
+    {{
+        return {entity.Name}.Create({creationDtoName.LowercaseFirstLetter()});
+    }}
+}}";
+        }
+        
+        
     }
 }

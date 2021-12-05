@@ -211,6 +211,48 @@
         {
             return $"Fake{objectToFakeName}";
         }
+        
+        public static string FakeParentTestHelpers(Entity entity, out string fakeParentIdRuleFor)
+        {
+            var fakeParent = "";
+            fakeParentIdRuleFor = "";
+            foreach (var entityProperty in entity.Properties)
+            {
+                if (entityProperty.IsForeignKey && !entityProperty.IsMany)
+                {
+                    var fakeParentClass = Utilities.FakerName(entityProperty.ForeignEntityName);
+                    var fakeParentCreationDto =
+                        Utilities.FakerName(Utilities.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
+                    fakeParent +=
+                        @$"var fake{entityProperty.ForeignEntityName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
+        await InsertAsync(fake{entityProperty.ForeignEntityName}One);{Environment.NewLine}{Environment.NewLine}        ";
+                    fakeParentIdRuleFor +=
+                        $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}One.Id){Environment.NewLine}            ";
+                }
+            }
+
+            return fakeParent;
+        }
+
+        public static string GetForeignEntityUsings(string testDirectory, Entity entity,
+            string projectBaseName)
+        {
+            var foreignEntityUsings = "";
+            var foreignProps = entity.Properties.Where(e => e.IsForeignKey).ToList();
+            foreach (var entityProperty in foreignProps)
+            {
+                if (entityProperty.IsForeignKey && !entityProperty.IsMany)
+                {
+                    var parentClassPath =
+                        ClassPathHelper.TestFakesClassPath(testDirectory, $"", entityProperty.ForeignEntityName, projectBaseName);
+
+                    foreignEntityUsings += $@"
+using {parentClassPath.ClassNamespace};";
+                }
+            }
+
+            return foreignEntityUsings;
+        }
 
         public static string GetDtoName(string entityName, Dto dto)
         {
@@ -572,6 +614,7 @@
         public const string Delete = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
         public const string Put = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
         public const string Patch = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
+        public const string CreateBatch = $""{{Base}}/{lowercaseEntityPluralName}/batch"";
     }}";
 
             return entityRouteClasses;

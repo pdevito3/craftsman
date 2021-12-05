@@ -50,6 +50,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
             var pkName = Entity.PrimaryKeyProperty.Name;
+            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
 
             var testName = $"put_{entity.Name.ToLower()}_returns_nocontent_when_entity_exists";
             testName += hasRestrictedEndpoints ? "_and_auth_credentials_are_valid" : "";
@@ -63,7 +64,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     public async Task {testName}()
     {{
         // Arrange
-        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
         var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();{clientAuth}
         await InsertAsync({fakeEntityVariableName});
 
@@ -83,13 +84,14 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
             var pkName = Entity.PrimaryKeyProperty.Name;
+            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
 
             return $@"
     [Test]
     public async Task put_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
     {{
         // Arrange
-        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
         var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();
 
         await InsertAsync({fakeEntityVariableName});
@@ -110,13 +112,14 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
             var pkName = Entity.PrimaryKeyProperty.Name;
+            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
 
             return $@"
     [Test]
     public async Task put_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
     {{
         // Arrange
-        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
         var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();
         _client.AddAuth();
 

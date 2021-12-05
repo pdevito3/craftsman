@@ -9,7 +9,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-* Nothing yet!
+### Added
+
+* Entities will now have private setters, a static `Create` method and an `Update` method to promote a DDD workflow
+  * This includes base entity and the dbcontext setters for the auditable fields
+
+### Updated
+
+* Updated FK and basic examples to have more features on the entities
+* Updated tests to work with new private entity workflow
+
+### Fixed
+
+* Batch endpoint route updated to `batch` along with a functional testing route
+* Batch add using update to controller
 
 ## [0.12.2] - 12/03/2021
 
