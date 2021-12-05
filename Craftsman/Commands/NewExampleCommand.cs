@@ -143,6 +143,7 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
+    - Type: PatchRecord
     Properties:
     - Name: Title
       Type: string
@@ -162,6 +163,12 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
+    - Type: PatchRecord
+    - Type: AddListByFk
+      BatchPropertyName: RecipeId
+      BatchPropertyType: Guid
+      ParentEntity: Recipe
+      BatchPropertyDbSetName: Recipes
     Properties:
     - Name: Name
       Type: string
@@ -199,6 +206,7 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
+    - Type: PatchRecord
     Properties:
     - Name: Title
       Type: string
