@@ -3,13 +3,16 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System;
+    using Enums;
 
     public static class SeederFunctions
     {
         public static string GetEntitySeederFileText(string classNamespace, Entity entity, string dbContextName, string solutionDirectory, string projectBaseName)
         {
             var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var dbContextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
+            var entityForCreationDto = $"Fake{Utilities.GetDtoName(entity.Name, Dto.Creation)}";
             if (dbContextName is null)
             {
                 throw new ArgumentNullException(nameof(dbContextName));
@@ -19,6 +22,7 @@
 
 using AutoBogus;
 using {entitiesClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
 using {dbContextClassPath.ClassNamespace};
 using System.Linq;
 
@@ -28,9 +32,9 @@ public static class {Utilities.GetSeederName(entity)}
     {{
         if (!context.{entity.Plural}.Any())
         {{
-            context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
-            context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
-            context.{entity.Plural}.Add(new AutoFaker<{entity.Name}>());
+            context.{entity.Plural}.Add({entity.Name}.Create(new AutoFaker<{entityForCreationDto}>()));
+            context.{entity.Plural}.Add({entity.Name}.Create(new AutoFaker<{entityForCreationDto}>()));
+            context.{entity.Plural}.Add({entity.Name}.Create(new AutoFaker<{entityForCreationDto}>()));
 
             context.SaveChanges();
         }}
