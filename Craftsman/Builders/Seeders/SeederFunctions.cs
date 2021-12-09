@@ -12,7 +12,7 @@
             var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var dbContextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-            var entityForCreationDto = $"Fake{Utilities.GetDtoName(entity.Name, Dto.Creation)}";
+            var entityForCreationDto = $"{Utilities.GetDtoName(entity.Name, Dto.Creation)}";
             if (dbContextName is null)
             {
                 throw new ArgumentNullException(nameof(dbContextName));
