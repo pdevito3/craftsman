@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Nothing yet!
 
+## [0.12.3] - 12/20/2021
+
+### Update
+
+* Updated Craftsman to .NET 6
+
 ## [0.12.2] - 12/03/2021
 
 ### Fixed
