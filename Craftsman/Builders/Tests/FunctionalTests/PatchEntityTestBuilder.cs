@@ -12,20 +12,20 @@
 
     public class PatchEntityTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, Entity entity, List<Policy> policies, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string solutionDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"Partial{entity.Name}UpdateTests.cs", entity.Name, projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, classPath, entity, policies, projectBaseName);
+            var fileText = WriteTestFileText(solutionDirectory, classPath, entity, isProtected, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, List<Policy> policies, string projectBaseName)
+        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)
         {
             var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
-            var hasRestrictedEndpoints = policies.Count > 0;
+            var hasRestrictedEndpoints = isProtected;
             var authOnlyTests = hasRestrictedEndpoints ? $@"
             {EntityTestUnauthorized(entity)}
             {EntityTestForbidden(entity)}" : "";
@@ -43,11 +43,11 @@ using System.Threading.Tasks;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
 {{
-    {PatchEntityTest(entity, hasRestrictedEndpoints, policies)}{authOnlyTests}
+    {PatchEntityTest(entity, hasRestrictedEndpoints)}{authOnlyTests}
 }}";
         }
 
-        private static string PatchEntityTest(Entity entity, bool hasRestrictedEndpoints, List<Policy> policies)
+        private static string PatchEntityTest(Entity entity, bool hasRestrictedEndpoints)
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
@@ -59,11 +59,9 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
             var testName = $"patch_{entity.Name.ToLower()}_returns_nocontent_when_using_valid_patchdoc_on_existing_entity";
             testName += hasRestrictedEndpoints ? "_and__valid_auth_credentials" : "";
-            var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.UpdatePartial }, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"
 
-            _client.AddAuth(new[] {scopes});
-            " : "";
+        _client.AddAuth(new[] {{Permissions.SuperAdmin}});" : "";
 
             // if no string properties, do one with an int
             if (myProp == null)

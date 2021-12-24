@@ -11,19 +11,19 @@
 
     public class CreateEntityTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, Entity entity, List<Policy> policies, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string solutionDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"Create{entity.Name}Tests.cs", entity.Name, projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, classPath, entity, policies, projectBaseName);
+            var fileText = WriteTestFileText(solutionDirectory, classPath, entity, isProtected, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, List<Policy> policies, string projectBaseName)
+        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)
         {
             var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
-            var hasRestrictedEndpoints = policies.Count > 0;
+            var hasRestrictedEndpoints = isProtected;
             var authOnlyTests = hasRestrictedEndpoints ? $@"
             {CreateEntityTestUnauthorized(entity)}
             {CreateEntityTestForbidden(entity)}" : "";
@@ -39,11 +39,11 @@ using System.Threading.Tasks;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
 {{
-    {CreateEntityTest(entity, hasRestrictedEndpoints, policies)}{authOnlyTests}
+    {CreateEntityTest(entity, hasRestrictedEndpoints)}{authOnlyTests}
 }}";
         }
 
-        private static string CreateEntityTest(Entity entity, bool hasRestrictedEndpoints, List<Policy> policies)
+        private static string CreateEntityTest(Entity entity, bool hasRestrictedEndpoints)
         {
             var fakeEntityForCreation = $"Fake{Utilities.GetDtoName(entity.Name, Dto.Creation)}";
             var fakeEntityVariableName = $"fake{entity.Name}";
@@ -51,10 +51,9 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
             var testName = $"create_{entity.Name.ToLower()}_returns_created_using_valid_dto";
             testName += hasRestrictedEndpoints ? "_and_valid_auth_credentials" : "";
-            var scopes = Utilities.BuildTestAuthorizationString(policies, new List<Endpoint>() { Endpoint.AddRecord }, entity.Name, PolicyType.Scope);
             var clientAuth = hasRestrictedEndpoints ? @$"
 
-            _client.AddAuth(new[] {scopes});" : "";
+        _client.AddAuth(new[] {{Permissions.SuperAdmin}});" : "";
 
             return $@"[Test]
     public async Task {testName}()

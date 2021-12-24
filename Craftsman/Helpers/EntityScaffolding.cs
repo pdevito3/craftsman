@@ -64,7 +64,7 @@
             {
                 CommandAddRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
                 AddCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
-                CreateEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
+                CreateEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
             }
@@ -73,7 +73,7 @@
             {
                 QueryGetRecordBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
                 GetRecordQueryTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
-                GetEntityRecordTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
+                GetEntityRecordTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
             }
@@ -82,7 +82,7 @@
             {
                 QueryGetListBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
                 GetListQueryTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
-                GetEntityListTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
+                GetEntityListTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
             }
@@ -91,7 +91,7 @@
             {
                 CommandDeleteRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
                 DeleteCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
-                DeleteEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
+                DeleteEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
             }
@@ -100,7 +100,7 @@
             {
                 CommandUpdateRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
                 PutCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
-                PutEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
+                PutEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.UpdateRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
             }
@@ -109,7 +109,7 @@
             {
                 CommandPatchRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
                 PatchCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName, fileSystem);
-                PatchEntityTestBuilder.CreateTests(testDirectory, entity, policies, projectBaseName, fileSystem);
+                PatchEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
             }
