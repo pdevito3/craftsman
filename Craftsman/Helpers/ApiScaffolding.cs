@@ -66,7 +66,15 @@
                 fileSystem
             );
             ApiRoutesBuilder.CreateClass(testDirectory, projectBaseName, fileSystem);
-
+            
+            if (template.AddJwtAuthentication)
+            {
+                PermissionsBuilder.GetPermissions(srcDirectory, projectBaseName, fileSystem); // <-- needs to run before entity features
+                RolesBuilder.GetRoles(srcDirectory, projectBaseName, fileSystem);
+                UserPolicyHandlerBuilder.CreatePolicyBuilder(srcDirectory, projectBaseName, fileSystem);
+                InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName);
+            }
+            
             //entities
             EntityScaffolding.ScaffoldEntities(srcDirectory,
                 testDirectory,
@@ -107,22 +115,8 @@
 
             //services
             CurrentUserServiceBuilder.GetCurrentUserService(srcDirectory, projectBaseName, fileSystem);
-            
-            // TODO move the auth stuff to a modifier to make it SOLID so i can add it to an add auth command
-            var policies = template.Entities
-                .SelectMany(entity => entity.Features)
-                .SelectMany(feature => feature.Policies)
-                .ToList();
-            
-            SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, projectBaseName, template.AddJwtAuthentication, policies, projectBaseName, fileSystem);
-            if (template.AddJwtAuthentication)
-            {
-                InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName, policies);
-                foreach (var feature in template.Entities.SelectMany(entity => entity.Features))
-                {
-                    InfrastructureServiceRegistrationModifier.AddPolicies(srcDirectory, feature.Policies , projectBaseName);
-                }
-            }
+            SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName, fileSystem);
+
             
             if (template.Bus.AddBus)
                 AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);

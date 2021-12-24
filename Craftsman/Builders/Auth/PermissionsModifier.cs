@@ -6,11 +6,11 @@
     using System.Collections.Generic;
     using System.IO;
 
-    public class SwaggerServiceRegistrationModifier
+    public class PermissionsModifier
     {
-        public static void AddPolicies(string srcDirectory, List<Policy> policies, string projectBaseName)
+        public static void AddPermission(string srcDirectory, string permission, string projectBaseName)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetSwaggerServiceExtensionName()}.cs", projectBaseName);
+            var classPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, $"Permissions.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -18,28 +18,18 @@
             if (!File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
-            var policiesString = "";
-            var nonExistantPolicies = Utilities.GetPoliciesThatDoNotExist(policies, classPath.FullClassPath);
-            policiesString += $@"{Environment.NewLine}{Utilities.GetSwaggerPolicies(nonExistantPolicies)}";
-
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
             {
                 using (var output = new StreamWriter(tempPath))
                 {
                     string line;
-                    bool updateNextLine = false;
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
-                        if (line.Contains($"Scopes ="))
+                        if (line.Contains($"Permissions marker"))
                         {
-                            updateNextLine = true;
-                        }
-                        else if (updateNextLine)
-                        {
-                            newText += policiesString;
-                            updateNextLine = false;
+                            newText += @$"{Environment.NewLine}    public const string {permission} = ""{permission}"";";
                         }
 
                         output.WriteLine(newText);
@@ -53,4 +43,3 @@
         }
     }
 }
-

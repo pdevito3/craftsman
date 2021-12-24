@@ -49,6 +49,13 @@
             get => _responseType;
             set => _responseType = Utilities.PropTypeCleanup(value);
         }
+
+        private string _permission;
+        public string PermissionName
+        {
+            get => _permission;
+            set => _permission = value ?? $"Can{Name}";
+        }
         
         public List<Policy> Policies { get; set; } = new List<Policy>();
 
@@ -86,6 +93,11 @@
         /// The name of the DbSet for the FK you are doing a batch add on. Generally, the plural of the FK entity. Leave null if you're not batching on a FK.
         /// </summary>
         public string BatchPropertyDbSetName { get; set; }
+
+        /// <summary>
+        /// Determined whether or not the feature is protected with an authorization policy attribute.
+        /// </summary>
+        public bool IsProtected { get; set; } = false;
 
         // feature role as command, producer, consumer in the future... dropped the ball on the OG implementation
     }

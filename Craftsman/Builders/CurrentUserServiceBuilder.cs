@@ -26,6 +26,7 @@ using System.Security.Claims;
 public interface ICurrentUserService
 {{
     string? UserId {{ get; }}
+    ClaimsPrincipal? User {{ get; }}
 }}
 
 public class CurrentUserService : ICurrentUserService
@@ -38,6 +39,7 @@ public class CurrentUserService : ICurrentUserService
     }}
 
     public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+    public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
 }}";
         }
     }

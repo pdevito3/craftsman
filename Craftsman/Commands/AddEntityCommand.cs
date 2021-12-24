@@ -104,13 +104,7 @@
                 template.DbContextName,
                 template.AddSwaggerComments,
                 fileSystem);
-            
-            //TODO move inside scaffoldentites?
-            foreach (var feature in template.Entities.SelectMany(entity => entity.Features))
-            {
-                InfrastructureServiceRegistrationModifier.AddPolicies(srcDirectory, feature.Policies , template.SolutionName);
-                SwaggerServiceRegistrationModifier.AddPolicies(srcDirectory, feature.Policies , template.SolutionName);
-            }
+
             SeederModifier.AddSeeders(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
             DbContextModifier.AddDbSet(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
         }

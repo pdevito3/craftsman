@@ -34,7 +34,7 @@
                 DtoBuilder.CreateDtos(srcDirectory, entity, projectBaseName);
                 ValidatorBuilder.CreateValidators(srcDirectory, projectBaseName, entity);
                 ProfileBuilder.CreateProfile(srcDirectory, entity, projectBaseName);
-                ApiRouteModifier.AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold
+                ApiRouteModifier.AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
                 
                 if(entity.Features.Count > 0)
                     ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName);
@@ -57,6 +57,8 @@
             var controllerClassPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName);
             if (!File.Exists(controllerClassPath.FullClassPath))
                 ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName);
+
+            PermissionsModifier.AddPermission(srcDirectory, feature.PermissionName, projectBaseName);
             
             if (feature.Type == FeatureType.AddRecord.Name)
             {
@@ -116,7 +118,7 @@
             {
                 CommandAddListBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName, feature, fileSystem);
                 AddListCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, feature, projectBaseName, fileSystem);
-                AddListTestBuilder.CreateTests(testDirectory, entity, policies, feature, projectBaseName, fileSystem);
+                AddListTestBuilder.CreateTests(testDirectory, entity, feature, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddListByFk, entity, addSwaggerComments, policies, 
                     feature, projectBaseName);
             }

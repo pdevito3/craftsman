@@ -349,45 +349,7 @@ using {parentClassPath.ClassNamespace};";
             return $@"api/{entityNamePlural.ToLower()}";
         }
 
-        public static string PolicyInfraStringBuilder(Policy policy)
-        {
-            if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
-            {
-                // ex: options.AddPolicy("CanRead", policy => policy.RequireClaim("scope", "detailedrecipes.read"));
-                return $@"            options.AddPolicy(""{policy.Name}"",
-                    policy => policy.RequireClaim(""scope"", ""{policy.PolicyValue}""));";
-            }
-            //else if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Role))
-            //{
-            //    // ex: options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Administrator"));
-            //    return $@"                options.AddPolicy(""{policy.Name}"",
-            //        policy => policy.RequireRole(""{policy.PolicyValue}""));";
-            //}
-
-            // claim ex: options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
-            return $@"            options.AddPolicy(""{policy.Name}"",
-                    policy => policy.RequireClaim(""{policy.PolicyValue}""));";
-        }
-
-        public static object GetSwaggerPolicies(IEnumerable<Policy> policies)
-        {
-            var policyStrings = "";
-
-            //var uniquePolicies = policies.DistinctBy(); //TODO use with .net6
-            var uniquePolicies = policies
-                .GroupBy(p => new {p.Name, p.PolicyValue, p.PolicyType} )
-                .Select(g => g.First())
-                .ToList();
-            foreach (var policy in uniquePolicies)
-            {
-                policyStrings += $@"
-                            {{ ""{policy.PolicyValue}"",""{policy.Name}"" }},";
-            }
-
-            return policyStrings;
-        }
-
-        public static string BuildTestAuthorizationString(List<Policy> policies, List<Endpoint> endpoints, string entityName, PolicyType policyType)
+        public static string BuildTestAuthorizationString(List<Policy> policies)
         {
             return "{\"" + string.Join("\", \"", policies.Select(r => r.PolicyValue)) + "\"}";
         }

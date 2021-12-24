@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace Craftsman.Models
 {
+    using Humanizer;
+
     /// <summary>
     /// This is the complete object representation of the API that we will read in from our input file and scaffold out the necessary files
     /// </summary>
@@ -73,5 +75,15 @@ namespace Craftsman.Models
         /// A list of eventing producers to be added to the BC
         /// </summary>
         public List<Producer> Producers { get; set; } = new List<Producer>();
+
+        /// <summary>
+        /// The value used for setting the policy name in your swagger config to be used for the scope that has access to the given boundary.
+        /// </summary>
+        private string _policyName;
+        public string PolicyName
+        {
+            get => _policyName ?? ProjectName.Underscore();
+            set => _policyName = value;
+        }
     }
 }
