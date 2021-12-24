@@ -1,5 +1,6 @@
 ﻿namespace Craftsman.Builders.Tests.FunctionalTests
 {
+    using System;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
@@ -18,15 +19,18 @@
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string srcDirectory, ClassPath classPath, Entity entity, bool hasRestrictedEndpoints, Feature feature, string projectBaseName)
+        private static string WriteTestFileText(string srcDirectory, ClassPath classPath, Entity entity, bool isProtected, Feature feature, string projectBaseName)
         {
             var dtoUtilClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Name, projectBaseName);
             var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(srcDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(srcDirectory, "", entity.Name, projectBaseName);
             var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(srcDirectory, "", feature.ParentEntity, projectBaseName);
             var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+            var permissionsUsing = isProtected 
+                ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};"
+                : string.Empty;
 
-            var authOnlyTests = hasRestrictedEndpoints ? $@"
+            var authOnlyTests = isProtected ? $@"
             {CreateEntityTestUnauthorized(entity)}
             {CreateEntityTestForbidden(entity)}" : "";
 
@@ -35,8 +39,7 @@
 using {dtoUtilClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using {parentFakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};
-using {permissionsClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};{permissionsUsing}
 using FluentAssertions;
 using NUnit.Framework;
 using System.Net;
@@ -44,13 +47,13 @@ using System.Threading.Tasks;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
 {{
-    {CreateEntityTest(entity, feature, hasRestrictedEndpoints)}
-    {NotFoundCreationTest(entity, feature, hasRestrictedEndpoints)}
-    {InvalidCreationTest(entity, feature, hasRestrictedEndpoints)}{authOnlyTests}
+    {CreateEntityTest(entity, feature, isProtected)}
+    {NotFoundCreationTest(entity, feature, isProtected)}
+    {InvalidCreationTest(entity, feature, isProtected)}{authOnlyTests}
 }}";
         }
 
-        private static string CreateEntityTest(Entity entity, Feature feature, bool hasRestrictedEndpoints)
+        private static string CreateEntityTest(Entity entity, Feature feature, bool isProtected)
         {
             var createDto = Utilities.GetDtoName(entity.Name, Dto.Creation);
             var fakeEntityForCreation = $"Fake{createDto}";
@@ -59,10 +62,10 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var fakeParentCreationDto = Utilities.FakerName(Utilities.GetDtoName(feature.ParentEntity, Dto.Creation));
 
             var testName = $"create_{entity.Name.ToLower()}_list_returns_created_using_valid_dto";
-            testName += hasRestrictedEndpoints ? "_and_valid_auth_credentials" : "";
-            var clientAuth = hasRestrictedEndpoints ? @$"
+            testName += isProtected ? "_and_valid_auth_credentials" : "";
+            var clientAuth = isProtected ? @$"
 
-        _client.AddAuth(new[] {{Permissions.SuperAdmin}});" : "";
+        _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
             return $@"[Test]
     public async Task {testName}()
@@ -81,17 +84,17 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     }}";
         }
 
-        private static string NotFoundCreationTest(Entity entity, Feature feature, bool hasRestrictedEndpoints)
+        private static string NotFoundCreationTest(Entity entity, Feature feature, bool isProtected)
         {
             var createDto = Utilities.GetDtoName(entity.Name, Dto.Creation);
             var fakeEntityForCreation = $"Fake{createDto}";
             var fakeEntityVariableName = $"fake{entity.Name}List";
 
             var testName = $"create_{entity.Name.ToLower()}_list_returns_notfound_when_fk_doesnt_exist";
-            testName += hasRestrictedEndpoints ? "_and_valid_auth_credentials" : "";
-            var clientAuth = hasRestrictedEndpoints ? @$"
+            testName += isProtected ? "_and_valid_auth_credentials" : "";
+            var clientAuth = isProtected ? @$"
 
-        _client.AddAuth(new[] {{Permissions.SuperAdmin}});" : "";
+        _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
             return $@"[Test]
     public async Task {testName}()
@@ -108,17 +111,17 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     }}";
         }
 
-        private static string InvalidCreationTest(Entity entity, Feature feature, bool hasRestrictedEndpoints)
+        private static string InvalidCreationTest(Entity entity, Feature feature, bool isProtected)
         {
             var createDto = Utilities.GetDtoName(entity.Name, Dto.Creation);
             var fakeEntityForCreation = $"Fake{createDto}";
             var fakeEntityVariableName = $"fake{entity.Name}List";
 
             var testName = $"create_{entity.Name.ToLower()}_list_returns_badrequest_when_no_fk_param";
-            testName += hasRestrictedEndpoints ? "_and_valid_auth_credentials" : "";
-            var clientAuth = hasRestrictedEndpoints ? @$"
+            testName += isProtected ? "_and_valid_auth_credentials" : "";
+            var clientAuth = isProtected ? @$"
 
-        _client.AddAuth(new[] {{Permissions.SuperAdmin}});" : "";
+        _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
             return $@"[Test]
     public async Task {testName}()

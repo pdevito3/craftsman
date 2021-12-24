@@ -73,6 +73,12 @@
                 RolesBuilder.GetRoles(srcDirectory, projectBaseName, fileSystem);
                 UserPolicyHandlerBuilder.CreatePolicyBuilder(srcDirectory, projectBaseName, fileSystem);
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName);
+                EntityScaffolding.ScaffoldRolePermissions(srcDirectory,
+                    testDirectory,
+                    projectBaseName,
+                    template.DbContext.ContextName,
+                    template.SwaggerConfig.AddSwaggerComments,
+                    fileSystem);
             }
             
             //entities

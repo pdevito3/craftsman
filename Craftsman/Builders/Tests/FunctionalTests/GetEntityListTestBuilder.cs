@@ -1,5 +1,6 @@
 ﻿namespace Craftsman.Builders.Tests.FunctionalTests
 {
+    using System;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
@@ -9,27 +10,30 @@
 
     public class GetEntityListTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string testDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"Get{entity.Name}ListTests.cs", entity.Name, projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, classPath, entity, isProtected, projectBaseName);
+            var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"Get{entity.Name}ListTests.cs", entity.Name, projectBaseName);
+            var fileText = WriteTestFileText(testDirectory, classPath, entity, isProtected, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)
+        private static string WriteTestFileText(string testDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)
         {
-            var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-            var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-
-            var hasRestrictedEndpoints = isProtected;
-            var authOnlyTests = hasRestrictedEndpoints ? $@"
+            var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "");
+            var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
+            var permissionsUsing = isProtected 
+                ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};"
+                : string.Empty;
+            
+            var authOnlyTests = isProtected ? $@"
             {GetEntityTestUnauthorized(entity)}
             {GetEntityTestForbidden(entity)}" : "";
 
             return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};{permissionsUsing}
 using FluentAssertions;
 using NUnit.Framework;
 using System.Net;
@@ -37,17 +41,17 @@ using System.Threading.Tasks;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
 {{
-    {GetEntityTest(entity, hasRestrictedEndpoints)}{authOnlyTests}
+    {GetEntityTest(entity, isProtected)}{authOnlyTests}
 }}";
         }
 
-        private static string GetEntityTest(Entity entity, bool hasRestrictedEndpoints)
+        private static string GetEntityTest(Entity entity, bool isProtected)
         {
             var testName = $"get_{entity.Name.ToLower()}_list_returns_success";
-            testName += hasRestrictedEndpoints ? "_using_valid_auth_credentials" : "";
-            var clientAuth = hasRestrictedEndpoints ? @$"
+            testName += isProtected ? "_using_valid_auth_credentials" : "";
+            var clientAuth = isProtected ? @$"
 
-        _client.AddAuth(new[] {{Permissions.SuperAdmin}});" : "";
+        _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
             return $@"[Test]
     public async Task {testName}()

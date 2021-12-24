@@ -33,7 +33,7 @@ using Microsoft.EntityFrameworkCore;
 public class UserPolicyHandler : IUserPolicyHandler
 {{
     private readonly RecipesDbContext _dbContext;
-    private readonly ICurrentUserService _currentCurrentUserService;
+    private readonly ICurrentUserService _currentUserService;
 
     public UserPolicyHandler(RecipesDbContext dbContext, ICurrentUserService currentUserService)
     {{

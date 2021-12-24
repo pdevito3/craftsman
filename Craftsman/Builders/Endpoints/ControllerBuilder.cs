@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Text;
     using Enums;
     using Exceptions;
@@ -11,36 +12,32 @@
 
     public static class ControllerBuilder
     {
-        public static void CreateController(string solutionDirectory, string entityName, string entityPlural, string projectBaseName)
+        public static void CreateController(string srcDirectory, string entityName, string entityPlural, string projectBaseName, bool isProtected, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.ControllerClassPath(solutionDirectory, $"{Utilities.GetControllerName(entityPlural)}.cs", projectBaseName, "v1");
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = GetControllerFileText(classPath.ClassNamespace, entityName, entityPlural, solutionDirectory, projectBaseName);
-            fs.Write(Encoding.UTF8.GetBytes(data));
+            var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entityPlural)}.cs", projectBaseName, "v1");
+            var fileText = GetControllerFileText(classPath.ClassNamespace, entityName, entityPlural, srcDirectory, projectBaseName, isProtected);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static string GetControllerFileText(string classNamespace, string entityName, string entityPlural, string solutionDirectory, string projectBaseName)
+        public static string GetControllerFileText(string classNamespace, string entityName, string entityPlural, string srcDirectory, string projectBaseName, bool usesJwtAuth)
         {
             // TODO create an attribute factory that can order them how i want and work more dynamically
 
             var endpointBase = Utilities.EndpointBaseGenerator(entityPlural);
 
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
-            var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
-            var featureClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, "", entityPlural, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entityName, projectBaseName);
+            var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+            var featureClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, "", entityPlural, projectBaseName);
+            var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+            var permissionsUsing = usesJwtAuth 
+                ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};"
+                : string.Empty;
 
             return @$"namespace {classNamespace};
 
 using {featureClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {wrapperClassPath.ClassNamespace};
+using {wrapperClassPath.ClassNamespace};{permissionsUsing}
 using System.Text.Json;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;

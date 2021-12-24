@@ -1,5 +1,6 @@
 ﻿namespace Craftsman.Builders.Tests.FunctionalTests
 {
+    using System;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
@@ -12,21 +13,24 @@
 
     public class PatchEntityTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string testDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"Partial{entity.Name}UpdateTests.cs", entity.Name, projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, classPath, entity, isProtected, projectBaseName);
+            var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"Partial{entity.Name}UpdateTests.cs", entity.Name, projectBaseName);
+            var fileText = WriteTestFileText(testDirectory, classPath, entity, isProtected, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)
+        private static string WriteTestFileText(string testDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)
         {
-            var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-            var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "");
+            var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
+            var permissionsUsing = isProtected 
+                ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};"
+                : string.Empty;
 
-            var hasRestrictedEndpoints = isProtected;
-            var authOnlyTests = hasRestrictedEndpoints ? $@"
+            var authOnlyTests = isProtected ? $@"
             {EntityTestUnauthorized(entity)}
             {EntityTestForbidden(entity)}" : "";
 
@@ -34,7 +38,7 @@
 
 using {fakerClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};{permissionsUsing}
 using Microsoft.AspNetCore.JsonPatch;
 using FluentAssertions;
 using NUnit.Framework;
@@ -43,11 +47,11 @@ using System.Threading.Tasks;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
 {{
-    {PatchEntityTest(entity, hasRestrictedEndpoints)}{authOnlyTests}
+    {PatchEntityTest(entity, isProtected)}{authOnlyTests}
 }}";
         }
 
-        private static string PatchEntityTest(Entity entity, bool hasRestrictedEndpoints)
+        private static string PatchEntityTest(Entity entity, bool isProtected)
         {
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
@@ -58,10 +62,10 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
 
             var testName = $"patch_{entity.Name.ToLower()}_returns_nocontent_when_using_valid_patchdoc_on_existing_entity";
-            testName += hasRestrictedEndpoints ? "_and__valid_auth_credentials" : "";
-            var clientAuth = hasRestrictedEndpoints ? @$"
+            testName += isProtected ? "_and__valid_auth_credentials" : "";
+            var clientAuth = isProtected ? @$"
 
-        _client.AddAuth(new[] {{Permissions.SuperAdmin}});" : "";
+        _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
             // if no string properties, do one with an int
             if (myProp == null)

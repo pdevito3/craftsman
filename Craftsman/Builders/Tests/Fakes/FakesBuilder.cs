@@ -11,32 +11,46 @@
 
     public static class FakesBuilder
     {
-        public static void CreateFakes(string solutionDirectory, string projectName, Entity entity, IFileSystem fileSystem)
+        public static void CreateFakes(string testDirectory, string projectBaseName, Entity entity, IFileSystem fileSystem)
         {
             // ****this class path will have an invalid FullClassPath. just need the directory
-            var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, $"", entity.Name, projectName);
+            var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"", entity.Name, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
 
-            CreateFakerEntityFile(solutionDirectory, entity.Name, entity, projectName, fileSystem);
-            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Creation), entity, projectName, fileSystem);
-            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Read), entity, projectName, fileSystem);
-            CreateFakerFile(solutionDirectory, Utilities.GetDtoName(entity.Name, Dto.Update), entity, projectName, fileSystem);
+            CreateFakerEntityFile(testDirectory, entity.Name, entity, projectBaseName, fileSystem);
+            CreateFakerFile(testDirectory, Utilities.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName, fileSystem);
+            CreateFakerFile(testDirectory, Utilities.GetDtoName(entity.Name, Dto.Read), entity, projectBaseName, fileSystem);
+            CreateFakerFile(testDirectory, Utilities.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName, fileSystem);
+        }
+        
+        public static void CreateRolePermissionFakes(string testDirectory, string projectBaseName, Entity entity, IFileSystem fileSystem)
+        {
+            var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"", entity.Name, projectBaseName);
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
+
+            CreateFakerEntityFile(testDirectory, entity.Name, entity, projectBaseName, fileSystem);
+            CreateFakerFile(testDirectory, Utilities.GetDtoName(entity.Name, Dto.Read), entity, projectBaseName, fileSystem);
+            
+            CreateRolePermissionFakerForCreationOrUpdateFile(testDirectory, Utilities.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName, fileSystem);
+            CreateRolePermissionFakerForCreationOrUpdateFile(testDirectory, Utilities.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName, fileSystem);
         }
 
-        private static void CreateFakerFile(string solutionDirectory, string objectToFakeClassName, Entity entity, string projectName, IFileSystem fileSystem)
+        private static void CreateFakerFile(string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName, IFileSystem fileSystem)
         {
             var fakeFilename = $"Fake{objectToFakeClassName}.cs";
-            var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, fakeFilename, entity.Name, projectName);
-            var fileText = GetFakeFileText(classPath.ClassNamespace, objectToFakeClassName, entity, solutionDirectory, projectName);
+            var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, entity.Name, projectBaseName);
+            var fileText = GetFakeFileText(classPath.ClassNamespace, objectToFakeClassName, entity, testDirectory, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string GetFakeFileText(string classNamespace, string objectToFakeClassName, Entity entity, string solutionDirectory, string projectBaseName)
+        private static string GetFakeFileText(string classNamespace, string objectToFakeClassName, Entity entity, string testDirectory, string projectBaseName)
         {
-            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var entitiesClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", entity.Plural, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
 
             // this... is super fragile. Should really refactor this
             var usingStatement = objectToFakeClassName.Contains("DTO", StringComparison.InvariantCultureIgnoreCase) ? @$"using {dtoClassPath.ClassNamespace};" : $"using {entitiesClassPath.ClassNamespace};";
@@ -57,18 +71,18 @@ public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
 }}";
         }
 
-        private static void CreateFakerEntityFile(string solutionDirectory, string objectToFakeClassName, Entity entity, string projectName, IFileSystem fileSystem)
+        private static void CreateFakerEntityFile(string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName, IFileSystem fileSystem)
         {
             var fakeFilename = $"Fake{objectToFakeClassName}.cs";
-            var classPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, fakeFilename, entity.Name, projectName);
-            var fileText = GetFakeEntityFileText(classPath.ClassNamespace, objectToFakeClassName, entity, solutionDirectory, projectName);
+            var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, entity.Name, projectBaseName);
+            var fileText = GetFakeEntityFileText(classPath.ClassNamespace, objectToFakeClassName, entity, testDirectory, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string GetFakeEntityFileText(string classNamespace, string objectToFakeClassName, Entity entity, string solutionDirectory, string projectBaseName)
+        private static string GetFakeEntityFileText(string classNamespace, string objectToFakeClassName, Entity entity, string testDirectory, string projectBaseName)
         {
-            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var entitiesClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", entity.Plural, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
             var creationDtoName = Utilities.GetDtoName(entity.Name, Dto.Creation);
 
             return @$"namespace {classNamespace};
@@ -86,6 +100,31 @@ public class Fake{objectToFakeClassName}
 }}";
         }
         
-        
+
+        private static void CreateRolePermissionFakerForCreationOrUpdateFile(string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName, IFileSystem fileSystem)
+        {
+            var fakeFilename = $"Fake{objectToFakeClassName}.cs";
+            var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, entity.Name, projectBaseName);
+            
+            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var policyDomainClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "",projectBaseName);
+
+            var fileText= @$"namespace {classPath.ClassNamespace};
+
+using AutoBogus;
+using {policyDomainClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
+
+public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
+{{
+    public Fake{objectToFakeClassName}()
+    {{
+        RuleFor(rp => rp.Permission, f => f.PickRandom(Permissions.List()));
+        RuleFor(rp => rp.Role, f => f.PickRandom(Roles.List()));
+    }}
+}}";
+
+            Utilities.CreateFile(classPath, fileText, fileSystem);
+        }
     }
 }

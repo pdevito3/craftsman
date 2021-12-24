@@ -244,30 +244,17 @@ BoundedContexts:
   - Name: Recipe
     Features:
     - Type: GetList
-      Policies:
-      - Name: CanReadRecipes
-        PolicyType: scope
-        PolicyValue: recipes.read
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: GetRecord
-      Policies:
-      - Name: CanReadRecipes
-        PolicyType: scope
-        PolicyValue: recipes.read
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: AddRecord
-      Policies:
-      - Name: CanAddRecipes
-        PolicyType: scope
-        PolicyValue: recipes.add
+      IsProtected: true
     - Type: UpdateRecord
-      Policies:
-      - Name: CanUpdateRecipes
-        PolicyType: scope
-        PolicyValue: recipes.update
+      IsProtected: true
     - Type: DeleteRecord
-      Policies:
-      - Name: CanDeleteRecipes
-        PolicyType: scope
-        PolicyValue: recipes.delete
+      IsProtected: true
     Properties:
     - Name: Title
       Type: string

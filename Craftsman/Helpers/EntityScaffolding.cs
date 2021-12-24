@@ -36,13 +36,14 @@
                 ProfileBuilder.CreateProfile(srcDirectory, entity, projectBaseName);
                 ApiRouteModifier.AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
                 
+                var isProtected = entity.Features.Any(f => f.IsProtected); // <-- one more example of why it would be nice to have specific endpoints for each feature 😤
                 if(entity.Features.Count > 0)
-                    ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName);
+                    ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName, isProtected, fileSystem);
                 
                 // TODO refactor to factory?
                 foreach (var feature in entity.Features)
                 {
-                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, entity, fileSystem);
+                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, entity, feature.IsProtected, fileSystem);
                 }
 
                 // Shared Tests
@@ -50,13 +51,62 @@
             }
         }
 
+        public static void ScaffoldRolePermissions(string srcDirectory,
+            string testDirectory,
+            string projectBaseName,
+            string dbContextName,
+            bool addSwaggerComments,
+            IFileSystem fileSystem)
+        {
+            var rolePermission = new Entity()
+            {
+                Name = "RolePermission",
+                Features = new List<Feature>()
+                {
+                    new() { Type = FeatureType.GetList.Name, IsProtected = true, PermissionName = "CanReadRolePermissions" },
+                    new() { Type = FeatureType.GetRecord.Name, IsProtected = true, PermissionName = "CanReadRolePermissions" },
+                    new() { Type = FeatureType.AddRecord.Name, IsProtected = true },
+                    new() { Type = FeatureType.UpdateRecord.Name, IsProtected = true },
+                    new() { Type = FeatureType.DeleteRecord.Name, IsProtected = true },
+                },
+                Properties = new List<EntityProperty>()
+                {
+                    new() { Name = "Role", Type = "string", CanFilter = false, CanSort = false },
+                    new() { Name = "Permission", Type = "string", CanFilter = false, CanSort = false }
+                } 
+            };
+            
+            EntityBuilder.CreateEntity(srcDirectory, rolePermission, projectBaseName, fileSystem);
+            DtoBuilder.CreateDtos(srcDirectory, rolePermission, projectBaseName);
+            ProfileBuilder.CreateProfile(srcDirectory, rolePermission, projectBaseName);
+            ApiRouteModifier.AddRoutes(testDirectory, rolePermission, projectBaseName);
+            
+            // custom validator
+            ValidatorBuilder.CreateRolePermissionValidators(srcDirectory, projectBaseName, rolePermission, fileSystem);
+                
+            if(rolePermission.Features.Count > 0)
+                ControllerBuilder.CreateController(srcDirectory, rolePermission.Name, rolePermission.Plural, projectBaseName, true, fileSystem);
+                
+            // TODO refactor to factory?
+            foreach (var feature in rolePermission.Features)
+            {
+                AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, rolePermission, true, fileSystem);
+            }
+
+            // Shared Tests
+            FakesBuilder.CreateRolePermissionFakes(testDirectory, projectBaseName, rolePermission, fileSystem);
+            
+            // need to do db modifier
+            DbContextModifier.AddDbSet(srcDirectory, new List<Entity>() { rolePermission }, dbContextName, projectBaseName);
+        }
+
         public static void AddFeatureToProject(string srcDirectory, string testDirectory, string projectBaseName,
             string dbContextName, bool addSwaggerComments, Feature feature, Entity entity,
-            IFileSystem fileSystem)
+            bool isProtected, IFileSystem fileSystem)
         {
             var controllerClassPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName);
             if (!File.Exists(controllerClassPath.FullClassPath))
-                ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName);
+                ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName, isProtected, fileSystem);
 
             PermissionsModifier.AddPermission(srcDirectory, feature.PermissionName, projectBaseName);
             

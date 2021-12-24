@@ -53,8 +53,8 @@
         private string _permission;
         public string PermissionName
         {
-            get => _permission;
-            set => _permission = value ?? $"Can{Name}";
+            get => _permission ?? $"Can{Name}";
+            set => _permission = value;
         }
 
         private string _batchPropName;
