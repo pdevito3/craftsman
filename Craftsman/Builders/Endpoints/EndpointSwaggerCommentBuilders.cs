@@ -146,23 +146,9 @@
     [ProducesResponseType(500)]" : "";
         }
 
-        public static string BuildAuthorizations(List<Policy> policies)
+        public static string BuildAuthorizations(string permission)
         {
-            var authorizations = "";
-            foreach (var policy in policies)
-            {
-                if (policy.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Scope))
-                //|| result.PolicyType == Enum.GetName(typeof(PolicyType), PolicyType.Claim))
-                {
-                    authorizations += $@"{Environment.NewLine}    [Authorize(Policy = ""{policy.Name}"")]";
-                }
-                else
-                {
-                    authorizations += $@"{Environment.NewLine}    [Authorize(Roles = ""{policy.Name}"")]";
-                }
-            }
-
-            return authorizations;
+            return $@"{Environment.NewLine}    [Authorize(Policy = Permissions.{permission})]";
         }
 
         public static string GetAuthResponses(bool hasAuthentications)

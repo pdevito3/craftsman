@@ -53,7 +53,6 @@
                     projectBaseName,
                     contextName,
                     true,
-                    feature.Policies,
                     feature,
                     new Entity() { Name = feature.EntityName, Plural = feature.EntityPlural},
                     fileSystem);
@@ -119,7 +118,6 @@
                     Type = featureType,
                     EntityName = entityName,
                     EntityPlural = entityPlural,
-                    Policies = policies
                 };
             }
             
@@ -153,7 +151,6 @@
                     Type = featureType,
                     EntityName = entityName,
                     EntityPlural = entityPlural,
-                    Policies = policies,
                     BatchPropertyName = propName,
                     BatchPropertyType = propType,
                     BatchPropertyDbSetName = dbSet,

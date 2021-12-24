@@ -56,8 +56,6 @@
             get => _permission;
             set => _permission = value ?? $"Can{Name}";
         }
-        
-        public List<Policy> Policies { get; set; } = new List<Policy>();
 
         private string _batchPropName;
         /// <summary>

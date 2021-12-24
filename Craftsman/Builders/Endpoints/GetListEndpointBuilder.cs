@@ -7,7 +7,7 @@
 
     public class GetListEndpointBuilder
     {
-        public static string GetEndpointTextForGetList(Entity entity, bool addSwaggerComments,List<Policy> policies)
+        public static string GetEndpointTextForGetList(Entity entity, bool addSwaggerComments, string permission)
         {
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
@@ -17,9 +17,9 @@
             var queryListMethodName = Utilities.QueryListName(entityName);
             var listResponse = $@"IEnumerable<{readDto}>";
             var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
-            var getListAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
+            var getListAuthorization = EndpointSwaggerCommentBuilders.BuildAuthorizations(permission);
 
-            return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetList(entity, addSwaggerComments, listResponse, getListAuthorizations.Length > 0)}{getListAuthorizations}
+            return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetList(entity, addSwaggerComments, listResponse, getListAuthorization.Length > 0)}{getListAuthorization}
     [Produces(""application/json"")]
     [HttpGet(Name = ""{getListEndpointName}"")]
     public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)

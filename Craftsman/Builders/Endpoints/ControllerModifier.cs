@@ -10,7 +10,7 @@
 
     public class ControllerModifier
     {
-        public static void AddEndpoint(string srcDirectory, FeatureType featureType, Entity entity, bool addSwaggerComments, List<Policy> policies, Feature feature, string projectBaseName)
+        public static void AddEndpoint(string srcDirectory, FeatureType featureType, Entity entity, bool addSwaggerComments, Feature feature, string projectBaseName)
         {
             var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName, "v1");
 
@@ -33,19 +33,19 @@
                         {
                             var endpoint = "";
                             if(featureType == FeatureType.GetList)
-                                endpoint = GetListEndpointBuilder.GetEndpointTextForGetList(entity, addSwaggerComments, policies);
+                                endpoint = GetListEndpointBuilder.GetEndpointTextForGetList(entity, addSwaggerComments, feature.PermissionName);
                             else if(featureType == FeatureType.GetRecord)
-                                endpoint = GetRecordEndpointBuilder.GetEndpointTextForGetRecord(entity, addSwaggerComments, policies);
+                                endpoint = GetRecordEndpointBuilder.GetEndpointTextForGetRecord(entity, addSwaggerComments, feature.PermissionName);
                             else if(featureType == FeatureType.AddRecord)
-                                endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateRecord(entity, addSwaggerComments, policies);
+                                endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateRecord(entity, addSwaggerComments, feature.PermissionName);
                             else if(featureType == FeatureType.AddListByFk)
-                                endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateList(entity, addSwaggerComments, policies, feature);
+                                endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateList(entity, addSwaggerComments, feature);
                             else if(featureType == FeatureType.DeleteRecord)
-                                endpoint = DeleteRecordEndpointBuilder.GetEndpointTextForDeleteRecord(entity, addSwaggerComments, policies);
+                                endpoint = DeleteRecordEndpointBuilder.GetEndpointTextForDeleteRecord(entity, addSwaggerComments, feature.PermissionName);
                             else if(featureType == FeatureType.UpdateRecord)
-                                endpoint = PutRecordEndpointBuilder.GetEndpointTextForPutRecord(entity, addSwaggerComments, policies);
+                                endpoint = PutRecordEndpointBuilder.GetEndpointTextForPutRecord(entity, addSwaggerComments, feature.PermissionName);
                             else if(featureType == FeatureType.PatchRecord)
-                                endpoint = PatchRecordEndpointBuilder.GetEndpointTextForPatchRecord(entity, addSwaggerComments, policies);
+                                endpoint = PatchRecordEndpointBuilder.GetEndpointTextForPatchRecord(entity, addSwaggerComments, feature.PermissionName);
 
                             newText = $"{endpoint}{Environment.NewLine}{Environment.NewLine}{newText}";
                         }

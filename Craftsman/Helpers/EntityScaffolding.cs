@@ -42,7 +42,7 @@
                 // TODO refactor to factory?
                 foreach (var feature in entity.Features)
                 {
-                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature.Policies, feature, entity, fileSystem);
+                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, entity, fileSystem);
                 }
 
                 // Shared Tests
@@ -51,7 +51,7 @@
         }
 
         public static void AddFeatureToProject(string srcDirectory, string testDirectory, string projectBaseName,
-            string dbContextName, bool addSwaggerComments, List<Policy> policies, Feature feature, Entity entity,
+            string dbContextName, bool addSwaggerComments, Feature feature, Entity entity,
             IFileSystem fileSystem)
         {
             var controllerClassPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName);
@@ -65,7 +65,7 @@
                 CommandAddRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
                 AddCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
                 CreateEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
-                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddRecord, entity, addSwaggerComments, policies, 
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddRecord, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
 
@@ -74,7 +74,7 @@
                 QueryGetRecordBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
                 GetRecordQueryTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
                 GetEntityRecordTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
-                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments, policies, 
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
 
@@ -83,7 +83,7 @@
                 QueryGetListBuilder.CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
                 GetListQueryTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
                 GetEntityListTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
-                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments, policies, 
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
             
@@ -92,7 +92,7 @@
                 CommandDeleteRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
                 DeleteCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
                 DeleteEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
-                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments, policies, 
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
             
@@ -101,7 +101,7 @@
                 CommandUpdateRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
                 PutCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
                 PutEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
-                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.UpdateRecord, entity, addSwaggerComments, policies, 
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.UpdateRecord, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
             
@@ -110,7 +110,7 @@
                 CommandPatchRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
                 PatchCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName, fileSystem);
                 PatchEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
-                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments, policies, 
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
             
@@ -119,7 +119,7 @@
                 CommandAddListBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName, feature, fileSystem);
                 AddListCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, feature, projectBaseName, fileSystem);
                 AddListTestBuilder.CreateTests(testDirectory, entity, feature, projectBaseName, fileSystem);
-                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddListByFk, entity, addSwaggerComments, policies, 
+                ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddListByFk, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
 

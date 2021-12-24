@@ -7,7 +7,7 @@
 
     public class GetRecordEndpointBuilder
     {
-        public static string GetEndpointTextForGetRecord(Entity entity, bool addSwaggerComments,List<Policy> policies)
+        public static string GetEndpointTextForGetRecord(Entity entity, bool addSwaggerComments, string permission)
         {
             var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
@@ -18,7 +18,7 @@
             var pkPropertyType = primaryKeyProp.Type;
             var singleResponse = $@"{readDto}";
             var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";
-            var getRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(policies);
+            var getRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(permission);
 
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetRecord(entity, addSwaggerComments, singleResponse, getRecordAuthorizations.Length > 0)}{getRecordAuthorizations}
