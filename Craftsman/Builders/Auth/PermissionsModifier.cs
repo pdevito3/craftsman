@@ -1,10 +1,8 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Auth
 {
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System;
-    using System.Collections.Generic;
     using System.IO;
+    using Helpers;
 
     public class PermissionsModifier
     {
@@ -17,6 +15,10 @@
 
             if (!File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            var fileText = File.ReadAllText(classPath.FullClassPath);
+            if (fileText.Contains($"const string {permission}"))
+                return;
 
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))

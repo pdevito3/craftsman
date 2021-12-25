@@ -21,6 +21,7 @@
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(testDirectory, "", projectBaseName);
             var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
             var entityClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", "RolePermissions", projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", "RolePermission", projectBaseName);
 
             return @$"namespace {classPath.ClassNamespace};
 

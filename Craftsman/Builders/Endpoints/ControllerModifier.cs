@@ -1,12 +1,10 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Endpoints
 {
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using Endpoints;
     using Enums;
+    using Helpers;
+    using Models;
 
     public class ControllerModifier
     {

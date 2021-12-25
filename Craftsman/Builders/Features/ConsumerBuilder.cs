@@ -1,11 +1,11 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Features
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System;
     using System.IO;
     using System.Text;
+    using Exceptions;
+    using Helpers;
+    using Models;
 
     public class ConsumerBuilder
     {

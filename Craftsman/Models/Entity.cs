@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace Craftsman.Models
 {
+    using Helpers;
+
     /// <summary>
     /// This represents a database entity for your project
     /// </summary>

@@ -8,6 +8,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using Builders.Features;
     using Builders.Tests.IntegrationTests;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;

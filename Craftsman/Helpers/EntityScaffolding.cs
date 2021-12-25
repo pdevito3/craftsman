@@ -13,6 +13,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using Builders.Auth;
     using Builders.Endpoints;
     using Builders.Tests.UnitTests;
     using Builders.Tests.Utilities;

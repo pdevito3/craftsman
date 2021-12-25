@@ -1,4 +1,4 @@
-﻿namespace Craftsman
+﻿namespace Craftsman.Helpers
 {
     using System;
 

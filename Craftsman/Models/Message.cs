@@ -1,6 +1,7 @@
 ﻿namespace Craftsman.Models
 {
     using System.Collections.Generic;
+    using Helpers;
 
     public class Message
     {

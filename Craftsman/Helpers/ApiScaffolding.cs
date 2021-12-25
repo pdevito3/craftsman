@@ -13,6 +13,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using Builders.Auth;
     using static Helpers.ConsoleWriter;
 
     public class ApiScaffolding

@@ -1,12 +1,7 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Auth
 {
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
     using System.IO.Abstractions;
-    using System.Text;
+    using Helpers;
 
     public class UserPolicyHandlerBuilder
     {
