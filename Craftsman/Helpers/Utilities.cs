@@ -94,11 +94,6 @@
             return $"{entity.Name}Seeder";
         }
 
-        public static string GetRepositoryListMethodName(string pluralEntity)
-        {
-            return $"Get{pluralEntity}Async";
-        }
-
         public static string GetMassTransitRegistrationName()
         {
             return "MassTransitServiceExtension";
@@ -113,25 +108,7 @@
         {
             return "SwaggerServiceExtension";
         }
-
-        public static List<Policy> GetPoliciesThatDoNotExist(List<Policy> policies, string existingFileFullClassPath)
-        {
-            var nonExistantPolicies = new List<Policy>();
-            nonExistantPolicies.AddRange(policies);
-
-            var fileText = File.ReadAllText(existingFileFullClassPath);
-
-            foreach (var policy in policies)
-            {
-                if (fileText.Contains(policy.Name) || fileText.Contains(policy.PolicyValue))
-                {
-                    nonExistantPolicies.Remove(policy);
-                }
-            }
-
-            return nonExistantPolicies;
-        }
-
+        
         public static string GetAppSettingsName(bool asJson = true)
         {
             return asJson ? $"appsettings.json" : $"appsettings";
@@ -347,11 +324,6 @@ using {parentClassPath.ClassNamespace};";
         public static string EndpointBaseGenerator(string entityNamePlural)
         {
             return $@"api/{entityNamePlural.ToLower()}";
-        }
-
-        public static string BuildTestAuthorizationString(List<Policy> policies)
-        {
-            return "{\"" + string.Join("\", \"", policies.Select(r => r.PolicyValue)) + "\"}";
         }
 
         public static void AddStartupEnvironmentsWithServices(

@@ -43,7 +43,7 @@
                 // TODO refactor to factory?
                 foreach (var feature in entity.Features)
                 {
-                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, entity, feature.IsProtected, fileSystem);
+                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, entity, fileSystem);
                 }
 
                 // Shared Tests
@@ -90,7 +90,7 @@
             // TODO refactor to factory?
             foreach (var feature in rolePermission.Features)
             {
-                AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, rolePermission, true, fileSystem);
+                AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, rolePermission, fileSystem);
             }
 
             // Shared Tests
@@ -101,12 +101,11 @@
         }
 
         public static void AddFeatureToProject(string srcDirectory, string testDirectory, string projectBaseName,
-            string dbContextName, bool addSwaggerComments, Feature feature, Entity entity,
-            bool isProtected, IFileSystem fileSystem)
+            string dbContextName, bool addSwaggerComments, Feature feature, Entity entity, IFileSystem fileSystem)
         {
             var controllerClassPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName);
             if (!File.Exists(controllerClassPath.FullClassPath))
-                ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName, isProtected, fileSystem);
+                ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName, feature.IsProtected, fileSystem);
 
             PermissionsModifier.AddPermission(srcDirectory, feature.PermissionName, projectBaseName);
             
