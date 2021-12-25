@@ -49,6 +49,7 @@ public class UserPolicyHandler : IUserPolicyHandler
         var roles = user.Claims
             .Where(c => c.Type == ClaimTypes.Role)
             .Select(r => r.Value)
+            .Distinct()
             .ToArray();
         
         // super admins can do everything

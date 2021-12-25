@@ -26,6 +26,7 @@ using System.Reflection;
 public static class Roles
 {{
     public const string SuperAdmin = ""SuperAdmin"";
+    public const string User = ""User"";
     
     public static List<string> List()
     {{

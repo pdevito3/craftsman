@@ -59,13 +59,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;{usingStatement}
 using NUnit.Framework;
 using Respawn;
 using System.IO;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 [SetUpFixture]
 public class TestFixture
@@ -102,7 +103,7 @@ public class TestFixture
         var httpContextAccessorService = services.FirstOrDefault(d =>
             d.ServiceType == typeof(IHttpContextAccessor));
         services.Remove(httpContextAccessorService);
-        services.AddScoped(_ => Mock.Of<IHttpContextAccessor>());
+        services.AddSingleton(_ => Mock.Of<IHttpContextAccessor>());
 
         _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
 
@@ -127,6 +128,44 @@ public class TestFixture
         var scope = _scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetService<TScopedService>();
         return service;
+    }}
+
+
+    public static void SetUserRole(string role, string sub = null)
+    {{
+        sub ??= Guid.NewGuid().ToString();
+        var claims = new List<Claim>
+        {{
+            new Claim(ClaimTypes.Role, role),
+            new Claim(ClaimTypes.Name, sub)
+        }};
+
+        var identity = new ClaimsIdentity(claims);
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        var httpContext = Mock.Of<HttpContext>(c => c.User == claimsPrincipal);
+
+        var httpContextAccessor = GetService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = httpContext;
+    }}
+
+    public static void SetUserRoles(string[] roles, string sub = null)
+    {{
+        sub ??= Guid.NewGuid().ToString();
+        var claims = new List<Claim>();
+        foreach (var role in roles)
+        {{
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }}
+        claims.Add(new Claim(ClaimTypes.Name, sub));
+
+        var identity = new ClaimsIdentity(claims);
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        var httpContext = Mock.Of<HttpContext>(c => c.User == claimsPrincipal);
+
+        var httpContextAccessor = GetService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = httpContext;
     }}
 
     public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)

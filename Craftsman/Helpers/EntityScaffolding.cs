@@ -14,6 +14,7 @@
     using System.IO.Abstractions;
     using System.Linq;
     using Builders.Endpoints;
+    using Builders.Tests.UnitTests;
     using Builders.Tests.Utilities;
     using static Helpers.ConsoleWriter;
 
@@ -95,6 +96,8 @@
 
             // Shared Tests
             FakesBuilder.CreateRolePermissionFakes(testDirectory, projectBaseName, rolePermission, fileSystem);
+            RolePermissionsUnitTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
+            UserPolicyHandlerIntegrationTests.CreateTests(testDirectory, srcDirectory, projectBaseName, fileSystem);
             
             // need to do db modifier
             DbContextModifier.AddDbSet(srcDirectory, new List<Entity>() { rolePermission }, dbContextName, projectBaseName);
