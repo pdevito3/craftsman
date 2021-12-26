@@ -285,8 +285,8 @@
         private static string AskBatchPropertyDbSetName(string entityName)
         {
             return AnsiConsole.Prompt(
-                new TextPrompt<string>($"What's the [green]name of the DbSet[/] of the the property you are doing the batch add on? Leave [green]null[/] if you're not batching on a FK. (Default: [green]{entityName}s[/])")
-                    .DefaultValue($"{entityName}s")
+                new TextPrompt<string>($"What's the [green]name of the DbSet[/] of the the property you are doing the batch add on? Leave [green]null[/] if you're not batching on a FK. (ex: [green]{entityName}s[/])")
+                    .AllowEmpty()
                     .HideDefaultValue()
             );
         }
@@ -294,23 +294,11 @@
         private static string AskParentEntity()
         {
             return AnsiConsole.Prompt(
-                new TextPrompt<string>("What's the [green]name of the parent entity[/] that the FK you using is associated to? For example, if you had a FK of `EventId`, the parent entity might be `Event`. Leave null if you're not batching on a FK.")
+                new TextPrompt<string>("What's the [green]name of the parent entity[/] that the FK you using is associated to? For example, if you had a FK of `EventId`, the parent entity might be `Event`. Leave [green]null[/] if you're not batching on a FK.")
+                    .AllowEmpty()
             );
         }
-
-        private static bool AskUseSwaggerComments()
-        {
-            var command = AnsiConsole.Prompt(
-                new TextPrompt<string>("Do you want to include swagger comments? (Default: [green]y[/])?")
-                    .InvalidChoiceMessage("[red]Please respond 'y' or 'n'[/]")
-                    .DefaultValue("y")
-                    .HideDefaultValue()
-                    .AddChoice("y")
-                    .AddChoice("n"));
-
-            return command == "y";
-        }
-
+        
         private static bool AskIsProtected()
         {
             var command = AnsiConsole.Prompt(

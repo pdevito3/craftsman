@@ -45,6 +45,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Batch endpoint route updated to `batch` along with a functional testing route
 * Batch add using update to controller
 * `IHttpContextAccessor` fixted to a singleton in integration tests' `TestFixture`
+* Can enter null for `add:feature` batch list options where needed
 
 ## [0.12.3] - 12/20/2021
 
