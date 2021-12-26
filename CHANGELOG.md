@@ -38,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Updated tests to work with new private entity workflow
 * CurrentUserServer has a method to get the User from the ClaimsPrincipal
 * Swagger question removed from `add:feature` as it wasn't being used. Will be set to true.
+* Removed unused `Unauthorized` and `Forbidden` MediatR filters 
 
 ### Fixed
 
