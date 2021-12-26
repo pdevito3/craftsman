@@ -116,7 +116,7 @@ public static class SwaggerServiceExtension
                         TokenUrl = new Uri(Environment.GetEnvironmentVariable(""AUTH_TOKEN_URL"")),
                         Scopes = new Dictionary<string, string>
                         {{
-                            {{""{policyName}"", ""{projectName.Humanize()} Access""}}
+                            {{""{policyName}"", ""{projectName.Humanize()} access""}}
                         }}
                     }}
                 }}

@@ -384,30 +384,17 @@ BoundedContexts:
   - Name: Recipe
     Features:
     - Type: GetList
-      Policies:
-      - Name: RecipesReadOnly
-        PolicyType: scope
-        PolicyValue: recipemanagement.readonly
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: GetRecord
-      Policies:
-      - Name: RecipesReadOnly
-        PolicyType: scope
-        PolicyValue: recipemanagement.readonly
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: AddRecord
-      Policies:
-      - Name: RecipesReadOnly
-        PolicyType: scope
-        PolicyValue: recipemanagement.readonly
+      IsProtected: true
     - Type: UpdateRecord
-      Policies:
-      - Name: RecipesReadOnly
-        PolicyType: scope
-        PolicyValue: recipemanagement.readonly
+      IsProtected: true
     - Type: DeleteRecord
-      Policies:
-      - Name: RecipesFullAccess
-        PolicyType: scope
-        PolicyValue: recipemanagement.fullaccess
+      IsProtected: true
     Properties:
     - Name: Title
       Type: string
@@ -435,14 +422,14 @@ BoundedContexts:
     Audience: recipe_management
     AuthorizationUrl: https://localhost:3385/connect/authorize
     TokenUrl: https://localhost:3385/connect/token
-    ClientId: recipemanagement.swagger
+    ClientId: recipe_management.swagger
     ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
 AuthServer:
   Name: AuthServerWithDomain
   Port: 3385
   Clients:
-    - Id: recipemanagement.swagger
-      Name: RM Swagger
+    - Id: recipe_management.swagger
+      Name: RecipeManagement Swagger
       Secrets:
         - 974d6f71-d41b-4601-9a7a-a33081f80687
       GrantType: Code
@@ -458,28 +445,24 @@ AuthServer:
       RequireClientSecret: true
       AllowPlainTextPkce: false
       AllowedScopes:
-        - recipemanagement.readonly
-        - recipemanagement.fullaccess
         - openid
         - profile
+        - role
+        - recipe_management #this should match the scope in your boundary's swagger spec 
   Scopes:
-    - Name: recipemanagement.readonly
-      DisplayName: Recipes - Read Only
-      UserClaims:
-        - recipes.read
-    - Name: recipemanagement.fullaccess
-      DisplayName: Recipes - Full Access
+    - Name: recipe_management
+      DisplayName: Recipes Management - API Access
   Apis:
     - Name: recipe_management
       DisplayName: Recipe Management
       ScopeNames:
-        - recipemanagement.readonly
-        - recipemanagement.fullaccess
+        - recipe_management
       Secrets:
         - 4653f605-2b36-43eb-bbef-a93480079f20
       UserClaims:
         - openid
         - profile
+        - role
 ";
         }
     }

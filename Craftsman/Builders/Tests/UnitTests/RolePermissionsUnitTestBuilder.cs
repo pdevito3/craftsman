@@ -28,6 +28,7 @@
 using {domainPolicyClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
