@@ -25,9 +25,9 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ DDD promoted entities (private setters, factory methods, associated fakers)
 
-🚧 Add Identity to Auth Server
+✅ Huge permissions upgrade. Significantly simplified setup which resulted in a new library ([HeimGaurd](https://github.com/pdevito3/heimguard)) that can be used in any .NET project.
 
-🚧 Better Role/Policy support
+🚧 Add Identity to Auth Server
 
 🚧 BFF Scaffolding
 
