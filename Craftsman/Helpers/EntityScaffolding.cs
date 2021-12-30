@@ -111,7 +111,8 @@
             if (!File.Exists(controllerClassPath.FullClassPath))
                 ControllerBuilder.CreateController(srcDirectory, entity.Name, entity.Plural, projectBaseName, feature.IsProtected, fileSystem);
 
-            PermissionsModifier.AddPermission(srcDirectory, feature.PermissionName, projectBaseName);
+            if(feature.IsProtected)
+                PermissionsModifier.AddPermission(srcDirectory, feature.PermissionName, projectBaseName);
             
             if (feature.Type == FeatureType.AddRecord.Name)
             {
