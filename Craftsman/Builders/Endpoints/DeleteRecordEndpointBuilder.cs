@@ -6,14 +6,14 @@
 
     public class DeleteRecordEndpointBuilder
     {
-        public static string GetEndpointTextForDeleteRecord(Entity entity, bool addSwaggerComments, string permission)
+        public static string GetEndpointTextForDeleteRecord(Entity entity, bool addSwaggerComments, Feature feature)
         {
             var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var primaryKeyProp = Entity.PrimaryKeyProperty;
             var deleteRecordCommandMethodName = Utilities.CommandDeleteName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
-            var deleteRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(permission);
+            var deleteRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_DeleteRecord(entity, addSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
     [Produces(""application/json"")]

@@ -7,7 +7,7 @@
 
     public class PatchRecordEndpointBuilder
     {
-        public static string GetEndpointTextForPatchRecord(Entity entity, bool addSwaggerComments, string permission)
+        public static string GetEndpointTextForPatchRecord(Entity entity, bool addSwaggerComments, Feature feature)
         {
             var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
@@ -15,7 +15,7 @@
             var primaryKeyProp = Entity.PrimaryKeyProperty;
             var patchRecordCommandMethodName = Utilities.CommandPatchName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
-            var updatePartialAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(permission);
+            var updatePartialAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_PatchRecord(entity, addSwaggerComments, updatePartialAuthorizations.Length > 0)}{updatePartialAuthorizations}
     [Consumes(""application/json"")]

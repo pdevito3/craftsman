@@ -7,7 +7,7 @@
 
     public class PutRecordEndpointBuilder
     {
-        public static string GetEndpointTextForPutRecord(Entity entity, bool addSwaggerComments, string permission)
+        public static string GetEndpointTextForPutRecord(Entity entity, bool addSwaggerComments, Feature feature)
         {
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
@@ -16,7 +16,7 @@
             var primaryKeyProp = Entity.PrimaryKeyProperty;
             var updateRecordCommandMethodName = Utilities.CommandUpdateName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
-            var updateRecordAuthorizations = EndpointSwaggerCommentBuilders.BuildAuthorizations(permission);
+            var updateRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_PutRecord(entity, addSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
     [Produces(""application/json"")]

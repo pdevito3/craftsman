@@ -7,7 +7,7 @@
 
     public class GetListEndpointBuilder
     {
-        public static string GetEndpointTextForGetList(Entity entity, bool addSwaggerComments, string permission)
+        public static string GetEndpointTextForGetList(Entity entity, bool addSwaggerComments, Feature feature)
         {
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
@@ -17,7 +17,7 @@
             var queryListMethodName = Utilities.QueryListName(entityName);
             var listResponse = $@"IEnumerable<{readDto}>";
             var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
-            var getListAuthorization = EndpointSwaggerCommentBuilders.BuildAuthorizations(permission);
+            var getListAuthorization = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
 
             return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetList(entity, addSwaggerComments, listResponse, getListAuthorization.Length > 0)}{getListAuthorization}
     [Produces(""application/json"")]

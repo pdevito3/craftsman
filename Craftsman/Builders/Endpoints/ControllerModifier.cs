@@ -31,19 +31,19 @@
                         {
                             var endpoint = "";
                             if(featureType == FeatureType.GetList)
-                                endpoint = GetListEndpointBuilder.GetEndpointTextForGetList(entity, addSwaggerComments, feature.PermissionName);
+                                endpoint = GetListEndpointBuilder.GetEndpointTextForGetList(entity, addSwaggerComments, feature);
                             else if(featureType == FeatureType.GetRecord)
-                                endpoint = GetRecordEndpointBuilder.GetEndpointTextForGetRecord(entity, addSwaggerComments, feature.PermissionName);
+                                endpoint = GetRecordEndpointBuilder.GetEndpointTextForGetRecord(entity, addSwaggerComments, feature);
                             else if(featureType == FeatureType.AddRecord)
-                                endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateRecord(entity, addSwaggerComments, feature.PermissionName);
+                                endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateRecord(entity, addSwaggerComments, feature);
                             else if(featureType == FeatureType.AddListByFk)
                                 endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateList(entity, addSwaggerComments, feature);
                             else if(featureType == FeatureType.DeleteRecord)
-                                endpoint = DeleteRecordEndpointBuilder.GetEndpointTextForDeleteRecord(entity, addSwaggerComments, feature.PermissionName);
+                                endpoint = DeleteRecordEndpointBuilder.GetEndpointTextForDeleteRecord(entity, addSwaggerComments, feature);
                             else if(featureType == FeatureType.UpdateRecord)
-                                endpoint = PutRecordEndpointBuilder.GetEndpointTextForPutRecord(entity, addSwaggerComments, feature.PermissionName);
+                                endpoint = PutRecordEndpointBuilder.GetEndpointTextForPutRecord(entity, addSwaggerComments, feature);
                             else if(featureType == FeatureType.PatchRecord)
-                                endpoint = PatchRecordEndpointBuilder.GetEndpointTextForPatchRecord(entity, addSwaggerComments, feature.PermissionName);
+                                endpoint = PatchRecordEndpointBuilder.GetEndpointTextForPatchRecord(entity, addSwaggerComments, feature);
 
                             newText = $"{endpoint}{Environment.NewLine}{Environment.NewLine}{newText}";
                         }
