@@ -13,6 +13,11 @@
         public string ExchangeName { get; set; }
 
         public string MessageName { get; set; }
+        
+        /// <summary>
+        /// The directory we want to to put this in in the domain. Generally the plural of an entity.
+        /// </summary>
+        public string DomainDirectory { get; set; }
 
         private ExchangeTypeEnum _exchangeType { get; set; }
         public string ExchangeType

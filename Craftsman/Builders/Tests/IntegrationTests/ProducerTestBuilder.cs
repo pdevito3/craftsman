@@ -21,7 +21,7 @@
         {
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-            var producerClassPath = ClassPathHelper.ProducerFeaturesClassPath(solutionDirectory, "", projectBaseName);
+            var producerClassPath = ClassPathHelper.ProducerFeaturesClassPath(solutionDirectory, "", producer.DomainDirectory, projectBaseName);
             
             return @$"namespace {classPath.ClassNamespace};
 

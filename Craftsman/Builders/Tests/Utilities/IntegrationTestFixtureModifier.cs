@@ -18,8 +18,6 @@
             if (!File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
-            var consumerFeatureClassPath = ClassPathHelper.ConsumerFeaturesClassPath(testDirectory, $"", projectBaseName);
-
             var usingsAdded = false;
             var tempPath = $"{classPath.FullClassPath}temp";
             using (var input = File.OpenText(classPath.FullClassPath))
@@ -130,7 +128,7 @@ using MassTransit;";
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        public static void AddMTConsumer(string testDirectory, string consumerName, string projectBaseName, string srcDirectory)
+        public static void AddMTConsumer(string testDirectory, string consumerName, string domainDirectory, string projectBaseName, string srcDirectory)
         {
             var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
 
@@ -140,7 +138,7 @@ using MassTransit;";
             if (!File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
-            var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"", projectBaseName);
+            var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"", domainDirectory, projectBaseName);
 
             var tempPath = $"{classPath.FullClassPath}temp";
             var hasUsingForConsumerNamespace = false;

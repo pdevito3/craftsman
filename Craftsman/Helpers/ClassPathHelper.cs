@@ -240,25 +240,23 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural, "Mappings"), className);
         }
 
-        public static ClassPath FeaturesClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        public static ClassPath FeaturesClassPath(string srcDirectory, string className, string entityName, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
             return string.IsNullOrEmpty(entityName)
-                ? new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain"), className)
-                : new ClassPath(solutionDirectory,
+                ? new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain"), className)
+                : new ClassPath(srcDirectory,
                     Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityName, "Features"), className);
         }
 
-        public static ClassPath ConsumerFeaturesClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath ConsumerFeaturesClassPath(string srcDirectory, string className, string domainDirectory, string projectBaseName)
         {
-            var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", "EventHandlers"), className);
+            return FeaturesClassPath(srcDirectory, className, domainDirectory, projectBaseName);
         }
 
-        public static ClassPath ProducerFeaturesClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath ProducerFeaturesClassPath(string srcDirectory, string className, string domainDirectory, string projectBaseName)
         {
-            var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", "EventHandlers"), className);
+            return FeaturesClassPath(srcDirectory, className, domainDirectory, projectBaseName);
         }
 
         public static ClassPath ExceptionsClassPath(string solutionDirectory, string className, string projectBaseName)

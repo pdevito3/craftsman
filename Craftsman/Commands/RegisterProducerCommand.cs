@@ -99,6 +99,7 @@
             
             producer.MessageName = AskMessageName();
             producer.EndpointRegistrationMethodName = AskEndpointRegistrationMethodName();
+            producer.DomainDirectory = AskDomainDirectory();
             producer.ExchangeType = AskExchangeType();
 
             return producer;
@@ -107,6 +108,12 @@
         private static string AskMessageName()
         {
             return AnsiConsole.Ask<string>("What is the name of the message being produced (e.g. [green]IRecipeAdded[/])?");
+        }
+
+        private static string AskDomainDirectory()
+        {
+            return AnsiConsole
+                .Ask<string>("What domain directory is the producer in? This is generally the plural of the entity publishing the message. (e.g. [green]Recipes[/])? Leave it null if the producer is directly in the Domain directory.");
         }
 
         private static string AskExchangeName()

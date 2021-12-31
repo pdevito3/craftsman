@@ -352,6 +352,7 @@ BoundedContexts:
     ProducerName: AddRecipeProducer
     ExchangeName: recipe-added
     MessageName: IRecipeAdded
+    DomainDirectory: Recipes
     ExchangeType: fanout
     UsesDb: true
   Consumers:
@@ -360,6 +361,7 @@ BoundedContexts:
     ExchangeName: book-additions
     QueueName: add-recipe-to-book
     MessageName: IRecipeAdded
+    DomainDirectory: Recipes
     ExchangeType: fanout
 Messages:
 - Name: IRecipeAdded

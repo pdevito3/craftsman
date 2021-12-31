@@ -11,7 +11,7 @@
     {
         public static void CreateConsumerFeature(string srcDirectory, Consumer consumer, string projectBaseName)
         {
-            var classPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"{consumer.ConsumerName}.cs", projectBaseName);
+            var classPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -33,7 +33,7 @@
             var dbProp = consumer.UsesDb ? @$"{context} db, " : "";
             var assignDb = consumer.UsesDb ? @$"{Environment.NewLine}        _db = db;" : "";
             var contextUsing = consumer.UsesDb ? $@"
-    using {contextClassPath.ClassNamespace};" : "";
+using {contextClassPath.ClassNamespace};" : "";
 
             return @$"namespace {classNamespace};
 

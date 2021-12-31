@@ -14,7 +14,7 @@
         {
             var className = $@"{consumer.EndpointRegistrationMethodName}Registration";
             var classPath = ClassPathHelper.WebApiConsumersServiceExtensionsClassPath(solutionDirectory, $"{className}.cs", projectBaseName);
-            var consumerFeatureClassPath = ClassPathHelper.ConsumerFeaturesClassPath(solutionDirectory, $"{consumer.ConsumerName}.cs", projectBaseName);
+            var consumerFeatureClassPath = ClassPathHelper.ConsumerFeaturesClassPath(solutionDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);

@@ -35,9 +35,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Updated FK and basic examples to have more features on the entities
+
 * Updated tests to work with new private entity workflow
+
 * CurrentUserServer has a method to get the User from the ClaimsPrincipal
+
 * Swagger question removed from `add:feature` as it wasn't being used. Will be set to true.
+
 * Removed unused `Unauthorized` and `Forbidden` MediatR filters 
 
 * Test Fixture updated to better handle MassTransit
@@ -68,12 +72,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Minor update to naming of producer in the bus example
 
 * Default exchange type now `Fanout` for producer and consumer
+
+* Added optional (but recommended) `DomainDirectory` prop to producers and consumers. This will move them from the `EventHandlers` directory and keep them directly with features for better colocation.
 ### Fixed
 
 * Batch endpoint route updated to `batch` along with a functional testing route
 * Batch add using update to controller
 * `IHttpContextAccessor` fixted to a singleton in integration tests' `TestFixture`
 * Can enter null for `add:feature` batch list options where needed
+* Minor formatting fix for indentation in producers and consumers
 
 ## [0.12.3] - 12/20/2021
 
