@@ -30,6 +30,9 @@
             WriteHelpText(@$"      new:domain          Create a new DDD based project.");
             WriteHelpText(@$"      new:example         Create an example project with an associated template file.");
 
+            WriteHelpHeader(@$"{Environment.NewLine}    register");
+            WriteHelpText(@$"      register:producer    Registers a producer with MassTransit using CLI prompts. This is especially useful for adding a new publish action to an existing feature (e.g. EntityCreated)");
+
             WriteHelpHeader(@$"{Environment.NewLine}Options:");
             WriteHelpText(@$"   -h, --help          Display this help message.");
 
@@ -42,6 +45,7 @@
             WriteHelpText(@$"   craftsman add:message -h");
             WriteHelpText(@$"   craftsman add:consumer -h");
             WriteHelpText(@$"   craftsman add:producer -h");
+            WriteHelpText(@$"   craftsman register:producer -h");
         }
     }
 }

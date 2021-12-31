@@ -127,6 +127,24 @@
                 }
             }
 
+            if (args[0] == "register:producer")
+            {
+                if (args.Length > 1 && (args[1] == "-h" || args[1] == "--help"))
+                    RegisterProducerCommand.Help();
+                else
+                {
+                    CheckForLatestVersion();
+
+                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the root directory.");
+                        rootDir = Console.ReadLine();
+                    }
+                    RegisterProducerCommand.Run(rootDir, fileSystem);
+                }
+            }
+            
             if (args.Length == 2 && (args[0] == "add:entity" || args[0] == "add:entities"))
             {
                 var filePath = args[1];
