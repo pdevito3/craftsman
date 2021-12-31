@@ -40,6 +40,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Swagger question removed from `add:feature` as it wasn't being used. Will be set to true.
 * Removed unused `Unauthorized` and `Forbidden` MediatR filters 
 
+* Test Fixture updated to better handle MassTransit
+
+  * `_provider` will always be injected, even when not using MassTransit
+
+  * The end of the fixture has been slightly updated to look like this:
+
+    ```c#
+            // MassTransit Harness Setup -- Do Not Delete Comment
+    
+            _provider = services.BuildServiceProvider();
+            _scopeFactory = _provider.GetService<IServiceScopeFactory>();
+    
+            // MassTransit Start Setup -- Do Not Delete Comment
+    ```
+
+  * Added several helper methods to the test fixture
+
+  * Updated the consumer test to use the helper methods
+
+  * **TODO** docs on what a producer and consumer test look like
 ### Fixed
 
 * Batch endpoint route updated to `batch` along with a functional testing route

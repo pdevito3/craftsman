@@ -75,6 +75,7 @@ public class TestFixture
     private static IWebHostEnvironment _env;
     private static IServiceScopeFactory _scopeFactory;
     private static Checkpoint _checkpoint;
+    private static ServiceProvider _provider;
 
     [OneTimeSetUp]
     public async Task RunBeforeAnyTests()
@@ -105,13 +106,16 @@ public class TestFixture
         services.Remove(httpContextAccessorService);
         services.AddSingleton(_ => Mock.Of<IHttpContextAccessor>());
 
-        _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
+        // MassTransit Harness Setup -- Do Not Delete Comment
+
+        _provider = services.BuildServiceProvider();
+        _scopeFactory = _provider.GetService<IServiceScopeFactory>();
+
+        // MassTransit Start Setup -- Do Not Delete Comment
 
         {checkpoint}
 
         EnsureDatabase();
-
-        // MassTransit Setup -- Do Not Delete Comment
     }}
 
     private static void EnsureDatabase()

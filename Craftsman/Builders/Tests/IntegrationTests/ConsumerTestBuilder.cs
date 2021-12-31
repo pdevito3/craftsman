@@ -58,15 +58,8 @@ public class {consumer.ConsumerName}Tests : TestBase
         await PublishMessage<{messageName}>(message);
 
         // Assert
-        // did the endpoint consume the message
-        (await _harness.Consumed.Any<{messageName}>()).Should().Be(true);
-
-        // ensure that no faults were published by the consumer
-        (await _harness.Published.Any<Fault<{messageName}>>()).Should().Be(false);
-        
-        // the desired consumer consumed the message
-        var consumerHarness = _provider.GetRequiredService<IConsumerTestHarness<{consumer.ConsumerName}>>();
-        (await consumerHarness.Consumed.Any<{messageName}>()).Should().Be(true);
+        (await IsConsumed<{messageName}>()).Should().Be(true);
+        (await IsConsumed<{messageName}, {consumer.ConsumerName}>()).Should().Be(true);
     }}";
         }
     }
