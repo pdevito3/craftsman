@@ -27,6 +27,10 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Huge permissions upgrade. Significantly simplified setup which resulted in a new library ([HeimGaurd](https://github.com/pdevito3/heimguard)) that can be used in any .NET project.
 
+✅ Message bus scaffolding and testing improvements
+
+✅ New `register:producer` command
+
 🚧 Add Identity to Auth Server
 
 🚧 BFF Scaffolding
