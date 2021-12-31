@@ -6,8 +6,6 @@
 
     public class Consumer
     {
-        private ExchangeType _type = Enums.ExchangeType.Direct;
-
         public string EndpointRegistrationMethodName { get; set; }
 
         public string ConsumerName { get; set; }
@@ -18,16 +16,19 @@
 
         public string QueueName { get; set; }
 
+        private ExchangeTypeEnum _exchangeType { get; set; }
         public string ExchangeType
         {
-            get => Enum.GetName(typeof(ExchangeType), _type);
+            get => _exchangeType.Name;
             set
             {
-                if (!Enum.TryParse<ExchangeType>(value, true, out var parsed))
+                if (!ExchangeTypeEnum.TryFromName(value, true, out var parsed))
                 {
-                    throw new InvalidExchangeTypeException(value);
+                    _exchangeType = ExchangeTypeEnum.Fanout;
+                    return;
                 }
-                _type = parsed;
+                
+                _exchangeType = parsed;
             }
         }
 

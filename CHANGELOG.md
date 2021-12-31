@@ -64,6 +64,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * Producer test generated
   
   * **TODO** docs on what a producer and consumer test look like
+
+* Default exchange type now `Fanout`
 ### Fixed
 
 * Batch endpoint route updated to `batch` along with a functional testing route

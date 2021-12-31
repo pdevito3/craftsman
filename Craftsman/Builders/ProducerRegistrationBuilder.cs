@@ -24,8 +24,8 @@
             using FileStream fs = File.Create(classPath.FullClassPath);
             var data = "";
 
-            if (Enum.GetName(typeof(ExchangeType), ExchangeType.Direct) == producer.ExchangeType
-                || Enum.GetName(typeof(ExchangeType), ExchangeType.Topic) == producer.ExchangeType)
+            if (ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct
+                || ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Topic)
                 data = GetDirectOrTopicProducerRegistration(classPath.ClassNamespace, className, producer);
             else
                 data = GetFanoutProducerRegistration(classPath.ClassNamespace, className, producer);
@@ -35,7 +35,9 @@
 
         public static string GetDirectOrTopicProducerRegistration(string classNamespace, string className, Producer producer)
         {
-            var exchangeType = Enum.GetName(typeof(ExchangeType), ExchangeType.Direct) == producer.ExchangeType ? "ExchangeType.Direct" : "ExchangeType.Topic";
+            var exchangeType = ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct 
+                ? "ExchangeType.Direct" 
+                : "ExchangeType.Topic";
 
             return @$"namespace {classNamespace};
 
