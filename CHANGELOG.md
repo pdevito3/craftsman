@@ -60,12 +60,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * Updated the consumer test to use the helper methods
 
   * Producer doesn't take in placeholder props
-  
+
   * Producer test generated
-  
+
   * **TODO** docs on what a producer and consumer test look like
 
-* Default exchange type now `Fanout`
+* Minor update to naming of producer in the bus example
+
+* Default exchange type now `Fanout` for producer and consumer
 ### Fixed
 
 * Batch endpoint route updated to `batch` along with a functional testing route

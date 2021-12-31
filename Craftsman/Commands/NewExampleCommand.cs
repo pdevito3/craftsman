@@ -348,8 +348,8 @@ BoundedContexts:
   Bus:
     AddBus: true
   Producers:
-  - EndpointRegistrationMethodName: RecipeAddedEndpoint
-    ProducerName: RecipeAdded
+  - EndpointRegistrationMethodName: AddRecipeProducerEndpoint
+    ProducerName: AddRecipeProducer
     ExchangeName: recipe-added
     MessageName: IRecipeAdded
     ExchangeType: fanout
