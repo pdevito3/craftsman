@@ -9,6 +9,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using Builders.Features;
+    using Builders.Tests.IntegrationTests;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Validators;
@@ -58,7 +59,7 @@
                 // get solution dir
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-                AddProducers(template.Producers, projectBaseName, srcDirectory);
+                AddProducers(template.Producers, projectBaseName, srcDirectory, testDirectory, fileSystem);
 
                 WriteHelpHeader($"{Environment.NewLine}Your producer has been successfully added. Keep up the good work!");
             }
@@ -91,7 +92,8 @@
             }
         }
 
-        public static void AddProducers(List<Producer> producers, string projectBaseName, string srcDirectory)
+        public static void AddProducers(List<Producer> producers, string projectBaseName, string srcDirectory,
+            string testDirectory, IFileSystem fileSystem)
         {
             var validator = new ProducerValidator();
             foreach (var producer in producers)
@@ -106,6 +108,8 @@
                 ProducerBuilder.CreateProducerFeature(srcDirectory, producer, projectBaseName);
                 ProducerRegistrationBuilder.CreateProducerRegistration(srcDirectory, producer, projectBaseName);
                 MassTransitModifier.AddProducerRegistation(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
+                
+                ProducerTestBuilder.CreateTests(testDirectory, producer, projectBaseName, fileSystem);
             });
         }
     }

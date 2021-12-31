@@ -59,6 +59,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
   * Updated the consumer test to use the helper methods
 
+  * Producer doesn't take in placeholder props
+  
+  * Producer test generated
+  
   * **TODO** docs on what a producer and consumer test look like
 ### Fixed
 

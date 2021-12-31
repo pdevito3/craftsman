@@ -132,7 +132,7 @@
                 AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory, fileSystem);
 
             if (template.Producers.Count > 0)
-                AddProducerCommand.AddProducers(template.Producers, projectBaseName, srcDirectory);
+                AddProducerCommand.AddProducers(template.Producers, projectBaseName, srcDirectory, testDirectory, fileSystem);
         }
     }
 }
