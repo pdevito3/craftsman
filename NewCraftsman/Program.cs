@@ -1,46 +1,73 @@
 ﻿using System.IO.Abstractions;
+using Craftsman.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
+using NewCraftsman;
+using NewCraftsman.Commands;
+using NewCraftsman.Helpers;
+using NewCraftsman.Interceptors;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using SpectreFail;
 
 var serviceCollection = new ServiceCollection();
 serviceCollection.AddSingleton<IFileSystem, FileSystem>();
+serviceCollection.AddSingleton<IConsoleWriter, ConsoleWriter>();
 
 var registrar = new TypeRegistrar(serviceCollection);
 var app = new CommandApp(registrar); // works without registrar
 
 app.Configure(config =>
 {
-    config.AddCommand<HelloCommand>("hello")
-        .WithAlias("hola")
-        .WithDescription("Say hello")
-        .WithExample(new []{"hello", "Phil"})
-        .WithExample(new []{"hello", "Phil", "--count", "4"});
+    config.SetApplicationName("craftsman");
+    config.SetInterceptor(new OperatingSystemInterceptor());
+    
+    config.AddBranch("new", @new =>
+    {
+        @new.AddCommand<NewDomainCommand>("domain")
+            .WithDescription("Scaffolds a project based on a given template file in a json or yaml format.").WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+    });
 });
 
-return app.Run(args);
 
-public class HelloCommand : Command<HelloCommand.Settings>
+try
 {
-    private IAnsiConsole _console;
-
-    public HelloCommand(IAnsiConsole console)
+    app.Run(args);
+}
+catch (Exception e)
+{
+    if (e is FileAlreadyExistsException
+        or DirectoryAlreadyExistsException
+        or InvalidSolutionNameException
+        or FileNotFoundException
+        or InvalidDbProviderException
+        or InvalidFileTypeException
+        or SolutiuonNameEntityMatchException)
     {
-        _console = console;
+        AnsiConsole.MarkupLine($"{e.Message}");
     }
-
-    public class Settings : CommandSettings
+    else
     {
-        [CommandArgument(0, "[Name]")]
-        public string Name { get; set; }
-    }
-
-
-    public override int Execute(CommandContext context, Settings settings)
-    {
-        // AnsiConsole.MarkupLine($"Hello, [blue]{settings.Name}[/]");
-        _console.MarkupLine($"Hello, [blue]{settings.Name}[/]");
-        return 0;
+        AnsiConsole.WriteException(e, new ExceptionSettings
+        {
+            Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
+            Style = new ExceptionStyle
+            {
+                Exception = new Style().Foreground(Color.Grey),
+                Message = new Style().Foreground(Color.White),
+                NonEmphasized = new Style().Foreground(Color.Cornsilk1),
+                Parenthesis = new Style().Foreground(Color.Cornsilk1),
+                Method = new Style().Foreground(Color.Red),
+                ParameterName = new Style().Foreground(Color.Cornsilk1),
+                ParameterType = new Style().Foreground(Color.Red),
+                Path = new Style().Foreground(Color.Red),
+                LineNumber = new Style().Foreground(Color.Cornsilk1),
+            }
+        });
     }
 }
+finally
+{
+    VersionChecker.CheckForLatestVersion();
+}
+

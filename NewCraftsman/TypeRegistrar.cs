@@ -1,4 +1,4 @@
-namespace SpectreFail;
+namespace NewCraftsman;
 
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
@@ -47,7 +47,7 @@ public class TypeResolver : ITypeResolver
         _provider = provider ?? throw new ArgumentNullException(nameof(provider));
     }
 
-    public object Resolve(Type? type)
+    public object Resolve(Type type)
     {
         if (type == null)
         {

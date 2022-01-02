@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Craftsman Dev": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Dev"
+      }
+    },
+    "Craftsman": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Prod"
+      }
+    }
+  }
+}

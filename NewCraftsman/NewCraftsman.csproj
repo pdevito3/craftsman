@@ -1,16 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>craftsman</ToolCommandName>
+        <PackageOutputPath>./nupkg</PackageOutputPath>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Authors>Paul DeVito</Authors>
+        <Description>A .NET scaffolding tool to help you stop worrying about boilerplate and focus on your business logic. Go to https://wrapt.dev for the full documentation.</Description>
+        <Company>Wrapt</Company>
+        <Product>Craftsman</Product>
+        <PackageTags>webapi c-sharp dotnet-core vertical-slice-architecture asp-net-core docker net-6 ddd domain-driven-design web-dev cqrs mediatr masstransit event-driven-architecture</PackageTags>
+        <RepositoryUrl>https://github.com/pdevito3/craftsman</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <AssemblyVersion>0.12.3</AssemblyVersion>
+        <FileVersion>0.12.3</FileVersion>
+        <Version>0.12.3</Version>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="RestSharp" Version="106.12.0" />
       <PackageReference Include="Spectre.Console" Version="0.43.0" />
       <PackageReference Include="System.IO.Abstractions" Version="13.2.43" />
+      <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
     </ItemGroup>
 
 </Project>
