@@ -30,6 +30,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * Functional tests auth helper method now sets `role` instead of `scope`
   * Alice is a `SuperAdmin` and bob is a `User`
 * Added a `register:producer` command with CLI prompt
+* A `Dockerfile` and `.dockerignore` will be added to each bounded context automatically
+* A `docker-compose.yaml` will be added to your solution root by default for local development
+  * Just run `docker-compose up --build` in your project root
+  * Then run migrations. For a postgres example:
+    * `dotnet ef database update --connection "Host=localhost;Port=3125;Database=dev_recipemanagement;Username=postgres;Password=postgres"`
+
+  * Default settings can be overriden using a `DockerConfig` object on an `ApiTemplate`
+  * `SA` will always be default user for sqlserver so it can work properly
+  * Startup uses https redirect, so we only expose `443`
+  * If no ports are given for api or db, they'll be auto assigned a free port on your machine
+
 
 
 ### Updated

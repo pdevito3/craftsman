@@ -83,9 +83,6 @@ Then take off httpsredirect in startup
         var volumes = "";
         foreach (var dockerConfig in dockerConfigList)
         {
-            //TODO docs: dotnet ef database update --connection "Host=localhost;Port=3125;Database=dev_recipemanagement;Username=postgres;Password=postgres"
-            //TODO docs: on sqlserver user always being SA
-
             var postgresDbUser = dockerConfig.DbUser ?? "postgres";
             var postgresDbPassword = dockerConfig.DbPassword ?? "postgres";
             var dbService = $@"
