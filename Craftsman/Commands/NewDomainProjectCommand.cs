@@ -10,7 +10,9 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using System.Linq;
     using System.Threading.Tasks;
+    using Builders.Docker;
     using static Helpers.ConsoleWriter;
 
     public static class NewDomainProjectCommand
@@ -110,6 +112,9 @@
 
             //final
             ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
+
+            var dockerConfigList = domainProject.BoundedContexts.Select(bc => bc.DockerConfig).ToList();
+            DockerBuilders.CreateDockerCompose(domainDirectory, dockerConfigList, fileSystem);
 
             if (domainProject.AddGit)
                 Utilities.GitSetup(domainDirectory);

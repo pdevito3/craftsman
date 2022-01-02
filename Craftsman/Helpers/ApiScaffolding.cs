@@ -14,6 +14,7 @@
     using System.IO.Abstractions;
     using System.Linq;
     using Builders.Auth;
+    using Builders.Docker;
     using static Helpers.ConsoleWriter;
 
     public class ApiScaffolding
@@ -124,7 +125,9 @@
             CurrentUserServiceBuilder.GetCurrentUserService(srcDirectory, projectBaseName, fileSystem);
             SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName, fileSystem);
 
-            
+            DockerBuilders.CreateDockerfile(srcDirectory, projectBaseName, fileSystem);
+            DockerBuilders.CreateDockerIgnore(srcDirectory, projectBaseName, fileSystem);
+
             if (template.Bus.AddBus)
                 AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
 
