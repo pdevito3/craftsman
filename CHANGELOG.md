@@ -81,6 +81,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * `IHttpContextAccessor` fixted to a singleton in integration tests' `TestFixture`
 * Can enter null for `add:feature` batch list options where needed
 * Minor formatting fix for indentation in producers and consumers
+* Removed extra exception using from  patch integration test
 
 ## [0.12.3] - 12/20/2021
 

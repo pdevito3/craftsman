@@ -54,7 +54,6 @@ using {dtoClassPath.ClassNamespace};
 using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
-using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
