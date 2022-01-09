@@ -144,7 +144,10 @@ public abstract class BaseEntity
                 var newLine = (property.IsForeignKey && !property.IsMany)
                     ? Environment.NewLine
                     : $"{Environment.NewLine}{Environment.NewLine}";
-                propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+                
+                if(property.IsPrimativeType || property.IsMany)
+                    propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+                
                 propString += GetForeignProp(property);
             }
 
@@ -156,11 +159,14 @@ public abstract class BaseEntity
             var attributeString = "";
             if (entityProperty.IsRequired)
                 attributeString += @$"    [Required]{Environment.NewLine}";
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany)
+            if (entityProperty.IsForeignKey 
+                && !entityProperty.IsMany 
+                && entityProperty.IsPrimativeType
+            )
                 attributeString += @$"    [JsonIgnore]
     [IgnoreDataMember]
     [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
-            if(entityProperty.IsMany)
+            if(entityProperty.IsMany || !entityProperty.IsPrimativeType)
                 attributeString += $@"    [JsonIgnore]
     [IgnoreDataMember]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)

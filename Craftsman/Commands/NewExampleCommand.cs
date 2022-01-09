@@ -153,9 +153,29 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
+    - Name: Author
+      Type: Author
+      ForeignEntityName: Author
+      ForeignEntityPlural: Authors
     - Name: Ingredients
       Type: ICollection<Ingredient>
       ForeignEntityPlural: Ingredients
+  - Name: Author
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Name
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeId
+      Type: Guid
+      ForeignEntityName: Recipe
+      ForeignEntityPlural: Recipes
   - Name: Ingredient
     Features:
     - Type: GetList

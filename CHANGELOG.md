@@ -83,6 +83,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Minor formatting fix for indentation in producers and consumers
 * Removed extra exception using from  patch integration test
 
+## [0.12.4] - 01/09/2022
+
+### Update
+
+* Updated the 1:1 relationships to use proper scaffolding.
+* Updated the FK example to show proper 1:1 relationship
+
 ## [0.12.3] - 12/20/2021
 
 ### Update

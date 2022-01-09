@@ -63,6 +63,8 @@ public {abstractString}class {Utilities.GetDtoName(entity.Name, dto)} {inheritan
                     continue;
                 if (props[eachProp].IsForeignKey && props[eachProp].IsMany)
                     continue;
+                if (!props[eachProp].IsPrimativeType)
+                    continue;
                 var guidDefault = dto == Dto.Creation && props[eachProp].Type.IsGuidPropertyType()
                     ? " = Guid.NewGuid();"
                     : "";

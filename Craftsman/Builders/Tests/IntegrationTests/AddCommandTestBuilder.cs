@@ -67,7 +67,7 @@ public class {commandName}Tests : TestBase
             var fakeParentIdRuleFor = "";
             foreach (var entityProperty in entity.Properties)
             {
-                if (entityProperty.IsForeignKey && !entityProperty.IsMany)
+                if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
                 {
                     var fakeParentClass = Utilities.FakerName(entityProperty.ForeignEntityName);
                     var fakeParentCreationDto = Utilities.FakerName(Utilities.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
