@@ -31,6 +31,8 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ New `register:producer` command
 
+✅ Added soft delete capability
+
 🚧 Add Identity to Auth Server
 
 🚧 BFF Scaffolding
