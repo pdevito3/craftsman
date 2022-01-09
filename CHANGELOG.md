@@ -74,6 +74,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Default exchange type now `Fanout` for producer and consumer
 
 * Added optional (but recommended) `DomainDirectory` prop to producers and consumers. This will move them from the `EventHandlers` directory and keep them directly with features for better colocation.
+
+* Updated the 1:1 relationships to use proper scaffolding.
+
+* Updated the FK example to show proper 1:1 relationship
 ### Fixed
 
 * Batch endpoint route updated to `batch` along with a functional testing route
@@ -82,13 +86,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Can enter null for `add:feature` batch list options where needed
 * Minor formatting fix for indentation in producers and consumers
 * Removed extra exception using from  patch integration test
-
-## [0.12.4] - 01/09/2022
-
-### Update
-
-* Updated the 1:1 relationships to use proper scaffolding.
-* Updated the FK example to show proper 1:1 relationship
 
 ## [0.12.3] - 12/20/2021
 
