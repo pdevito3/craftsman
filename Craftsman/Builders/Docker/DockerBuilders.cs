@@ -51,8 +51,8 @@ RUN dotnet publish ""{projectBaseName}.csproj"" -c Release -o /app/out
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 COPY --from=publish /app/out .
 
-ENV ASPNETCORE_URLS=https://+:443
-EXPOSE 443
+ENV ASPNETCORE_URLS=https://+:8080
+EXPOSE 8080
 
 ENTRYPOINT [""dotnet"", ""{projectBaseName}.dll""]
 ";
@@ -128,7 +128,7 @@ Then take off httpsredirect in startup
       context: ""./{dockerConfig.ProjectName}/src/{dockerConfig.ProjectName}""
       dockerfile: ""Dockerfile""
     ports:
-      - ""{dockerConfig.ApiPort}:443""
+      - ""{dockerConfig.ApiPort}:8080""
     environment:
       ASPNETCORE_ENVIRONMENT: ""DockerLocal""
       DB_CONNECTION_STRING: ""{connectionString}""
