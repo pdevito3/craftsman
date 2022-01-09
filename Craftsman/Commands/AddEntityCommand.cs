@@ -96,17 +96,21 @@
 
         private static void RunEntityBuilders(string srcDirectory, string testDirectory, AddEntityTemplate template, IFileSystem fileSystem)
         {
+            var projectBaseName = template.SolutionName;
+            var useSoftDelete = Utilities.ProjectUsesSoftDelete(srcDirectory, projectBaseName);
+            
             //entities
             EntityScaffolding.ScaffoldEntities(srcDirectory,
                 testDirectory,
-                template.SolutionName,
+                projectBaseName,
                 template.Entities,
                 template.DbContextName,
                 template.AddSwaggerComments,
+                useSoftDelete,
                 fileSystem);
 
-            SeederModifier.AddSeeders(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
-            DbContextModifier.AddDbSet(srcDirectory, template.Entities, template.DbContextName, template.SolutionName);
+            SeederModifier.AddSeeders(srcDirectory, template.Entities, template.DbContextName, projectBaseName);
+            DbContextModifier.AddDbSet(srcDirectory, template.Entities, template.DbContextName, projectBaseName);
         }
 
         private static AddEntityTemplate GetDbContext(string srcDirectory, AddEntityTemplate template, string projectBaseName)

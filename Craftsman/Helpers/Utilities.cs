@@ -610,5 +610,26 @@ using {parentClassPath.ClassNamespace};";
 
             return entityRouteClasses;
         }
+
+        public static bool ProjectUsesSoftDelete(string srcDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"BaseEntity.cs", "", projectBaseName);
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                return false;
+
+            if (!File.Exists(classPath.FullClassPath))
+                return false;
+
+            using var input = File.OpenText(classPath.FullClassPath);
+            string line;
+            while (null != (line = input.ReadLine()))
+            {
+                if (line.Contains($"Deleted"))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -85,5 +85,7 @@ namespace Craftsman.Models
             get => _policyName ?? ProjectName.Underscore();
             set => _policyName = value;
         }
+
+        public bool UseSoftDelete { get; set; } = true;
     }
 }

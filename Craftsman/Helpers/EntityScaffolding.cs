@@ -27,6 +27,7 @@
             List<Entity> entities,
             string dbContextName,
             bool addSwaggerComments,
+            bool useSoftDelete,
             IFileSystem fileSystem)
         {
             foreach (var entity in entities)
@@ -45,7 +46,7 @@
                 // TODO refactor to factory?
                 foreach (var feature in entity.Features)
                 {
-                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, entity, fileSystem);
+                    AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, entity, useSoftDelete, fileSystem);
                 }
 
                 // Shared Tests
@@ -58,6 +59,7 @@
             string projectBaseName,
             string dbContextName,
             bool addSwaggerComments,
+            bool useSoftDelete,
             IFileSystem fileSystem)
         {
             var rolePermission = new Entity()
@@ -92,7 +94,7 @@
             // TODO refactor to factory?
             foreach (var feature in rolePermission.Features)
             {
-                AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, rolePermission, fileSystem);
+                AddFeatureToProject(srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, rolePermission, useSoftDelete, fileSystem);
             }
 
             // Shared Tests
@@ -105,7 +107,7 @@
         }
 
         public static void AddFeatureToProject(string srcDirectory, string testDirectory, string projectBaseName,
-            string dbContextName, bool addSwaggerComments, Feature feature, Entity entity, IFileSystem fileSystem)
+            string dbContextName, bool addSwaggerComments, Feature feature, Entity entity, bool useSoftDelete, IFileSystem fileSystem)
         {
             var controllerClassPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entity.Plural)}.cs", projectBaseName);
             if (!File.Exists(controllerClassPath.FullClassPath))
@@ -144,7 +146,7 @@
             if (feature.Type == FeatureType.DeleteRecord.Name)
             {
                 CommandDeleteRecordBuilder.CreateCommand(srcDirectory, entity, dbContextName, projectBaseName);
-                DeleteCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
+                DeleteCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName, useSoftDelete);
                 DeleteEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments, 
                     feature, projectBaseName);
