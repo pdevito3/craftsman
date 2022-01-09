@@ -23,9 +23,15 @@ v0.12 brought a ton of new features, but there are still several items I want to
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-🚧 Add Identity to Auth Server
+✅ DDD promoted entities (private setters, factory methods, associated fakers)
 
-🚧 Better Role/Policy support
+✅ Huge permissions upgrade. Significantly simplified setup which resulted in a new library ([HeimGaurd](https://github.com/pdevito3/heimguard)) that can be used in any .NET project.
+
+✅ Message bus scaffolding and testing improvements
+
+✅ New `register:producer` command
+
+🚧 Add Identity to Auth Server
 
 🚧 BFF Scaffolding
 

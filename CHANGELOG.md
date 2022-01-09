@@ -9,7 +9,92 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-* Nothing yet!
+### Added
+
+* Entities will now have private setters, a static `Create` method and an `Update` method to promote a DDD workflow
+  * This includes base entity and the dbcontext setters for the auditable fields
+* A huge permissions overhaul
+  * `SuperAdmin` role is added by default and will automatically be given all permissions. 
+  * A `User` role with also be created. This role will not have any permissions assigned to it by default and can be removed if you would like **as long as you add another role in addition to `SuperAdmin`**. This will allow for integration tests of the `UserPolicyHandler` to be fully scoped.
+  * A permission will be added for each feature with a default name of `CanFEATURENAME`, but can be overridden if desired.
+  * Role-permission mappings outside of this need tobe done manually 
+  * You will be responsible for managing permissions outside of super admin
+  * Policies are no longer part of the craftsman api, but a single policy will be added with each api boundary to swagger to dictate access to that boundary. It has a default of a snake case of `ProjectName`, but can be overridden
+    * **Call out in docs**. Also docs note that scope added in boundary for access should match the scope on your auth server, 
+    * If using the built in auth server, this will be added for you. if not, make sure it mataches an appropriate scope in your auth server for this api boundary
+  * **Features now have a prop for `IsProtected` that, if true, will add an authorization attribute to your endpoint with the `PolicyName` and add tests that check for access**
+  * Integration tests for `UserPolicyHandler`
+  * Unit tests for `RolePermission`
+  * `Policies` prop removed from Feature
+  * Added `SetUserRole` and `SetUserRoles` methods to integreation tests' `TestFixture` for easy role management in integration tests
+  * Functional tests auth helper method now sets `role` instead of `scope`
+  * Alice is a `SuperAdmin` and bob is a `User`
+* Added a `register:producer` command with CLI prompt
+
+
+### Updated
+
+* Updated FK and basic examples to have more features on the entities
+
+* Updated tests to work with new private entity workflow
+
+* CurrentUserServer has a method to get the User from the ClaimsPrincipal
+
+* Swagger question removed from `add:feature` as it wasn't being used. Will be set to true.
+
+* Removed unused `Unauthorized` and `Forbidden` MediatR filters 
+
+* Test Fixture updated to better handle MassTransit
+
+  * `_provider` will always be injected, even when not using MassTransit
+
+  * The end of the fixture has been slightly updated to look like this:
+
+    ```c#
+            // MassTransit Harness Setup -- Do Not Delete Comment
+    
+            _provider = services.BuildServiceProvider();
+            _scopeFactory = _provider.GetService<IServiceScopeFactory>();
+    
+            // MassTransit Start Setup -- Do Not Delete Comment
+    ```
+
+  * Added several helper methods to the test fixture
+
+  * Updated the consumer test to use the helper methods
+
+  * Producer doesn't take in placeholder props
+
+  * Producer test generated
+
+  * **TODO** docs on what a producer and consumer test look like
+
+* Minor update to naming of producer in the bus example
+
+* Default exchange type now `Fanout` for producer and consumer
+
+* Added optional (but recommended) `DomainDirectory` prop to producers and consumers. This will move them from the `EventHandlers` directory and keep them directly with features for better colocation.
+### Fixed
+
+* Batch endpoint route updated to `batch` along with a functional testing route
+* Batch add using update to controller
+* `IHttpContextAccessor` fixted to a singleton in integration tests' `TestFixture`
+* Can enter null for `add:feature` batch list options where needed
+* Minor formatting fix for indentation in producers and consumers
+* Removed extra exception using from  patch integration test
+
+## [0.12.4] - 01/09/2022
+
+### Update
+
+* Updated the 1:1 relationships to use proper scaffolding.
+* Updated the FK example to show proper 1:1 relationship
+
+## [0.12.3] - 12/20/2021
+
+### Update
+
+* Updated Craftsman to .NET 6
 
 ## [0.12.3] - 12/20/2021
 

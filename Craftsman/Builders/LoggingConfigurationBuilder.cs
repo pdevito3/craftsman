@@ -1,12 +1,7 @@
-namespace Craftsman.Builders.AuthServer
+namespace Craftsman.Builders
 {
-    using System;
     using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
     using Helpers;
-    using Models;
-    using static Helpers.ConstMessages;
 
     public class LoggingConfigurationBuilder
     {

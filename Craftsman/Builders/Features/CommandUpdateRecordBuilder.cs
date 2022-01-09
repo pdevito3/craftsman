@@ -94,8 +94,7 @@ public static class {className}
             if ({updatedEntityProp} == null)
                 throw new NotFoundException(""{entity.Name}"", request.{primaryKeyPropName});
 
-            _mapper.Map(request.{commandProp}, {updatedEntityProp});
-
+            {updatedEntityProp}.Update(request.{commandProp});
             await _db.SaveChangesAsync(cancellationToken);
 
             return true;

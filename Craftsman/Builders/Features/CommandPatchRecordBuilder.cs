@@ -103,7 +103,7 @@ public static class {className}
             var {patchedEntityProp} = _mapper.Map<{updateDto}>({updatedEntityProp}); // map the {entityNameLowercase} we got from the database to an updatable {entityNameLowercase} model
             request.PatchDoc.ApplyTo({patchedEntityProp}); // apply patchdoc updates to the updatable {entityNameLowercase}
 
-            _mapper.Map({patchedEntityProp}, {updatedEntityProp});
+            {updatedEntityProp}.Update({patchedEntityProp});
             await _db.SaveChangesAsync(cancellationToken);
 
             return true;

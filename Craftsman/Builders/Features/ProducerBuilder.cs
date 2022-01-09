@@ -1,17 +1,17 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Features
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System;
     using System.IO;
     using System.Text;
+    using Exceptions;
+    using Helpers;
+    using Models;
 
     public class ProducerBuilder
     {
         public static void CreateProducerFeature(string srcDirectory, Producer producer, string projectBaseName)
         {
-            var classPath = ClassPathHelper.ProducerFeaturesClassPath(srcDirectory, $"{producer.ProducerName}.cs", projectBaseName);
+            var classPath = ClassPathHelper.ProducerFeaturesClassPath(srcDirectory, $"{producer.ProducerName}.cs", producer.DomainDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -29,14 +29,12 @@
         {
             var context = Utilities.GetDbContext(srcDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
-            var dbReadOnly = producer.UsesDb ? @$"{Environment.NewLine}            private readonly {context} _db;" : "";
+            var dbReadOnly = producer.UsesDb ? @$"{Environment.NewLine}    private readonly {context} _db;" : "";
             var dbProp = producer.UsesDb ? @$"{context} db, " : "";
-            var assignDb = producer.UsesDb ? @$"{Environment.NewLine}                _db = db;" : "";
+            var assignDb = producer.UsesDb ? @$"{Environment.NewLine}        _db = db;" : "";
             var contextUsing = producer.UsesDb ? $@"
-    using {contextClassPath.ClassNamespace};" : "";
+using {contextClassPath.ClassNamespace};" : "";
 
-            var commandProp = "SomeContentToPutInMessage";
-            var commandPropLower = commandProp.LowercaseFirstLetter();
             var propTypeToReturn = "bool";
             var commandName = $"{producer.ProducerName}Command";
 
@@ -55,11 +53,8 @@ public static class {producer.ProducerName}
 {{
     public class {commandName} : IRequest<{propTypeToReturn}>
     {{
-        public string {commandProp} {{ get; set; }}
-
-        public {commandName}(string {commandPropLower})
+        public {commandName}()
         {{
-            {commandProp} = {commandPropLower};
         }}
     }}
 
@@ -72,14 +67,6 @@ public static class {producer.ProducerName}
         {{
             _publishEndpoint = publishEndpoint;
             _mapper = mapper;{assignDb}
-        }}
-
-        public class {commandName}Profile : Profile
-        {{
-            public {commandName}Profile()
-            {{
-                //createmap<to this, from this>
-            }}
         }}
 
         public async Task<{propTypeToReturn}> Handle({commandName} request, CancellationToken cancellationToken)

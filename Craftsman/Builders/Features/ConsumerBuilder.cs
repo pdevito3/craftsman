@@ -1,17 +1,17 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Features
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System;
     using System.IO;
     using System.Text;
+    using Exceptions;
+    using Helpers;
+    using Models;
 
     public class ConsumerBuilder
     {
         public static void CreateConsumerFeature(string srcDirectory, Consumer consumer, string projectBaseName)
         {
-            var classPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"{consumer.ConsumerName}.cs", projectBaseName);
+            var classPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -29,11 +29,11 @@
         {
             var context = Utilities.GetDbContext(srcDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
-            var dbReadOnly = consumer.UsesDb ? @$"{Environment.NewLine}        private readonly {context} _db;" : "";
+            var dbReadOnly = consumer.UsesDb ? @$"{Environment.NewLine}    private readonly {context} _db;" : "";
             var dbProp = consumer.UsesDb ? @$"{context} db, " : "";
-            var assignDb = consumer.UsesDb ? @$"{Environment.NewLine}            _db = db;" : "";
+            var assignDb = consumer.UsesDb ? @$"{Environment.NewLine}        _db = db;" : "";
             var contextUsing = consumer.UsesDb ? $@"
-    using {contextClassPath.ClassNamespace};" : "";
+using {contextClassPath.ClassNamespace};" : "";
 
             return @$"namespace {classNamespace};
 
@@ -49,14 +49,6 @@ public class {consumer.ConsumerName} : IConsumer<{consumer.MessageName}>
     public {consumer.ConsumerName}({dbProp}IMapper mapper)
     {{
         _mapper = mapper;{assignDb}
-    }}
-
-    public class {consumer.ConsumerName}Profile : Profile
-    {{
-        public {consumer.ConsumerName}Profile()
-        {{
-            //createmap<to this, from this>
-        }}
     }}
 
     public Task Consume(ConsumeContext<{consumer.MessageName}> context)

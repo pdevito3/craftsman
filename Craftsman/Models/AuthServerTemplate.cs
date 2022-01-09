@@ -121,7 +121,7 @@ namespace Craftsman.Models
         {
             get => _allowedScopes;
             set => _allowedScopes = GrantTypeEnum == Enums.GrantType.Code 
-            ? value ?? new List<string>() {"openid", "profile"}
+            ? value ?? new List<string>() {"openid", "profile", "role"}
             : value;
         }
         

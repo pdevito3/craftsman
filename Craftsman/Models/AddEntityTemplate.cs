@@ -28,16 +28,5 @@ namespace Craftsman.Models
         /// Add swagger comments to the controller Optional
         /// </summary>
         public bool AddSwaggerComments { get; set; } = true;
-
-        /// <summary>
-        /// Calculation to determine whether or not authentication is added to the project
-        /// </summary>
-        public bool AddJwtAuthentication =>
-            Entities
-                .Select(e => e.Features
-                    .Select(f => f.Policies)
-                    .ToList())
-                .ToList()
-                .Count > 0;
     }
 }

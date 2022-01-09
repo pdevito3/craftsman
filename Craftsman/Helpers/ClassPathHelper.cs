@@ -34,6 +34,11 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests"), className);
         }
 
+        public static ClassPath UnitTestEntityTestsClassPath(string testDirectory, string className, string entityPlural, string projectBaseName)
+        {
+            return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Domain", entityPlural), className);
+        }
+
         public static ClassPath UnitTestWrapperTestsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Wrappers"), className);
@@ -185,6 +190,11 @@
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
         }
 
+        public static ClassPath ServicesTestClassPath(string testDirectory, string className, string projectBaseName)
+        {
+            return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "ServiceTests"), className);
+        }
+
         public static ClassPath FeatureTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "FeatureTests", entityName), className);
@@ -230,25 +240,23 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural, "Mappings"), className);
         }
 
-        public static ClassPath FeaturesClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        public static ClassPath FeaturesClassPath(string srcDirectory, string className, string entityName, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
             return string.IsNullOrEmpty(entityName)
-                ? new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain"), className)
-                : new ClassPath(solutionDirectory,
+                ? new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain"), className)
+                : new ClassPath(srcDirectory,
                     Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityName, "Features"), className);
         }
 
-        public static ClassPath ConsumerFeaturesClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath ConsumerFeaturesClassPath(string srcDirectory, string className, string domainDirectory, string projectBaseName)
         {
-            var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", "EventHandlers"), className);
+            return FeaturesClassPath(srcDirectory, className, domainDirectory, projectBaseName);
         }
 
-        public static ClassPath ProducerFeaturesClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath ProducerFeaturesClassPath(string srcDirectory, string className, string domainDirectory, string projectBaseName)
         {
-            var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", "EventHandlers"), className);
+            return FeaturesClassPath(srcDirectory, className, domainDirectory, projectBaseName);
         }
 
         public static ClassPath ExceptionsClassPath(string solutionDirectory, string className, string projectBaseName)
@@ -271,6 +279,13 @@
         public static ClassPath WebApiServicesClassPath(string srcDirectory, string className, string projectBaseName)
         {
             return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Services"), className);
+        }
+
+        public static ClassPath PolicyDomainClassPath(string srcDirectory, string className, string projectBaseName)
+        {
+            // wanted to have a `Policy` directory under Domain for permissions, roles, and rolepermissions, but changing the class path for
+            // rolepermissions scaffolding wasn't worth the lift atm. so this is currently the same as domain, but leaving it in hopes of an easier refactor in the future.
+            return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain"), className);
         }
 
         public static ClassPath WebApiProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)

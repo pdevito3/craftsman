@@ -91,15 +91,12 @@ public class {dbContextName} : DbContext
             switch (entry.State)
             {{
                 case EntityState.Added:
-                    entry.Entity.CreatedBy = _currentUserService?.UserId;
-                    entry.Entity.CreatedOn = now;
-                    entry.Entity.LastModifiedBy = _currentUserService?.UserId;
-                    entry.Entity.LastModifiedOn = now;
+                    entry.Entity.UpdateCreationProperties(now, _currentUserService?.UserId);
+                    entry.Entity.UpdateModifiedProperties(now, _currentUserService?.UserId);
                     break;
 
                 case EntityState.Modified:
-                    entry.Entity.LastModifiedBy = _currentUserService?.UserId;
-                    entry.Entity.LastModifiedOn = now;
+                    entry.Entity.UpdateModifiedProperties(now, _currentUserService?.UserId);
                     break;
                 
                 case EntityState.Deleted:

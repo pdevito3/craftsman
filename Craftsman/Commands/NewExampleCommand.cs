@@ -143,6 +143,7 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
+    - Type: PatchRecord
     Properties:
     - Name: Title
       Type: string
@@ -152,9 +153,29 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
+    - Name: Author
+      Type: Author
+      ForeignEntityName: Author
+      ForeignEntityPlural: Authors
     - Name: Ingredients
       Type: ICollection<Ingredient>
       ForeignEntityPlural: Ingredients
+  - Name: Author
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Name
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeId
+      Type: Guid
+      ForeignEntityName: Recipe
+      ForeignEntityPlural: Recipes
   - Name: Ingredient
     Features:
     - Type: GetList
@@ -162,6 +183,12 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
+    - Type: PatchRecord
+    - Type: AddListByFk
+      BatchPropertyName: RecipeId
+      BatchPropertyType: Guid
+      ParentEntity: Recipe
+      BatchPropertyDbSetName: Recipes
     Properties:
     - Name: Name
       Type: string
@@ -199,6 +226,7 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
+    - Type: PatchRecord
     Properties:
     - Name: Title
       Type: string
@@ -236,30 +264,17 @@ BoundedContexts:
   - Name: Recipe
     Features:
     - Type: GetList
-      Policies:
-      - Name: CanReadRecipes
-        PolicyType: scope
-        PolicyValue: recipes.read
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: GetRecord
-      Policies:
-      - Name: CanReadRecipes
-        PolicyType: scope
-        PolicyValue: recipes.read
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: AddRecord
-      Policies:
-      - Name: CanAddRecipes
-        PolicyType: scope
-        PolicyValue: recipes.add
+      IsProtected: true
     - Type: UpdateRecord
-      Policies:
-      - Name: CanUpdateRecipes
-        PolicyType: scope
-        PolicyValue: recipes.update
+      IsProtected: true
     - Type: DeleteRecord
-      Policies:
-      - Name: CanDeleteRecipes
-        PolicyType: scope
-        PolicyValue: recipes.delete
+      IsProtected: true
     Properties:
     - Name: Title
       Type: string
@@ -353,10 +368,11 @@ BoundedContexts:
   Bus:
     AddBus: true
   Producers:
-  - EndpointRegistrationMethodName: RecipeAddedEndpoint
-    ProducerName: RecipeAdded
+  - EndpointRegistrationMethodName: AddRecipeProducerEndpoint
+    ProducerName: AddRecipeProducer
     ExchangeName: recipe-added
     MessageName: IRecipeAdded
+    DomainDirectory: Recipes
     ExchangeType: fanout
     UsesDb: true
   Consumers:
@@ -365,6 +381,7 @@ BoundedContexts:
     ExchangeName: book-additions
     QueueName: add-recipe-to-book
     MessageName: IRecipeAdded
+    DomainDirectory: Recipes
     ExchangeType: fanout
 Messages:
 - Name: IRecipeAdded
@@ -389,30 +406,17 @@ BoundedContexts:
   - Name: Recipe
     Features:
     - Type: GetList
-      Policies:
-      - Name: RecipesReadOnly
-        PolicyType: scope
-        PolicyValue: recipemanagement.readonly
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: GetRecord
-      Policies:
-      - Name: RecipesReadOnly
-        PolicyType: scope
-        PolicyValue: recipemanagement.readonly
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: AddRecord
-      Policies:
-      - Name: RecipesReadOnly
-        PolicyType: scope
-        PolicyValue: recipemanagement.readonly
+      IsProtected: true
     - Type: UpdateRecord
-      Policies:
-      - Name: RecipesReadOnly
-        PolicyType: scope
-        PolicyValue: recipemanagement.readonly
+      IsProtected: true
     - Type: DeleteRecord
-      Policies:
-      - Name: RecipesFullAccess
-        PolicyType: scope
-        PolicyValue: recipemanagement.fullaccess
+      IsProtected: true
     Properties:
     - Name: Title
       Type: string
@@ -440,14 +444,14 @@ BoundedContexts:
     Audience: recipe_management
     AuthorizationUrl: https://localhost:3385/connect/authorize
     TokenUrl: https://localhost:3385/connect/token
-    ClientId: recipemanagement.swagger
+    ClientId: recipe_management.swagger
     ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
 AuthServer:
   Name: AuthServerWithDomain
   Port: 3385
   Clients:
-    - Id: recipemanagement.swagger
-      Name: RM Swagger
+    - Id: recipe_management.swagger
+      Name: RecipeManagement Swagger
       Secrets:
         - 974d6f71-d41b-4601-9a7a-a33081f80687
       GrantType: Code
@@ -463,28 +467,24 @@ AuthServer:
       RequireClientSecret: true
       AllowPlainTextPkce: false
       AllowedScopes:
-        - recipemanagement.readonly
-        - recipemanagement.fullaccess
         - openid
         - profile
+        - role
+        - recipe_management #this should match the scope in your boundary's swagger spec 
   Scopes:
-    - Name: recipemanagement.readonly
-      DisplayName: Recipes - Read Only
-      UserClaims:
-        - recipes.read
-    - Name: recipemanagement.fullaccess
-      DisplayName: Recipes - Full Access
+    - Name: recipe_management
+      DisplayName: Recipes Management - API Access
   Apis:
     - Name: recipe_management
       DisplayName: Recipe Management
       ScopeNames:
-        - recipemanagement.readonly
-        - recipemanagement.fullaccess
+        - recipe_management
       Secrets:
         - 4653f605-2b36-43eb-bbef-a93480079f20
       UserClaims:
         - openid
         - profile
+        - role
 ";
         }
     }

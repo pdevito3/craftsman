@@ -11,25 +11,25 @@
 
     public class PatchCommandTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.FeatureTestClassPath(solutionDirectory, $"Patch{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
+            var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Patch{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
 
-            var fileText = WriteTestFileText(solutionDirectory, classPath, entity, projectBaseName);
+            var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
         {
             var featureName = Utilities.PatchEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var commandName = Utilities.CommandPatchName(entity.Name);
 
-            var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-            var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var featuresClassPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
+            var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
+            var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "", projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
             var lookupVal = $@"""Easily Identified Value For Test""";
@@ -44,6 +44,8 @@
             if (myProp == null)
                 return "// no patch tests were created";
 
+            var foreignEntityUsings = Utilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
+            
             return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
@@ -52,12 +54,11 @@ using {dtoClassPath.ClassNamespace};
 using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
-using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
-using static {testFixtureName};
+using static {testFixtureName};{foreignEntityUsings}
 
 public class {commandName}Tests : TestBase
 {{
@@ -74,12 +75,15 @@ public class {commandName}Tests : TestBase
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
             var pkName = Entity.PrimaryKeyProperty.Name;
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
+            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
 
+            var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+            
             return $@"[Test]
     public async Task can_patch_existing_{entity.Name.ToLower()}_in_db()
     {{
         // Arrange
-        var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
+        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
         await InsertAsync({fakeEntityVariableName});
         var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
         var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};

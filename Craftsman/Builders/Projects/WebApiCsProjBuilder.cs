@@ -58,6 +58,7 @@
     <PackageReference Include=""AutoMapper.Extensions.Microsoft.DependencyInjection"" Version=""8.1.1"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""6.0.0"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""10.3.4"" />
+    <PackageReference Include=""HeimGuard"" Version=""0.1.1"" />
     <PackageReference Include=""MediatR"" Version=""9.0.0"" />
     <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""9.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""6.0.0"" />

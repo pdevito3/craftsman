@@ -8,6 +8,7 @@
     using System.IO.Abstractions;
     using System.Linq;
     using System.Text;
+    using Enums;
 
     public static class EntityBuilder
     {
@@ -27,6 +28,11 @@
 
         public static string GetEntityFileText(string classNamespace, string srcDirectory, Entity entity, string projectBaseName)
         {
+            var creationDtoName = Utilities.GetDtoName(entity.Name, Dto.Creation);
+            var creationValidatorName = Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation);
+            var updateDtoName = Utilities.GetDtoName(entity.Name, Dto.Update);
+            var updateValidatorName = Utilities.ValidatorNameGenerator(entity.Name, Validator.Update);
+            var profileName = Utilities.GetProfileName(entity.Name);
             var propString = EntityPropBuilder(entity.Properties);
             var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
             var tableAnnotation = EntityAnnotationBuilder(entity);
@@ -36,13 +42,22 @@
             foreach (var entityProperty in foreignProps)
             {
                 var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", entityProperty.ForeignEntityPlural, projectBaseName);
+                
                 foreignEntityUsings += $@"
 using {classPath.ClassNamespace};";
             }
 
+            var profileClassPath = ClassPathHelper.ProfileClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Name, projectBaseName);
+            var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
 
             return @$"namespace {classNamespace};
 
+using {dtoClassPath.ClassNamespace};
+using {profileClassPath.ClassNamespace};
+using {validatorClassPath.ClassNamespace};
+using AutoMapper;
+using FluentValidation;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -52,6 +67,29 @@ using System.Runtime.Serialization;{usingSieve}{foreignEntityUsings}
 public class {entity.Name} : BaseEntity
 {{
 {propString}
+
+
+    public static {entity.Name} Create({creationDtoName} {creationDtoName.LowercaseFirstLetter()})
+    {{
+        new {creationValidatorName}().ValidateAndThrow({creationDtoName.LowercaseFirstLetter()});
+        var mapper = new Mapper(new MapperConfiguration(cfg => {{
+            cfg.AddProfile<{profileName}>();
+        }}));
+        var new{entity.Name} = mapper.Map<{entity.Name}>({creationDtoName.LowercaseFirstLetter()});
+        
+        return new{entity.Name};
+    }}
+        
+    public void Update({updateDtoName} {updateDtoName.LowercaseFirstLetter()})
+    {{
+        new {updateValidatorName}().ValidateAndThrow({updateDtoName.LowercaseFirstLetter()});
+        var mapper = new Mapper(new MapperConfiguration(cfg => {{
+            cfg.AddProfile<{profileName}>();
+        }}));
+        mapper.Map({updateDtoName.LowercaseFirstLetter()}, this);
+    }}
+    
+    private {entity.Name}() {{ }} // For EF
 }}";
         }
 
@@ -65,11 +103,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 public abstract class BaseEntity
 {{
     [Key]
-    public Guid Id {{ get; set; }} = Guid.NewGuid();
-    public DateTime CreatedOn {{ get; set; }}
-    public string? CreatedBy {{ get; set; }}
-    public DateTime? LastModifiedOn {{ get; set; }}
-    public string? LastModifiedBy {{ get; set; }}
+    public Guid Id {{ get; private set; }} = Guid.NewGuid();
+    public DateTime CreatedOn {{ get; private set; }}
+    public string? CreatedBy {{ get; private set; }}
+    public DateTime? LastModifiedOn {{ get; private set; }}
+    public string? LastModifiedBy {{ get; private set; }}
+
+    public void UpdateCreationProperties(DateTime createdOn, string? createdBy)
+    {{
+        CreatedOn = createdOn;
+        CreatedBy = createdBy;
+    }}
+    
+    public void UpdateModifiedProperties(DateTime? lastModifiedOn, string? lastModifiedBy)
+    {{
+        LastModifiedOn = lastModifiedOn;
+        LastModifiedBy = lastModifiedBy;
+    }}
 }}";
         }
 
@@ -94,7 +144,10 @@ public abstract class BaseEntity
                 var newLine = (property.IsForeignKey && !property.IsMany)
                     ? Environment.NewLine
                     : $"{Environment.NewLine}{Environment.NewLine}";
-                propString += $@"    public {property.Type} {property.Name} {{ get; set; }}{defaultValue}{newLine}";
+                
+                if(property.IsPrimativeType || property.IsMany)
+                    propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+                
                 propString += GetForeignProp(property);
             }
 
@@ -106,11 +159,14 @@ public abstract class BaseEntity
             var attributeString = "";
             if (entityProperty.IsRequired)
                 attributeString += @$"    [Required]{Environment.NewLine}";
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany)
+            if (entityProperty.IsForeignKey 
+                && !entityProperty.IsMany 
+                && entityProperty.IsPrimativeType
+            )
                 attributeString += @$"    [JsonIgnore]
     [IgnoreDataMember]
     [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
-            if(entityProperty.IsMany)
+            if(entityProperty.IsMany || !entityProperty.IsPrimativeType)
                 attributeString += $@"    [JsonIgnore]
     [IgnoreDataMember]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)
@@ -123,7 +179,7 @@ public abstract class BaseEntity
 
         private static string GetForeignProp(EntityProperty prop)
         {
-            return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public {prop.ForeignEntityName} {prop.ForeignEntityName} {{ get; set; }}{Environment.NewLine}{Environment.NewLine}" : "";
+            return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public {prop.ForeignEntityName} {prop.ForeignEntityName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
         }
     }
 }

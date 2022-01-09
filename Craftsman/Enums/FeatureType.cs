@@ -2,7 +2,8 @@
 {
     using System;
     using Ardalis.SmartEnum;
-    
+    using Helpers;
+
     public abstract class FeatureType : SmartEnum<FeatureType>
     {
         public static readonly FeatureType GetRecord = new GetRecordType();
