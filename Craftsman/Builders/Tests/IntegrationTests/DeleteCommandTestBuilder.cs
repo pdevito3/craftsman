@@ -10,7 +10,7 @@
 
     public class DeleteCommandTestBuilder
     {
-        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName, bool useSoftDelete)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Delete{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
 
@@ -22,17 +22,17 @@
 
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
+                var data = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName, useSoftDelete);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName, bool useSoftDelete)
         {
             var featureName = Utilities.DeleteEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var commandName = Utilities.CommandDeleteName(entity.Name);
-            var badId = Entity.PrimaryKeyProperty.Name;
+            var softDeleteTest = useSoftDelete ? SoftDeleteTest(commandName, entity, featureName) : "";
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
@@ -54,7 +54,7 @@ using static {testFixtureName};{foreignEntityUsings}
 
 public class {commandName}Tests : TestBase
 {{
-    {GetDeleteTest(commandName, entity, featureName)}{GetDeleteWithoutKeyTest(commandName, entity, featureName)}
+    {GetDeleteTest(commandName, entity, featureName)}{GetDeleteWithoutKeyTest(commandName, entity, featureName)}{softDeleteTest}
 }}";
         }
 
@@ -107,6 +107,41 @@ public class {commandName}Tests : TestBase
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
+    }}";
+        }
+
+        private static string SoftDeleteTest(string commandName, Entity entity, string featureName)
+        {
+            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
+            var fakeEntityVariableName = $"fake{entity.Name}One";
+            var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
+            var pkName = Entity.PrimaryKeyProperty.Name;
+            var lowercaseEntityPk = pkName.LowercaseFirstLetter();
+            
+            var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+
+            return $@"
+
+    [Test]
+    public async Task can_softdelete_{entity.Name.ToLower()}_from_db()
+    {{
+        // Arrange
+        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
+        await InsertAsync({fakeEntityVariableName});
+        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+        var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
+
+        // Act
+        var command = new {featureName}.{commandName}({lowercaseEntityPk});
+        await SendAsync(command);
+        var deleted{entity.Name} = (await ExecuteDbContextAsync(db => db.{entity.Plural}
+            .IgnoreQueryFilters()
+            .ToListAsync())
+        ).FirstOrDefault();
+
+        // Assert
+        deleted{entity.Name}?.IsDeleted.Should().BeTrue();
     }}";
         }
     }

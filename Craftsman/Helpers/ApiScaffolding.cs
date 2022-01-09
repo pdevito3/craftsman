@@ -63,6 +63,7 @@
                 template.DbContext.Provider,
                 template.DbContext.DatabaseName,
                 template.DbContext.NamingConventionEnum,
+                template.UseSoftDelete,
                 projectBaseName,
                 fileSystem
             );
@@ -79,6 +80,7 @@
                     projectBaseName,
                     template.DbContext.ContextName,
                     template.SwaggerConfig.AddSwaggerComments,
+                    template.UseSoftDelete,
                     fileSystem);
             }
             
@@ -89,6 +91,7 @@
                 template.Entities,
                 template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
+                template.UseSoftDelete,
                 fileSystem);
 
             // environments
@@ -114,7 +117,7 @@
             FunctionalTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
             HealthTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
             HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
-            EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, fileSystem);
+            EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete, fileSystem);
             CurrentUserServiceTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
 
             //seeders

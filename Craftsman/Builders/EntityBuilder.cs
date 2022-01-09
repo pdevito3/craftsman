@@ -19,10 +19,10 @@
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        public static void CreateBaseEntity(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateBaseEntity(string srcDirectory, string projectBaseName, bool useSoftDelete, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"BaseEntity.cs", "", projectBaseName);
-            var fileText = GetBaseEntityFileText(classPath.ClassNamespace);
+            var fileText = GetBaseEntityFileText(classPath.ClassNamespace, useSoftDelete);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
@@ -93,8 +93,22 @@ public class {entity.Name} : BaseEntity
 }}";
         }
 
-        public static string GetBaseEntityFileText(string classNamespace)
+        public static string GetBaseEntityFileText(string classNamespace, bool useSoftDelete)
         {
+            var isDeletedProp = useSoftDelete 
+                ? $@"
+    public bool IsDeleted {{ get; private set; }}"
+                : "";
+            
+            var isDeletedMethod = useSoftDelete
+                ? $@"
+    
+    public void UpdateIsDeleted(bool isDeleted)
+    {{
+        IsDeleted = isDeleted;
+    }}"
+                : "";
+            
             return @$"namespace {classNamespace};
 
 using System.ComponentModel.DataAnnotations;
@@ -107,7 +121,7 @@ public abstract class BaseEntity
     public DateTime CreatedOn {{ get; private set; }}
     public string? CreatedBy {{ get; private set; }}
     public DateTime? LastModifiedOn {{ get; private set; }}
-    public string? LastModifiedBy {{ get; private set; }}
+    public string? LastModifiedBy {{ get; private set; }}{isDeletedProp}
 
     public void UpdateCreationProperties(DateTime createdOn, string? createdBy)
     {{
@@ -119,7 +133,7 @@ public abstract class BaseEntity
     {{
         LastModifiedOn = lastModifiedOn;
         LastModifiedBy = lastModifiedBy;
-    }}
+    }}{isDeletedMethod}
 }}";
         }
 
