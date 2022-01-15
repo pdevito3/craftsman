@@ -79,6 +79,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Updated the 1:1 relationships to use proper scaffolding.
 
 * Updated the FK example to show proper 1:1 relationship
+
+* Entities with a Guid prop will no longer have a default of `Guid.NewGuid()`
 ### Fixed
 
 * Batch endpoint route updated to `batch` along with a functional testing route

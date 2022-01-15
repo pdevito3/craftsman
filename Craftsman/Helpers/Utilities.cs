@@ -519,7 +519,7 @@ using {parentClassPath.ClassNamespace};";
                 return defaultValue == null ? "" : @$" = ""{defaultValue}"";";
 
             if ((prop.Type.IsGuidPropertyType() && !prop.Type.Contains("?") && !prop.IsForeignKey))
-                return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : @" = Guid.NewGuid();";
+                return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : "";
             
             return string.IsNullOrEmpty(defaultValue) ? "" : $" = {defaultValue};";
         }
