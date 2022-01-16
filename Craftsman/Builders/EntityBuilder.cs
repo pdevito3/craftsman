@@ -18,7 +18,7 @@
             var fileText = GetEntityFileText(classPath.ClassNamespace, srcDirectory, entity, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
-        
+
         public static void CreateBaseEntity(string srcDirectory, string projectBaseName, bool useSoftDelete, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"BaseEntity.cs", "", projectBaseName);
@@ -36,13 +36,13 @@
             var propString = EntityPropBuilder(entity.Properties);
             var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
             var tableAnnotation = EntityAnnotationBuilder(entity);
-            
+
             var foreignEntityUsings = "";
             var foreignProps = entity.Properties.Where(e => e.IsForeignKey).ToList();
             foreach (var entityProperty in foreignProps)
             {
                 var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", entityProperty.ForeignEntityPlural, projectBaseName);
-                
+
                 foreignEntityUsings += $@"
 using {classPath.ClassNamespace};";
             }
@@ -58,7 +58,7 @@ using {profileClassPath.ClassNamespace};
 using {validatorClassPath.ClassNamespace};
 using AutoMapper;
 using FluentValidation;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;{usingSieve}{foreignEntityUsings}
@@ -95,11 +95,11 @@ public class {entity.Name} : BaseEntity
 
         public static string GetBaseEntityFileText(string classNamespace, bool useSoftDelete)
         {
-            var isDeletedProp = useSoftDelete 
+            var isDeletedProp = useSoftDelete
                 ? $@"
     public bool IsDeleted {{ get; private set; }}"
                 : "";
-            
+
             var isDeletedMethod = useSoftDelete
                 ? $@"
     
@@ -108,7 +108,7 @@ public class {entity.Name} : BaseEntity
         IsDeleted = isDeleted;
     }}"
                 : "";
-            
+
             return @$"namespace {classNamespace};
 
 using System.ComponentModel.DataAnnotations;
@@ -141,7 +141,7 @@ public abstract class BaseEntity
         {
             if (string.IsNullOrEmpty(entity.TableName))
                 return null;
-            
+
             // must have table name to have a schema :-(
             var tableName = entity.TableName;
             return entity.Schema != null ? @$"[Table(""{tableName}"", Schema=""{entity.Schema}"")]" : @$"[Table(""{tableName}"")]";
@@ -158,10 +158,10 @@ public abstract class BaseEntity
                 var newLine = (property.IsForeignKey && !property.IsMany)
                     ? Environment.NewLine
                     : $"{Environment.NewLine}{Environment.NewLine}";
-                
+
                 if(property.IsPrimativeType || property.IsMany)
                     propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
-                
+
                 propString += GetForeignProp(property);
             }
 
@@ -173,8 +173,8 @@ public abstract class BaseEntity
             var attributeString = "";
             if (entityProperty.IsRequired)
                 attributeString += @$"    [Required]{Environment.NewLine}";
-            if (entityProperty.IsForeignKey 
-                && !entityProperty.IsMany 
+            if (entityProperty.IsForeignKey
+                && !entityProperty.IsMany
                 && entityProperty.IsPrimativeType
             )
                 attributeString += @$"    [JsonIgnore]

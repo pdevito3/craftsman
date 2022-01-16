@@ -20,7 +20,7 @@
         {
             var classPath = Utilities.GetStartupClassPath(projectDirectory, authServerProjectName);
             var testUsersClassPath = ClassPathHelper.AuthServerSeederClassPath(projectDirectory, "", authServerProjectName);
-            
+
             var fileText = @$"{DuendeDisclosure}namespace {classPath.ClassNamespace};
 using Duende.IdentityServer;
 using Microsoft.AspNetCore.Builder;
@@ -84,7 +84,7 @@ public class Startup
 }}";
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
-        
+
         public static string GetWebApiStartupText(string solutionDirectory, string classNamespace, bool useJwtAuth, string projectBaseName)
         {
             var appAuth = "";
@@ -114,7 +114,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using Serilog;
 
 public class Startup
@@ -137,7 +137,7 @@ public class Startup
         services.AddCorsService(""{corsName}"", _env);
         services.AddInfrastructure(_config, _env);
         services.AddControllers()
-            .AddNewtonsoftJson(o => o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+            .AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
         services.AddApiVersioningExtension();
         services.AddWebApiServices();
         services.AddHealthChecks();

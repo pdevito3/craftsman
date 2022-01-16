@@ -29,7 +29,7 @@
             return @$"namespace {classPath.ClassNamespace};
 
 using Microsoft.AspNetCore.JsonPatch;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Dynamic;
 using System.Net;
 using System.Net.Http.Json;
@@ -71,7 +71,7 @@ public static class HttpClientExtensions
     public static async Task<HttpResponseMessage> PatchJsonRequestAsync<TModel>(this HttpClient client, string url, JsonPatchDocument<TModel> patchDoc)
         where TModel : class
     {{
-        var serializedRecipeToUpdate = JsonConvert.SerializeObject(patchDoc);
+        var serializedRecipeToUpdate = JsonSerializer.Serialize(patchDoc);
 
         var patchRequest = new HttpRequestMessage(new HttpMethod(""PATCH""), url)
         {{
