@@ -81,6 +81,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Updated the FK example to show proper 1:1 relationship
 
 * Entities with a Guid prop will no longer have a default of `Guid.NewGuid()`
+
+* Updated default library from NewtonSoft.Json to System.text.Json (https://github.com/pdevito3/craftsman/issues/52)
+
 ### Fixed
 
 * Batch endpoint route updated to `batch` along with a functional testing route
@@ -89,6 +92,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Can enter null for `add:feature` batch list options where needed
 * Minor formatting fix for indentation in producers and consumers
 * Removed extra exception using from  patch integration test
+* Fixed docker image for integration tests running on macOS + M1 chip (https://github.com/pdevito3/craftsman/issues/53)
 
 ## [0.12.3] - 12/20/2021
 
