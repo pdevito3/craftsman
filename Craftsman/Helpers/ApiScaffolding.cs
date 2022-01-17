@@ -72,8 +72,8 @@
             if (template.AddJwtAuthentication)
             {
                 PermissionsBuilder.GetPermissions(srcDirectory, projectBaseName, fileSystem); // <-- needs to run before entity features
-                RolesBuilder.GetRoles(srcDirectory, projectBaseName, fileSystem);
-                UserPolicyHandlerBuilder.CreatePolicyBuilder(srcDirectory, projectBaseName, fileSystem);
+                RolesBuilder.GetRoles(solutionDirectory, fileSystem);
+                UserPolicyHandlerBuilder.CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName);
                 EntityScaffolding.ScaffoldRolePermissions(solutionDirectory,
                     srcDirectory,
@@ -129,7 +129,6 @@
             CurrentUserServiceBuilder.GetCurrentUserService(srcDirectory, projectBaseName, fileSystem);
             SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName, fileSystem);
 
-            
             if (template.Bus.AddBus)
                 AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
 

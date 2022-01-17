@@ -122,7 +122,7 @@
             {
                 CommandAddRecordBuilder.CreateCommand(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
                 AddCommandTestBuilder.CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
-                CreateEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
+                CreateEntityTestBuilder.CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.AddRecord, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
@@ -131,7 +131,7 @@
             {
                 QueryGetRecordBuilder.CreateQuery(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
                 GetRecordQueryTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
-                GetEntityRecordTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
+                GetEntityRecordTestBuilder.CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
@@ -140,7 +140,7 @@
             {
                 QueryGetListBuilder.CreateQuery(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
                 GetListQueryTestBuilder.CreateTests(testDirectory, solutionDirectory, entity, projectBaseName);
-                GetEntityListTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
+                GetEntityListTestBuilder.CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
@@ -149,7 +149,7 @@
             {
                 CommandDeleteRecordBuilder.CreateCommand(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
                 DeleteCommandTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName, useSoftDelete);
-                DeleteEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
+                DeleteEntityTestBuilder.CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }
@@ -158,7 +158,7 @@
             {
                 CommandUpdateRecordBuilder.CreateCommand(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
                 PutCommandTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
-                PutEntityTestBuilder.CreateTests(testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
+                PutEntityTestBuilder.CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName, fileSystem);
                 ControllerModifier.AddEndpoint(srcDirectory, FeatureType.UpdateRecord, entity, addSwaggerComments, 
                     feature, projectBaseName);
             }

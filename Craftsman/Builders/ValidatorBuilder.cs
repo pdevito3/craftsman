@@ -116,11 +116,13 @@ public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulati
         {
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
             
             return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
 using {permissionsClassPath.ClassNamespace};
+using {rolesClassPath.ClassNamespace};
 using FluentValidation;
 
 public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}

@@ -22,6 +22,7 @@
             var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
             var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", "RolePermission", projectBaseName);
+            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
 
             return @$"namespace {classPath.ClassNamespace};
 
@@ -29,6 +30,7 @@ using {domainPolicyClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
+using {rolesClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;

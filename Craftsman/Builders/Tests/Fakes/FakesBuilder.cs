@@ -108,12 +108,14 @@ public class Fake{objectToFakeClassName}
             
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var policyDomainClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "",projectBaseName);
+            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
 
             var fileText= @$"namespace {classPath.ClassNamespace};
 
 using AutoBogus;
 using {policyDomainClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
+using {rolesClassPath.ClassNamespace};
 
 public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
 {{

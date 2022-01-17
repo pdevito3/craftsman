@@ -26,8 +26,10 @@
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(srcDirectory, "", entity.Name, projectBaseName);
             var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(srcDirectory, "", feature.ParentEntity, projectBaseName);
             var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+            
             var permissionsUsing = isProtected 
-                ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};"
+                ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};{Environment.NewLine}using {rolesClassPath.ClassNamespace};"
                 : string.Empty;
 
             var authOnlyTests = isProtected ? $@"
