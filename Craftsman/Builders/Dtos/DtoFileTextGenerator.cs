@@ -71,7 +71,7 @@
                     : "";
 
                 string newLine = eachProp == props.Count - 1 ? "" : Environment.NewLine;
-                propString += $@"       public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{guidDefault}{newLine}";
+                propString += $@"        public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{guidDefault}{newLine}";
             }
 
             return propString;
