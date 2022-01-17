@@ -25,7 +25,7 @@
 
             var endpointBase = Utilities.EndpointBaseGenerator(entityPlural);
 
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
             var featureClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, "", entityPlural, projectBaseName);
             var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);

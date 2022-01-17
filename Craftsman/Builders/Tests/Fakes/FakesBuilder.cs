@@ -50,7 +50,7 @@
         private static string GetFakeFileText(string classNamespace, string objectToFakeClassName, Entity entity, string solutionDirectory, string testDirectory, string projectBaseName)
         {
             var entitiesClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
             // this... is super fragile. Should really refactor this
             var usingStatement = objectToFakeClassName.Contains("DTO", StringComparison.InvariantCultureIgnoreCase) ? @$"using {dtoClassPath.ClassNamespace};" : $"using {entitiesClassPath.ClassNamespace};";
@@ -82,7 +82,7 @@ public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
         private static string GetFakeEntityFileText(string classNamespace, string objectToFakeClassName, Entity entity, string solutionDirectory, string testDirectory, string projectBaseName)
         {
             var entitiesClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var creationDtoName = Utilities.GetDtoName(entity.Name, Dto.Creation);
 
             return @$"namespace {classNamespace};
@@ -106,7 +106,7 @@ public class Fake{objectToFakeClassName}
             var fakeFilename = $"Fake{objectToFakeClassName}.cs";
             var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, entity.Name, projectBaseName);
             
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var policyDomainClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "",projectBaseName);
 
             var fileText= @$"namespace {classPath.ClassNamespace};

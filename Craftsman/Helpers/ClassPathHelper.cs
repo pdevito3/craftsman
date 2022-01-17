@@ -322,10 +322,9 @@
             return new ClassPath(solutionDirectory, $"{projectBaseName}.{SharedTestProjectSuffix}", className);
         }
 
-        public static ClassPath DtoClassPath(string solutionDirectory, string className, string entityName)
+        public static ClassPath DtoClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
         {
-            var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Dtos", entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Dtos", projectBaseName, entityName), className);
         }
 
         public static ClassPath SharedDtoClassPath(string solutionDirectory, string className)

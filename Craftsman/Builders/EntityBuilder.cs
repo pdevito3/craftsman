@@ -48,7 +48,7 @@ using {classPath.ClassNamespace};";
             }
 
             var profileClassPath = ClassPathHelper.ProfileClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, $"", entity.Name);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, $"", entity.Name, projectBaseName);
             var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
 
             return @$"namespace {classNamespace};
