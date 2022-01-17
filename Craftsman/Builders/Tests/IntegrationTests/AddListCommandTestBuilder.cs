@@ -10,22 +10,22 @@
 
     public class AddListCommandTestBuilder
     {
-        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, Feature feature, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, Feature feature, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{feature.Command}Tests.cs", entity.Name, projectBaseName);
-            var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, feature, projectBaseName);
+            var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, feature, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, Feature feature, string projectBaseName)
+        private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, Feature feature, string projectBaseName)
         {
             var featureName = Utilities.AddEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var commandName = feature.Command;
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
-            var dtoUtilClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "", projectBaseName);
+            var dtoUtilClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
             var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", feature.ParentEntity, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);

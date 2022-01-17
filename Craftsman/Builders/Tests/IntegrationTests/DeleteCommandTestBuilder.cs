@@ -10,7 +10,7 @@
 
     public class DeleteCommandTestBuilder
     {
-        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName, bool useSoftDelete)
+        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName, bool useSoftDelete)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Delete{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
 
@@ -22,12 +22,12 @@
 
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName, useSoftDelete);
+                var data = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName, useSoftDelete);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName, bool useSoftDelete)
+        private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName, bool useSoftDelete)
         {
             var featureName = Utilities.DeleteEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
@@ -36,6 +36,7 @@
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
             var foreignEntityUsings = Utilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
@@ -44,12 +45,12 @@
 
 using {fakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};
+using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
-using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;
-using {featuresClassPath.ClassNamespace};
 using static {testFixtureName};{foreignEntityUsings}
 
 public class {commandName}Tests : TestBase

@@ -9,9 +9,9 @@
 
     public class QueryGetRecordBuilder
     {
-        public static void CreateQuery(string solutionDirectory, Entity entity, string contextName, string projectBaseName)
+        public static void CreateQuery(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
         {
-            var classPath = ClassPathHelper.FeaturesClassPath(solutionDirectory, $"{Utilities.GetEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{Utilities.GetEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -22,12 +22,12 @@
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
                 var data = "";
-                data = GetQueryFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, projectBaseName);
+                data = GetQueryFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        public static string GetQueryFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string projectBaseName)
+        public static string GetQueryFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
         {
             var className = Utilities.GetEntityFeatureClassName(entity.Name);
             var queryRecordName = Utilities.QueryRecordName(entity.Name);
@@ -37,9 +37,9 @@
             var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
             var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
 
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
-            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+            var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
 
             return @$"namespace {classNamespace};
 

@@ -12,10 +12,10 @@
 
     public static class EntityBuilder
     {
-        public static void CreateEntity(string srcDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateEntity(string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
-            var fileText = GetEntityFileText(classPath.ClassNamespace, srcDirectory, entity, projectBaseName);
+            var fileText = GetEntityFileText(classPath.ClassNamespace, solutionDirectory, srcDirectory, entity, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
@@ -26,7 +26,7 @@
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static string GetEntityFileText(string classNamespace, string srcDirectory, Entity entity, string projectBaseName)
+        public static string GetEntityFileText(string classNamespace, string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName)
         {
             var creationDtoName = Utilities.GetDtoName(entity.Name, Dto.Creation);
             var creationValidatorName = Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation);
@@ -48,7 +48,7 @@ using {classPath.ClassNamespace};";
             }
 
             var profileClassPath = ClassPathHelper.ProfileClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Name, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, $"", entity.Name);
             var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
 
             return @$"namespace {classNamespace};

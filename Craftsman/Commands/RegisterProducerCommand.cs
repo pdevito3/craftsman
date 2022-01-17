@@ -47,7 +47,7 @@
                 var projectBaseName = Directory.GetParent(srcDirectory).Name;
 
                 var producer = RunPrompt();
-                ProducerRegistrationBuilder.CreateProducerRegistration(srcDirectory, producer, projectBaseName);
+                ProducerRegistrationBuilder.CreateProducerRegistration(boundedContextDirectory, srcDirectory, producer, projectBaseName);
                 MassTransitModifier.AddProducerRegistation(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
                 
                 WriteHelpHeader($"{Environment.NewLine}Your producer has been successfully registered. Keep up the good work!");

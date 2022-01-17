@@ -33,7 +33,7 @@
             var commandName = Utilities.CommandAddName(entity.Name);
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "", projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 

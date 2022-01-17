@@ -59,7 +59,7 @@
                 // get solution dir
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-                AddProducers(template.Producers, projectBaseName, srcDirectory, testDirectory, fileSystem);
+                AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
 
                 WriteHelpHeader($"{Environment.NewLine}Your producer has been successfully added. Keep up the good work!");
             }
@@ -92,7 +92,7 @@
             }
         }
 
-        public static void AddProducers(List<Producer> producers, string projectBaseName, string srcDirectory,
+        public static void AddProducers(List<Producer> producers, string projectBaseName, string solutionDirectory, string srcDirectory,
             string testDirectory, IFileSystem fileSystem)
         {
             var validator = new ProducerValidator();
@@ -105,11 +105,11 @@
 
             producers.ForEach(producer =>
             {
-                ProducerBuilder.CreateProducerFeature(srcDirectory, producer, projectBaseName);
-                ProducerRegistrationBuilder.CreateProducerRegistration(srcDirectory, producer, projectBaseName);
+                ProducerBuilder.CreateProducerFeature(solutionDirectory, srcDirectory, producer, projectBaseName);
+                ProducerRegistrationBuilder.CreateProducerRegistration(solutionDirectory, srcDirectory, producer, projectBaseName);
                 MassTransitModifier.AddProducerRegistation(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
                 
-                ProducerTestBuilder.CreateTests(testDirectory, producer, projectBaseName, fileSystem);
+                ProducerTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, producer, projectBaseName, fileSystem);
             });
         }
     }

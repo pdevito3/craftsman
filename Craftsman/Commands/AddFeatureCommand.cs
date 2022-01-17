@@ -50,6 +50,7 @@
                 
                 var useSoftDelete = Utilities.ProjectUsesSoftDelete(srcDirectory, projectBaseName);
                 EntityScaffolding.AddFeatureToProject(
+                    solutionDirectory, 
                     srcDirectory,
                     testDirectory,
                     projectBaseName,

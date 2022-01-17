@@ -16,7 +16,7 @@
 
         public static string GetErrorHandlerFilterAttributeText(string srcDirectory, string projectBaseName, string classNamespace)
         {
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
 
             return @$"// source: https://github.com/jasontaylordev/CleanArchitecture/blob/main/src/WebUI/Filters/ApiExceptionFilterAttribute.cs
 

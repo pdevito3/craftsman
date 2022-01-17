@@ -11,15 +11,15 @@
 
     public class PatchCommandTestBuilder
     {
-        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Patch{entity.Name}CommandTests.cs", entity.Name, projectBaseName);
 
-            var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
+            var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+        private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
         {
             var featureName = Utilities.PatchEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
@@ -27,8 +27,8 @@
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
-            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "", projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
             var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();

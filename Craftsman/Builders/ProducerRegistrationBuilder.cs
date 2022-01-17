@@ -10,10 +10,10 @@
 
     public class ProducerRegistrationBuilder
     {
-        public static void CreateProducerRegistration(string solutionDirectory, Producer producer, string projectBaseName)
+        public static void CreateProducerRegistration(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
         {
             var className = $@"{producer.EndpointRegistrationMethodName}Registration";
-            var classPath = ClassPathHelper.WebApiProducersServiceExtensionsClassPath(solutionDirectory, $"{className}.cs", projectBaseName);
+            var classPath = ClassPathHelper.WebApiProducersServiceExtensionsClassPath(srcDirectory, $"{className}.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -26,24 +26,25 @@
 
             if (ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct
                 || ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Topic)
-                data = GetDirectOrTopicProducerRegistration(classPath.ClassNamespace, className, producer);
+                data = GetDirectOrTopicProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
             else
-                data = GetFanoutProducerRegistration(classPath.ClassNamespace, className, producer);
+                data = GetFanoutProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
 
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string GetDirectOrTopicProducerRegistration(string classNamespace, string className, Producer producer)
+        public static string GetDirectOrTopicProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)
         {
             var exchangeType = ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct 
                 ? "ExchangeType.Direct" 
                 : "ExchangeType.Topic";
+            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
 
             return @$"namespace {classNamespace};
 
 using MassTransit;
 using MassTransit.RabbitMqTransport;
-using Messages;
+using {messagesClassPath.ClassNamespace};
 using RabbitMQ.Client;
 
 public static class {className}
@@ -74,13 +75,15 @@ public static class {className}
 }}";
         }
 
-        public static string GetFanoutProducerRegistration(string classNamespace, string className, Producer producer)
+        public static string GetFanoutProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)
         {
+            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
+            
             return @$"namespace {classNamespace};
 
 using MassTransit;
 using MassTransit.RabbitMqTransport;
-using Messages;
+using {messagesClassPath.ClassNamespace};
 using RabbitMQ.Client;
 
 public static class {className}

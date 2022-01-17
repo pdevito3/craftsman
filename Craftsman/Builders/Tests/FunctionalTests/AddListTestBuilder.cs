@@ -12,16 +12,16 @@
 
     public class AddListTestBuilder
     {
-        public static void CreateTests(string srcDirectory, Entity entity, Feature feature, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string solutionDirectory, string testDirectory, Entity entity, Feature feature, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.FunctionalTestClassPath(srcDirectory, $"{feature.Name}Tests.cs", entity.Name, projectBaseName);
-            var fileText = WriteTestFileText(srcDirectory, classPath, entity, feature.IsProtected, feature, projectBaseName);
+            var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"{feature.Name}Tests.cs", entity.Name, projectBaseName);
+            var fileText = WriteTestFileText(solutionDirectory, testDirectory, classPath, entity, feature.IsProtected, feature, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string srcDirectory, ClassPath classPath, Entity entity, bool isProtected, Feature feature, string projectBaseName)
+        private static string WriteTestFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, Entity entity, bool isProtected, Feature feature, string projectBaseName)
         {
-            var dtoUtilClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Name, projectBaseName);
+            var dtoUtilClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
             var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(srcDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(srcDirectory, "", entity.Name, projectBaseName);
             var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(srcDirectory, "", feature.ParentEntity, projectBaseName);

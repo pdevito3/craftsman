@@ -18,7 +18,7 @@
         private static void UpdateDtoFile(string solutionDirectory, string entityName, List<EntityProperty> props, Dto dto, string projectBaseName)
         {
             var dtoFileName = $"{Utilities.GetDtoName(entityName, dto)}.cs";
-            var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, dtoFileName, entityName, projectBaseName);
+            var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, dtoFileName, entityName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");

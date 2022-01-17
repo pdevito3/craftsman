@@ -75,7 +75,8 @@
                 RolesBuilder.GetRoles(srcDirectory, projectBaseName, fileSystem);
                 UserPolicyHandlerBuilder.CreatePolicyBuilder(srcDirectory, projectBaseName, fileSystem);
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName);
-                EntityScaffolding.ScaffoldRolePermissions(srcDirectory,
+                EntityScaffolding.ScaffoldRolePermissions(solutionDirectory,
+                    srcDirectory,
                     testDirectory,
                     projectBaseName,
                     template.DbContext.ContextName,
@@ -85,7 +86,8 @@
             }
             
             //entities
-            EntityScaffolding.ScaffoldEntities(srcDirectory,
+            EntityScaffolding.ScaffoldEntities(solutionDirectory,
+                srcDirectory,
                 testDirectory,
                 projectBaseName,
                 template.Entities,
@@ -107,8 +109,8 @@
                 fileSystem
             );
 
-            // unit tests, test utils, and one offs
-            PagedListTestBuilder.CreateTests(testDirectory, projectBaseName);
+            // unit tests, test utils, and one offs∂
+            PagedListTestBuilder.CreateTests(srcDirectory, testDirectory, projectBaseName);
             IntegrationTestFixtureBuilder.CreateFixture(testDirectory, projectBaseName, template.DbContext.ContextName, template.DbContext.DatabaseName, template.DbContext.Provider, fileSystem);
             IntegrationTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
             DockerUtilitiesBuilder.CreateGeneralUtilityClass(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
@@ -132,10 +134,10 @@
                 AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
 
             if (template.Consumers.Count > 0)
-                AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory, fileSystem);
+                AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
 
             if (template.Producers.Count > 0)
-                AddProducerCommand.AddProducers(template.Producers, projectBaseName, srcDirectory, testDirectory, fileSystem);
+                AddProducerCommand.AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
         }
     }
 }

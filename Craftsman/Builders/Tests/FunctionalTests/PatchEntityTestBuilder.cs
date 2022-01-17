@@ -13,18 +13,18 @@
 
     public class PatchEntityTestBuilder
     {
-        public static void CreateTests(string testDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"Partial{entity.Name}UpdateTests.cs", entity.Name, projectBaseName);
-            var fileText = WriteTestFileText(testDirectory, classPath, entity, isProtected, projectBaseName);
+            var fileText = WriteTestFileText(solutionDirectory, testDirectory, classPath, entity, isProtected, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string testDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)
+        private static string WriteTestFileText(string solutionDirectory, string testDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)
         {
             var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
             var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
             var permissionsUsing = isProtected 
                 ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};"

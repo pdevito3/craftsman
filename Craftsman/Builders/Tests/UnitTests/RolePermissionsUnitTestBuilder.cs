@@ -9,19 +9,19 @@
 
     public class RolePermissionsUnitTestBuilder
     {
-        public static void CreateTests(string testDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"RolePermissionTests.cs", "RolePermissions", projectBaseName);
-            var fileText = WriteTestFileText(testDirectory, classPath, projectBaseName);
+            var fileText = WriteTestFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string testDirectory, ClassPath classPath, string projectBaseName)
+        private static string WriteTestFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
         {
-            var wrapperClassPath = ClassPathHelper.WrappersClassPath(testDirectory, "", projectBaseName);
-            var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
-            var entityClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", "RolePermissions", projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", "RolePermission", projectBaseName);
+            var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+            var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+            var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", "RolePermission");
 
             return @$"namespace {classPath.ClassNamespace};
 

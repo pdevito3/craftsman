@@ -62,7 +62,7 @@
                 FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
 
                 // add all files based on the given template config
-                RunEntityBuilders(srcDirectory, testDirectory, template, fileSystem);
+                RunEntityBuilders(solutionDirectory, srcDirectory, testDirectory, template, fileSystem);
 
                 WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
             }
@@ -94,13 +94,14 @@
             }
         }
 
-        private static void RunEntityBuilders(string srcDirectory, string testDirectory, AddEntityTemplate template, IFileSystem fileSystem)
+        private static void RunEntityBuilders(string solutionDirectory, string srcDirectory, string testDirectory, AddEntityTemplate template, IFileSystem fileSystem)
         {
             var projectBaseName = template.SolutionName;
             var useSoftDelete = Utilities.ProjectUsesSoftDelete(srcDirectory, projectBaseName);
             
             //entities
-            EntityScaffolding.ScaffoldEntities(srcDirectory,
+            EntityScaffolding.ScaffoldEntities(solutionDirectory,
+                srcDirectory,
                 testDirectory,
                 projectBaseName,
                 template.Entities,

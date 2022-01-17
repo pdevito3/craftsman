@@ -8,9 +8,9 @@
 
     public class PagedListTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string projectBaseName)
+        public static void CreateTests(string srcDirectory, string testDirectory, string projectBaseName)
         {
-            var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(solutionDirectory, $"PagedListTests.cs", projectBaseName);
+            var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(testDirectory, $"PagedListTests.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -20,14 +20,14 @@
 
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = WriteTestFileText(solutionDirectory, classPath, projectBaseName);
+                var data = WriteTestFileText(srcDirectory, classPath, projectBaseName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, string projectBaseName)
+        private static string WriteTestFileText(string srcDirectory, ClassPath classPath, string projectBaseName)
         {
-            var wrapperClassPath = ClassPathHelper.WrappersClassPath(solutionDirectory, "", projectBaseName);
+            var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
 
             return @$"namespace {classPath.ClassNamespace};
 

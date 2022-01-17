@@ -10,7 +10,7 @@
         public static string GetEntitySeederFileText(string classNamespace, Entity entity, string dbContextName, string solutionDirectory, string projectBaseName)
         {
             var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
             var dbContextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
             var entityForCreationDto = $"{Utilities.GetDtoName(entity.Name, Dto.Creation)}";
             if (dbContextName is null)

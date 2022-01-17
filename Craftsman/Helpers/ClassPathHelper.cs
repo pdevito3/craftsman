@@ -11,16 +11,16 @@
         public const string FunctionalTestProjectSuffix = "FunctionalTests";
         // public const string ApiProjectSuffix = "WebApi";
         public const string ApiProjectSuffix = "";
-        public const string MessagesProjName = "Messages";
+        public const string SharedKernelProjName = "SharedKernel";
 
         public static ClassPath SolutionClassPath(string solutionDirectory, string className)
         {
             return new ClassPath(solutionDirectory, "", className);
         }
 
-        public static ClassPath BaseMessageClassPath(string solutionDirectory, string className)
+        public static ClassPath MessagesClassPath(string solutionDirectory, string className)
         {
-            return new ClassPath(solutionDirectory, MessagesProjName, className);
+            return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Messages"), className);
         }
 
         public static ClassPath ControllerClassPath(string solutionDirectory, string className, string projectBaseName, string version = "v1")
@@ -228,10 +228,10 @@
             return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Databases"), className);
         }
 
-        public static ClassPath ValidationClassPath(string solutionDirectory, string className, string entityPlural, string projectBaseName)
+        public static ClassPath ValidationClassPath(string srcDirectory, string className, string entityPlural, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural, "Validators"), className);
+            return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural, "Validators"), className);
         }
 
         public static ClassPath ProfileClassPath(string solutionDirectory, string className, string entityPlural, string projectBaseName)
@@ -259,16 +259,14 @@
             return FeaturesClassPath(srcDirectory, className, domainDirectory, projectBaseName);
         }
 
-        public static ClassPath ExceptionsClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath ExceptionsClassPath(string solutionDirectory, string className)
         {
-            var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Exceptions"), className);
+            return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Exceptions"), className);
         }
 
-        public static ClassPath WrappersClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath WrappersClassPath(string srcDirectory, string className, string projectBaseName)
         {
-            var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Wrappers"), className);
+            return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Wrappers"), className);
         }
 
         public static ClassPath WebApiResourcesClassPath(string srcDirectory, string className, string projectBaseName)
@@ -304,9 +302,9 @@
             return new ClassPath(solutionDirectory, $"{projectBaseName}.{UnitTestProjectSuffix}", className);
         }
 
-        public static ClassPath MessagesProjectRootClassPath(string solutionDirectory, string className)
+        public static ClassPath SharedKernelProjectRootClassPath(string solutionDirectory, string className)
         {
-            return new ClassPath(solutionDirectory, MessagesProjName, className);
+            return new ClassPath(solutionDirectory, SharedKernelProjName, className);
         }
         
         public static ClassPath ExampleYamlRootClassPath(string solutionDirectory, string className)
@@ -324,16 +322,16 @@
             return new ClassPath(solutionDirectory, $"{projectBaseName}.{SharedTestProjectSuffix}", className);
         }
 
-        public static ClassPath DtoClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        public static ClassPath DtoClassPath(string solutionDirectory, string className, string entityName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Dtos", entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Dtos", entityName), className);
         }
 
-        public static ClassPath SharedDtoClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath SharedDtoClassPath(string solutionDirectory, string className)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Dtos", "Shared"), className);
+            return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Dtos", "Shared"), className);
         }
 
         public static ClassPath IntegrationTestProjectClassPath(string solutionDirectory, string projectBaseName)
@@ -356,9 +354,9 @@
             return new ClassPath(solutionDirectory, $"{projectBaseName}.{UnitTestProjectSuffix}", $"{projectBaseName}.{UnitTestProjectSuffix}.csproj");
         }
 
-        public static ClassPath MessagesProjectClassPath(string solutionDirectory)
+        public static ClassPath SharedKernelProjectClassPath(string solutionDirectory)
         {
-            return new ClassPath(solutionDirectory, MessagesProjName, $"{MessagesProjName}.csproj");
+            return new ClassPath(solutionDirectory, SharedKernelProjName, $"{SharedKernelProjName}.csproj");
         }
 
         public static ClassPath WebApiProjectClassPath(string projectDirectory, string projectBaseName)

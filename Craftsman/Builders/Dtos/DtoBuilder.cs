@@ -12,7 +12,7 @@
         public static void CreateDtos(string solutionDirectory, Entity entity, string projectBaseName)
         {
             // ****this class path will have an invalid FullClassPath. just need the directory
-            var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -35,7 +35,7 @@
         public static void CreateDtoFile(string solutionDirectory, Entity entity, Dto dto, string projectBaseName)
         {
             var dtoFileName = $"{Utilities.GetDtoName(entity.Name, dto)}.cs";
-            var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, dtoFileName, entity.Name, projectBaseName);
+            var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, dtoFileName, entity.Name);
 
             if (File.Exists(classPath.FullClassPath))
                 throw new FileAlreadyExistsException(classPath.FullClassPath);
