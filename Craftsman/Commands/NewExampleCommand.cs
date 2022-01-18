@@ -145,7 +145,6 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
-    - Type: PatchRecord
     Properties:
     - Name: Title
       Type: string
@@ -185,7 +184,6 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
-    - Type: PatchRecord
     - Type: AddListByFk
       BatchPropertyName: RecipeId
       BatchPropertyType: Guid
@@ -223,11 +221,17 @@ BoundedContexts:
   - Name: Recipe
     Features:
     - Type: GetList
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: GetRecord
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: AddRecord
+      IsProtected: true
     - Type: UpdateRecord
+      IsProtected: true
     - Type: DeleteRecord
-    - Type: PatchRecord
+      IsProtected: true
     Properties:
     - Name: Title
       Type: string
@@ -267,7 +271,6 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
-    - Type: PatchRecord
     - Type: AddListByFk
       BatchPropertyName: RecipeId
       BatchPropertyType: Guid
@@ -385,7 +388,6 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
-    - Type: PatchRecord
     Properties:
     - Name: Title
       Type: string
