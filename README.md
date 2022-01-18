@@ -37,7 +37,7 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Added `Complex` example for `new:example` command
 
-✅ Better M1 chip compaatabilities (courtesy of @sshquack)
+✅ Better M1 chip compatabilities (courtesy of @sshquack)
 
 🚧 Add Identity to Auth Server
 
