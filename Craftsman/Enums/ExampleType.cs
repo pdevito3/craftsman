@@ -10,6 +10,7 @@
         public static readonly ExampleType WithBus = new WithBusType();
         public static readonly ExampleType WithAuthServer = new WithAuthServerType();
         public static readonly ExampleType WithForeignKey = new WithForeignKeyType();
+        public static readonly ExampleType Complex = new ComplexType();
 
         protected ExampleType(string name, int value) : base(name, value)
         {
@@ -38,6 +39,11 @@
         private class WithForeignKeyType : ExampleType
         {
             public WithForeignKeyType() : base(nameof(WithForeignKey), 5) {}
+        }
+
+        private class ComplexType : ExampleType
+        {
+            public ComplexType() : base(nameof(Complex), 6) {}
         }
     }
 }

@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Added a `register:producer` command with CLI prompt
 * Added `UseSoftDelete` property to the `ApiTemplate` which is set to true. When adding an entity after the fact,, Craftsman will automatically detect whether or not your project is using soft deletion by checking base entity for the appropriate property.
 * Added a `SharedKernel` project at the root to capture DTOs, exceptions, and roles (if using auth)
+* Added new `Complex` example for `new:example`
 
 
 ### Updated
