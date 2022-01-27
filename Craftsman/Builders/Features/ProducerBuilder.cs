@@ -1,17 +1,17 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Features
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System;
     using System.IO;
     using System.Text;
+    using Exceptions;
+    using Helpers;
+    using Models;
 
     public class ProducerBuilder
     {
-        public static void CreateProducerFeature(string srcDirectory, Producer producer, string projectBaseName)
+        public static void CreateProducerFeature(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
         {
-            var classPath = ClassPathHelper.ProducerFeaturesClassPath(srcDirectory, $"{producer.ProducerName}.cs", projectBaseName);
+            var classPath = ClassPathHelper.ProducerFeaturesClassPath(srcDirectory, $"{producer.ProducerName}.cs", producer.DomainDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -20,32 +20,32 @@
                 throw new FileAlreadyExistsException(classPath.FullClassPath);
 
             using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = GetProducerRegistration(classPath.ClassNamespace, producer, srcDirectory, projectBaseName);
+            var data = GetProducerRegistration(classPath.ClassNamespace, producer, solutionDirectory, srcDirectory, projectBaseName);
 
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string GetProducerRegistration(string classNamespace, Producer producer, string srcDirectory, string projectBaseName)
+        public static string GetProducerRegistration(string classNamespace, Producer producer, string solutionDirectory, string srcDirectory, string projectBaseName)
         {
             var context = Utilities.GetDbContext(srcDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
-            var dbReadOnly = producer.UsesDb ? @$"{Environment.NewLine}            private readonly {context} _db;" : "";
+            var dbReadOnly = producer.UsesDb ? @$"{Environment.NewLine}    private readonly {context} _db;" : "";
             var dbProp = producer.UsesDb ? @$"{context} db, " : "";
-            var assignDb = producer.UsesDb ? @$"{Environment.NewLine}                _db = db;" : "";
+            var assignDb = producer.UsesDb ? @$"{Environment.NewLine}        _db = db;" : "";
             var contextUsing = producer.UsesDb ? $@"
-    using {contextClassPath.ClassNamespace};" : "";
+using {contextClassPath.ClassNamespace};" : "";
 
-            var commandProp = "SomeContentToPutInMessage";
-            var commandPropLower = commandProp.LowercaseFirstLetter();
+            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
+            
             var propTypeToReturn = "bool";
             var commandName = $"{producer.ProducerName}Command";
 
             return @$"namespace {classNamespace};
 
+using {messagesClassPath.ClassNamespace};
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MassTransit;
-using Messages;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
@@ -55,11 +55,8 @@ public static class {producer.ProducerName}
 {{
     public class {commandName} : IRequest<{propTypeToReturn}>
     {{
-        public string {commandProp} {{ get; set; }}
-
-        public {commandName}(string {commandPropLower})
+        public {commandName}()
         {{
-            {commandProp} = {commandPropLower};
         }}
     }}
 
@@ -72,14 +69,6 @@ public static class {producer.ProducerName}
         {{
             _publishEndpoint = publishEndpoint;
             _mapper = mapper;{assignDb}
-        }}
-
-        public class {commandName}Profile : Profile
-        {{
-            public {commandName}Profile()
-            {{
-                //createmap<to this, from this>
-            }}
         }}
 
         public async Task<{propTypeToReturn}> Handle({commandName} request, CancellationToken cancellationToken)

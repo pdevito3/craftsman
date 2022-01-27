@@ -41,7 +41,7 @@
             services.AddCorsService(""MyBcCorsPolicy"");
             services.AddInfrastructure(_config, _env);
             services.AddControllers()
-                .AddNewtonsoftJson();
+                .AddJsonOptions();
             services.AddApiVersioningExtension();
             services.AddWebApiServices();
             services.AddHealthChecks();
@@ -117,7 +117,7 @@
             services.AddCorsService(""MyBcCorsPolicy"");
             services.AddInfrastructure(_config, _env);
             services.AddControllers()
-                .AddNewtonsoftJson();
+                .AddJsonOptions();
             services.AddApiVersioningExtension();
             services.AddWebApiServices();
             services.AddHealthChecks();

@@ -29,7 +29,7 @@
             return @$"namespace {classPath.ClassNamespace};
 
 using Microsoft.AspNetCore.JsonPatch;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Dynamic;
 using System.Net;
 using System.Net.Http.Json;
@@ -38,40 +38,40 @@ using System.Threading.Tasks;
 
 public static class HttpClientExtensions
 {{
-    public static HttpClient AddAuth(this HttpClient client, params string[] scopes)
+    public static HttpClient AddAuth(this HttpClient client, params string[] roles)
     {{
         dynamic data = new ExpandoObject();
         data.sub = Guid.NewGuid();
-        data.scope = scopes;
+        data.role = roles;
         client.SetFakeBearerToken((object)data);
 
         return client;
     }}
 
-    public async static Task<HttpResponseMessage> GetRequestAsync(this HttpClient client, string url)
+    public static async Task<HttpResponseMessage> GetRequestAsync(this HttpClient client, string url)
     {{
         return await client.GetAsync(url).ConfigureAwait(false);
     }}
 
-    public async static Task<HttpResponseMessage> DeleteRequestAsync(this HttpClient client, string url)
+    public static async Task<HttpResponseMessage> DeleteRequestAsync(this HttpClient client, string url)
     {{
         return await client.DeleteAsync(url).ConfigureAwait(false);
     }}
 
-    public async static Task<HttpResponseMessage> PostJsonRequestAsync(this HttpClient client, string url, object value)
+    public static async Task<HttpResponseMessage> PostJsonRequestAsync(this HttpClient client, string url, object value)
     {{
         return await client.PostAsJsonAsync(url, value).ConfigureAwait(false);
     }}
 
-    public async static Task<HttpResponseMessage> PutJsonRequestAsync(this HttpClient client, string url, object value)
+    public static async Task<HttpResponseMessage> PutJsonRequestAsync(this HttpClient client, string url, object value)
     {{
         return await client.PutAsJsonAsync(url, value).ConfigureAwait(false);
     }}
 
-    public async static Task<HttpResponseMessage> PatchJsonRequestAsync<TModel>(this HttpClient client, string url, JsonPatchDocument<TModel> patchDoc)
+    public static async Task<HttpResponseMessage> PatchJsonRequestAsync<TModel>(this HttpClient client, string url, JsonPatchDocument<TModel> patchDoc)
         where TModel : class
     {{
-        var serializedRecipeToUpdate = JsonConvert.SerializeObject(patchDoc);
+        var serializedRecipeToUpdate = JsonSerializer.Serialize(patchDoc);
 
         var patchRequest = new HttpRequestMessage(new HttpMethod(""PATCH""), url)
         {{

@@ -1,12 +1,11 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.Dtos
 {
-    using Craftsman.Builders.Dtos;
-    using Craftsman.Enums;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using Enums;
+    using Helpers;
+    using Models;
 
     public class DtoModifier
     {

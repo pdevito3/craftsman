@@ -11,7 +11,7 @@
 
     public class GetListQueryTestBuilder
     {
-        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+        public static void CreateTests(string testDirectory, string solutionDirectory, Entity entity, string projectBaseName)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{entity.Name}ListQueryTests.cs", entity.Name, projectBaseName);
 
@@ -23,20 +23,19 @@
 
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
+                var data = WriteTestFileText(testDirectory, solutionDirectory, classPath, entity, projectBaseName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+        private static string WriteTestFileText(string testDirectory, string solutionDirectory, ClassPath classPath, Entity entity, string projectBaseName)
         {
             var featureName = Utilities.GetEntityListFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
-            var queryName = Utilities.QueryListName(entity.Name);
 
-            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "", projectBaseName);
+            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(testDirectory, featureName, entity.Plural, projectBaseName);
 
             var sortTests = "";
@@ -83,14 +82,14 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
             var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
 
-            var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+            var fakeParent = Utilities.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
             return @$"
     [Test]
     public async Task can_get_{entity.Name.ToLower()}_list()
     {{
         // Arrange
-        {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
-        var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
+        {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForOne}.Generate());
+        var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForTwo}.Generate());
         var queryParameters = new {entityParams}();
 
         await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
@@ -115,15 +114,15 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
             var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
 
-            var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+            var fakeParent = Utilities.FakeParentTestHelpersThreeCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo, out var fakeParentIdRuleForThree);
             return $@"
     [Test]
     public async Task can_get_{entity.Name.ToLower()}_list_with_expected_page_size_and_number()
     {{
         //Arrange
-        {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
-        var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
-        var {fakeEntityVariableNameThree} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
+        {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForOne}.Generate());
+        var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForTwo}.Generate());
+        var {fakeEntityVariableNameThree} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForThree}.Generate());
         var queryParameters = new {entityParams}() {{ PageSize = 1, PageNumber = 2 }};
 
         await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}, {fakeEntityVariableNameThree});
@@ -175,17 +174,17 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
                 return "";
             }
 
-            var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+            var fakeParent = Utilities.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
             return $@"
     [Test]
     public async Task can_get_sorted_list_of_{entity.Name.ToLower()}_by_{prop.Name}_in_asc_order()
     {{
         //Arrange
         {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}()
-            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {bravo}){fakeParentIdRuleFor.RemoveLastNewLine()}
+            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {bravo}){fakeParentIdRuleForOne.RemoveLastNewLine()}
             .Generate());
         var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}()
-            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {alpha}){fakeParentIdRuleFor.RemoveLastNewLine()}
+            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {alpha}){fakeParentIdRuleForTwo.RemoveLastNewLine()}
             .Generate());
         var queryParameters = new {entityParams}() {{ SortOrder = ""{prop.Name}"" }};
 
@@ -246,17 +245,17 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
                 return "";
             }
 
-            var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+            var fakeParent = Utilities.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
             return $@"
     [Test]
     public async Task can_get_sorted_list_of_{entity.Name.ToLower()}_by_{prop.Name}_in_desc_order()
     {{
         //Arrange
         {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}()
-            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {alpha}){fakeParentIdRuleFor.RemoveLastNewLine()}
+            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {alpha}){fakeParentIdRuleForOne.RemoveLastNewLine()}
             .Generate());
         var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}()
-            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {bravo}){fakeParentIdRuleFor.RemoveLastNewLine()}
+            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {bravo}){fakeParentIdRuleForTwo.RemoveLastNewLine()}
             .Generate());
         var queryParameters = new {entityParams}() {{ SortOrder = ""-{prop.Name}"" }};
 
@@ -327,17 +326,17 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
                 return "";
             }
 
-            var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+            var fakeParent = Utilities.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
             return $@"
     [Test]
     public async Task can_filter_{entity.Name.ToLower()}_list_using_{prop.Name}()
     {{
         //Arrange
         {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}()
-            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {alpha}){fakeParentIdRuleFor.RemoveLastNewLine()}
+            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {alpha}){fakeParentIdRuleForOne.RemoveLastNewLine()}
             .Generate());
         var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}()
-            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {bravo}){fakeParentIdRuleFor.RemoveLastNewLine()}
+            .RuleFor({entity.Lambda} => {entity.Lambda}.{prop.Name}, _ => {bravo}){fakeParentIdRuleForTwo.RemoveLastNewLine()}
             .Generate());
         var queryParameters = new {entityParams}() {{ Filters = $""{prop.Name} == {{{expectedFilterableProperty}}}"" }};
 

@@ -10,19 +10,20 @@
 
     public class ConsumerTestBuilder
     {
-        public static void CreateTests(string testDirectory, Consumer consumer, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Consumer consumer, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{consumer.ConsumerName}Tests.cs", "EventHandlers", projectBaseName);
-            var fileText = WriteTestFileText(testDirectory, classPath, consumer, projectBaseName);
+            var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, consumer, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, Consumer consumer, string projectBaseName)
+        private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Consumer consumer, string projectBaseName)
         {
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
-            var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-            var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(solutionDirectory, "", projectBaseName);
+            var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
+            var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, "", consumer.DomainDirectory, projectBaseName);
             
+            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
             return @$"namespace {classPath.ClassNamespace};
 
 using FluentAssertions;
@@ -30,7 +31,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using MassTransit;
 using MassTransit.Testing;
-using Messages;
+using {messagesClassPath.ClassNamespace};
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using {consumerClassPath.ClassNamespace};
@@ -58,15 +59,8 @@ public class {consumer.ConsumerName}Tests : TestBase
         await PublishMessage<{messageName}>(message);
 
         // Assert
-        // did the endpoint consume the message
-        (await _harness.Consumed.Any<{messageName}>()).Should().Be(true);
-
-        // ensure that no faults were published by the consumer
-        (await _harness.Published.Any<Fault<{messageName}>>()).Should().Be(false);
-        
-        // the desired consumer consumed the message
-        var consumerHarness = _provider.GetRequiredService<IConsumerTestHarness<{consumer.ConsumerName}>>();
-        (await consumerHarness.Consumed.Any<{messageName}>()).Should().Be(true);
+        (await IsConsumed<{messageName}>()).Should().Be(true);
+        (await IsConsumed<{messageName}, {consumer.ConsumerName}>()).Should().Be(true);
     }}";
         }
     }

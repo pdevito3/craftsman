@@ -15,7 +15,7 @@
             var data = GetBaseUtilityText(classPath.ClassNamespace, provider);
             Utilities.CreateFile(classPath, data, fileSystem);
         }
-        
+
         public static void CreateDockerDatabaseUtilityClass(string solutionDirectory, string projectBaseName, string provider, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "DockerDatabaseUtilities.cs");
@@ -38,28 +38,26 @@
                 ? @$"public const string DB_PASSWORD = ""#testingDockerPassword#"";
     private const string DB_USER = ""postgres"";
     private const string DB_NAME = ""{projectBaseName}"";
-    private const string DB_IMAGE = ""postgres"";
-    private const string DB_IMAGE_TAG = ""latest"";
+    private static readonly ImageTag ImageTagForOs = new ImageTag(""postgres"", ""latest"");
     private const string DB_CONTAINER_NAME = ""IntegrationTesting_{projectBaseName}"";
     private const string DB_VOLUME_NAME = ""IntegrationTesting_{projectBaseName}"";"
                 : @$"private const string DB_PASSWORD = ""#testingDockerPassword#"";
     private const string DB_USER = ""SA"";
-    private const string DB_IMAGE = ""mcr.microsoft.com/mssql/server"";
-    private const string DB_IMAGE_TAG = ""2019-latest"";
+    private static readonly ImageTag ImageTagForOs = GetImageTagForOs();
     private const string DB_CONTAINER_NAME = ""IntegrationTesting_{projectBaseName}"";
     private const string DB_VOLUME_NAME = ""IntegrationTesting_{projectBaseName}"";";
 
             var mountedVol = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
-                ? @$"""/var/lib/postgresql/data""" 
+                ? @$"""/var/lib/postgresql/data"""
                 : @$"""/var/lib/sqlserver/data""";
 
             var dbConnection = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"DockerUtilities.GetSqlConnectionString(port, DB_PASSWORD, DB_USER, DB_NAME);"
                 : $@"DockerUtilities.GetSqlConnectionString(port, DB_PASSWORD, DB_USER);";
-            
+
             return @$"namespace {classNamespace};
 
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Model.Builders;
 using Ductus.FluentDocker.Services;
@@ -67,6 +65,7 @@ using Ductus.FluentDocker.Services.Extensions;
 
 public static class DockerDatabaseUtilities
 {{
+    private record ImageTag(string Image, string Tag);
     {constants}
 
     public static async Task<int> EnsureDockerStartedAndGetPortPortAsync()
@@ -91,7 +90,7 @@ public static class DockerDatabaseUtilities
         {{
             var container = new Builder().UseContainer()
                 .WithName(DB_CONTAINER_NAME)
-                .UseImage($""{{DB_IMAGE}}:{{DB_IMAGE_TAG}}"")
+                .UseImage($""{{ImageTagForOs.Image}}:{{ImageTagForOs.Tag}}"")
                 .ExposePort(freePort, {providerPort})
                 {envList}
                 .WaitForPort(""{providerPort}/tcp"", 30000 /*30s*/)
@@ -107,13 +106,29 @@ public static class DockerDatabaseUtilities
         return existingContainer.ToHostExposedEndpoint(""{providerPort}/tcp"").Port;
     }}
 
+    // SQL Server 2019 does not work on macOS + M1 chip. So we use SQL Edge as a workaround until SQL Server 2022 is GA.
+    // See https://github.com/pdevito3/craftsman/issues/53 for details.
+    private static ImageTag GetImageTagForOs() 
+    {{
+        var sqlServerImageTag = new ImageTag(""mcr.microsoft.com/mssql/server"", ""2019-latest"");
+        var sqlEdgeImageTag = new ImageTag(""mcr.microsoft.com/azure-sql-edge"", ""latest"");
+        return IsRunningOnMacOsArm64() ? sqlEdgeImageTag : sqlServerImageTag;
+    }}
+
+    private static bool IsRunningOnMacOsArm64() 
+    {{
+        var isMacOs = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+        var cpuArch = RuntimeInformation.ProcessArchitecture;
+        return isMacOs && cpuArch == Architecture.Arm64;
+    }}
+
     public static string GetSqlConnectionString(string port)
     {{
         return {dbConnection}
     }}
 }}";
         }
-        
+
         private static string GetBaseUtilityText(string classNamespace, string provider)
         {
             var dbConnection = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
@@ -139,7 +154,7 @@ public static class DockerDatabaseUtilities
             $""User ID={{user}};"" +
             $""Password={{password}}"";
     }}";
-            
+
             var usingStatement = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"
 using Npgsql;"

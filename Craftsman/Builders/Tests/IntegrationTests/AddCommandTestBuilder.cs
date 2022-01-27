@@ -33,7 +33,7 @@
             var commandName = Utilities.CommandAddName(entity.Name);
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "", projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
@@ -67,7 +67,7 @@ public class {commandName}Tests : TestBase
             var fakeParentIdRuleFor = "";
             foreach (var entityProperty in entity.Properties)
             {
-                if (entityProperty.IsForeignKey && !entityProperty.IsMany)
+                if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
                 {
                     var fakeParentClass = Utilities.FakerName(entityProperty.ForeignEntityName);
                     var fakeParentCreationDto = Utilities.FakerName(Utilities.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));

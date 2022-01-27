@@ -47,15 +47,18 @@
 
                 var feature = RunPrompt();
                 // EmptyFeatureBuilder.CreateCommand(srcDirectory, contextName, projectBaseName, feature);
+                
+                var useSoftDelete = Utilities.ProjectUsesSoftDelete(srcDirectory, projectBaseName);
                 EntityScaffolding.AddFeatureToProject(
+                    solutionDirectory, 
                     srcDirectory,
                     testDirectory,
                     projectBaseName,
                     contextName,
                     true,
-                    feature.Policies,
                     feature,
                     new Entity() { Name = feature.EntityName, Plural = feature.EntityPlural},
+                    useSoftDelete,
                     fileSystem);
                 
                 WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
@@ -101,8 +104,7 @@
             {
                 var entityName = AskEntityName();
                 var entityPlural = AskEntityPlural(entityName);
-                var useSwagger = AskUseSwaggerComments();
-                var policies = AskPolicies();
+                var isProtected = AskIsProtected();
 
                 AnsiConsole.WriteLine();
                 AnsiConsole.Render(new Table().AddColumns("[grey]Property[/]", "[grey]Value[/]")
@@ -110,8 +112,7 @@
                     .BorderColor(Color.Grey)
                     .AddRow("[grey]Entity Name[/]", entityName)
                     .AddRow("[grey]Entity Plural[/]", entityPlural)
-                    .AddRow("[grey]Use Swagger[/]", useSwagger.ToString())
-                    .AddRow("[grey]Policies[/]", policies.Count > 0 ? $"{policies.Count} policies" : "-")
+                    .AddRow("[grey]Is Protected[/]", isProtected.ToString())
                 );
                 
                 return new Feature()
@@ -119,7 +120,7 @@
                     Type = featureType,
                     EntityName = entityName,
                     EntityPlural = entityPlural,
-                    Policies = policies
+                    IsProtected = isProtected
                 };
             }
             
@@ -127,8 +128,7 @@
             {
                 var entityName = AskEntityName();
                 var entityPlural = AskEntityPlural(entityName);
-                var useSwagger = AskUseSwaggerComments();
-                var policies = AskPolicies();
+                var isProtected = AskIsProtected();
                 var propName = AskBatchOnPropertyName();
                 var propType = AskBatchOnPropertyType();
                 var parentEntity = AskParentEntity();
@@ -140,8 +140,7 @@
                     .BorderColor(Color.Grey)
                     .AddRow("[grey]Entity Name[/]", entityName)
                     .AddRow("[grey]Entity Plural[/]", entityPlural)
-                    .AddRow("[grey]Use Swagger[/]", useSwagger.ToString())
-                    .AddRow("[grey]Policies[/]", policies.Count > 0 ? $"{policies.Count} policies" : "-")
+                    .AddRow("[grey]Is Protected[/]", isProtected.ToString())
                     .AddRow("[grey]Batch Prop Name[/]", propName)
                     .AddRow("[grey]Batch Prop Type[/]", propType)
                     .AddRow("[grey]Parent Entity[/]", parentEntity)
@@ -153,11 +152,11 @@
                     Type = featureType,
                     EntityName = entityName,
                     EntityPlural = entityPlural,
-                    Policies = policies,
+                    IsProtected = isProtected,
                     BatchPropertyName = propName,
                     BatchPropertyType = propType,
                     BatchPropertyDbSetName = dbSet,
-                    ParentEntity = parentEntity
+                    ParentEntity = parentEntity,
                 };
             }
             
@@ -289,8 +288,8 @@
         private static string AskBatchPropertyDbSetName(string entityName)
         {
             return AnsiConsole.Prompt(
-                new TextPrompt<string>($"What's the [green]name of the DbSet[/] of the the property you are doing the batch add on? Leave [green]null[/] if you're not batching on a FK. (Default: [green]{entityName}s[/])")
-                    .DefaultValue($"{entityName}s")
+                new TextPrompt<string>($"What's the [green]name of the DbSet[/] of the the property you are doing the batch add on? Leave [green]null[/] if you're not batching on a FK. (ex: [green]{entityName}s[/])")
+                    .AllowEmpty()
                     .HideDefaultValue()
             );
         }
@@ -298,16 +297,17 @@
         private static string AskParentEntity()
         {
             return AnsiConsole.Prompt(
-                new TextPrompt<string>("What's the [green]name of the parent entity[/] that the FK you using is associated to? For example, if you had a FK of `EventId`, the parent entity might be `Event`. Leave null if you're not batching on a FK.")
+                new TextPrompt<string>("What's the [green]name of the parent entity[/] that the FK you using is associated to? For example, if you had a FK of `EventId`, the parent entity might be `Event`. Leave [green]null[/] if you're not batching on a FK.")
+                    .AllowEmpty()
             );
         }
-
-        private static bool AskUseSwaggerComments()
+        
+        private static bool AskIsProtected()
         {
             var command = AnsiConsole.Prompt(
-                new TextPrompt<string>("Do you want to include swagger comments? (Default: [green]y[/])?")
+                new TextPrompt<string>("Is this a protected feature? (Default: [green]n[/])?")
                     .InvalidChoiceMessage("[red]Please respond 'y' or 'n'[/]")
-                    .DefaultValue("y")
+                    .DefaultValue("n")
                     .HideDefaultValue()
                     .AddChoice("y")
                     .AddChoice("n"));
@@ -315,62 +315,13 @@
             return command == "y";
         }
 
-        private static List<Policy> AskPolicies()
+        private static string AskPermissionName(string featureName)
         {
-            var command = AnsiConsole.Prompt(
-                new TextPrompt<string>("Do you want to add a policy to this feature? (Default: [green]n[/])?")
-                    .InvalidChoiceMessage("[red]Please respond 'y' or 'n'[/]")
-                    .DefaultValue("n")
-                    .HideDefaultValue()
-                    .AddChoice("y")
-                    .AddChoice("n"));
-
-            var wantsToAddPolicies = command == "y";
-
-            if (wantsToAddPolicies)
-            {
-                var policies = new List<Policy>();
-                var firstPolicy = AskPolicy();
-                policies.Add(firstPolicy);
-
-                var additional = "y";
-                while (additional == "y")
-                {
-                    additional = AnsiConsole.Prompt(
-                        new TextPrompt<string>("Do you want to add any more policies? (Default: [green]n[/])?")
-                            .InvalidChoiceMessage("[red]Please respond 'y' or 'n'[/]")
-                            .DefaultValue("n")
-                            .HideDefaultValue()
-                            .AddChoice("y")
-                            .AddChoice("n"));
-
-                    var wantsAdditional = additional == "y";
-                    if (!wantsAdditional) break;
-                    
-                    var newPolicy = AskPolicy();
-                    policies.Add(newPolicy);
-                }
-
-                return policies;
-            }
-
-            return new List<Policy>();
-        }
-        
-        
-        private static Policy AskPolicy()
-        {
-            // ask policy type, then
-            var name = AskPolicyName();
-            return new Policy()
-            {
-                Name = name
-            };
-        }
-
-        private static string AskPolicyName()
-        {
-            return AnsiConsole.Ask<string>("What's the name of the policy you want to apply?");
+            return AnsiConsole.Prompt(
+                new TextPrompt<string>(
+                        $"What's the name of the permission for this feature? (Default: [green]Can{featureName}[/])?")
+                    .DefaultValue($"Can{featureName}")
+                    .HideDefaultValue());
         }
         
         private static int AskAge(IAnsiConsole console)

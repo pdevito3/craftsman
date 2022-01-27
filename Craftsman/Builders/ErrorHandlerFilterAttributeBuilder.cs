@@ -16,7 +16,7 @@
 
         public static string GetErrorHandlerFilterAttributeText(string srcDirectory, string projectBaseName, string classNamespace)
         {
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
 
             return @$"// source: https://github.com/jasontaylordev/CleanArchitecture/blob/main/src/WebUI/Filters/ApiExceptionFilterAttribute.cs
 
@@ -38,8 +38,6 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
                 {{ typeof(FluentValidation.ValidationException), HandleFluentValidationException }},
                 {{ typeof(ValidationException), HandleValidationException }},
                 {{ typeof(NotFoundException), HandleNotFoundException }},
-                {{ typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException }},
-                {{ typeof(ForbiddenAccessException), HandleForbiddenAccessException }},
             }};
     }}
 
@@ -120,40 +118,6 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
         }};
 
         context.Result = new NotFoundObjectResult(details);
-
-        context.ExceptionHandled = true;
-    }}
-
-    private void HandleUnauthorizedAccessException(ExceptionContext context)
-    {{
-        var details = new ProblemDetails
-        {{
-            Status = StatusCodes.Status401Unauthorized,
-            Title = ""Unauthorized"",
-            Type = ""https://tools.ietf.org/html/rfc7235#section-3.1""
-        }};
-
-        context.Result = new ObjectResult(details)
-        {{
-            StatusCode = StatusCodes.Status401Unauthorized
-        }};
-
-        context.ExceptionHandled = true;
-    }}
-
-    private void HandleForbiddenAccessException(ExceptionContext context)
-    {{
-        var details = new ProblemDetails
-        {{
-            Status = StatusCodes.Status403Forbidden,
-            Title = ""Forbidden"",
-            Type = ""https://tools.ietf.org/html/rfc7231#section-6.5.3""
-        }};
-
-        context.Result = new ObjectResult(details)
-        {{
-            StatusCode = StatusCodes.Status403Forbidden
-        }};
 
         context.ExceptionHandled = true;
     }}

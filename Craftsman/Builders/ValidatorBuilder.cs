@@ -6,20 +6,31 @@
     using Craftsman.Models;
     using System;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Text;
 
     public class ValidatorBuilder
     {
-        public static void CreateValidators(string solutionDirectory, string projectBaseName, Entity entity)
+        public static void CreateValidators(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity)
         {
-            BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Manipulation);
-            BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Creation);
-            BuildValidatorClass(solutionDirectory, projectBaseName, entity, Validator.Update);
+            BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Manipulation);
+            BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Creation);
+            BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Update);
+        }
+        
+        public static void CreateRolePermissionValidators(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity, IFileSystem fileSystem)
+        {
+            BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Creation);
+            BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Update);
+            
+            var manipulationClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"{Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}.cs", entity.Plural, projectBaseName);
+            var manipulationFileText = GetRolePermissionManipulationValidatorFileText(solutionDirectory, srcDirectory, projectBaseName, manipulationClassPath.ClassNamespace, entity);
+            Utilities.CreateFile(manipulationClassPath, manipulationFileText, fileSystem);
         }
 
-        private static void BuildValidatorClass(string solutionDirectory, string projectBaseName, Entity entity, Validator validator)
+        private static void BuildValidatorClass(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity, Validator validator)
         {
-            var classPath = ClassPathHelper.ValidationClassPath(solutionDirectory, $"{Utilities.ValidatorNameGenerator(entity.Name, validator)}.cs", entity.Plural, projectBaseName);
+            var classPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"{Utilities.ValidatorNameGenerator(entity.Name, validator)}.cs", entity.Plural, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -30,16 +41,16 @@
             using FileStream fs = File.Create(classPath.FullClassPath);
             var data = validator switch
             {
-                Validator.Creation => GetCreationValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity),
-                Validator.Update => GetUpdateValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity),
-                Validator.Manipulation => GetManipulationValidatorFileText(solutionDirectory, projectBaseName, classPath.ClassNamespace, entity),
+                Validator.Creation => GetCreationValidatorFileText(solutionDirectory, classPath.ClassNamespace, entity, projectBaseName),
+                Validator.Update => GetUpdateValidatorFileText(solutionDirectory, classPath.ClassNamespace, entity, projectBaseName),
+                Validator.Manipulation => GetManipulationValidatorFileText(srcDirectory, classPath.ClassNamespace, entity, projectBaseName),
                 _ => throw new Exception("Unrecognized validator exception.")
             };
 
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string GetCreationValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
+        public static string GetCreationValidatorFileText(string solutionDirectory, string classNamespace, Entity entity, string projectBaseName)
         {
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             return @$"namespace {classNamespace};
@@ -57,7 +68,7 @@ public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}
 }}";
         }
 
-        public static string GetUpdateValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
+        public static string GetUpdateValidatorFileText(string solutionDirectory, string classNamespace, Entity entity, string projectBaseName)
         {
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             return @$"namespace {classNamespace};
@@ -75,7 +86,7 @@ public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: 
 }}";
         }
         
-        public static string GetManipulationValidatorFileText(string solutionDirectory, string projectBaseName, string classNamespace, Entity entity)
+        public static string GetManipulationValidatorFileText(string solutionDirectory, string classNamespace, Entity entity, string projectBaseName)
         {
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             return @$"namespace {classNamespace};
@@ -98,6 +109,43 @@ public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulati
     //     return await _context.TodoLists
     //         .AllAsync(l => l.Title != title, cancellationToken);
     // }}
+}}";
+        }
+        
+        public static string GetRolePermissionManipulationValidatorFileText(string solutionDirectory, string srcDirectory, string projectBaseName, string classNamespace, Entity entity)
+        {
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+            
+            return @$"namespace {classNamespace};
+
+using {dtoClassPath.ClassNamespace};
+using {permissionsClassPath.ClassNamespace};
+using {rolesClassPath.ClassNamespace};
+using FluentValidation;
+
+public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}
+{{
+    public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}()
+    {{
+        RuleFor(rp => rp.Permission)
+            .Must(BeAnExistingPermission)
+            .WithMessage(""Please use a valid role."");
+        RuleFor(rp => rp.Role)
+            .Must(BeAnExistingRole)
+            .WithMessage(""Please use a valid role."");
+    }}
+    
+    private static bool BeAnExistingPermission(string permission)
+    {{
+        return Permissions.List().Contains(permission);
+    }}
+
+    private static bool BeAnExistingRole(string role)
+    {{
+        return Roles.List().Contains(role);
+    }}
 }}";
         }
     }

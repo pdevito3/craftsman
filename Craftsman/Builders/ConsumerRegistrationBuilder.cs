@@ -14,7 +14,7 @@
         {
             var className = $@"{consumer.EndpointRegistrationMethodName}Registration";
             var classPath = ClassPathHelper.WebApiConsumersServiceExtensionsClassPath(solutionDirectory, $"{className}.cs", projectBaseName);
-            var consumerFeatureClassPath = ClassPathHelper.ConsumerFeaturesClassPath(solutionDirectory, $"{consumer.ConsumerName}.cs", projectBaseName);
+            var consumerFeatureClassPath = ClassPathHelper.ConsumerFeaturesClassPath(solutionDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -37,8 +37,8 @@
             using FileStream fs = File.Create(classPath.FullClassPath);
             var data = "";
 
-            if (Enum.GetName(typeof(ExchangeType), ExchangeType.Direct) == consumer.ExchangeType
-                || Enum.GetName(typeof(ExchangeType), ExchangeType.Topic) == consumer.ExchangeType)
+            if (ExchangeTypeEnum.FromName(consumer.ExchangeType) == ExchangeTypeEnum.Direct
+                || ExchangeTypeEnum.FromName(consumer.ExchangeType) == ExchangeTypeEnum.Topic)
                 data = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, className, consumer, lazyText, quorumText, consumerFeatureClassPath.ClassNamespace);
             else
                 data = GetFanoutConsumerRegistration(classPath.ClassNamespace, className, consumer, lazyText, quorumText, consumerFeatureClassPath.ClassNamespace);
@@ -48,7 +48,9 @@
 
         public static string GetDirectOrTopicConsumerRegistration(string classNamespace, string className, Consumer consumer, string lazyText, string quorumText, string consumerFeatureUsing)
         {
-            var exchangeType = Enum.GetName(typeof(ExchangeType), ExchangeType.Direct) == consumer.ExchangeType ? "ExchangeType.Direct" : "ExchangeType.Topic";
+            var exchangeType = ExchangeTypeEnum.FromName(consumer.ExchangeType) == ExchangeTypeEnum.Direct 
+                ? "ExchangeType.Direct" 
+                : "ExchangeType.Topic";
 
             return @$"namespace {classNamespace};
 
