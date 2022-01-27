@@ -31,14 +31,14 @@
             var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
             var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
             var permissionsUsing = usesJwtAuth 
-                ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};"
+                ? @$"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};
+using {rolesClassPath.ClassNamespace};"
                 : string.Empty;
 
             return @$"namespace {classNamespace};
 
 using {featureClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {rolesClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};{permissionsUsing}
 using System.Text.Json;
 using Microsoft.AspNetCore.JsonPatch;
