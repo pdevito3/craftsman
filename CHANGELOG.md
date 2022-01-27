@@ -86,6 +86,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Took audit fields off of DTO
 
+* Bumped LibGit2Sharp to preview for M1 compatibility
+
 ### Fixed
 
 * Batch endpoint route updated to `batch` along with a functional testing route
