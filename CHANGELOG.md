@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * Policies are no longer part of the craftsman api, but a single policy will be added with each api boundary to swagger to dictate access to that boundary. It has a default of a snake case of `ProjectName`, but can be overridden
     * **Call out in docs**. Also docs note that scope added in boundary for access should match the scope on your auth server, 
     * If using the built in auth server, this will be added for you. if not, make sure it mataches an appropriate scope in your auth server for this api boundary
-  * **Features now have a prop for `IsProtected` that, if true, will add an authorization attribute to your endpoint with the `PolicyName` and add tests that check for access**
+  * Features now have a prop for `IsProtected` that, if true, will add an authorization attribute to your endpoint with the `PolicyName` and add tests that check for access
   * Integration tests for `UserPolicyHandler`
   * Unit tests for `RolePermission`
   * `Policies` prop removed from Feature
@@ -30,7 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * Functional tests auth helper method now sets `role` instead of `scope`
   * Alice is a `SuperAdmin` and bob is a `User`
 * Added a `register:producer` command with CLI prompt
-* Added `UseSoftDelete` property to the `ApiTemplate` which is set to true. When adding an entity after the fact,, Craftsman will automatically detect whether or not your project is using soft deletion by checking base entity for the appropriate property.
+* Added `UseSoftDelete` property to the `ApiTemplate` which is set to true. When adding an entity after the fact, Craftsman will automatically detect whether or not your project is using soft deletion by checking base entity for the appropriate property.
 * Added a `SharedKernel` project at the root to capture DTOs, exceptions, and roles (if using auth)
 * Added new `Complex` example for `new:example`
 
@@ -69,8 +69,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * Producer doesn't take in placeholder props
 
   * Producer test generated
-
-  * **TODO** docs on what a producer and consumer test look like
 
 * Minor update to naming of producer in the bus example
 
