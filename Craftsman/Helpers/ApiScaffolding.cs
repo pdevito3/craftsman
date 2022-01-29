@@ -136,6 +136,8 @@
 
             if (template.Producers.Count > 0)
                 AddProducerCommand.AddProducers(template.Producers, projectBaseName, srcDirectory, testDirectory, fileSystem);
+            
+            DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory, template.DockerConfig);
         }
     }
 }

@@ -94,6 +94,9 @@
             fileSystem.Directory.CreateDirectory(domainDirectory);
             SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
 
+            // need this before boundaries to give them something to build against
+            DockerBuilders.CreateDockerComposeSkeleton(domainDirectory, fileSystem);
+            
             //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
             //    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity));
             foreach (var bc in domainProject.BoundedContexts)
@@ -112,9 +115,6 @@
 
             //final
             ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
-
-            var dockerConfigList = domainProject.BoundedContexts.Select(bc => bc.DockerConfig).ToList();
-            DockerBuilders.CreateDockerCompose(domainDirectory, dockerConfigList, fileSystem);
 
             if (domainProject.AddGit)
                 Utilities.GitSetup(domainDirectory);
