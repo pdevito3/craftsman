@@ -9,6 +9,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+* A `Dockerfile` and `.dockerignore` will be added to each bounded context automatically
+
+* A `docker-compose.yaml` will be added to your solution root by default for local development
+  * Just run `docker-compose up --build` in your project root
+
+  * Then set an env and apply migrations. For a postgres example:
+    * env
+
+        *Powershell*
+    
+      ```powershell
+      $Env:ASPNETCORE_ENVIRONMENT = "anything"
+      ```
+    
+        *Bash*
+    
+      ```bash
+      export ASPNETCORE_ENVIRONMENT=anything
+      ```
+    
+    * `dotnet ef database update --connection "Host=localhost;Port=3125;Database=dev_recipemanagement;Username=postgres;Password=postgres"`
+    
+  * Default settings can be overriden using a `DockerConfig` object on an `ApiTemplate`
+
+  * `SA` will always be default user for sqlserver so it can work properly
+
+  * If no ports are given for api or db, they'll be auto assigned a free port on your machine
+
+
 ### Updated
 
 - Initial commit will use system git user and email as author.
