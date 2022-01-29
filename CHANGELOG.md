@@ -39,6 +39,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
   * If no ports are given for api or db, they'll be auto assigned a free port on your machine
 
+
+### Updated
+
+- Initial commit will use system git user and email as author.
+
 ## [0.13.0] - 01/27/2022
 
 ### Added
