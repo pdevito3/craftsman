@@ -49,12 +49,13 @@ RUN dotnet publish ""{projectBaseName}.csproj"" -c Release -o /app/out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /app
 COPY --from=publish /app/out .
 
 ENV ASPNETCORE_URLS=https://+:8080
 EXPOSE 8080
 
-ENTRYPOINT [""dotnet"", ""{projectBaseName}.dll""]
+ENTRYPOINT [""dotnet"", ""/app/{projectBaseName}.dll""]
 ";
         
         /* if I want to do both 80 and 443, do
