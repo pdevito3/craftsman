@@ -419,7 +419,7 @@ using {parentClassPath.ClassNamespace};";
             fs.Write(Encoding.UTF8.GetBytes(fileText));
         }
 
-        public static void GitSetup(string solutionDirectory)
+        public static void GitSetup(string solutionDirectory, bool useSystemGitUser)
         {
             GitBuilder.CreateGitIgnore(solutionDirectory);
 
@@ -429,7 +429,9 @@ using {parentClassPath.ClassNamespace};";
             string[] allFiles = Directory.GetFiles(solutionDirectory, "*.*", SearchOption.AllDirectories);
             Commands.Stage(repo, allFiles);
 
-            var author = repo.Config.BuildSignature(DateTimeOffset.Now);
+            var author = useSystemGitUser 
+                ? repo.Config.BuildSignature(DateTimeOffset.Now) 
+                : new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
             repo.Commit("Initial Commit", author, author);
         }
 

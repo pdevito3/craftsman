@@ -10,6 +10,8 @@
 
         public bool AddGit { get; set; } = true;
 
+        public bool UseSystemGitUser { get; set; } = true;
+
         /// <summary>
         /// A list of eventing messages to be added to the domain
         /// </summary>
