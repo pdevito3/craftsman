@@ -86,6 +86,8 @@ namespace Craftsman.Models
             set => _policyName = value;
         }
 
+        public bool UseSoftDelete { get; set; } = true;
+
         private DockerConfig _dockerConfig;
         public DockerConfig DockerConfig
         {

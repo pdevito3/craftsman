@@ -5,22 +5,24 @@
 
     public class UserPolicyHandlerBuilder
     {
-        public static void CreatePolicyBuilder(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreatePolicyBuilder(string solutionDirectory, string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
-            var fileText = GetPolicyBuilderText(classPath.ClassNamespace, srcDirectory, projectBaseName);
+            var fileText = GetPolicyBuilderText(classPath.ClassNamespace, solutionDirectory, srcDirectory, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        private static string GetPolicyBuilderText(string classNamespace, string srcDirectory, string projectBaseName)
+        private static string GetPolicyBuilderText(string classNamespace, string solutionDirectory, string srcDirectory, string projectBaseName)
         {
             var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
             var dbContextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
             
             return @$"namespace {classNamespace};
 
 using System.Security.Claims;
 using {dbContextClassPath.ClassNamespace};
+using {rolesClassPath.ClassNamespace};
 using {domainPolicyClassPath.ClassNamespace};
 using HeimGuard;
 using Microsoft.EntityFrameworkCore;

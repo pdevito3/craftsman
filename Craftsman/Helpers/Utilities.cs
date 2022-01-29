@@ -195,7 +195,7 @@
             fakeParentIdRuleFor = "";
             foreach (var entityProperty in entity.Properties)
             {
-                if (entityProperty.IsForeignKey && !entityProperty.IsMany)
+                if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
                 {
                     var fakeParentClass = Utilities.FakerName(entityProperty.ForeignEntityName);
                     var fakeParentCreationDto =
@@ -205,6 +205,63 @@
         await InsertAsync(fake{entityProperty.ForeignEntityName}One);{Environment.NewLine}{Environment.NewLine}        ";
                     fakeParentIdRuleFor +=
                         $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}One.Id){Environment.NewLine}            ";
+                }
+            }
+
+            return fakeParent;
+        }
+        
+        public static string FakeParentTestHelpersTwoCount(Entity entity, out string fakeParentIdRuleForOne, out string fakeParentIdRuleForTwo)
+        {
+            var fakeParent = "";
+            fakeParentIdRuleForOne = "";
+            fakeParentIdRuleForTwo = "";
+            foreach (var entityProperty in entity.Properties)
+            {
+                if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
+                {
+                    var fakeParentClass = Utilities.FakerName(entityProperty.ForeignEntityName);
+                    var fakeParentCreationDto =
+                        Utilities.FakerName(Utilities.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
+                    fakeParent +=
+                        @$"var fake{entityProperty.ForeignEntityName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
+        var fake{entityProperty.ForeignEntityName}Two = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
+        await InsertAsync(fake{entityProperty.ForeignEntityName}One, fake{entityProperty.ForeignEntityName}Two);{Environment.NewLine}{Environment.NewLine}        ";
+                    fakeParentIdRuleForOne +=
+                        $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}One.Id){Environment.NewLine}            ";
+                    fakeParentIdRuleForTwo +=
+                        $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}Two.Id){Environment.NewLine}            ";
+                }
+            }
+
+            return fakeParent;
+        }
+        
+        
+        public static string FakeParentTestHelpersThreeCount(Entity entity, out string fakeParentIdRuleForOne, out string fakeParentIdRuleForTwo, out string fakeParentIdRuleForThree)
+        {
+            var fakeParent = "";
+            fakeParentIdRuleForOne = "";
+            fakeParentIdRuleForTwo = "";
+            fakeParentIdRuleForThree = "";
+            foreach (var entityProperty in entity.Properties)
+            {
+                if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
+                {
+                    var fakeParentClass = Utilities.FakerName(entityProperty.ForeignEntityName);
+                    var fakeParentCreationDto =
+                        Utilities.FakerName(Utilities.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
+                    fakeParent +=
+                        @$"var fake{entityProperty.ForeignEntityName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
+        var fake{entityProperty.ForeignEntityName}Two = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
+        var fake{entityProperty.ForeignEntityName}Three = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
+        await InsertAsync(fake{entityProperty.ForeignEntityName}One, fake{entityProperty.ForeignEntityName}Two, fake{entityProperty.ForeignEntityName}Three);{Environment.NewLine}{Environment.NewLine}        ";
+                    fakeParentIdRuleForOne +=
+                        $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}One.Id){Environment.NewLine}            ";
+                    fakeParentIdRuleForTwo +=
+                        $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}Two.Id){Environment.NewLine}            ";
+                    fakeParentIdRuleForThree +=
+                        $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}Three.Id){Environment.NewLine}            ";
                 }
             }
 
@@ -462,7 +519,7 @@ using {parentClassPath.ClassNamespace};";
                 return defaultValue == null ? "" : @$" = ""{defaultValue}"";";
 
             if ((prop.Type.IsGuidPropertyType() && !prop.Type.Contains("?") && !prop.IsForeignKey))
-                return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : @" = Guid.NewGuid();";
+                return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : "";
             
             return string.IsNullOrEmpty(defaultValue) ? "" : $" = {defaultValue};";
         }
@@ -552,6 +609,27 @@ using {parentClassPath.ClassNamespace};";
     }}";
 
             return entityRouteClasses;
+        }
+
+        public static bool ProjectUsesSoftDelete(string srcDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"BaseEntity.cs", "", projectBaseName);
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                return false;
+
+            if (!File.Exists(classPath.FullClassPath))
+                return false;
+
+            using var input = File.OpenText(classPath.FullClassPath);
+            string line;
+            while (null != (line = input.ReadLine()))
+            {
+                if (line.Contains($"Deleted"))
+                    return true;
+            }
+
+            return false;
         }
     }
 }

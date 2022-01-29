@@ -62,7 +62,7 @@
                 var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
                 Utilities.IsSolutionDirectoryGuard(solutionDirectory);
 
-                AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory, fileSystem);
+                AddConsumers(template.Consumers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
 
                 WriteHelpHeader($"{Environment.NewLine}Your consumer has been successfully added. Keep up the good work!");
             }
@@ -95,7 +95,7 @@
             }
         }
 
-        public static void AddConsumers(List<Consumer> consumers, string projectBaseName, string srcDirectory, string testDirectory, IFileSystem fileSystem)
+        public static void AddConsumers(List<Consumer> consumers, string projectBaseName, string solutionDirectory, string srcDirectory, string testDirectory, IFileSystem fileSystem)
         {
             var validator = new ConsumerValidator();
             foreach (var consumer in consumers)
@@ -107,12 +107,12 @@
 
             consumers.ForEach(consumer =>
             {
-                ConsumerBuilder.CreateConsumerFeature(srcDirectory, consumer, projectBaseName);
+                ConsumerBuilder.CreateConsumerFeature(solutionDirectory, srcDirectory, consumer, projectBaseName);
                 ConsumerRegistrationBuilder.CreateConsumerRegistration(srcDirectory, consumer, projectBaseName);
                 MassTransitModifier.AddConsumerRegistation(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
 
                 IntegrationTestFixtureModifier.AddMTConsumer(testDirectory, consumer.ConsumerName, consumer.DomainDirectory, projectBaseName, srcDirectory);
-                ConsumerTestBuilder.CreateTests(testDirectory, consumer, projectBaseName, fileSystem);
+                ConsumerTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, consumer, projectBaseName, fileSystem);
             });
         }
     }

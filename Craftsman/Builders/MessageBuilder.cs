@@ -12,7 +12,7 @@
     {
         public static void CreateMessage(string solutionDirectory, Message message, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.MessagesProjectRootClassPath(solutionDirectory, $"{message.Name}.cs");
+            var classPath = ClassPathHelper.MessagesClassPath(solutionDirectory, $"{message.Name}.cs");
 
             if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
                 fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

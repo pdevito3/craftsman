@@ -11,22 +11,23 @@
 
     public class UserPolicyHandlerIntegrationTests
     {
-        public static void CreateTests(string testDirectory, string srcDirectory, string projectBaseName,
+        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName,
             IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.ServicesTestClassPath(testDirectory, $"UserPolicyHandlerTests.cs", projectBaseName);
-            var fileText =  WriteTestFileText(testDirectory, srcDirectory, classPath, projectBaseName);
+            var fileText =  WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
+        private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
         {
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             
             var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
             var policyDomainClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
             var entityClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", "RolePermissions", projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", "RolePermission", projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", "RolePermission", projectBaseName);
+            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
 
             return @$"namespace {classPath.ClassNamespace};
 
@@ -34,6 +35,7 @@ using {servicesClassPath.ClassNamespace};
 using {policyDomainClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
+using {rolesClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using HeimGuard;

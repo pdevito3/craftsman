@@ -9,7 +9,7 @@
 
     public class ConsumerBuilder
     {
-        public static void CreateConsumerFeature(string srcDirectory, Consumer consumer, string projectBaseName)
+        public static void CreateConsumerFeature(string solutionDirectory, string srcDirectory, Consumer consumer, string projectBaseName)
         {
             var classPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
 
@@ -20,12 +20,12 @@
                 throw new FileAlreadyExistsException(classPath.FullClassPath);
 
             using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, consumer, srcDirectory, projectBaseName);
+            var data = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, consumer, solutionDirectory, srcDirectory, projectBaseName);
 
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string GetDirectOrTopicConsumerRegistration(string classNamespace, Consumer consumer, string srcDirectory, string projectBaseName)
+        public static string GetDirectOrTopicConsumerRegistration(string classNamespace, Consumer consumer, string solutionDirectory, string srcDirectory, string projectBaseName)
         {
             var context = Utilities.GetDbContext(srcDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
@@ -35,11 +35,12 @@
             var contextUsing = consumer.UsesDb ? $@"
 using {contextClassPath.ClassNamespace};" : "";
 
+            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
             return @$"namespace {classNamespace};
 
 using AutoMapper;
 using MassTransit;
-using Messages;
+using {messagesClassPath.ClassNamespace};
 using System.Threading.Tasks;{contextUsing}
 
 public class {consumer.ConsumerName} : IConsumer<{consumer.MessageName}>

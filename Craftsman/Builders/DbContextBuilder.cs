@@ -20,18 +20,19 @@
             string dbProvider,
             string dbName,
             NamingConventionEnum namingConventionEnum,
+            bool useSoftDelete,
             string projectBaseName,
             IFileSystem fileSystem
         )
         {
             var classPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{dbContextName}.cs", projectBaseName);
-            var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, srcDirectory, projectBaseName);
+            var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, srcDirectory, useSoftDelete, projectBaseName);
             Utilities.CreateFile(classPath, data, fileSystem);
             
             RegisterContext(srcDirectory, dbProvider, dbContextName, dbName, namingConventionEnum, projectBaseName);
         }
 
-        public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string srcDirectory, string projectBaseName)
+        public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string srcDirectory, bool useSoftDelete, string projectBaseName)
         {
             var entitiesUsings = "";
             foreach (var entity in entities)
@@ -41,6 +42,23 @@
             }
             var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
             var baseEntityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", "", projectBaseName);
+
+            var softDelete = useSoftDelete 
+                ? $@"
+                    entry.State = EntityState.Modified;
+                    entry.Entity.UpdateModifiedProperties(now, _currentUserService?.UserId);
+                    entry.Entity.UpdateIsDeleted(true);"
+                : "";            
+            var softDeleteFilterClass = useSoftDelete 
+                ? $@"
+
+{SoftDeleteFilterClass()}"
+                :"";
+            
+            var modelBuilderFilter = useSoftDelete 
+                ? $@"
+            modelBuilder.FilterSoftDeletedRecords();"
+                : "";
             
             return @$"namespace {classNamespace};
 
@@ -49,8 +67,10 @@ using {baseEntityClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query;
 
 public class {dbContextName} : DbContext
 {{
@@ -69,6 +89,7 @@ public class {dbContextName} : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {{
+        base.OnModelCreating(modelBuilder);{modelBuilderFilter}
     }}
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
@@ -99,10 +120,32 @@ public class {dbContextName} : DbContext
                     entry.Entity.UpdateModifiedProperties(now, _currentUserService?.UserId);
                     break;
                 
-                case EntityState.Deleted:
-                    // deleted_at
+                case EntityState.Deleted:{softDelete}
                     break;
             }}
+        }}
+    }}
+}}{softDeleteFilterClass}";
+        }
+
+        private static string SoftDeleteFilterClass()
+        {
+            return $@"public static class Extensions
+{{
+    public static void FilterSoftDeletedRecords(this ModelBuilder modelBuilder)
+    {{
+        Expression<Func<BaseEntity, bool>> filterExpr = e => !e.IsDeleted;
+        foreach (var mutableEntityType in modelBuilder.Model.GetEntityTypes()
+            .Where(m => m.ClrType.IsAssignableTo(typeof(BaseEntity))))
+        {{
+            // modify expression to handle correct child type
+            var parameter = Expression.Parameter(mutableEntityType.ClrType);
+            var body = ReplacingExpressionVisitor
+                .Replace(filterExpr.Parameters.First(), parameter, filterExpr.Body);
+            var lambdaExpression = Expression.Lambda(body, parameter);
+
+            // set filter
+            mutableEntityType.SetQueryFilter(lambdaExpression);
         }}
     }}
 }}";

@@ -64,6 +64,7 @@
                 template.DbContext.Provider,
                 template.DbContext.DatabaseName,
                 template.DbContext.NamingConventionEnum,
+                template.UseSoftDelete,
                 projectBaseName,
                 fileSystem
             );
@@ -72,24 +73,28 @@
             if (template.AddJwtAuthentication)
             {
                 PermissionsBuilder.GetPermissions(srcDirectory, projectBaseName, fileSystem); // <-- needs to run before entity features
-                RolesBuilder.GetRoles(srcDirectory, projectBaseName, fileSystem);
-                UserPolicyHandlerBuilder.CreatePolicyBuilder(srcDirectory, projectBaseName, fileSystem);
+                RolesBuilder.GetRoles(solutionDirectory, fileSystem);
+                UserPolicyHandlerBuilder.CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName);
-                EntityScaffolding.ScaffoldRolePermissions(srcDirectory,
+                EntityScaffolding.ScaffoldRolePermissions(solutionDirectory,
+                    srcDirectory,
                     testDirectory,
                     projectBaseName,
                     template.DbContext.ContextName,
                     template.SwaggerConfig.AddSwaggerComments,
+                    template.UseSoftDelete,
                     fileSystem);
             }
             
             //entities
-            EntityScaffolding.ScaffoldEntities(srcDirectory,
+            EntityScaffolding.ScaffoldEntities(solutionDirectory,
+                srcDirectory,
                 testDirectory,
                 projectBaseName,
                 template.Entities,
                 template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
+                template.UseSoftDelete,
                 fileSystem);
 
             // environments
@@ -105,8 +110,8 @@
                 fileSystem
             );
 
-            // unit tests, test utils, and one offs
-            PagedListTestBuilder.CreateTests(testDirectory, projectBaseName);
+            // unit tests, test utils, and one offs∂
+            PagedListTestBuilder.CreateTests(srcDirectory, testDirectory, projectBaseName);
             IntegrationTestFixtureBuilder.CreateFixture(testDirectory, projectBaseName, template.DbContext.ContextName, template.DbContext.DatabaseName, template.DbContext.Provider, fileSystem);
             IntegrationTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
             DockerUtilitiesBuilder.CreateGeneralUtilityClass(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
@@ -115,7 +120,7 @@
             FunctionalTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
             HealthTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
             HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
-            EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, fileSystem);
+            EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete, fileSystem);
             CurrentUserServiceTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
 
             //seeders
@@ -132,10 +137,10 @@
                 AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
 
             if (template.Consumers.Count > 0)
-                AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, srcDirectory, testDirectory, fileSystem);
+                AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
 
             if (template.Producers.Count > 0)
-                AddProducerCommand.AddProducers(template.Producers, projectBaseName, srcDirectory, testDirectory, fileSystem);
+                AddProducerCommand.AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
             
             DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory, template.DockerConfig);
         }

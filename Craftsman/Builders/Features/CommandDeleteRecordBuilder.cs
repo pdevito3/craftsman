@@ -8,7 +8,7 @@
 
     public class CommandDeleteRecordBuilder
     {
-        public static void CreateCommand(string srcDirectory, Entity entity, string contextName, string projectBaseName)
+        public static void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
         {
             var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{Utilities.DeleteEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
 
@@ -21,12 +21,12 @@
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
                 var data = "";
-                data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, srcDirectory, projectBaseName);
+                data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string srcDirectory, string projectBaseName)
+        public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
         {
             var className = Utilities.DeleteEntityFeatureClassName(entity.Name);
             var deleteCommandName = Utilities.CommandDeleteName(entity.Name);
@@ -36,8 +36,8 @@
             var entityNameLowercase = entity.Name.LowercaseFirstLetter();
 
             var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
 
             return @$"namespace {classNamespace};
