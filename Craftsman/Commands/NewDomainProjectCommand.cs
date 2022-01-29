@@ -117,7 +117,7 @@
             ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
 
             if (domainProject.AddGit)
-                Utilities.GitSetup(domainDirectory);
+                Utilities.GitSetup(domainDirectory, domainProject.UseSystemGitUser);
         }
     }
 }
