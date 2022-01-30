@@ -111,12 +111,14 @@ public class {entity.Name} : BaseEntity
 
             return @$"namespace {classNamespace};
 
+using Sieve.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 public abstract class BaseEntity
 {{
     [Key]
+    [Sieve(CanFilter = true, CanSort = true)]
     public Guid Id {{ get; private set; }} = Guid.NewGuid();
     public DateTime CreatedOn {{ get; private set; }}
     public string? CreatedBy {{ get; private set; }}

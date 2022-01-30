@@ -44,6 +44,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Initial commit will use system git user and email as author.
   - **DOCS:** Can be toggled off to use a generic `Craftsman` author if desired using a `UseSystemGitUser` boolean on your Domain Template
+- `Id` on `BaseEntity` is sortable and filterable by default
 
 
 ## [0.13.0] - 01/27/2022
