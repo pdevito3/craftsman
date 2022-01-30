@@ -63,7 +63,6 @@
     <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""9.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""6.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""6.0.0"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.NewtonsoftJson"" Version=""6.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.0.0"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""6.0.0"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""6.0.0"" />
@@ -80,7 +79,7 @@
     <PackageReference Include=""Serilog.AspNetCore"" Version=""4.1.0"" />
     <PackageReference Include=""Serilog.Enrichers.AspNetCore"" Version=""1.0.0"" />
     <PackageReference Include=""Serilog.Enrichers.Context"" Version=""4.2.0"" />
-     <PackageReference Include=""Serilog.Exceptions"" Version=""8.0.0"" />
+    <PackageReference Include=""Serilog.Exceptions"" Version=""8.0.0"" />
     <PackageReference Include=""Serilog.Enrichers.Process"" Version=""2.0.2"" />
     <PackageReference Include=""Serilog.Enrichers.Thread"" Version=""3.1.0"" />
     <PackageReference Include=""Serilog.Settings.Configuration"" Version=""3.3.0"" />

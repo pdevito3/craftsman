@@ -78,7 +78,7 @@
         {
             return entityPlural;
         }
-        
+
         public static string GetWebHostFactoryName()
         {
             return "TestingWebApplicationFactory";
@@ -108,7 +108,7 @@
         {
             return "SwaggerServiceExtension";
         }
-        
+
         public static string GetAppSettingsName(bool asJson = true)
         {
             return asJson ? $"appsettings.json" : $"appsettings";
@@ -188,7 +188,7 @@
         {
             return $"Fake{objectToFakeName}";
         }
-        
+
         public static string FakeParentTestHelpers(Entity entity, out string fakeParentIdRuleFor)
         {
             var fakeParent = "";
@@ -210,7 +210,7 @@
 
             return fakeParent;
         }
-        
+
         public static string FakeParentTestHelpersTwoCount(Entity entity, out string fakeParentIdRuleForOne, out string fakeParentIdRuleForTwo)
         {
             var fakeParent = "";
@@ -236,8 +236,8 @@
 
             return fakeParent;
         }
-        
-        
+
+
         public static string FakeParentTestHelpersThreeCount(Entity entity, out string fakeParentIdRuleForOne, out string fakeParentIdRuleForTwo, out string fakeParentIdRuleForThree)
         {
             var fakeParent = "";
@@ -395,10 +395,10 @@ using {parentClassPath.ClassNamespace};";
             IFileSystem fileSystem)
         {
             AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, dbName, projectBaseName);
-            
+
             if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
                 environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{projectName} (Development)" });
-            
+
             foreach (var env in environments)
             {
                 WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, projectBaseName);
@@ -419,7 +419,7 @@ using {parentClassPath.ClassNamespace};";
             fs.Write(Encoding.UTF8.GetBytes(fileText));
         }
 
-        public static void GitSetup(string solutionDirectory)
+        public static void GitSetup(string solutionDirectory, bool useSystemGitUser)
         {
             GitBuilder.CreateGitIgnore(solutionDirectory);
 
@@ -429,7 +429,9 @@ using {parentClassPath.ClassNamespace};";
             string[] allFiles = Directory.GetFiles(solutionDirectory, "*.*", SearchOption.AllDirectories);
             Commands.Stage(repo, allFiles);
 
-            var author = new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
+            var author = useSystemGitUser 
+                ? repo.Config.BuildSignature(DateTimeOffset.Now) 
+                : new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
             repo.Commit("Initial Commit", author, author);
         }
 
@@ -519,8 +521,8 @@ using {parentClassPath.ClassNamespace};";
                 return defaultValue == null ? "" : @$" = ""{defaultValue}"";";
 
             if ((prop.Type.IsGuidPropertyType() && !prop.Type.Contains("?") && !prop.IsForeignKey))
-                return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : @" = Guid.NewGuid();";
-            
+                return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : "";
+
             return string.IsNullOrEmpty(defaultValue) ? "" : $" = {defaultValue};";
         }
 
@@ -588,7 +590,7 @@ using {parentClassPath.ClassNamespace};";
                     }
                 });
         }
-        
+
         public static string CreateApiRouteClasses(Entity entity)
         {
             var entityRouteClasses = "";
@@ -609,6 +611,27 @@ using {parentClassPath.ClassNamespace};";
     }}";
 
             return entityRouteClasses;
+        }
+
+        public static bool ProjectUsesSoftDelete(string srcDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"BaseEntity.cs", "", projectBaseName);
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                return false;
+
+            if (!File.Exists(classPath.FullClassPath))
+                return false;
+
+            using var input = File.OpenText(classPath.FullClassPath);
+            string line;
+            while (null != (line = input.ReadLine()))
+            {
+                if (line.Contains($"Deleted"))
+                    return true;
+            }
+
+            return false;
         }
     }
 }

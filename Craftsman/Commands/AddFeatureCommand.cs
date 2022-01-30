@@ -47,8 +47,10 @@
 
                 var feature = RunPrompt();
                 // EmptyFeatureBuilder.CreateCommand(srcDirectory, contextName, projectBaseName, feature);
-
+                
+                var useSoftDelete = Utilities.ProjectUsesSoftDelete(srcDirectory, projectBaseName);
                 EntityScaffolding.AddFeatureToProject(
+                    solutionDirectory, 
                     srcDirectory,
                     testDirectory,
                     projectBaseName,
@@ -56,6 +58,7 @@
                     true,
                     feature,
                     new Entity() { Name = feature.EntityName, Plural = feature.EntityPlural},
+                    useSoftDelete,
                     fileSystem);
                 
                 WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");

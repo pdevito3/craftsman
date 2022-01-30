@@ -18,13 +18,14 @@
             {
                 fileSystem.Directory.CreateDirectory(solutionDirectory);
                 Utilities.ExecuteProcess("dotnet", @$"new sln -n {projectName}", solutionDirectory);
+                BuildSharedKernelProject(solutionDirectory, fileSystem);
             }
             catch (Exception e)
             {
                 WriteError(e.Message);
                 throw;
 
-                // custom error that you must be using the .net 5 sdk?
+                // custom error that you must be using the .net 6 sdk?
             }
         }
 
@@ -52,10 +53,10 @@
             Directory.CreateDirectory(ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
 
             // additional from what was other projects
-            Directory.CreateDirectory(ClassPathHelper.DtoClassPath(srcDirectory, "", "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.DtoClassPath(solutionDirectory, "", "", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.ExceptionsClassPath(srcDirectory, "").ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.SharedDtoClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.SharedDtoClassPath(solutionDirectory, "").ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.DummySeederClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
 
@@ -69,11 +70,13 @@
             StartupBuilder.CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName, fileSystem);
             LocalConfigBuilder.CreateLocalConfig(srcDirectory, projectBaseName, fileSystem);
             LoggingConfigurationBuilder.CreateConfigFile(srcDirectory, projectBaseName, fileSystem);
-            
-            BasePaginationParametersBuilder.CreateBasePaginationParameters(srcDirectory, projectBaseName, fileSystem);
-            PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, fileSystem);
-            CoreExceptionsBuilder.CreateExceptions(srcDirectory, projectBaseName, fileSystem);
             InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(srcDirectory, projectBaseName, fileSystem);
+            
+            BasePaginationParametersBuilder.CreateBasePaginationParameters(solutionDirectory, projectBaseName, fileSystem);
+            PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, fileSystem);
+            CoreExceptionsBuilder.CreateExceptions(solutionDirectory, projectBaseName, fileSystem);
+            
+            Utilities.AddProjectReference(webApiProjectClassPath, @"..\..\..\SharedKernel\SharedKernel.csproj");
         }
 
         private static void BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)
@@ -112,16 +115,14 @@
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
         }
 
-        public static void BuildMessagesProject(string solutionDirectory)
+        public static void BuildSharedKernelProject(string solutionDirectory, IFileSystem fileSystem)
         {
-            var projectExists = File.Exists(Path.Combine(solutionDirectory, "Messages", "Messages.csproj"));
-            if (!projectExists)
-            {
-                var projectClassPath = ClassPathHelper.MessagesProjectRootClassPath(solutionDirectory, "");
-
-                MessagesCsProjBuilder.CreateMessagesCsProj(solutionDirectory);
-                Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
-            }
+            var projectExists = File.Exists(Path.Combine(solutionDirectory, "SharedKernel", "SharedKernel.csproj"));
+            if (projectExists) return;
+            
+            var projectClassPath = ClassPathHelper.SharedKernelProjectRootClassPath(solutionDirectory, "");
+            SharedKernelCsProjBuilder.CreateMessagesCsProj(solutionDirectory, fileSystem);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
         }
 
         public static void BuildAuthServerProject(string solutionDirectory, string authServerProjectName, IFileSystem fileSystem)

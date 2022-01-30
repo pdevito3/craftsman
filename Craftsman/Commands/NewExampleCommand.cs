@@ -121,6 +121,8 @@
               return AuthServerTemplate(name);
             if(exampleType == ExampleType.WithForeignKey) 
               return ForeignKeyTemplate(name);
+            if(exampleType == ExampleType.Complex) 
+              return ComplexTemplate(name);
 
             throw new Exception("Example type was not recognized.");
         }
@@ -143,7 +145,6 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
-    - Type: PatchRecord
     Properties:
     - Name: Title
       Type: string
@@ -183,7 +184,6 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
-    - Type: PatchRecord
     - Type: AddListByFk
       BatchPropertyName: RecipeId
       BatchPropertyType: Guid
@@ -206,6 +206,170 @@ BoundedContexts:
       Type: Guid
       ForeignEntityName: Recipe";
         }
+        
+        private static string ComplexTemplate(string name)
+        {
+          return $@"DomainName: {name}
+BoundedContexts:
+- ProjectName: RecipeManagement
+  Port: 5375
+  DbContext:
+   ContextName: RecipesDbContext
+   DatabaseName: RecipeManagement
+   Provider: Postgres
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+      IsProtected: true
+      PermissionName: CanReadRecipes
+    - Type: GetRecord
+      IsProtected: true
+      PermissionName: CanReadRecipes
+    - Type: AddRecord
+      IsProtected: true
+    - Type: UpdateRecord
+      IsProtected: true
+    - Type: DeleteRecord
+      IsProtected: true
+    - Type: PatchRecord
+      IsProtected: true
+    Properties:
+    - Name: Title
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Directions
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Author
+      Type: Author
+      ForeignEntityName: Author
+      ForeignEntityPlural: Authors
+    - Name: Ingredients
+      Type: ICollection<Ingredient>
+      ForeignEntityPlural: Ingredients
+  - Name: Author
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Name
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeId
+      Type: Guid
+      ForeignEntityName: Recipe
+      ForeignEntityPlural: Recipes
+  - Name: Ingredient
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    - Type: AddListByFk
+      BatchPropertyName: RecipeId
+      BatchPropertyType: Guid
+      ParentEntity: Recipe
+      BatchPropertyDbSetName: Recipes
+    Properties:
+    - Name: Name
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Quantity
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Measure
+      Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: RecipeId
+      Type: Guid
+      ForeignEntityName: Recipe
+  Environments:
+    - EnvironmentName: Development
+      Authority: https://localhost:3385
+      Audience: recipe_management
+      AuthorizationUrl: https://localhost:3385/connect/authorize
+      TokenUrl: https://localhost:3385/connect/token
+      ClientId: recipe_management.swagger
+      ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+      BrokerSettings:
+        Host: localhost
+        VirtualHost: /
+        Username: guest
+        Password: guest
+  Bus:
+    AddBus: true
+  Producers:
+  - EndpointRegistrationMethodName: AddRecipeProducerEndpoint
+    ProducerName: AddRecipeProducer
+    ExchangeName: recipe-added
+    MessageName: IRecipeAdded
+    DomainDirectory: Recipes
+    ExchangeType: fanout
+    UsesDb: true
+  Consumers:
+  - EndpointRegistrationMethodName: AddToBookEndpoint
+    ConsumerName: AddToBook
+    ExchangeName: book-additions
+    QueueName: add-recipe-to-book
+    MessageName: IRecipeAdded
+    DomainDirectory: Recipes
+    ExchangeType: fanout
+Messages:
+- Name: IRecipeAdded
+  Properties:
+  - Name: RecipeId
+    Type: guid
+AuthServer:
+  Name: AuthServerWithDomain
+  Port: 3385
+  Clients:
+    - Id: recipe_management.swagger
+      Name: RecipeManagement Swagger
+      Secrets:
+        - 974d6f71-d41b-4601-9a7a-a33081f80687
+      GrantType: Code
+      RedirectUris:
+        - 'https://localhost:5375/swagger/oauth2-redirect.html'
+      PostLogoutRedirectUris:
+        - 'http://localhost:5375/'
+      AllowedCorsOrigins:
+        - 'https://localhost:5375'
+      FrontChannelLogoutUri: 'http://localhost:5375/signout-oidc'
+      AllowOfflineAccess: true
+      RequirePkce: true
+      RequireClientSecret: true
+      AllowPlainTextPkce: false
+      AllowedScopes:
+        - openid
+        - profile
+        - role
+        - recipe_management #this should match the scope in your boundary's swagger spec 
+  Scopes:
+    - Name: recipe_management
+      DisplayName: Recipes Management - API Access
+  Apis:
+    - Name: recipe_management
+      DisplayName: Recipe Management
+      ScopeNames:
+        - recipe_management
+      Secrets:
+        - 4653f605-2b36-43eb-bbef-a93480079f20
+      UserClaims:
+        - openid
+        - profile
+        - role";
+        }
 
         private static string BasicTemplate(string name)
         {
@@ -226,7 +390,6 @@ BoundedContexts:
     - Type: AddRecord
     - Type: UpdateRecord
     - Type: DeleteRecord
-    - Type: PatchRecord
     Properties:
     - Name: Title
       Type: string

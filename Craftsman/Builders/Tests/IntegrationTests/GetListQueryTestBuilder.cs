@@ -11,7 +11,7 @@
 
     public class GetListQueryTestBuilder
     {
-        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+        public static void CreateTests(string testDirectory, string solutionDirectory, Entity entity, string projectBaseName)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{entity.Name}ListQueryTests.cs", entity.Name, projectBaseName);
 
@@ -23,19 +23,19 @@
 
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
+                var data = WriteTestFileText(testDirectory, solutionDirectory, classPath, entity, projectBaseName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+        private static string WriteTestFileText(string testDirectory, string solutionDirectory, ClassPath classPath, Entity entity, string projectBaseName)
         {
             var featureName = Utilities.GetEntityListFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
 
-            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "", projectBaseName);
+            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(testDirectory, "", entity.Name, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(testDirectory, featureName, entity.Plural, projectBaseName);
 
             var sortTests = "";

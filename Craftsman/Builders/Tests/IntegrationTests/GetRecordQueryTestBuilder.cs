@@ -10,7 +10,7 @@
 
     public class GetRecordQueryTestBuilder
     {
-        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{entity.Name}QueryTests.cs", entity.Name, projectBaseName);
 
@@ -22,12 +22,12 @@
 
             using (FileStream fs = File.Create(classPath.FullClassPath))
             {
-                var data = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
+                var data = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName);
                 fs.Write(Encoding.UTF8.GetBytes(data));
             }
         }
 
-        private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+        private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
         {
             var featureName = Utilities.GetEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
@@ -36,18 +36,19 @@
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
             var foreignEntityUsings = Utilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
             return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};
+using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
-using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;
-using {featuresClassPath.ClassNamespace};
 using static {testFixtureName};{foreignEntityUsings}
 
 public class {queryName}Tests : TestBase

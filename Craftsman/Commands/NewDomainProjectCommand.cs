@@ -10,7 +10,9 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using System.Linq;
     using System.Threading.Tasks;
+    using Builders.Docker;
     using static Helpers.ConsoleWriter;
 
     public static class NewDomainProjectCommand
@@ -92,6 +94,9 @@
             fileSystem.Directory.CreateDirectory(domainDirectory);
             SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
 
+            // need this before boundaries to give them something to build against
+            DockerBuilders.CreateDockerComposeSkeleton(domainDirectory, fileSystem);
+            
             //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
             //    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity));
             foreach (var bc in domainProject.BoundedContexts)
@@ -112,7 +117,7 @@
             ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName, fileSystem);
 
             if (domainProject.AddGit)
-                Utilities.GitSetup(domainDirectory);
+                Utilities.GitSetup(domainDirectory, domainProject.UseSystemGitUser);
         }
     }
 }

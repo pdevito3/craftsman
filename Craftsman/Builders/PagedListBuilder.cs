@@ -7,9 +7,9 @@
 
     public class PagedListBuilder
     {
-        public static void CreatePagedList(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreatePagedList(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WrappersClassPath(solutionDirectory, $"PagedList.cs", projectBaseName);
+            var classPath = ClassPathHelper.WrappersClassPath(srcDirectory, $"PagedList.cs", projectBaseName);
             var fileText = GetPagedListText(classPath.ClassNamespace);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }

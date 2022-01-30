@@ -11,14 +11,14 @@
 
     public class CommandAddListBuilder
     {
-        public static void CreateCommand(string srcDirectory, Entity entity, string contextName, string projectBaseName, Feature feature, IFileSystem fileSystem)
+        public static void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName, Feature feature, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{feature.Name}.cs", entity.Plural, projectBaseName);
-            var fileText = GetCommandFileText(classPath.ClassNamespace, entity, contextName, srcDirectory, feature, projectBaseName);
+            var fileText = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, feature, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, Feature feature, string projectBaseName)
+        public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, Feature feature, string projectBaseName)
         {
             var className = feature.Name;
             var addCommandName = feature.Command;
@@ -35,11 +35,11 @@
             var commandProp = $"{entityName}ListToAdd";
             var newEntityProp = $"{entityNameLowercaseListVar}ListToAdd";
 
-            var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+            var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "", projectBaseName);
-            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-            var validatorsClassPath = ClassPathHelper.ValidationClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+            var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
+            var validatorsClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
             var batchFkCheck = !string.IsNullOrEmpty(feature.BatchPropertyDbSetName)
                 ? @$"var fkEntity = await _db.{feature.BatchPropertyDbSetName}.Where(x => x.Id == request.{feature.BatchPropertyName}).FirstOrDefaultAsync(cancellationToken);
