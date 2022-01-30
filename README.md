@@ -25,11 +25,19 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ DDD promoted entities (private setters, factory methods, associated fakers)
 
-✅ Huge permissions upgrade. Significantly simplified setup which resulted in a new library ([HeimGaurd](https://github.com/pdevito3/heimguard)) that can be used in any .NET project.
+✅ Huge permissions upgrade. Significantly simplified setup which resulted in a new library ([HeimGuard](https://github.com/pdevito3/heimguard)) that can be used in any .NET project.
 
 ✅ Message bus scaffolding and testing improvements
 
 ✅ New `register:producer` command
+
+✅ Added soft delete capability
+
+✅ Added Shared Kernel
+
+✅ Added `Complex` example for `new:example` command
+
+✅ Better M1 chip compatabilities (courtesy of @sshquack)
 
 🚧 Add Identity to Auth Server
 

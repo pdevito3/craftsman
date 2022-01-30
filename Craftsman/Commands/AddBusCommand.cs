@@ -106,7 +106,7 @@
             var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
             Utilities.AddPackages(webApiClassPath, massTransitPackages);
 
-            WebApiServiceExtensionsBuilder.CreateMassTransitServiceExtension(srcDirectory, projectBaseName, fileSystem);
+            WebApiServiceExtensionsBuilder.CreateMassTransitServiceExtension(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
             foreach (var env in template.Environments)
             {
                 WebApiAppSettingsModifier.AddRmq(srcDirectory, env, projectBaseName, fileSystem);
@@ -114,10 +114,6 @@
             }
 
             IntegrationTestFixtureModifier.AddMassTransit(testDirectory, projectBaseName);
-
-            SolutionBuilder.BuildMessagesProject(solutionDirectory);
-
-            Utilities.AddProjectReference(webApiClassPath, @"..\..\..\Messages\Messages.csproj");
         }
     }
 }

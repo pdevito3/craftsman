@@ -14,10 +14,10 @@
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static void CreateMassTransitServiceExtension(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateMassTransitServiceExtension(string solutionDirectory, string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetMassTransitRegistrationName()}.cs", projectBaseName);
-            var fileText = GetMassTransitServiceExtensionText(classPath.ClassNamespace, srcDirectory, projectBaseName);
+            var fileText = GetMassTransitServiceExtensionText(classPath.ClassNamespace, solutionDirectory, srcDirectory, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
@@ -153,15 +153,17 @@ public static class WebApiServiceExtension
 }}";
         }
 
-        public static string GetMassTransitServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName)
+        public static string GetMassTransitServiceExtensionText(string classNamespace, string solutionDirectory, string srcDirectory, string projectBaseName)
         {
             var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
+            
+            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
             
             return @$"namespace {classNamespace};
 
 using {utilsClassPath.ClassNamespace};
 using MassTransit;
-using Messages;
+using {messagesClassPath.ClassNamespace};
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

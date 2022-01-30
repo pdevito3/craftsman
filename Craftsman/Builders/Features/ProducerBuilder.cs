@@ -9,7 +9,7 @@
 
     public class ProducerBuilder
     {
-        public static void CreateProducerFeature(string srcDirectory, Producer producer, string projectBaseName)
+        public static void CreateProducerFeature(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
         {
             var classPath = ClassPathHelper.ProducerFeaturesClassPath(srcDirectory, $"{producer.ProducerName}.cs", producer.DomainDirectory, projectBaseName);
 
@@ -20,12 +20,12 @@
                 throw new FileAlreadyExistsException(classPath.FullClassPath);
 
             using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = GetProducerRegistration(classPath.ClassNamespace, producer, srcDirectory, projectBaseName);
+            var data = GetProducerRegistration(classPath.ClassNamespace, producer, solutionDirectory, srcDirectory, projectBaseName);
 
             fs.Write(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string GetProducerRegistration(string classNamespace, Producer producer, string srcDirectory, string projectBaseName)
+        public static string GetProducerRegistration(string classNamespace, Producer producer, string solutionDirectory, string srcDirectory, string projectBaseName)
         {
             var context = Utilities.GetDbContext(srcDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
@@ -35,15 +35,17 @@
             var contextUsing = producer.UsesDb ? $@"
 using {contextClassPath.ClassNamespace};" : "";
 
+            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
+            
             var propTypeToReturn = "bool";
             var commandName = $"{producer.ProducerName}Command";
 
             return @$"namespace {classNamespace};
 
+using {messagesClassPath.ClassNamespace};
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MassTransit;
-using Messages;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;

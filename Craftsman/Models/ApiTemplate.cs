@@ -85,5 +85,20 @@ namespace Craftsman.Models
             get => _policyName ?? ProjectName.Underscore();
             set => _policyName = value;
         }
+
+        public bool UseSoftDelete { get; set; } = true;
+
+        private DockerConfig _dockerConfig;
+        public DockerConfig DockerConfig
+        {
+            get
+            {
+                var projectNamelessConfig = _dockerConfig ?? new DockerConfig();
+                projectNamelessConfig.ProjectName = ProjectName;
+                projectNamelessConfig.Provider = DbContext.Provider;
+                return projectNamelessConfig;
+            }
+            set => _dockerConfig = value;
+        }
     }
 }

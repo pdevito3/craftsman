@@ -26,4 +26,16 @@ public class ApiTemplateTests
         };
         project.PolicyName.Should().Be(given);
     }
+    
+    
+    [Fact]
+    public void dockerconfig_defaults_are_set()
+    {
+        var given = new Faker().Lorem.Word();
+        var project = new ApiTemplate()
+        {
+            ProjectName = given
+        };
+        project.DockerConfig.ProjectName.Should().Be(given);
+    }
 }

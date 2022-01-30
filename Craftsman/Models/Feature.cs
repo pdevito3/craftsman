@@ -93,7 +93,7 @@
         public string BatchPropertyDbSetName { get; set; }
 
         /// <summary>
-        /// Determined whether or not the feature is protected with an authorization policy attribute.
+        /// Determines whether or not the feature is protected with an authorization policy attribute.
         /// </summary>
         public bool IsProtected { get; set; } = false;
 

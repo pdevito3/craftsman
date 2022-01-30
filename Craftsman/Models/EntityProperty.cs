@@ -60,8 +60,37 @@ namespace Craftsman.Models
         /// </summary>
         public bool IsForeignKey
         {
-            get => !string.IsNullOrEmpty(ForeignEntityName) 
+            get => !string.IsNullOrEmpty(ForeignEntityName)
                    || IsMany;
+        }
+
+        public bool IsPrimativeType
+        {
+            get 
+            {
+                var rawType = Type.ToLower().Trim().Replace("?", "");
+                return rawType is "string" 
+                    or "byte"
+                    or "sbyte"
+                    or "short"
+                    or "ushort"
+                    or "int" 
+                    or "nint" 
+                    or "uint" 
+                    or "nuint" 
+                    or "long" 
+                    or "ulong" 
+                    or "double"
+                    or "float" 
+                    or "decimal" 
+                    or "char" 
+                    or "bool" 
+                    or "dateonly"
+                    or "timeonly" 
+                    or "datetime" 
+                    or "object" 
+                    or "guid";
+            }
         }
 
         public bool IsMany

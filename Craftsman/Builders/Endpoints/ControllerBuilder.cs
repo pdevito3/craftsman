@@ -12,25 +12,27 @@
 
     public static class ControllerBuilder
     {
-        public static void CreateController(string srcDirectory, string entityName, string entityPlural, string projectBaseName, bool isProtected, IFileSystem fileSystem)
+        public static void CreateController(string solutionDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName, bool isProtected, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entityPlural)}.cs", projectBaseName, "v1");
-            var fileText = GetControllerFileText(classPath.ClassNamespace, entityName, entityPlural, srcDirectory, projectBaseName, isProtected);
+            var fileText = GetControllerFileText(classPath.ClassNamespace, entityName, entityPlural, solutionDirectory, srcDirectory, projectBaseName, isProtected);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static string GetControllerFileText(string classNamespace, string entityName, string entityPlural, string srcDirectory, string projectBaseName, bool usesJwtAuth)
+        public static string GetControllerFileText(string classNamespace, string entityName, string entityPlural, string solutionDirectory, string srcDirectory, string projectBaseName, bool usesJwtAuth)
         {
             // TODO create an attribute factory that can order them how i want and work more dynamically
 
             var endpointBase = Utilities.EndpointBaseGenerator(entityPlural);
 
-            var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entityName, projectBaseName);
+            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
             var featureClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, "", entityPlural, projectBaseName);
             var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
             var permissionsUsing = usesJwtAuth 
-                ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};"
+                ? @$"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};
+using {rolesClassPath.ClassNamespace};"
                 : string.Empty;
 
             return @$"namespace {classNamespace};
