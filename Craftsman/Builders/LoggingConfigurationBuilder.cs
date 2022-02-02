@@ -19,6 +19,7 @@ namespace Craftsman.Builders
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
+using Serilog.Formatting.Json;
 
 public static class LoggingConfiguration
 {{
@@ -35,16 +36,16 @@ public static class LoggingConfiguration
             .MinimumLevel.Override(""Microsoft.Hosting.Lifetime"", LogEventLevel.Information)
             .MinimumLevel.Override(""Microsoft.AspNetCore.Authentication"", LogEventLevel.Information)
             .Enrich.FromLogContext()
-            .Enrich.WithProperty(""EnvironmentName"", env.EnvironmentName)
+            .Enrich.WithEnvironment(env.EnvironmentName)
             .Enrich.WithProperty(""ApplicationName"", env.ApplicationName)
             .Enrich.WithExceptionDetails()
             .Enrich.WithProcessId()
             .Enrich.WithThreadId()
             .Enrich.WithMachineName()
-            .WriteTo.Console();
+            .WriteTo.Console(new JsonFormatter());
 
         if (env.IsProduction())
-            logger.MinimumLevel.Error();
+            logger.MinimumLevel.Information();
         
         if (env.IsDevelopment())
             logger.MinimumLevel.Debug();
