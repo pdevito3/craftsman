@@ -84,8 +84,29 @@ public class {commandName}Tests : TestBase
         // Assert
         updated{entity.Name}.Should().BeEquivalentTo(updated{entity.Name}Dto, options =>
             options.ExcludingMissingMembers());
-    }}
+    }}{GetUpdateWithoutKeyTest(commandName, entity, featureName)}
 }}";
+        }
+
+        private static string GetUpdateWithoutKeyTest(string commandName, Entity entity, string featureName)
+        {
+            var badId = Utilities.GetRandomId(Entity.PrimaryKeyProperty.Type);
+
+            return badId == "" ? "" : $@"
+
+    [Test]
+    public async Task update_{entity.Name.ToLower()}_throws_notfoundexception_when_record_does_not_exist()
+    {{
+        // Arrange
+        var badId = {badId};
+
+        // Act
+        var command = new {featureName}.{commandName}(badId);
+        Func<Task> act = () => SendAsync(command);
+
+        // Assert
+        await act.Should().ThrowAsync<NotFoundException>();
+    }}";
         }
     }
 }
