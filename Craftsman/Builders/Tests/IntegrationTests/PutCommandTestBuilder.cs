@@ -35,10 +35,8 @@
             var fakeEntity = Utilities.FakerName(entity.Name);
             var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
             var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
-            var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
             var pkName = Entity.PrimaryKeyProperty.Name;
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
@@ -46,6 +44,7 @@
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, featureName, entity.Plural, projectBaseName);
 
             var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
             var foreignEntityUsings = Utilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
@@ -55,12 +54,13 @@
 using {fakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
+using {exceptionsClassPath.ClassNamespace};
+using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
-using {featuresClassPath.ClassNamespace};
 using static {testFixtureName};{foreignEntityUsings}
 
 public class {commandName}Tests : TestBase
@@ -91,6 +91,8 @@ public class {commandName}Tests : TestBase
         private static string GetUpdateWithoutKeyTest(string commandName, Entity entity, string featureName)
         {
             var badId = Utilities.GetRandomId(Entity.PrimaryKeyProperty.Type);
+            var fakeUpdateDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Update));
+            Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
 
             return badId == "" ? "" : $@"
 
@@ -99,6 +101,7 @@ public class {commandName}Tests : TestBase
     {{
         // Arrange
         var badId = {badId};
+        var updated{entity.Name}Dto = new {fakeUpdateDto}(){fakeParentIdRuleFor}.Generate();
 
         // Act
         var command = new {featureName}.{commandName}(badId);
