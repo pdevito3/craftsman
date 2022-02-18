@@ -42,7 +42,7 @@ public static class LoggingConfiguration
             .Enrich.WithProcessId()
             .Enrich.WithThreadId()
             .Enrich.WithMachineName()
-            .WriteTo.Console(new JsonFormatter());
+            .WriteTo.Console();
 
         if (env.IsProduction())
             logger.MinimumLevel.Information();
