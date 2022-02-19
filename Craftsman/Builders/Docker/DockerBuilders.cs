@@ -85,8 +85,7 @@ Then take off httpsredirect in startup
 
 services:
         
-volumes:
-";
+volumes:";
     }
 
     public static void AddBoundaryToDockerCompose(string solutionDirectory, DockerConfig dockerConfig)
