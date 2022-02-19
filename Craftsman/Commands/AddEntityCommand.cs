@@ -1,7 +1,6 @@
 ﻿namespace Craftsman.Commands
 {
     using Craftsman.Builders;
-    using Craftsman.Builders.Seeders;
     using Craftsman.Builders.Tests.Utilities;
     using Craftsman.Enums;
     using Craftsman.Exceptions;
@@ -110,7 +109,6 @@
                 useSoftDelete,
                 fileSystem);
 
-            SeederModifier.AddSeeders(srcDirectory, template.Entities, template.DbContextName, projectBaseName);
             DbContextModifier.AddDbSet(srcDirectory, template.Entities, template.DbContextName, projectBaseName);
         }
 

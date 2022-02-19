@@ -51,6 +51,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - GET record, PUT, and DELETE all have typed ids (e.g. `{id:guid}`) on their controllers
 - `Development` environment uses a connection string to an actual database now, instead of an in memory db. This can easily be spun up with a `docker-compose` for local development
 
+### Removed
+
+- Removed seeders
+
 
 ## [0.13.0] - 01/27/2022
 

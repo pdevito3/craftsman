@@ -1,7 +1,6 @@
 ﻿namespace Craftsman.Helpers
 {
     using Craftsman.Builders;
-    using Craftsman.Builders.Seeders;
     using Craftsman.Builders.Tests.FunctionalTests;
     using Craftsman.Builders.Tests.UnitTests;
     using Craftsman.Builders.Tests.Utilities;
@@ -128,9 +127,6 @@
             HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
             EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete, fileSystem);
             CurrentUserServiceTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
-
-            //seeders
-            SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, projectBaseName);
 
             //services
             CurrentUserServiceBuilder.GetCurrentUserService(srcDirectory, projectBaseName, fileSystem);
