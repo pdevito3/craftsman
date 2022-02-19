@@ -25,6 +25,13 @@ public static class DockerBuilders
         Utilities.CreateFile(classPath, fileText, fileSystem);
     }
     
+    public static void CreateDockerComposeDbSkeleton(string solutionDirectory, IFileSystem fileSystem)
+    {
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
+        var fileText = GetDockerComposeSkeletonText();
+        Utilities.CreateFile(classPath, fileText, fileSystem);
+    }
+    
     public static void CreateDockerIgnore(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $".dockerignore", projectBaseName);
@@ -88,40 +95,56 @@ services:
 volumes:";
     }
 
+
+    public static void AddVolumeToDockerComposeDb(string solutionDirectory, DockerConfig dockerConfig)
+    {
+        var services = "";
+        var volumes = GetVolumesTextForCompose(dockerConfig, out var dbService);
+
+        services += $@"
+  {dockerConfig.DbHostName}:{dbService}";
+        
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
+
+        if (!Directory.Exists(classPath.ClassDirectory))
+            Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!File.Exists(classPath.FullClassPath))
+            return; //don't want to require this
+
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = File.OpenText(classPath.FullClassPath))
+        {
+            using (var output = new StreamWriter(tempPath))
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"services:"))
+                    {
+                        newText += @$"{Environment.NewLine}{services}";
+                    }
+                    if (line.Contains($"volumes:"))
+                    {
+                        newText += @$"{Environment.NewLine}{volumes}";
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        File.Delete(classPath.FullClassPath);
+        File.Move(tempPath, classPath.FullClassPath);
+    }
+
     public static void AddBoundaryToDockerCompose(string solutionDirectory, DockerConfig dockerConfig)
     {
         var services = "";
-        var volumes = "";
-        var dbService = $@"
-    image: postgres
-    restart: always
-    ports:
-      - '{dockerConfig.DbPort}:5432'
-    environment:
-      - POSTGRES_USER={dockerConfig.DbUser}
-      - POSTGRES_PASSWORD={dockerConfig.DbPassword}
-      - POSTGRES_DB={dockerConfig.DbName}
-    volumes:
-      - {dockerConfig.VolumeName}:/var/lib/postgresql/data";
+        var volumes = GetVolumesTextForCompose(dockerConfig, out var dbService);
 
-        if (dockerConfig.DbProviderEnum == DbProvider.SqlServer)
-        {
-            dbService = @$"
-    image: mcr.microsoft.com/mssql/server
-    restart: always
-    ports:
-      - '{dockerConfig.DbPort}:1433'
-    environment:
-      - DB_USER={dockerConfig.DbUser}
-      - SA_PASSWORD={dockerConfig.DbPassword}
-      - DB_CONTAINER_NAME={dockerConfig.DbName}
-      - ACCEPT_EULA=Y
-    volumes:
-      - {dockerConfig.VolumeName}:/var/lib/sqlserver/data";
-        }
-            
-        volumes += $"{Environment.NewLine}  {dockerConfig.VolumeName}:";
-            
         services += $@"
   {dockerConfig.DbHostName}:{dbService}
 
@@ -157,11 +180,11 @@ volumes:";
                     var newText = $"{line}";
                     if (line.Contains($"services:"))
                     {
-                        newText += @$"{Environment.NewLine}{services}";
+                        newText += @$"{services}";
                     }
                     if (line.Contains($"volumes:"))
                     {
-                        newText += @$"{Environment.NewLine}{volumes}";
+                        newText += @$"{volumes}";
                     }
 
                     output.WriteLine(newText);
@@ -172,6 +195,41 @@ volumes:";
         // delete the old file and set the name of the new one to the original name
         File.Delete(classPath.FullClassPath);
         File.Move(tempPath, classPath.FullClassPath);
+    }
+
+    private static string GetVolumesTextForCompose(DockerConfig dockerConfig, out string dbService)
+    {
+        var volumes = "";
+        dbService = $@"
+    image: postgres
+    restart: always
+    ports:
+      - '{dockerConfig.DbPort}:5432'
+    environment:
+      - POSTGRES_USER={dockerConfig.DbUser}
+      - POSTGRES_PASSWORD={dockerConfig.DbPassword}
+      - POSTGRES_DB={dockerConfig.DbName}
+    volumes:
+      - {dockerConfig.VolumeName}:/var/lib/postgresql/data";
+
+        if (dockerConfig.DbProviderEnum == DbProvider.SqlServer)
+        {
+            dbService = @$"
+    image: mcr.microsoft.com/mssql/server
+    restart: always
+    ports:
+      - '{dockerConfig.DbPort}:1433'
+    environment:
+      - DB_USER={dockerConfig.DbUser}
+      - SA_PASSWORD={dockerConfig.DbPassword}
+      - DB_CONTAINER_NAME={dockerConfig.DbName}
+      - ACCEPT_EULA=Y
+    volumes:
+      - {dockerConfig.VolumeName}:/var/lib/sqlserver/data";
+        }
+
+        volumes += $"{Environment.NewLine}  {dockerConfig.VolumeName}:";
+        return volumes;
     }
 
     private static string GetDockerIgnoreText()

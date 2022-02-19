@@ -149,6 +149,7 @@
                 AddProducerCommand.AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
             
             DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory, template.DockerConfig);
+            DockerBuilders.AddVolumeToDockerComposeDb(solutionDirectory, template.DockerConfig);
         }
     }
 }
