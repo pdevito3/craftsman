@@ -36,18 +36,18 @@ public class DockerConfig
     }
     public string AuthServerPort { get; set; }
     
-    private int? _dbPort;
+    private int? _dbPort = Utilities.GetFreePort();
     public int? DbPort
     {
-        get => _dbPort ?? Utilities.GetFreePort();
-        set => _dbPort = value;
+        get => _dbPort;
+        set => _dbPort = value ?? _dbPort;
     }
     
-    private int? _apiPort;
+    private int? _apiPort = Utilities.GetFreePort();
     public int? ApiPort
     {
-        get => _apiPort ?? Utilities.GetFreePort();
-        set => _apiPort = value;
+        get => _apiPort;
+        set => _apiPort = value ?? _apiPort;
     }
     
     private string _dbHostName;
