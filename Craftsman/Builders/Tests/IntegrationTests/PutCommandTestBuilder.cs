@@ -104,7 +104,7 @@ public class {commandName}Tests : TestBase
         var updated{entity.Name}Dto = new {fakeUpdateDto}(){fakeParentIdRuleFor}.Generate();
 
         // Act
-        var command = new {featureName}.{commandName}(badId);
+        var command = new {featureName}.{commandName}(badId, updated{entity.Name}Dto);
         Func<Task> act = () => SendAsync(command);
 
         // Assert
