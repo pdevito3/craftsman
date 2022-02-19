@@ -14,6 +14,8 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using System.Net;
+    using System.Net.Sockets;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
@@ -392,6 +394,7 @@ using {parentClassPath.ClassNamespace};";
             int port,
             bool useJwtAuth,
             string projectBaseName,
+            DockerConfig dockerConfig,
             IFileSystem fileSystem)
         {
             AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, dbName, projectBaseName);
@@ -401,7 +404,7 @@ using {parentClassPath.ClassNamespace};";
 
             foreach (var env in environments)
             {
-                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, projectBaseName);
+                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, dockerConfig, projectBaseName);
             }
             if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
                 SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, projectBaseName);
@@ -435,6 +438,17 @@ using {parentClassPath.ClassNamespace};";
             repo.Commit("Initial Commit", author, author);
         }
 
+
+        public static int GetFreePort()
+        {
+            // From https://stackoverflow.com/a/150974/4190785
+            var tcpListener = new TcpListener(IPAddress.Loopback, 0);
+            tcpListener.Start();
+            var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
+            tcpListener.Stop();
+            return port;
+        }
+        
         public static void AddPackages(ClassPath classPath, Dictionary<string, string> packagesToAdd)
         {
             if (!Directory.Exists(classPath.ClassDirectory))

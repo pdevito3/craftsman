@@ -195,16 +195,18 @@ public class {dbContextName} : DbContext
                         if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                         {
                             newText += @$"
-        if (env.IsEnvironment(LocalConfig.FunctionalTestingEnvName) || env.IsDevelopment())
+        if (env.IsEnvironment(LocalConfig.FunctionalTestingEnvName))
         {{
             services.AddDbContext<{dbContextName}>(options =>
                 options.UseInMemoryDatabase($""{dbName ?? dbContextName}""));
         }}
         else
         {{
+            var connectionString = Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"")
+                ?? throw new Exception(""DB_CONNECTION_STRING environment variable is not set."");
+
             services.AddDbContext<{dbContextName}>(options =>
-                options.{usingDbStatement}(
-                    Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"") ?? ""placeholder-for-migrations"",
+                options.{usingDbStatement}(connectionString,
                     builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});
         }}";
                         }

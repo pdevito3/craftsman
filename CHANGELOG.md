@@ -49,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Id` on `BaseEntity` is sortable and filterable by default
 - Minor logging updates for better json formatting and more information in prod
 - GET record, PUT, and DELETE all have typed ids (e.g. `{id:guid}`) on their controllers
+- `Development` environment uses a connection string to an actual database now, instead of an in memory db. This can easily be spun up with a `docker-compose` for local development
 
 
 ## [0.13.0] - 01/27/2022

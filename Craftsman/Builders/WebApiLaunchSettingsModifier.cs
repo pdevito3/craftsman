@@ -4,10 +4,11 @@
     using Craftsman.Helpers;
     using Craftsman.Models;
     using System.IO;
+    using Enums;
 
     public class WebApiLaunchSettingsModifier
     {
-        public static void AddProfile(string solutionDirectory, ApiEnvironment env, int port, string projectBaseName = "")
+        public static void AddProfile(string solutionDirectory, ApiEnvironment env, int port, DockerConfig dockerConfig, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(solutionDirectory, $"launchsettings.json", projectBaseName); // hard coding webapi here not great
 
@@ -28,7 +29,7 @@
                         var newText = $"{line}";
                         if (line.Contains(@$"""profiles"""))
                         {
-                            newText += GetProfileText(env, port);
+                            newText += GetProfileText(env, port, dockerConfig);
                         }
 
                         output.WriteLine(newText);
@@ -41,11 +42,9 @@
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        private static string GetProfileText(ApiEnvironment env, int port)
+        private static string GetProfileText(ApiEnvironment env, int port, DockerConfig dockerConfig)
         {
-            var connectionString = env.ConnectionString.Replace(@"\", @"\\");
-            
-                return $@"
+            return $@"
     ""{env.ProfileName ?? env.EnvironmentName}"": {{
       ""commandName"": ""Project"",
       ""launchBrowser"": true,
@@ -58,7 +57,7 @@
         ""AUTH_TOKEN_URL"": ""{env.TokenUrl}"",
         ""AUTH_CLIENT_ID"": ""{env.ClientId}"",
         ""AUTH_CLIENT_SECRET"": ""{env.ClientSecret}"",
-        ""DB_CONNECTION_STRING"": ""{connectionString}"",
+        ""DB_CONNECTION_STRING"": ""{dockerConfig.DbConnectionString}"",
         ""RMQ_HOST"": ""{env.BrokerSettings.Host}"",
         ""RMQ_VIRTUAL_HOST"": ""{env.BrokerSettings.VirtualHost}"",
         ""RMQ_USERNAME"": ""{env.BrokerSettings.Username}"",

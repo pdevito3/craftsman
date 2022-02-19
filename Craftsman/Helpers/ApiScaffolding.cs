@@ -52,6 +52,11 @@
         private static void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem)
         {
             var projectBaseName = template.ProjectName;
+            
+            // docker config data transform
+            template.DockerConfig.ProjectName = template.ProjectName;
+            template.DockerConfig.Provider = template.DbContext.Provider;
+            
 
             // get solution dir from bcDir
             var solutionDirectory = Directory.GetParent(boundedContextDirectory)?.FullName;
@@ -107,6 +112,7 @@
                 template.Port,
                 template.AddJwtAuthentication,
                 projectBaseName,
+                template.DockerConfig,
                 fileSystem
             );
 

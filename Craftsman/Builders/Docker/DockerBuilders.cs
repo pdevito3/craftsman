@@ -93,35 +93,28 @@ volumes:
     {
         var services = "";
         var volumes = "";
-            var postgresDbUser = dockerConfig.DbUser ?? "postgres";
-            var postgresDbPassword = dockerConfig.DbPassword ?? "postgres";
-            var dbService = $@"
+        var dbService = $@"
     image: postgres
     restart: always
     ports:
       - '{dockerConfig.DbPort}:5432'
     environment:
-      - POSTGRES_USER={postgresDbUser}
-      - POSTGRES_PASSWORD={postgresDbPassword}
+      - POSTGRES_USER={dockerConfig.DbUser}
+      - POSTGRES_PASSWORD={dockerConfig.DbPassword}
       - POSTGRES_DB={dockerConfig.DbName}
     volumes:
       - {dockerConfig.VolumeName}:/var/lib/postgresql/data";
-            
-        var connectionString = $"Host={dockerConfig.DbHostName};Port=5432;Database={dockerConfig.DbName};Username={postgresDbUser};Password={postgresDbPassword}";
-        
+
         if (dockerConfig.DbProviderEnum == DbProvider.SqlServer)
         {
-            var dbUser = "SA";
-            var dbPassword = dockerConfig.DbPassword ?? "#localDockerPassword#";
-            connectionString = @$"Data Source={dockerConfig.DbHostName},1433;Integrated Security=False;User ID={dbUser};Password={dbPassword}";
             dbService = @$"
     image: mcr.microsoft.com/mssql/server
     restart: always
     ports:
       - '{dockerConfig.DbPort}:1433'
     environment:
-      - DB_USER={dbUser}
-      - SA_PASSWORD={dbPassword}
+      - DB_USER={dockerConfig.DbUser}
+      - SA_PASSWORD={dockerConfig.DbPassword}
       - DB_CONTAINER_NAME={dockerConfig.DbName}
       - ACCEPT_EULA=Y
     volumes:
@@ -140,10 +133,9 @@ volumes:
     ports:
       - ""{dockerConfig.ApiPort}:8080""
     environment:
-      ASPNETCORE_ENVIRONMENT: ""DockerLocal""
-      DB_CONNECTION_STRING: ""{connectionString}""
-      ASPNETCORE_Kestrel__Certificates__Default__Path: ""/https/aspnetappcert.pfx""
-      ASPNETCORE_Kestrel__Certificates__Default__Password: ""password""
+      ASPNETCORE_ENVIRONMENT: ""Development""
+      DB_CONNECTION_STRING: ""{dockerConfig.DbConnectionStringCompose}""
+
     volumes:
       - ~/.aspnet/https:/https:ro";
         
