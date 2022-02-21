@@ -387,25 +387,17 @@ using {parentClassPath.ClassNamespace};";
 
         public static void AddStartupEnvironmentsWithServices(
             string solutionDirectory,
-            string projectName,
             string dbName,
-            List<ApiEnvironment> environments,
+            ApiEnvironment environment,
             SwaggerConfig swaggerConfig,
             int port,
-            bool useJwtAuth,
             string projectBaseName,
             DockerConfig dockerConfig,
             IFileSystem fileSystem)
         {
             AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, dbName, projectBaseName);
 
-            if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
-                environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{projectName} (Development)" });
-
-            foreach (var env in environments)
-            {
-                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, dockerConfig, projectBaseName);
-            }
+            WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, environment, port, dockerConfig, projectBaseName);
             if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
                 SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, projectBaseName);
         }

@@ -294,14 +294,14 @@ BoundedContexts:
     - Name: RecipeId
       Type: Guid
       ForeignEntityName: Recipe
-  Environments:
-    - EnvironmentName: Development
-      Authority: https://localhost:3385
-      Audience: recipe_management
-      AuthorizationUrl: https://localhost:3385/connect/authorize
-      TokenUrl: https://localhost:3385/connect/token
-      ClientId: recipe_management.swagger
-      ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+  Environment:
+      AuthSettings:
+        Authority: https://localhost:3385
+        Audience: recipe_management
+        AuthorizationUrl: https://localhost:3385/connect/authorize
+        TokenUrl: https://localhost:3385/connect/token
+        ClientId: recipe_management.swagger
+        ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
       BrokerSettings:
         Host: localhost
         VirtualHost: /
@@ -459,26 +459,12 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
-  Environments:
-    - EnvironmentName: Development
+  Environment:
+    AuthSettings:
       Authority: https://localhost:5010
       Audience: recipeManagementDev
       AuthorizationUrl: https://localhost:5010/connect/authorize
       TokenUrl: https://localhost:5010/connect/token
-      ClientId: service.client.dev
-    - EnvironmentName: Qa
-      ConnectionString: ""MyQaConnectionString""
-      Authority: https://qaauth.com
-      Audience: recipeManagementQa
-      AuthorizationUrl: https://qaauth.com/connect/authorize
-      TokenUrl: https://qaauth.com/connect/token
-      ClientId: service.client.qa
-    - EnvironmentName: Production
-      ConnectionString: ""MyProdConnectionString""
-      Authority: https://auth.com
-      Audience: recipeManagement
-      AuthorizationUrl: https://auth.com/connect/authorize
-      TokenUrl: https://auth.com/connect/token
       ClientId: service.client";
         }
 
@@ -521,8 +507,7 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
-  Environments:
-    - EnvironmentName: Development
+  Environment:
       BrokerSettings:
         Host: localhost
         VirtualHost: /
@@ -601,14 +586,14 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
-  Environments:
-  - EnvironmentName: Development
-    Authority: https://localhost:3385
-    Audience: recipe_management
-    AuthorizationUrl: https://localhost:3385/connect/authorize
-    TokenUrl: https://localhost:3385/connect/token
-    ClientId: recipe_management.swagger
-    ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+  Environment:
+    AuthSettings:
+      Authority: https://localhost:3385
+      Audience: recipe_management
+      AuthorizationUrl: https://localhost:3385/connect/authorize
+      TokenUrl: https://localhost:3385/connect/token
+      ClientId: recipe_management.swagger
+      ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
 AuthServer:
   Name: AuthServerWithDomain
   Port: 3385

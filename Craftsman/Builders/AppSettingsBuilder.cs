@@ -46,18 +46,5 @@
 }}
 ";
         }
-
-        private static string GetJwtAuthSettings(ApiEnvironment env)
-        {
-            return $@",
-  ""JwtSettings"": {{
-    ""Audience"": ""{env.Audience}"",
-    ""Authority"": ""{env.Authority}"",
-    ""AuthorizationUrl"": ""{env.AuthorizationUrl}"",
-    ""TokenUrl"": ""{env.TokenUrl}"",
-    ""ClientId"": ""{env.ClientId}"",
-    ""ClientSecret"": ""{env.ClientSecret}"",
-  }}";
-        }
     }
 }

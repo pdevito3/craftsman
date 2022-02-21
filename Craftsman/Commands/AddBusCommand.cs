@@ -43,7 +43,7 @@
             try
             {
                 var template = new Bus();
-                template.Environments.Add(new ApiEnvironment { EnvironmentName = "Development" });
+                template.Environment = new ApiEnvironment();
                 if (!string.IsNullOrEmpty(filePath))
                 {
                     FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
@@ -107,11 +107,8 @@
             Utilities.AddPackages(webApiClassPath, massTransitPackages);
 
             WebApiServiceExtensionsBuilder.CreateMassTransitServiceExtension(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
-            foreach (var env in template.Environments)
-            {
-                WebApiAppSettingsModifier.AddRmq(srcDirectory, env, projectBaseName, fileSystem);
-                StartupModifier.RegisterMassTransitService(srcDirectory, env.EnvironmentName, projectBaseName);
-            }
+            WebApiAppSettingsModifier.AddRmq(srcDirectory, template.Environment, projectBaseName, fileSystem);
+            StartupModifier.RegisterMassTransitService(srcDirectory, projectBaseName);
 
             IntegrationTestFixtureModifier.AddMassTransit(testDirectory, projectBaseName);
         }

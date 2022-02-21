@@ -50,6 +50,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Minor logging updates for better json formatting and more information in prod
 - GET record, PUT, and DELETE all have typed ids (e.g. `{id:guid}`) on their controllers
 - `Development` environment uses a connection string to an actual database now, instead of an in memory db. This can easily be spun up with a `docker-compose` for local development
+- Environment is now a singular object that will take in values for local environment variables for development and placed in launch settings and your docker compose. When deploying to other environments, you will use these same environment variables, but pass the appropriate value for that env.
+  - Updated auth properties to be under an `AuthSettings` object like we do for broker settings
+  - Removed `ConnectionString` from env. Docker connection will be added automatically in launch settings
+  - Removed `EnvironmentName` as it will always be `Development`
+  - Updated examples to handle new environment setup
+
 
 ### Removed
 

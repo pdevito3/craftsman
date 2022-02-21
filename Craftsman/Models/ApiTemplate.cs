@@ -37,7 +37,7 @@ namespace Craftsman.Models
         /// <summary>
         /// List of each environment to add into the API. Optional
         /// </summary>
-        public List<ApiEnvironment> Environments { get; set; } = new List<ApiEnvironment>();
+        public ApiEnvironment Environment { get; set; } = new ApiEnvironment();
 
         /// <summary>
         /// The port that will be used when running locally in the project.
@@ -47,13 +47,7 @@ namespace Craftsman.Models
         /// <summary>
         /// Calculation to determine whether or not authentication is added to the project
         /// </summary>
-        public bool AddJwtAuthentication
-        {
-            get => Environments
-                .Where(e => e?.Authority?.Length > 0)
-                .ToList()
-                .Count > 0;
-        }
+        public bool AddJwtAuthentication => Environment?.AuthSettings?.Authority?.Length > 0;
 
         /// <summary>
         /// Message bus information for the bounded context. **Environment will be overriden by the BC environment and should be set there**
@@ -62,7 +56,7 @@ namespace Craftsman.Models
         {
             get
             {
-                _bus.Environments = Environments; // get bus environment settings from domain environments for a single source of truth
+                _bus.Environment = Environment; // get bus environment settings from domain environments for a single source of truth
                 return _bus;
             }
             set => _bus = value;

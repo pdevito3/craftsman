@@ -104,12 +104,10 @@
             // environments
             Utilities.AddStartupEnvironmentsWithServices(
                 srcDirectory,
-                projectBaseName,
                 template.DbContext.DatabaseName,
-                template.Environments,
+                template.Environment,
                 template.SwaggerConfig,
                 template.Port,
-                template.AddJwtAuthentication,
                 projectBaseName,
                 template.DockerConfig,
                 fileSystem

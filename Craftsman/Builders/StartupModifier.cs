@@ -6,7 +6,7 @@
 
     public class StartupModifier
     {
-        public static void RegisterMassTransitService(string srcDirectory, string envName, string projectBaseName)
+        public static void RegisterMassTransitService(string srcDirectory, string projectBaseName)
         {
             var classPath = Utilities.GetStartupClassPath(srcDirectory, projectBaseName);
 
