@@ -123,11 +123,11 @@ volumes:";
                     var newText = $"{line}";
                     if (line.Contains($"services:"))
                     {
-                        newText += @$"{Environment.NewLine}{services}";
+                        newText += @$"{services}";
                     }
                     if (line.Contains($"volumes:"))
                     {
-                        newText += @$"{Environment.NewLine}{volumes}";
+                        newText += @$"{volumes}";
                     }
 
                     output.WriteLine(newText);
