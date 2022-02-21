@@ -107,7 +107,6 @@ public class Startup
 
 using {apiServiceExtensionsClassPath.ClassNamespace};
 using {apiAppExtensionsClassPath.ClassNamespace};
-using {seederClassPath.ClassNamespace};
 using {dbContextClassPath.ClassNamespace};
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
