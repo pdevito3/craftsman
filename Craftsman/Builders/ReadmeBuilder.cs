@@ -31,19 +31,24 @@
 
 This project was created with [Craftsman](https://github.com/pdevito3/craftsman).
 
-## Get Started
+## Getting Started
+### Set Up Your Database
+This project is configured to reference a live database instead of an in-memory one for more robust development. 
+By default, the database will be configured to run in a docker container and already has the connection 
+string configured in your launch settings.
 
-Go to your solution directory:
+To set up your database you can either:
+1. Run `docker-compose up --build` to just spin up your database(s) (and message broker, if applicable).
+2. Run `docker-compose -f docker-compose.all.yaml up --build` to spin up your database(s) along with all of your apis. 
 
-```shell
-cd {domainName}
-```
+After you have your database(s) running in docker, make sure you apply your migrations:
+1. `cd` to the boundary project root (e.g. `cd RecipeManagement/src/RecipeManagement`
+2. Run `dotnet ef database update` to apply your migrations
 
-Run your solution:
-
-```shell
-dotnet run --project YourBoundedContextName
-```
+### Running Your Apis
+If you used `docker-compose.all.yaml` your api(s) will be running in docker containers; these settings will be set in your compose file. 
+Otherwise, you can use the `dotnet run` command or the built in `Run` option in your IDE. Either way, those will be getting all their 
+settings from `launchSettings.json`.
 
 ## Running Integration Tests
 To run integration tests:
