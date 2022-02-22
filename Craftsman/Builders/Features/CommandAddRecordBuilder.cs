@@ -91,10 +91,11 @@ public static class {className}
 
             await _db.SaveChangesAsync(cancellationToken);
 
-            return await _db.{entity.Plural}
+            var {entityNameLowercase}List = await _db.{entity.Plural}
                 .AsNoTracking()
-                .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName}, cancellationToken);
+
+            return _mapper.Map<{readDto}>({entityNameLowercase}List);
         }}
     }}
 }}";
