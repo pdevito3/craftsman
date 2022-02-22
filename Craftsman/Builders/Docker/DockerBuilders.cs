@@ -45,22 +45,23 @@ public static class DockerBuilders
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY [""{projectBaseName}.csproj"", ""./""]
-RUN dotnet restore ""./{projectBaseName}.csproj""
+COPY [""{projectBaseName}/src/{projectBaseName}/{projectBaseName}.csproj"", ""./{projectBaseName}/src/{projectBaseName}/""]
+COPY [""SharedKernel/SharedKernel.csproj"", ""./SharedKernel/""]
+RUN dotnet restore ""./{projectBaseName}/src/{projectBaseName}/{projectBaseName}.csproj""
 
 # Copy everything else and build
 COPY . ./
-RUN dotnet build ""{projectBaseName}.csproj"" -c Release -o /app/build
+RUN dotnet build ""{projectBaseName}/src/{projectBaseName}/{projectBaseName}.csproj"" -c Release -o /app/build
 
 FROM build-env AS publish
-RUN dotnet publish ""{projectBaseName}.csproj"" -c Release -o /app/out
+RUN dotnet publish ""{projectBaseName}/src/{projectBaseName}/{projectBaseName}.csproj"" -c Release -o /app/out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=publish /app/out .
 
-ENV ASPNETCORE_URLS=https://+:8080
+ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 ENTRYPOINT [""dotnet"", ""/app/{projectBaseName}.dll""]
@@ -150,8 +151,8 @@ volumes:";
 
   {dockerConfig.ApiServiceName}:
     build:
-      context: ""./{dockerConfig.ProjectName}/src/{dockerConfig.ProjectName}""
-      dockerfile: ""Dockerfile""
+      context: .
+      dockerfile: {dockerConfig.ProjectName}/src/{dockerConfig.ProjectName}/Dockerfile
     ports:
       - ""{dockerConfig.ApiPort}:8080""
     environment:
