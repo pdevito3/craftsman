@@ -130,6 +130,11 @@ namespace Craftsman.Models
         /// </summary>
         public string ColumnName { get; set; }
 
+        /// <summary>
+        /// Database type to use when it doesn't match the property type
+        /// </summary>
+        public string ColumnType { get; set; }
+
         public static EntityProperty GetPrimaryKey()
         {
             return new()
