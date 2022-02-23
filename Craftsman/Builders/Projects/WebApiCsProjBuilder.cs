@@ -54,7 +54,6 @@
   <ItemGroup>
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
     <PackageReference Include=""Bogus"" Version=""34.0.1"" />
-    <PackageReference Include=""Autofac.Extensions.DependencyInjection"" Version=""7.2.0"" />
     <PackageReference Include=""AutoMapper.Extensions.Microsoft.DependencyInjection"" Version=""8.1.1"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""6.0.0"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""10.3.4"" />
