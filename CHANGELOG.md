@@ -73,6 +73,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Removed unused mapper from delete feature
 
+- Updated entity property definition with optional `ColumnType` attribute
+
 ### Removed
 
 - Removed seeders
