@@ -43,7 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 - Fixed bug in `Add` feature that had a chained action after `ProjectTo`. They will now be filtered like so:
-  
+
   ```c#
   var {entityNameLowercase}List = await _db.{entity.Plural}
   	.AsNoTracking()
@@ -51,7 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   
   return _mapper.Map<{readDto}>({entityNameLowercase}List);
   ```
-  
+
 - Initial commit will use system git user and email as author.
 
   - **DOCS:** Can be toggled off to use a generic `Craftsman` author if desired using a `UseSystemGitUser` boolean on your Domain Template
@@ -71,6 +71,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Removed `EnvironmentName` as it will always be `Development`
   - Updated examples to handle new environment setup
 
+- Removed unused mapper from delete feature
 
 ### Removed
 

@@ -46,8 +46,6 @@ using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
@@ -68,11 +66,9 @@ public static class {className}
     public class Handler : IRequestHandler<{deleteCommandName}, bool>
     {{
         private readonly {contextName} _db;
-        private readonly IMapper _mapper;
 
-        public Handler({contextName} db, IMapper mapper)
+        public Handler({contextName} db)
         {{
-            _mapper = mapper;
             _db = db;
         }}
 
