@@ -42,17 +42,21 @@
             WriteHelpText(Environment.NewLine);
         }
 
-        public static void Run(string filePath, string solutionDirectory, IFileSystem fileSystem, Verbosity verbosity)
+        public static void Run(string filePath, string boundaryDirectory, IFileSystem fileSystem, Verbosity verbosity)
         {
             try
             {
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
                 var template = FileParsingHelper.GetTemplateFromFile<AddEntityTemplate>(filePath);
 
-                var srcDirectory = Path.Combine(solutionDirectory, "src");
-                var testDirectory = Path.Combine(solutionDirectory, "tests");
+                var srcDirectory = Path.Combine(boundaryDirectory, "src");
+                var testDirectory = Path.Combine(boundaryDirectory, "tests");
 
                 Utilities.IsBoundedContextDirectoryGuard(srcDirectory, testDirectory);
+                
+                var solutionDirectory = Directory.GetParent(boundaryDirectory)?.FullName;
+                Utilities.IsSolutionDirectoryGuard(solutionDirectory);
+                
                 var projectBaseName = Directory.GetParent(srcDirectory).Name;
                 template = GetDbContext(srcDirectory, template, projectBaseName);
                 template.SolutionName = projectBaseName;
