@@ -9,16 +9,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-* Nothing yet!
-
-## [0.13.1] - 02/25/2022
-
-### Fixed
-
-* `add:entity` command will now use the correct solution folder
-
-## [0.13.0] - 01/27/2022
-
 ### Added
 
 * A `Dockerfile` and `.dockerignore` will be added to each bounded context automatically
@@ -88,6 +78,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 
 - Removed seeders
+
+## [0.13.1] - 02/25/2022
+
+### Fixed
+
+* `add:entity` command will now use the correct solution folder
 
 
 ## [0.13.0] - 01/27/2022
