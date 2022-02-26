@@ -30,7 +30,6 @@
                 var template = FileParsingHelper.GetTemplateFromFile<BffTemplate>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 
-                var projectName = template.ProjectName;
                 AnsiConsole.Status()
                     .AutoRefresh(true)
                     .Spinner(Spinner.Known.Dots2)
@@ -86,7 +85,7 @@
             LaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, projectName, template, fileSystem);
             AppSettingsBuilder.CreateBffAppSettings(projectDirectory, projectName, fileSystem);
             
-            //TODO add logging
+            // TODO add logging
             ProgramBuilder.CreateProgram(projectDirectory, projectName, template, fileSystem);
             
             // TODO README at root
@@ -109,12 +108,22 @@
             AssetsBuilder.CreateFavicon(spaDirectory, fileSystem);
             LibBuilder.CreateAxios(spaDirectory, fileSystem);
             TypesBuilder.CreateApiTypes(spaDirectory, fileSystem);
-
+            ViteEnvBuilder.CreateViteEnv(spaDirectory, fileSystem);
+            MainTsxBuilder.CreateMainTsx(spaDirectory, fileSystem);
+            CustomCssBuilder.CreateCustomCss(spaDirectory, fileSystem);
+            
+            // TODO dynamic routes?
+            // TODO at least clean up routes
+            AppTsxBuilder.CreateAppTsx(spaDirectory, fileSystem);
 
             // Docker
             // TODO add auth vars to docker compose
             
             // TODO docs on ApiAddress and making a resource to abstract out the baseurl and that the `ApiAddress` can be a string that incorporates that
+            
+            // TODO sync bff configed port with auth server bff port?
+            
+            // TODO AnsiConsole injection for status updates
         }
     }
 }
