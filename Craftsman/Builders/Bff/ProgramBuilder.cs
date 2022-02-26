@@ -6,9 +6,9 @@ using Models;
 
 public class ProgramBuilder
 {
-    public static void CreateProgram(string projectDirectory, string projectName, BffTemplate template, IFileSystem fileSystem)
+    public static void CreateProgram(string spaDirectory, string projectName, BffTemplate template, IFileSystem fileSystem)
     {
-        var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Program.cs", projectName);
+        var classPath = ClassPathHelper.BffProjectRootClassPath(spaDirectory, $"Program.cs", projectName);
         var fileText = GetProgramText(template);
         Utilities.CreateFile(classPath, fileText, fileSystem);
     }

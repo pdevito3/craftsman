@@ -127,6 +127,26 @@
             return new ClassPath(projectDirectory, Path.Combine($"{projectName}", "Properties"), className);
         }
 
+        public static ClassPath BffSpaSrcClassPath(string spaDirectory, string className)
+        {
+            return new ClassPath(spaDirectory, "src", className);
+        }
+
+        public static ClassPath BffSpaSrcAssetsClassPath(string spaDirectory, string className)
+        {
+            return new ClassPath(spaDirectory, Path.Combine("src", "assets"), className);
+        }
+
+        public static ClassPath BffSpaSrcApiTypesClassPath(string spaDirectory, string className)
+        {
+            return new ClassPath(spaDirectory, Path.Combine("src", "types", "api"), className);
+        }
+
+        public static ClassPath BffSpaSrcLibClassPath(string spaDirectory, string className)
+        {
+            return new ClassPath(spaDirectory, Path.Combine("src", "lib"), className);
+        }
+
         public static ClassPath BffSpaRootClassPath(string spaDirectory, string className)
         {
             return new ClassPath(spaDirectory, "", className);

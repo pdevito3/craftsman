@@ -8,6 +8,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using Builders.Bff;
+    using Builders.Bff.Src;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Builders.Tests.Utilities;
@@ -95,12 +96,25 @@
             
             // TODO README at root
             
-            // SPA
+            // SPA - root
             ViteConfigBuilder.CreateViteConfig(spaDirectory, template.ProxyPort, fileSystem);
             TsConfigBuilder.CreateTsConfigPaths(spaDirectory, fileSystem);
             TsConfigBuilder.CreateTsConfig(spaDirectory, fileSystem);
             TailwindConfigBuilder.CreateTailwindConfig(spaDirectory, fileSystem);
             PostCssBuilder.CreatePostCss(spaDirectory, fileSystem);
+            PackageJsonBuilder.CreatePackageJson(spaDirectory, projectName, fileSystem);
+            IndexHtmlBuilder.CreateIndexHtml(spaDirectory, template.HeadTitle, fileSystem);
+            AspnetcoreReactBuilder.CreateAspnetcoreReact(spaDirectory, fileSystem);
+            AspnetcoreHttpsBuilder.CreateAspnetcoreHttps(spaDirectory, fileSystem);
+            EnvBuilder.CreateEnv(spaDirectory, fileSystem);
+            EnvBuilder.CreateDevEnv(spaDirectory, template.ProxyPort, fileSystem);
+            PrettierRcBuilder.CreatePrettierRc(spaDirectory, fileSystem);
+            
+            // SPA - src
+            AssetsBuilder.CreateFavicon(spaDirectory, fileSystem);
+            LibBuilder.CreateAxios(spaDirectory, fileSystem);
+            TypesBuilder.CreateApiTypes(spaDirectory, fileSystem);
+
 
             // Docker
             // TODO add auth vars to docker compose

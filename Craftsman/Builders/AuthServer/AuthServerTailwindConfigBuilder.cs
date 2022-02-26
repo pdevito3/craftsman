@@ -1,12 +1,7 @@
 ﻿namespace Craftsman.Builders.AuthServer
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
-    using Helpers;
-    using Models;
-    using static Helpers.ConstMessages;
+  using System.IO.Abstractions;
+  using Helpers;
 
     public class AuthServerTailwindConfigBuilder
     {
