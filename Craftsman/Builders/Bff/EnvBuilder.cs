@@ -10,7 +10,7 @@
 
     public class EnvBuilder
     {
-        public static void CreateDevEnv(string spaDirectory, int spaPort, IFileSystem fileSystem)
+        public static void CreateDevEnv(string spaDirectory, int? spaPort, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, ".env.development");
             var fileText = GetEnvDevText(spaPort);
@@ -23,7 +23,7 @@
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        public static string GetEnvDevText(int spaPort)
+        public static string GetEnvDevText(int? spaPort)
         {
             return @$"PORT={spaPort}
 HTTPS=true;";

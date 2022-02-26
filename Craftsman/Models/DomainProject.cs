@@ -18,5 +18,7 @@
         public List<Message> Messages { get; set; } = new List<Message>();
 
         public AuthServerTemplate AuthServer { get; set; } = null;
+
+        public BffTemplate Bff { get; set; } = null;
     }
 }

@@ -135,7 +135,7 @@
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
         }
 
-        public static void BuildBffProject(string solutionDirectory, string projectName, int proxyPort, IFileSystem fileSystem)
+        public static void BuildBffProject(string solutionDirectory, string projectName, int? proxyPort, IFileSystem fileSystem)
         {
             var projectExists = File.Exists(Path.Combine(solutionDirectory, projectName, $"{projectName}.csproj"));
             if (projectExists) return;

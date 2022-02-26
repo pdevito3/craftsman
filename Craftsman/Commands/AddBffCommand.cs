@@ -36,17 +36,7 @@
                     .Spinner(Spinner.Known.Dots2)
                     .Start($"[yellow]Creating {template.ProjectName} [/]", ctx =>
                     {
-                        var projectDirectory = $"{domainDirectory}{Path.DirectorySeparatorChar}{projectName}";
-                        var spaDirectory = Path.Combine(projectDirectory, "ClientApp");
-                        fileSystem.Directory.CreateDirectory(spaDirectory);
-
-                        ctx.Spinner(Spinner.Known.BouncingBar);
-                        ctx.Status($"[bold blue]Building {projectName} Projects [/]");
-                        Builders.SolutionBuilder.BuildBffProject(domainDirectory, projectName, template.ProxyPort, fileSystem);
-
-                        // add all files based on the given template config
-                        ctx.Status($"[bold blue]Scaffolding Files for {projectName} [/]");
-                        AddBff(template, projectDirectory, spaDirectory, fileSystem);
+                        AddBff(template, domainDirectory, fileSystem);
                         
                         WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
                     });
@@ -83,10 +73,15 @@
             }
         }
 
-        public static void AddBff(BffTemplate template, string projectDirectory, string spaDirectory, IFileSystem fileSystem)
+        public static void AddBff(BffTemplate template, string domainDirectory, IFileSystem fileSystem)
         {
             var projectName = template.ProjectName;
-            
+            var projectDirectory = $"{domainDirectory}{Path.DirectorySeparatorChar}{projectName}";
+            Builders.SolutionBuilder.BuildBffProject(domainDirectory, projectName, template.ProxyPort, fileSystem);
+
+            var spaDirectory = Path.Combine(projectDirectory, "ClientApp");
+            fileSystem.Directory.CreateDirectory(spaDirectory);
+
             // .NET Project
             LaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, projectName, template, fileSystem);
             AppSettingsBuilder.CreateBffAppSettings(projectDirectory, projectName, fileSystem);
@@ -118,6 +113,8 @@
 
             // Docker
             // TODO add auth vars to docker compose
+            
+            // TODO docs on ApiAddress and making a resource to abstract out the baseurl and that the `ApiAddress` can be a string that incorporates that
         }
     }
 }

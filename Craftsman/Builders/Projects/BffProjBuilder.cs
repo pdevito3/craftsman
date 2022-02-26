@@ -10,14 +10,14 @@
 
     public class BffProjBuilder
     {
-        public static void CreateProject(string solutionDirectory, string projectBaseName, int proxyPort, IFileSystem fileSystem)
+        public static void CreateProject(string solutionDirectory, string projectBaseName, int? proxyPort, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var fileText = ProjectFileText(proxyPort);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static string ProjectFileText(int proxyPort)
+        public static string ProjectFileText(int? proxyPort)
         {
             return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 

@@ -12,7 +12,7 @@
   {
     public static void CreateAspnetcoreHttps(string spaDirectory, IFileSystem fileSystem)
     {
-      var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "aspnetcore-react.js");
+      var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "aspnetcore-https.js");
       var fileText = GetAspnetcoreHttpsText();
       Utilities.CreateFile(classPath, fileText, fileSystem);
     }

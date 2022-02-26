@@ -1,5 +1,7 @@
 namespace Craftsman.Models;
 
+using Helpers;
+
 public class BffTemplate
 {
     private string _projectName;
@@ -16,16 +18,29 @@ public class BffTemplate
         set => _profileName = value ?? ProjectName;
     }
     
-    /// <summary>
-    /// The port of your SPA
-    /// </summary>
-    public int ProxyPort { get; set; }
-    
+    private int _port = Utilities.GetFreePort();
     /// <summary>
     /// The port of the .NET app. Will initially boot to this port and then forward to the SPA proxy
     /// </summary>
-    public int Port { get; set; }
+    public int? Port
+    {
+        get => _port;
+        set => _port = value ?? _port;
+    }
     
+    private int _proxyPort = Utilities.GetFreePort();
+    /// <summary>
+    /// The port of your SPA
+    /// </summary>
+    
+    //TODO this being nullable is really mixing a domain
+    // concept with what should be a dto. the dto they pass should be a nullable
+    // int, but the domain should separately take that in and be a nonnullable int when set
+    public int? ProxyPort 
+    {
+        get => _proxyPort;
+        set => _proxyPort = value ?? _proxyPort;
+    }
     
     public string Authority { get; set; }
 
