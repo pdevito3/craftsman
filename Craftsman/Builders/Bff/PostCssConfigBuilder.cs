@@ -10,9 +10,9 @@
 
     public class PostCssBuilder
     {
-        public static void CreatePostCss(string projectDirectory, IFileSystem fileSystem)
+        public static void CreatePostCss(string spaDirectory, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.BffSpaRootClassPath(projectDirectory, "postcss.config.js");
+            var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "postcss.config.js");
             var fileText = GetPostCssText();
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }

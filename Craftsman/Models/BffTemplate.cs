@@ -43,4 +43,11 @@ public class BffTemplate
     public List<RemoteEndpoint> RemoteEndpoints { get; set; }
 
     public List<string> BoundaryScopes { get; set; }
+
+    private string _headTitle; 
+    public string HeadTitle
+    {
+        get => _headTitle;
+        set => _headTitle = value ?? $"{ProjectName} App";
+    }
 }
