@@ -106,6 +106,11 @@
             return new ClassPath(projectDirectory, authServerProjectName, className);
         }
 
+        public static ClassPath BffProjectRootClassPath(string projectDirectory, string className, string projectName)
+        {
+            return new ClassPath(projectDirectory, projectName, className);
+        }
+
         public static ClassPath WebApiLaunchSettingsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
@@ -115,6 +120,16 @@
         public static ClassPath AuthServerLaunchSettingsClassPath(string projectDirectory, string className, string authServerProjectName)
         {
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Properties"), className);
+        }
+
+        public static ClassPath BffLaunchSettingsClassPath(string projectDirectory, string className, string projectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine($"{projectName}", "Properties"), className);
+        }
+
+        public static ClassPath BffSpaRootClassPath(string spaDirectory, string className)
+        {
+            return new ClassPath(spaDirectory, "", className);
         }
 
         public static ClassPath AuthServerConfigClassPath(string projectDirectory, string className, string authServerProjectName)

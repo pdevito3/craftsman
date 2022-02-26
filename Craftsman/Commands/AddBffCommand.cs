@@ -1,6 +1,5 @@
 ﻿namespace Craftsman.Commands
 {
-    using Craftsman.Builders;
     using Craftsman.Exceptions;
     using Craftsman.Helpers;
     using Craftsman.Models;
@@ -8,6 +7,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using Builders.Bff;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Builders.Tests.Utilities;
@@ -35,20 +35,17 @@
                     .Spinner(Spinner.Known.Dots2)
                     .Start($"[yellow]Creating {template.ProjectName} [/]", ctx =>
                     {
-                        // add an accelerate.config.yaml file to the root?
-                        var bcDirectory = $"{domainDirectory}{Path.DirectorySeparatorChar}{projectName}";
-                        var srcDirectory = Path.Combine(bcDirectory, "src");
-                        var testDirectory = Path.Combine(bcDirectory, "tests");
-                        fileSystem.Directory.CreateDirectory(srcDirectory);
-                        fileSystem.Directory.CreateDirectory(testDirectory);
+                        var projectDirectory = $"{domainDirectory}{Path.DirectorySeparatorChar}{projectName}";
+                        var spaDirectory = Path.Combine(projectDirectory, "ClientApp");
+                        fileSystem.Directory.CreateDirectory(spaDirectory);
 
                         ctx.Spinner(Spinner.Known.BouncingBar);
                         ctx.Status($"[bold blue]Building {projectName} Projects [/]");
-                        SolutionBuilder.BuildBffProject(domainDirectory, projectName, template.ProxyPort, fileSystem);
+                        Builders.SolutionBuilder.BuildBffProject(domainDirectory, projectName, template.ProxyPort, fileSystem);
 
                         // add all files based on the given template config
                         ctx.Status($"[bold blue]Scaffolding Files for {projectName} [/]");
-                        AddBff(template);
+                        AddBff(template, projectDirectory, spaDirectory, fileSystem);
                         
                         WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
                     });
@@ -85,9 +82,28 @@
             }
         }
 
-        public static void AddBff(BffTemplate template)
+        public static void AddBff(BffTemplate template, string projectDirectory, string spaDirectory, IFileSystem fileSystem)
         {
-            // TBD
+            var projectName = template.ProjectName;
+            
+            // .NET Project
+            LaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, projectName, template, fileSystem);
+            AppSettingsBuilder.CreateBffAppSettings(projectDirectory, projectName, fileSystem);
+            
+            //TODO add logging
+            ProgramBuilder.CreateProgram(projectDirectory, projectName, template, fileSystem);
+            
+            // TODO README at root
+            
+            // SPA
+            ViteConfigBuilder.CreateViteConfig(spaDirectory, template.ProxyPort, fileSystem);
+            TsConfigBuilder.CreateTsConfigPaths(spaDirectory, fileSystem);
+            TsConfigBuilder.CreateTsConfig(spaDirectory, fileSystem);
+            TailwindConfigBuilder.CreateTailwindConfig(spaDirectory, fileSystem);
+            PostCssBuilder.CreatePostCss(spaDirectory, fileSystem);
+
+            // Docker
+            // TODO add auth vars to docker compose
         }
     }
 }
