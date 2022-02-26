@@ -7,7 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 > Semantic versioning will come once I hit v1, but at this point each `0.x` release may have breaking changes as I iron out the kinks of the framework. 
 
-## [Unreleased]
+## Unreleased
+
+* Nothing yet!
+
+## [0.13.1] - 02/25/2022
+
+### Fixed
+
+* `add:entity` command will now use the correct solution folder
+
+## [0.13.0] - 01/27/2022
 
 ### Added
 
