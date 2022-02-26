@@ -373,5 +373,10 @@
         {
             return new ClassPath(projectDirectory, $"{authServerProjectName}", $"{authServerProjectName}.csproj");
         }
+
+        public static ClassPath BffProjectClassPath(string projectDirectory, string bffProjectName)
+        {
+            return new ClassPath(projectDirectory, $"{bffProjectName}", $"{bffProjectName}.csproj");
+        }
     }
 }

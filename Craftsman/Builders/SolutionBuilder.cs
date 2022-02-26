@@ -134,6 +134,16 @@
             AuthServerProjBuilder.CreateProject(solutionDirectory, authServerProjectName, fileSystem);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
         }
+
+        public static void BuildBffProject(string solutionDirectory, string projectName, int proxyPort, IFileSystem fileSystem)
+        {
+            var projectExists = File.Exists(Path.Combine(solutionDirectory, projectName, $"{projectName}.csproj"));
+            if (projectExists) return;
+            
+            var projectClassPath = ClassPathHelper.BffProjectClassPath(solutionDirectory, projectName);
+            BffProjBuilder.CreateProject(solutionDirectory, projectName, proxyPort, fileSystem);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
+        }
     }
 
     public static class Extensions
