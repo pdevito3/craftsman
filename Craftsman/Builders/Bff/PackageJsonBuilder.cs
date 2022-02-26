@@ -81,8 +81,7 @@
 			""last 1 safari version""
 		]
 	}}
-}}
-;";
+}}";
     }
   }
 }
