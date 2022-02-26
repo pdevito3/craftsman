@@ -6,14 +6,14 @@ using Models;
 
 public class ViteConfigBuilder
 {
-    public static void CreateViteConfig(string spaDirectory, int proxyPort, IFileSystem fileSystem)
+    public static void CreateViteConfig(string spaDirectory, int? proxyPort, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, $"vite.config.ts");
         var fileText = GetViteConfigText(proxyPort);
         Utilities.CreateFile(classPath, fileText, fileSystem);
     }
 
-    public static string GetViteConfigText(int proxyPort)
+    public static string GetViteConfigText(int? proxyPort)
     {
             return @$"import reactRefresh from '@vitejs/plugin-react-refresh';
 import {{ readFileSync }} from 'fs';

@@ -108,7 +108,7 @@
 
         public static ClassPath BffProjectRootClassPath(string projectDirectory, string className, string projectName)
         {
-            return new ClassPath(projectDirectory, projectName, className);
+            return new ClassPath(projectDirectory, "", className);
         }
 
         public static ClassPath WebApiLaunchSettingsClassPath(string solutionDirectory, string className, string projectBaseName)
@@ -124,7 +124,7 @@
 
         public static ClassPath BffLaunchSettingsClassPath(string projectDirectory, string className, string projectName)
         {
-            return new ClassPath(projectDirectory, Path.Combine($"{projectName}", "Properties"), className);
+            return new ClassPath(projectDirectory, Path.Combine("Properties"), className);
         }
 
         public static ClassPath BffSpaSrcClassPath(string spaDirectory, string className)

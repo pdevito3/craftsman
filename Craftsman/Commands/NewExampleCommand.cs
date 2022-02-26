@@ -594,6 +594,17 @@ BoundedContexts:
       TokenUrl: https://localhost:3385/connect/token
       ClientId: recipe_management.swagger
       ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+Bff:
+  ProjectName: RecipeManagementApp
+  HeadTitle: Recipe Management App
+  Authority: https://localhost:3385
+  ClientId: recipe_management.swagger
+  ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+  RemoteEndpoints:
+    - LocalPath: /api/recipes
+      ApiAddress: https://localhost:5375/api/recipes
+  BoundaryScopes:
+    - recipe_management
 AuthServer:
   Name: AuthServerWithDomain
   Port: 3385
