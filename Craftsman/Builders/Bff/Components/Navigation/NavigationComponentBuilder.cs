@@ -24,7 +24,6 @@ public class NavigationComponentBuilder
     public static string GetPrivateNavigationText()
     {
         return @$"import React from 'react';
-
 import {{ Fragment, useState, useEffect }} from 'react';
 import {{ Dialog, Transition }} from '@headlessui/react';
 import {{
