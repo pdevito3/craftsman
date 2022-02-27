@@ -8,7 +8,10 @@
     using System.IO;
     using System.IO.Abstractions;
     using Builders.Bff;
+    using Builders.Bff.Components.Headers;
+    using Builders.Bff.Components.Navigation;
     using Builders.Bff.Features.Auth;
+    using Builders.Bff.Features.Home;
     using Builders.Bff.Src;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
@@ -107,6 +110,7 @@
             
             // SPA - src
             AssetsBuilder.CreateFavicon(spaDirectory, fileSystem);
+            AssetsBuilder.CreateLogo(spaDirectory, fileSystem);
             LibBuilder.CreateAxios(spaDirectory, fileSystem);
             TypesBuilder.CreateApiTypes(spaDirectory, fileSystem);
             ViteEnvBuilder.CreateViteEnv(spaDirectory, fileSystem);
@@ -118,12 +122,16 @@
             AppTsxBuilder.CreateAppTsx(spaDirectory, fileSystem);
             
             // SPA - src/components
-            // TODO add components
+            HeadersComponentBuilder.CreateHeaderComponentItems(spaDirectory, fileSystem);
+            NavigationComponentBuilder.CreateNavigationComponentItems(spaDirectory, fileSystem);
             
             // SPA - src/features
             AuthFeatureApiBuilder.CreateAuthFeatureApis(spaDirectory, fileSystem);
             AuthFeatureRoutesBuilder.CreateAuthFeatureRoutes(spaDirectory, fileSystem);
             AuthFeatureBuilder.CreateAuthFeatureIndex(spaDirectory, fileSystem);
+            
+            HomeFeatureRoutesBuilder.CreateHomeFeatureRoutes(spaDirectory, fileSystem);
+            HomeFeatureBuilder.CreateHomeFeatureIndex(spaDirectory, fileSystem);
             
 
             // Docker
