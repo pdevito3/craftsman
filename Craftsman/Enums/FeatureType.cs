@@ -42,8 +42,8 @@
                 => featureName.EscapeSpaces() ?? $"Get{entityName}List";
             public override string CommandName(string command, string entityName) 
                 => command.EscapeSpaces() ?? $"Get{entityName}ListQuery";
-            public override string BffApiName(string entityPlural) 
-                => $"get{entityPlural}";
+            public override string BffApiName(string entityName) 
+                => $"get{entityName}List";
         }
 
         private class AddRecordType : FeatureType

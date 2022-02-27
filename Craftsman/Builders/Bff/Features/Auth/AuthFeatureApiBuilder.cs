@@ -12,7 +12,7 @@ public class AuthFeatureApiBuilder
 		var routesIndexFileText = GetAuthFeatureApisIndexText();
 		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
 
-		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Api , "Login.tsx");
+		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Api , "useAuthUser.tsx");
 		var routesLoginFileText = GetAuthFeatureApisLoginText();
 		Utilities.CreateFile(routesLoginClassPath, routesLoginFileText, fileSystem);
 	}
@@ -40,6 +40,9 @@ function useClaims() {{
 		async () => {{
 			return fetchClaims();
 		}},
+		{{
+			retry: false,
+		}}
 	);
 }}
 

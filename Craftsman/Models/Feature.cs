@@ -47,7 +47,7 @@
         public string ResponseType
         {
             get => _responseType;
-            set => _responseType = Utilities.PropTypeCleanup(value);
+            set => _responseType = Utilities.PropTypeCleanupDotNet(value);
         }
 
         private string _permission;
@@ -74,7 +74,7 @@
         public string BatchPropertyType
         {
             get => _batchPropType;
-            set => _batchPropType = Utilities.PropTypeCleanup(value);
+            set => _batchPropType = Utilities.PropTypeCleanupDotNet(value);
         }
         
         private string _parentEntity;

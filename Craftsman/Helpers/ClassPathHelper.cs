@@ -140,7 +140,7 @@
                 nameof(BffFeatureCategory.Routes) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "routes"), className),
                 nameof(BffFeatureCategory.Api) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "api"), className),
                 nameof(BffFeatureCategory.Types) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "types"), className),
-                _ => new ClassPath(spaDirectory, Path.Combine("src", featureName.UppercaseFirstLetter()), className)
+                _ => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter()), className)
             };
         }
 

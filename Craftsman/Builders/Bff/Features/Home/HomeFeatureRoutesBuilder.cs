@@ -8,11 +8,17 @@ public class HomeFeatureRoutesBuilder
 {
 	public static void CreateHomeFeatureRoutes(string spaDirectory, IFileSystem fileSystem)
 	{
-		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Home", BffFeatureCategory.Routes , "index.ts");
+		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
+			"Home", 
+			BffFeatureCategory.Routes , 
+			"index.ts");
 		var routesIndexFileText = GetHomeFeatureRoutesIndexText();
 		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
 
-		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Home", BffFeatureCategory.Routes , "Login.tsx");
+		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
+			"Home", 
+			BffFeatureCategory.Routes , 
+			"Home.tsx");
 		var routesLoginFileText = GetHomeFeatureRoutesLoginText();
 		Utilities.CreateFile(routesLoginClassPath, routesLoginFileText, fileSystem);
 	}

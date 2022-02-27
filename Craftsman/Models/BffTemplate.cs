@@ -53,8 +53,8 @@ public class BffTemplate
     private string _cookieName; 
     public string CookieName
     {
-        get => _cookieName;
-        set => _cookieName = value ?? $"__Host-{ProjectName}-bff";
+        get => _cookieName ?? $"__Host-{ProjectName}-bff";
+        set => _cookieName = value;
     }
 
     public List<RemoteEndpoint> RemoteEndpoints { get; set; }
@@ -164,6 +164,13 @@ public class BffEntityProperty
     public string Type
     {
         get => _type;
-        set => _type = Utilities.PropTypeCleanup(value);
+        set => _type = Utilities.PropTypeCleanupTypeScript(value);
     }
+
+    public bool Nullable => Type.Contains('?');
+
+    /// <summary>
+    /// The Type with the optional marker removed
+    /// </summary>
+    public string RawType => Type.Replace("?", "");
 }

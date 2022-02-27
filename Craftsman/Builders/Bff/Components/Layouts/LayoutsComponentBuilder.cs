@@ -7,15 +7,15 @@ public class LayoutComponentBuilder
 {
     public static void CreateLayoutComponentItems(string spaDirectory, IFileSystem fileSystem)
     {
-      var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layout", "index.ts");
+      var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "index.ts");
       var indexFileText = GetLayoutIndexText();
       Utilities.CreateFile(indexCassPath, indexFileText, fileSystem);
       
-      var privateLayoutClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layout", "PrivateLayout.tsx");
+      var privateLayoutClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "PrivateLayout.tsx");
       var privateLayoutFileText = GetPrivateLayoutText();
       Utilities.CreateFile(privateLayoutClassPath, privateLayoutFileText, fileSystem);
       
-      var publicLayoutClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layout", "PublicLayout.tsx");
+      var publicLayoutClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "PublicLayout.tsx");
       var publicLayoutFileText = GetPublicLayoutText();
       Utilities.CreateFile(publicLayoutClassPath, publicLayoutFileText, fileSystem);
     }
@@ -43,7 +43,7 @@ function PrivateLayout() {{
 			<div className='w-full h-full'>
 				<PrivateHeader />
 				<main className='flex-1 h-full p-4 bg-gray-50'>
-					<div className='>
+					<div className=''>
 						{{!username ? (
 							<a
 								href='/bff/login?returnUrl=/'

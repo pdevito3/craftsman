@@ -53,8 +53,8 @@ builder.Services.AddAuthentication(options =>
     .AddOpenIdConnect(""oidc"", options =>
     {{
         options.Authority = Environment.GetEnvironmentVariable(""AUTH_AUTHORITY"");
-        options.ClientId = Environment.GetEnvironmentVariable(""CLIENT_ID"");
-        options.ClientSecret = Environment.GetEnvironmentVariable(""CLIENT_SECRET"");
+        options.ClientId = Environment.GetEnvironmentVariable(""AUTH_CLIENT_ID"");
+        options.ClientSecret = Environment.GetEnvironmentVariable(""AUTH_CLIENT_SECRET"");
         options.ResponseType = ""code"";
         options.ResponseMode = ""query"";
 

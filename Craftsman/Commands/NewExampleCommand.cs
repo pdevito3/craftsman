@@ -596,15 +596,31 @@ BoundedContexts:
       ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
 Bff:
   ProjectName: RecipeManagementApp
+  ProxyPort: 4378
   HeadTitle: Recipe Management App
   Authority: https://localhost:3385
-  ClientId: recipe_management.swagger
+  ClientId: recipe_management.bff
   ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
   RemoteEndpoints:
     - LocalPath: /api/recipes
       ApiAddress: https://localhost:5375/api/recipes
   BoundaryScopes:
     - recipe_management
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Title
+      Type: string #optional if string
+    - Name: Directions
+    - Name: RecipeSourceLink
+    - Name: Description
+    - Name: ImageLink
 AuthServer:
   Name: AuthServerWithDomain
   Port: 3385
@@ -621,6 +637,28 @@ AuthServer:
       AllowedCorsOrigins:
         - 'https://localhost:5375'
       FrontChannelLogoutUri: 'http://localhost:5375/signout-oidc'
+      AllowOfflineAccess: true
+      RequirePkce: true
+      RequireClientSecret: true
+      AllowPlainTextPkce: false
+      AllowedScopes:
+        - openid
+        - profile
+        - role
+        - recipe_management #this should match the scope in your boundary's swagger spec
+    - Id: recipe_management.bff
+      Name: RecipeManagement BFF
+      Secrets:
+        - 974d6f71-d41b-4601-9a7a-a33081f80687
+      GrantType: Code
+      RedirectUris:
+        - 'https://localhost:4378/swagger/signin-oidc'
+      PostLogoutRedirectUris:
+        - 'http://localhost:4378/signout-callback-oidc'
+      AllowedCorsOrigins:
+        - 'https://localhost:5375'
+        - 'https://localhost:4378'
+      FrontChannelLogoutUri: 'http://localhost:4378/signout-oidc'
       AllowOfflineAccess: true
       RequirePkce: true
       RequireClientSecret: true

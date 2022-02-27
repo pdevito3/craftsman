@@ -58,7 +58,7 @@ function Login() {{
 				</div>
 			) : (
 				<div className='p-20 m-12 border rounded-md'>
-					<div className='>
+					<div className=''>
 						{{!username ? (
 							<a
 								href='/bff/login?returnUrl=/'

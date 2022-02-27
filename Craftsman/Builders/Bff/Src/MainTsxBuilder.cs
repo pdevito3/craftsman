@@ -27,7 +27,7 @@ ReactDOM.render(
 	<React.StrictMode>
 		<QueryClientProvider client={{new QueryClient()}}>
 			<App />
-			<ReactQueryDevtools initialIsOpen={false} />
+			<ReactQueryDevtools initialIsOpen={{false}} />
 		</QueryClientProvider>
 		<Notifications />
 	</React.StrictMode>,
