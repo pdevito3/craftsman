@@ -137,11 +137,16 @@
         {
             return category.Name switch
             {
-                nameof(BffFeatureCategory.Routes) => new ClassPath(spaDirectory, Path.Combine("src", featureName, "routes"), className),
-                nameof(BffFeatureCategory.Api) => new ClassPath(spaDirectory, Path.Combine("src", featureName, "api"), className),
-                nameof(BffFeatureCategory.Types) => new ClassPath(spaDirectory, Path.Combine("src", featureName, "types"), className),
-                _ => new ClassPath(spaDirectory, Path.Combine("src", featureName), className)
+                nameof(BffFeatureCategory.Routes) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "routes"), className),
+                nameof(BffFeatureCategory.Api) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "api"), className),
+                nameof(BffFeatureCategory.Types) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "types"), className),
+                _ => new ClassPath(spaDirectory, Path.Combine("src", featureName.UppercaseFirstLetter()), className)
             };
+        }
+
+        public static ClassPath BffSpaComponentClassPath(string spaDirectory, string componentName,  string className)
+        {
+            return new ClassPath(spaDirectory, Path.Combine("src", "components", componentName.UppercaseFirstLetter()), className);
         }
 
         public static ClassPath BffSpaSrcAssetsClassPath(string spaDirectory, string className)
