@@ -8,13 +8,16 @@ public class DynamicFeatureRoutesBuilder
 {
 	public static void CreateDynamicFeatureRoutes(string spaDirectory, string entityName, string entityPlural, IFileSystem fileSystem)
 	{
-		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityName, BffFeatureCategory.Routes , "index.ts");
+		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
+			entityPlural, 
+			BffFeatureCategory.Routes ,
+			"index.ts");
 		var routesIndexFileText = GetAuthFeatureRoutesIndexText(entityName);
 		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
 
 		var routesLoginFileText = GetEntityListRouteText(entityName, entityPlural);
 		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
-			entityName, 
+			entityPlural, 
 			BffFeatureCategory.Routes , 
 			$"{entityName.UppercaseFirstLetter()}List.tsx");
 		Utilities.CreateFile(routesLoginClassPath, routesLoginFileText, fileSystem);

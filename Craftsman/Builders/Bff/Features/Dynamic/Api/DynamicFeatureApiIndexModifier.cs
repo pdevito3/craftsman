@@ -7,9 +7,9 @@
 
     public class DynamicFeatureApiIndexModifier
     {
-        public static void AddFeature(string spaDirectory, string entityName, FeatureType type)
+        public static void AddFeature(string spaDirectory, string entityName, string entityPlural, FeatureType type)
         {
-            var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityName, BffFeatureCategory.Api , "index.ts");
+            var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityPlural, BffFeatureCategory.Api , "index.ts");
             var featureFilenameBase = Utilities.GetBffApiFilenameBase(entityName, type);
 
             if (!Directory.Exists(classPath.ClassDirectory))

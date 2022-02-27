@@ -6,9 +6,10 @@ using Helpers;
 
 public class DynamicFeatureKeysBuilder
 {
-	public static void CreateDynamicFeatureKeys(string spaDirectory, string entityName, IFileSystem fileSystem)
+	public static void CreateDynamicFeatureKeys(string spaDirectory, string entityName, string entityPlural, IFileSystem fileSystem)
 	{
-		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityName, 
+		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
+			entityPlural, 
 			BffFeatureCategory.Api , 
 			$"{Utilities.BffApiKeysFilename(entityName)}.ts");
 		var routesIndexFileText = GetDynamicFeatureKeysText(entityName);

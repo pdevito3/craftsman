@@ -9,7 +9,8 @@ public class DynamicFeatureAddEntityBuilder
 {
 	public static void CreateApiFile(string spaDirectory, string entityName, string entityPlural, IFileSystem fileSystem)
 	{
-		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityName, 
+		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
+			entityPlural, 
 			BffFeatureCategory.Api , 
 			$"{FeatureType.AddRecord.BffApiName(entityName)}.ts");
 		var routesIndexFileText = GetApiText(entityName, entityPlural);
