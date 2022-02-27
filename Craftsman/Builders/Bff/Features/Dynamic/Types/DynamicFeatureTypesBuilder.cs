@@ -7,10 +7,10 @@ using Models;
 
 public class DynamicFeatureTypesBuilder
 {
-	public static void CreateDynamicFeatureTypes(string spaDirectory, string entityName, List<BffEntityProperty> props, IFileSystem fileSystem)
+	public static void CreateDynamicFeatureTypes(string spaDirectory, string entityName, string entityPlural, List<BffEntityProperty> props, IFileSystem fileSystem)
 	{
 		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
-			entityName, 
+			entityPlural, 
 			BffFeatureCategory.Types , 
 			"index.ts");
 		var routesIndexFileText = GetAuthFeatureRoutesIndexText(entityName, props);

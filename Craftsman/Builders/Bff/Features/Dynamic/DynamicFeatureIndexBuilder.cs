@@ -6,9 +6,9 @@ using Helpers;
 
 public class DynamicFeatureBuilder
 {
-    public static void CreateDynamicFeatureIndex(string spaDirectory, string entityName, IFileSystem fileSystem)
+    public static void CreateDynamicFeatureIndex(string spaDirectory, string entityPlural, IFileSystem fileSystem)
     {
-      var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityName, BffFeatureCategory.Index , "index.ts");
+      var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityPlural, BffFeatureCategory.Index , "index.ts");
       var fileText = GetDynamicFeatureIndexText();
       Utilities.CreateFile(classPath, fileText, fileSystem);
     }

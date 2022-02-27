@@ -143,16 +143,16 @@
             
             foreach (var templateEntity in template.Entities)
             {
-                DynamicFeatureBuilder.CreateDynamicFeatureIndex(spaDirectory, templateEntity.Name, fileSystem);
+                DynamicFeatureBuilder.CreateDynamicFeatureIndex(spaDirectory, templateEntity.Plural, fileSystem);
                 DynamicFeatureRoutesBuilder.CreateDynamicFeatureRoutes(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                DynamicFeatureTypesBuilder.CreateDynamicFeatureTypes(spaDirectory, templateEntity.Name, templateEntity.Properties, fileSystem);
+                DynamicFeatureTypesBuilder.CreateDynamicFeatureTypes(spaDirectory, templateEntity.Name, templateEntity.Plural, templateEntity.Properties, fileSystem);
                 
                 // apis
-                DynamicFeatureKeysBuilder.CreateDynamicFeatureKeys(spaDirectory, templateEntity.Name, fileSystem);
+                DynamicFeatureKeysBuilder.CreateDynamicFeatureKeys(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
                 DynamicFeatureApiIndexBuilder.CreateDynamicFeatureApiIndex(spaDirectory, templateEntity.Name, fileSystem);
                 foreach (var templateEntityFeature in templateEntity.Features)
                 {
-                    DynamicFeatureApiIndexModifier.AddFeature(spaDirectory, templateEntity.Name, FeatureType.FromName(templateEntityFeature.Type));
+                    DynamicFeatureApiIndexModifier.AddFeature(spaDirectory, templateEntity.Name, templateEntity.Plural, FeatureType.FromName(templateEntityFeature.Type));
                     
                     if (templateEntityFeature.Type == FeatureType.AddRecord.Name)
                         DynamicFeatureAddEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
