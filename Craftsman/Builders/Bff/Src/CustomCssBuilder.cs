@@ -1,12 +1,7 @@
-﻿namespace Craftsman.Builders.Bff
+﻿namespace Craftsman.Builders.Bff.Src
 {
-  using System;
   using System.IO.Abstractions;
-  using System.Linq;
-  using Enums;
   using Helpers;
-  using Models;
-  using static Helpers.ConstMessages;
 
   public class CustomCssBuilder
   {

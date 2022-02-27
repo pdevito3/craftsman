@@ -8,6 +8,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using Builders.Bff;
+    using Builders.Bff.Features.Auth;
     using Builders.Bff.Src;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
@@ -115,6 +116,15 @@
             // TODO dynamic routes?
             // TODO at least clean up routes
             AppTsxBuilder.CreateAppTsx(spaDirectory, fileSystem);
+            
+            // SPA - src/components
+            // TODO add components
+            
+            // SPA - src/features
+            AuthFeatureApiBuilder.CreateAuthFeatureApis(spaDirectory, fileSystem);
+            AuthFeatureRoutesBuilder.CreateAuthFeatureRoutes(spaDirectory, fileSystem);
+            AuthFeatureBuilder.CreateAuthFeatureIndex(spaDirectory, fileSystem);
+            
 
             // Docker
             // TODO add auth vars to docker compose
@@ -125,5 +135,7 @@
             
             // TODO AnsiConsole injection for status updates
         }
+        
+        // private void AddFeatureToBff()
     }
 }

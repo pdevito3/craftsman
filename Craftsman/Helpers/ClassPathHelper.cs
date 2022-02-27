@@ -1,6 +1,7 @@
 ﻿namespace Craftsman.Helpers
 {
     using Craftsman.Models;
+    using Craftsman.Enums;
     using System.IO;
 
     public static class ClassPathHelper
@@ -130,6 +131,17 @@
         public static ClassPath BffSpaSrcClassPath(string spaDirectory, string className)
         {
             return new ClassPath(spaDirectory, "src", className);
+        }
+
+        public static ClassPath BffSpaFeatureClassPath(string spaDirectory, string featureName, BffFeatureCategory category, string className)
+        {
+            return category.Name switch
+            {
+                nameof(BffFeatureCategory.Routes) => new ClassPath(spaDirectory, Path.Combine("src", featureName, "routes"), className),
+                nameof(BffFeatureCategory.Api) => new ClassPath(spaDirectory, Path.Combine("src", featureName, "api"), className),
+                nameof(BffFeatureCategory.Types) => new ClassPath(spaDirectory, Path.Combine("src", featureName, "types"), className),
+                _ => new ClassPath(spaDirectory, Path.Combine("src", featureName), className)
+            };
         }
 
         public static ClassPath BffSpaSrcAssetsClassPath(string spaDirectory, string className)

@@ -1,14 +1,9 @@
-﻿namespace Craftsman.Builders.Bff
+﻿namespace Craftsman.Builders.Bff.Src
 {
-  using System;
-  using System.IO.Abstractions;
-  using System.Linq;
-  using Enums;
-  using Helpers;
-  using Models;
-  using static Helpers.ConstMessages;
+	using System.IO.Abstractions;
+	using Helpers;
 
-  public class AppTsxBuilder
+	public class AppTsxBuilder
   {
     public static void CreateAppTsx(string spaDirectory, IFileSystem fileSystem)
     {
