@@ -13,6 +13,7 @@
     using Builders.Bff.Components.Navigation;
     using Builders.Bff.Components.Notifications;
     using Builders.Bff.Features.Auth;
+    using Builders.Bff.Features.Dynamic;
     using Builders.Bff.Features.Home;
     using Builders.Bff.Src;
     using static Helpers.ConsoleWriter;
@@ -136,6 +137,14 @@
             
             HomeFeatureRoutesBuilder.CreateHomeFeatureRoutes(spaDirectory, fileSystem);
             HomeFeatureBuilder.CreateHomeFeatureIndex(spaDirectory, fileSystem);
+            
+            foreach (var templateEntity in template.Entities)
+            {
+                DynamicFeatureBuilder.CreateDynamicFeatureIndex(spaDirectory, templateEntity.Name, fileSystem);
+                DynamicFeatureRoutesBuilder.CreateDynamicFeatureRoutes(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
+                // types -- dto equivalent
+                // apis - feature.foreach
+            }
             
 
             // Docker

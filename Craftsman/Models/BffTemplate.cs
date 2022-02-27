@@ -1,5 +1,7 @@
 namespace Craftsman.Models;
 
+using Enums;
+using Exceptions;
 using Helpers;
 
 public class BffTemplate
@@ -64,5 +66,104 @@ public class BffTemplate
     {
         get => _headTitle;
         set => _headTitle = value ?? $"{ProjectName} App";
+    }
+
+    public List<BffEntity> Entities { get; set; }
+}
+
+public class BffEntity
+{
+    private string _name;
+    /// <summary>
+    /// The name of the entity
+    /// </summary>
+    public string Name
+    {
+        get => _name.UppercaseFirstLetter();
+        set => _name = value;
+    }
+
+    private string _plural;
+    /// <summary>
+    /// The Plural name of the entity.
+    /// </summary>
+    public string Plural
+    {
+        get => _plural ?? $"{Name}s";
+        set => _plural = value;
+    }
+
+    /// <summary>
+    /// List of properties associated to the entity
+    /// </summary>
+    public List<BffEntityProperty> Properties { get; set; } = new List<BffEntityProperty>();
+    
+    private List<BffFeature> _features = new List<BffFeature>();
+    public List<BffFeature> Features
+    {
+        get => _features;
+        set
+        {
+            var entitylessFeatures = value ?? new List<BffFeature>();
+            _features = entitylessFeatures
+                .Select(f =>
+                {
+                    f.EntityName = Name;
+                    f.EntityPlural = Plural;
+                    return f;
+                })
+                .ToList();
+        }
+    }
+}
+
+public class BffFeature
+{
+    public string EntityName { get; set; }
+
+    public string EntityPlural { get; set; }
+        
+    private FeatureType FeatureType { get; set; }
+    public string Type
+    {
+        get => FeatureType.Name;
+        set
+        {
+            if (!FeatureType.TryFromName(value, true, out var parsed))
+            {
+                if(value.Equals("CreateRecord", StringComparison.InvariantCultureIgnoreCase))
+                    FeatureType = FeatureType.AddRecord;
+                else
+                    throw new InvalidFeatureTypeException(value);
+            }
+            FeatureType = parsed;
+        }
+    }
+
+    public string BffApiName => FeatureType == FeatureType.GetList 
+            ? FeatureType.BffApiName(EntityPlural) 
+            : FeatureType.BffApiName(EntityName);
+}
+
+public class BffEntityProperty
+{
+    private string _name;
+    /// <summary>
+    /// Name of the property
+    /// </summary>
+    public string Name
+    {
+        get => _name.UppercaseFirstLetter();
+        set => _name = value;
+    }
+
+    private string _type = "string";
+    /// <summary>
+    /// Type of property (e.g. string, int, DateTime?, etc.)
+    /// </summary>
+    public string Type
+    {
+        get => _type;
+        set => _type = Utilities.PropTypeCleanup(value);
     }
 }
