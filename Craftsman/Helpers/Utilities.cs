@@ -21,7 +21,7 @@
 
     public class Utilities
     {
-        public static string PropTypeCleanup(string prop)
+        public static string PropTypeCleanupDotNet(string prop)
         {
             var lowercaseProps = new string[] { "string", "int", "decimal", "double", "float", "object", "bool", "char", "byte", "ushort", "uint", "ulong" };
             if (lowercaseProps.Contains(prop.ToLower()))
@@ -46,6 +46,34 @@
                 return "Guid";
             else
                 return prop;
+        }
+        
+        public static string PropTypeCleanupTypeScript(string prop)
+        {
+            return prop.ToLower() switch
+            {
+                "boolean" => "boolean",
+                "bool" => "boolean",
+                "number" => "number",
+                "int" => "number",
+                "string" => "string",
+                "dateonly" => "Date",
+                "timeonly" => "Date",
+                "datetimeoffset" => "Date",
+                "guid" => "string",
+                "uuid" => "string",
+                "boolean?" => "boolean?",
+                "bool?" => "boolean?",
+                "number?" => "number?",
+                "int?" => "number?",
+                "string?" => "string?",
+                "dateonly?" => "Date?",
+                "timeonly?" => "Date?",
+                "datetimeoffset?" => "Date?",
+                "guid?" => "string?",
+                "uuid?" => "string?",
+                _ => prop
+            };
         }
 
         public static ClassPath GetStartupClassPath(string solutionDirectory, string projectBaseName)
@@ -114,6 +142,16 @@
         public static string GetAppSettingsName(bool asJson = true)
         {
             return asJson ? $"appsettings.json" : $"appsettings";
+        }
+
+        public static string BffApiKeysFilename(string entityName)
+        {
+            return $"{entityName.LowercaseFirstLetter()}.keys";
+        }
+
+        public static string BffApiKeysExport(string entityName)
+        {
+            return $"{entityName.UppercaseFirstLetter()}Keys";
         }
 
         public static string GetProfileName(string entityName)
@@ -312,6 +350,19 @@ using {parentClassPath.ClassNamespace};";
                 default:
                     throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Dto), dto)}");
             }
+        }
+
+        public static string GetBffApiFilenameBase(string entityName, FeatureType type)
+        {
+            return type.Name switch
+            {
+                nameof(FeatureType.AddRecord) => $"add{entityName.UppercaseFirstLetter()}",
+                nameof(FeatureType.GetList) => $"get{entityName.UppercaseFirstLetter()}List",
+                nameof(FeatureType.GetRecord) => $"get{entityName.UppercaseFirstLetter()}",
+                nameof(FeatureType.UpdateRecord) => $"update{entityName.UppercaseFirstLetter()}",
+                nameof(FeatureType.DeleteRecord) => $"delete{entityName.UppercaseFirstLetter()}",
+                _ => throw new Exception($"The '{type.Name}' feature is not supported in bff api scaffolding.")
+            };
         }
 
         public static string ValidatorNameGenerator(string entityName, Validator validator)

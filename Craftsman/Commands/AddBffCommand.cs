@@ -14,11 +14,14 @@
     using Builders.Bff.Components.Notifications;
     using Builders.Bff.Features.Auth;
     using Builders.Bff.Features.Dynamic;
+    using Builders.Bff.Features.Dynamic.Api;
+    using Builders.Bff.Features.Dynamic.Types;
     using Builders.Bff.Features.Home;
     using Builders.Bff.Src;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Builders.Tests.Utilities;
+    using Enums;
 
     public static class AddBffCommand
     {
@@ -142,8 +145,22 @@
             {
                 DynamicFeatureBuilder.CreateDynamicFeatureIndex(spaDirectory, templateEntity.Name, fileSystem);
                 DynamicFeatureRoutesBuilder.CreateDynamicFeatureRoutes(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                // types -- dto equivalent
-                // apis - feature.foreach
+                DynamicFeatureTypesBuilder.CreateDynamicFeatureTypes(spaDirectory, templateEntity.Name, templateEntity.Properties, fileSystem);
+                
+                // apis
+                DynamicFeatureKeysBuilder.CreateDynamicFeatureKeys(spaDirectory, templateEntity.Name, fileSystem);
+                DynamicFeatureApiIndexBuilder.CreateDynamicFeatureApiIndex(spaDirectory, templateEntity.Name, fileSystem);
+                foreach (var templateEntityFeature in templateEntity.Features)
+                {
+                    DynamicFeatureApiIndexModifier.AddFeature(spaDirectory, templateEntity.Name, FeatureType.FromName(templateEntityFeature.Type));
+                    
+                    if (templateEntityFeature.Type == FeatureType.AddRecord.Name)
+                        DynamicFeatureAddEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
+                    if (templateEntityFeature.Type == FeatureType.GetList.Name)
+                        DynamicFeatureGetListEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
+                    
+                    // TODO additional features
+                }
             }
             
 
@@ -151,12 +168,8 @@
             // TODO add auth vars to docker compose
             
             // TODO docs on ApiAddress and making a resource to abstract out the baseurl and that the `ApiAddress` can be a string that incorporates that
-            
-            // TODO sync bff configed port with auth server bff port?
-            
+
             // TODO AnsiConsole injection for status updates
         }
-        
-        // private void AddFeatureToBff()
     }
 }

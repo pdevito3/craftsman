@@ -24,7 +24,7 @@ namespace Craftsman.Models
         public string Type
         {
             get => _type;
-            set => _type = Utilities.PropTypeCleanup(value);
+            set => _type = Utilities.PropTypeCleanupDotNet(value);
         }
 
         /// <summary>

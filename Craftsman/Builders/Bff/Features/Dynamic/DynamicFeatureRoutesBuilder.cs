@@ -13,7 +13,10 @@ public class DynamicFeatureRoutesBuilder
 		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
 
 		var routesLoginFileText = GetEntityListRouteText(entityName, entityPlural);
-		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityName, BffFeatureCategory.Routes , "Login.tsx");
+		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
+			entityName, 
+			BffFeatureCategory.Routes , 
+			$"{entityName.UppercaseFirstLetter()}List.tsx");
 		Utilities.CreateFile(routesLoginClassPath, routesLoginFileText, fileSystem);
 	}
 	
