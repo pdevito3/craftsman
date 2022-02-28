@@ -149,7 +149,7 @@
                 
                 // apis
                 DynamicFeatureKeysBuilder.CreateDynamicFeatureKeys(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                DynamicFeatureApiIndexBuilder.CreateDynamicFeatureApiIndex(spaDirectory, templateEntity.Name, fileSystem);
+                DynamicFeatureApiIndexBuilder.CreateDynamicFeatureApiIndex(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
                 foreach (var templateEntityFeature in templateEntity.Features)
                 {
                     DynamicFeatureApiIndexModifier.AddFeature(spaDirectory, templateEntity.Name, templateEntity.Plural, FeatureType.FromName(templateEntityFeature.Type));
