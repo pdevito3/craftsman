@@ -35,13 +35,13 @@ import {{PagedResponse, Pagination}} from '@/types/api';
 const get{entityPluralUppercaseFirst} = (queryString: string) => {{
 	return api.get(`/api/{entityPluralLowercase}?${{queryString}}`).then((response) => {{
 		return {{
-			data: response.data,
+			data: response,
 			pagination: JSON.parse(response.headers['x-pagination']) as Pagination
 		}} as PagedResponse<{readDtoName}>;
 	}});
 }};
 
-const use{entityPluralUppercaseFirst} = ({{ pageNumber, pageSize, filters, sortOrder }}: QueryParams = {{}}) => {{
+export const use{entityPluralUppercaseFirst} = ({{ pageNumber, pageSize, filters, sortOrder }}: QueryParams = {{}}) => {{
 	const queryParams = queryString.stringify({{ pageNumber, pageSize, filters, sortOrder }});
 
 	return useQuery(
@@ -49,9 +49,6 @@ const use{entityPluralUppercaseFirst} = ({{ pageNumber, pageSize, filters, sortO
 		() => get{entityPluralUppercaseFirst}(queryParams)
 	);
 }};
-
-export {{ use{entityPluralUppercaseFirst} }};
-
 ";
 	}
 }

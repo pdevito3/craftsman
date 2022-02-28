@@ -160,8 +160,10 @@
                         DynamicFeatureGetListEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
                     if (templateEntityFeature.Type == FeatureType.DeleteRecord.Name)
                         DynamicFeatureDeleteEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                    
-                    // TODO additional features
+                    if (templateEntityFeature.Type == FeatureType.UpdateRecord.Name)
+                        DynamicFeatureUpdateEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
+                    if (templateEntityFeature.Type == FeatureType.GetRecord.Name)
+                        DynamicFeatureGetEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
                 }
             }
             
