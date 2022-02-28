@@ -19,6 +19,7 @@
             string dbContextName,
             string dbProvider,
             string dbName,
+            string localDbConnection,
             NamingConventionEnum namingConventionEnum,
             bool useSoftDelete,
             string projectBaseName,
@@ -29,7 +30,7 @@
             var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, srcDirectory, useSoftDelete, projectBaseName);
             Utilities.CreateFile(classPath, data, fileSystem);
             
-            RegisterContext(srcDirectory, dbProvider, dbContextName, dbName, namingConventionEnum, projectBaseName);
+            RegisterContext(srcDirectory, dbProvider, dbContextName, dbName, localDbConnection, namingConventionEnum, projectBaseName);
         }
 
         public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string srcDirectory, bool useSoftDelete, string projectBaseName)
@@ -164,7 +165,7 @@ public class {dbContextName} : DbContext
             return dbSetText;
         }
 
-        private static void RegisterContext(string srcDirectory, string dbProvider, string dbContextName, string dbName, NamingConventionEnum namingConventionEnum, string projectBaseName)
+        private static void RegisterContext(string srcDirectory, string dbProvider, string dbContextName, string dbName, string localDbConnection, NamingConventionEnum namingConventionEnum, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetInfraRegistrationName()}.cs", projectBaseName);
 
@@ -202,8 +203,14 @@ public class {dbContextName} : DbContext
         }}
         else
         {{
-            var connectionString = Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"")
-                ?? throw new Exception(""DB_CONNECTION_STRING environment variable is not set."");
+            var connectionString = Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"");
+            if(string.IsNullOrEmpty(connectionString))
+            {{
+                // this makes local migrations easier to manage. feel free to refactor if desired.
+                connectionString = env.IsDevelopment() 
+                    ? ""{localDbConnection}""
+                    : throw new Exception(""DB_CONNECTION_STRING environment variable is not set."");
+            }}
 
             services.AddDbContext<{dbContextName}>(options =>
                 options.{usingDbStatement}(connectionString,
