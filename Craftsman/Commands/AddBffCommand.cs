@@ -158,6 +158,8 @@
                         DynamicFeatureAddEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
                     if (templateEntityFeature.Type == FeatureType.GetList.Name)
                         DynamicFeatureGetListEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
+                    if (templateEntityFeature.Type == FeatureType.DeleteRecord.Name)
+                        DynamicFeatureDeleteEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
                     
                     // TODO additional features
                 }
