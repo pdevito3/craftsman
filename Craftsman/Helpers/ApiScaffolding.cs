@@ -67,6 +67,7 @@
                 template.DbContext.ContextName,
                 template.DbContext.Provider,
                 template.DbContext.DatabaseName,
+                template.DockerConfig.DbConnectionString,
                 template.DbContext.NamingConventionEnum,
                 template.UseSoftDelete,
                 projectBaseName,
