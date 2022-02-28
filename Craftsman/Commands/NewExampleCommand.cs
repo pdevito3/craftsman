@@ -652,13 +652,13 @@ AuthServer:
         - 974d6f71-d41b-4601-9a7a-a33081f80687
       GrantType: Code
       RedirectUris:
-        - 'https://localhost:4378/swagger/signin-oidc'
+        - https://localhost:4378/signin-oidc
       PostLogoutRedirectUris:
-        - 'http://localhost:4378/signout-callback-oidc'
+        - https://localhost:4378/signout-callback-oidc
       AllowedCorsOrigins:
-        - 'https://localhost:5375'
-        - 'https://localhost:4378'
-      FrontChannelLogoutUri: 'http://localhost:4378/signout-oidc'
+        - https://localhost:5375
+        - https://localhost:4378
+      FrontChannelLogoutUri: https://localhost:4378/signout-oidc
       AllowOfflineAccess: true
       RequirePkce: true
       RequireClientSecret: true

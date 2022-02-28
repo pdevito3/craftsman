@@ -6,15 +6,16 @@ using Helpers;
 
 public class DynamicFeatureApiIndexBuilder
 {
-	public static void CreateDynamicFeatureApiIndex(string spaDirectory, string entityPlural, IFileSystem fileSystem)
+	public static void CreateDynamicFeatureApiIndex(string spaDirectory, string entityName, string entityPlural, IFileSystem fileSystem)
 	{
 		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityPlural, BffFeatureCategory.Api , "index.ts");
-		var routesIndexFileText = GetDynamicFeatureApisIndexText();
+		var routesIndexFileText = GetDynamicFeatureApisIndexText(entityName);
 		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
 	}
 	
-	public static string GetDynamicFeatureApisIndexText()
+	public static string GetDynamicFeatureApisIndexText(string entityName)
 	{
-	    return @$"export * from './recipe.keys';";
+		var keysImport = Utilities.BffApiKeysFilename(entityName);
+	    return @$"export * from './{keysImport}';";
 	}
 }

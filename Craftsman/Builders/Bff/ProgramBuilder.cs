@@ -23,7 +23,8 @@ public class ProgramBuilder
         var remoteEndpoints = "";
         foreach(var endpoint in template.RemoteEndpoints)
             remoteEndpoints +=
-                $@"{Environment.NewLine}    endpoints.MapRemoteBffApiEndpoint(""{endpoint.LocalPath}"", ""{endpoint.ApiAddress}"");";
+                $@"{Environment.NewLine}    endpoints.MapRemoteBffApiEndpoint(""{endpoint.LocalPath}"", ""{endpoint.ApiAddress}"")
+        .RequireAccessToken();";
         
         
         return @$"using Duende.Bff;
