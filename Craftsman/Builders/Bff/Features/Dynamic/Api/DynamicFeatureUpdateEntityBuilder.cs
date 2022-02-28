@@ -5,22 +5,21 @@ using Enums;
 using Helpers;
 using Models;
 
-public class DynamicFeatureAddEntityBuilder
+public class DynamicFeatureUpdateEntityBuilder
 {
 	public static void CreateApiFile(string spaDirectory, string entityName, string entityPlural, IFileSystem fileSystem)
 	{
 		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
 			entityPlural, 
 			BffFeatureCategory.Api , 
-			$"{FeatureType.AddRecord.BffApiName(entityName)}.ts");
+			$"{FeatureType.UpdateRecord.BffApiName(entityName)}.ts");
 		var routesIndexFileText = GetApiText(entityName, entityPlural);
 		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
 	}
 	
 	public static string GetApiText(string entityName, string entityPlural)
 	{
-		var dtoForCreationName = Utilities.GetDtoName(entityName, Dto.Creation);
-		var readDtoName = Utilities.GetDtoName(entityName, Dto.Read);
+		var dtoForUpdateName = Utilities.GetDtoName(entityName, Dto.Update);
 		var entityPluralLowercase = entityPlural.ToLower();
 		var entityUpperFirst = entityName.UppercaseFirstLetter();
 		var keysImport = Utilities.BffApiKeysFilename(entityName);
@@ -30,22 +29,23 @@ public class DynamicFeatureAddEntityBuilder
 import {{ AxiosError }} from 'axios';
 import {{ UseMutationOptions, useQueryClient, useMutation }} from 'react-query';
 import {{ {keyExportName} }} from './{keysImport}';
-import {{ {readDtoName}, {dtoForCreationName} }} from '../types';
+import {{ {dtoForUpdateName} }} from '../types';
 
-const add{entityUpperFirst} = (data: {dtoForCreationName}) => {{
+export const update{entityUpperFirst} = (id: string, data: {dtoForUpdateName}) => {{
 	return api
-		.post('/api/{entityPluralLowercase}', data)
-		.then((response) => response.data as {readDtoName});
+		.put(`/api/{entityPluralLowercase}/${{id}}`, data)
+		.then(() => {{ }});
 }};
 
-export function useAdd{entityUpperFirst}(options?: UseMutationOptions<{readDtoName}, AxiosError, {dtoForCreationName}>) {{
+export function useUpdate{entityUpperFirst}(id: string, options?: UseMutationOptions<void, AxiosError, {dtoForUpdateName}>) {{
 	const queryClient = useQueryClient()
 
 	return useMutation(
-		(new{entityUpperFirst}: {dtoForCreationName}) => add{entityUpperFirst}(new{entityUpperFirst}),
+		(updated{entityUpperFirst}: {dtoForUpdateName}) => update{entityUpperFirst}(id, updated{entityUpperFirst}),
 		{{
 			onSuccess: () => {{
 				queryClient.invalidateQueries({keyExportName}.lists())
+				queryClient.invalidateQueries({keyExportName}.details())
 			}},
 			...options
 		}});
