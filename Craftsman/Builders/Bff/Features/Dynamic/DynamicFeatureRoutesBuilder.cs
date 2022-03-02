@@ -16,25 +16,29 @@ public class DynamicFeatureRoutesBuilder
 		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
 
 		var routesLoginFileText = GetEntityListRouteText(entityName, entityPlural);
+		var listRouteName = Utilities.BffEntityListRouteComponentName(entityName);
 		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
 			entityPlural, 
 			BffFeatureCategory.Routes , 
-			$"{entityName.UppercaseFirstLetter()}List.tsx");
+			$"{listRouteName}.tsx");
 		Utilities.CreateFile(routesLoginClassPath, routesLoginFileText, fileSystem);
 	}
 	
 	public static string GetAuthFeatureRoutesIndexText(string entityName)
 	{
-	    return @$"export * from './{entityName.UppercaseFirstLetter()}List';";
+		var listRouteName = Utilities.BffEntityListRouteComponentName(entityName);
+	    return @$"export * from './{listRouteName}';";
 	}
 
 public static string GetEntityListRouteText(string entityName, string entityPlural)
 {
 	var actualDataVar = $"{entityName.LowercaseFirstLetter()}Data";
+	var listRouteName = Utilities.BffEntityListRouteComponentName(entityName);
+	
     return @$"import React from 'react';
 import {{ use{entityPlural.UppercaseFirstLetter()} }} from '../api';
 
-function {entityName.UppercaseFirstLetter()}List() {{
+function {listRouteName}() {{
 	const {{ data: {entityPlural.LowercaseFirstLetter()} }} = use{entityPlural.UppercaseFirstLetter()}();
 	const {actualDataVar} = {entityPlural.LowercaseFirstLetter()}?.data;
 
@@ -47,7 +51,7 @@ function {entityName.UppercaseFirstLetter()}List() {{
 	</>;
 }}
 
-export {{ {entityName.UppercaseFirstLetter()}List }};
+export {{ {listRouteName} }};
 ";
 	}
 }

@@ -149,6 +149,11 @@
             return $"{entityName.LowercaseFirstLetter()}.keys";
         }
 
+        public static string BffEntityListRouteComponentName(string entityName)
+        {
+            return $"{entityName.UppercaseFirstLetter()}List";
+        }
+        
         public static string BffApiKeysExport(string entityName)
         {
             return $"{entityName.UppercaseFirstLetter()}Keys";
