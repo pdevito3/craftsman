@@ -20,14 +20,14 @@ public static class DockerBuilders
     
     public static void CreateDockerComposeSkeleton(string solutionDirectory, IFileSystem fileSystem)
     {
-        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.all.yaml");
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
         var fileText = GetDockerComposeSkeletonText();
         Utilities.CreateFile(classPath, fileText, fileSystem);
     }
     
     public static void CreateDockerComposeDbSkeleton(string solutionDirectory, IFileSystem fileSystem)
     {
-        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
         var fileText = GetDockerComposeSkeletonText();
         Utilities.CreateFile(classPath, fileText, fileSystem);
     }
@@ -74,7 +74,7 @@ EXPOSE 80
 EXPOSE 443
 ```
 
-also add an `80` port in `ports` in docker-compose.all.yaml like 
+also add an `80` port in `ports` in docker-compose.yaml like 
 ```
     ports:
       #- ""{dockerConfig.ApiPort-1}:80""
@@ -105,7 +105,7 @@ volumes:";
         services += $@"
   {dockerConfig.DbHostName}:{dbService}";
         
-        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
 
         if (!Directory.Exists(classPath.ClassDirectory))
             Directory.CreateDirectory(classPath.ClassDirectory);
@@ -162,7 +162,7 @@ volumes:";
     volumes:
       - ~/.aspnet/https:/https:ro";
         
-        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.all.yaml");
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
         if (!Directory.Exists(classPath.ClassDirectory))
             Directory.CreateDirectory(classPath.ClassDirectory);

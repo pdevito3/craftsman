@@ -38,17 +38,19 @@ By default, the database will be configured to run in a docker container and alr
 string configured in your launch settings.
 
 To set up your database you can either:
-1. Run `docker-compose up --build` to just spin up your database(s) (and message broker, if applicable).
-2. Run `docker-compose -f docker-compose.all.yaml up --build` to spin up your database(s) along with all of your apis. 
+1. Run `docker-compose up --build`  to spin up your database(s) along with all of your apis.
+2. Run `docker-compose -f docker-compose.data.yaml up --build` to just spin up your database(s) (and message broker, if applicable). 
 
 After you have your database(s) running in docker, make sure you apply your migrations:
 1. `cd` to the boundary project root (e.g. `cd RecipeManagement/src/RecipeManagement`
 2. Run `dotnet ef database update` to apply your migrations
 
 ### Running Your Apis
-If you used `docker-compose.all.yaml` your api(s) will be running in docker containers; these settings will be set in your compose file. 
+If you used `docker-compose.yaml` your api(s) will be running in docker containers; these settings will be set in your compose file.
 Otherwise, you can use the `dotnet run` command or the built in `Run` option in your IDE. Either way, those will be getting all their 
 settings from `launchSettings.json`.
+
+For debugging, you can use docker compose debugging or stop a running container (if needed) and run it using your IDE or `dotnet run` command. 
 
 ## Running Integration Tests
 To run integration tests:
