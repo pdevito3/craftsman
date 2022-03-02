@@ -91,11 +91,11 @@ public static class {className}
 
             await _db.SaveChangesAsync(cancellationToken);
 
-            var {entityNameLowercase}List = await _db.{entity.Plural}
+            var {entityNameLowercase}Added = await _db.{entity.Plural}
                 .AsNoTracking()
                 .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName}, cancellationToken);
 
-            return _mapper.Map<{readDto}>({entityNameLowercase}List);
+            return _mapper.Map<{readDto}>({entityNameLowercase}Added);
         }}
     }}
 }}";
