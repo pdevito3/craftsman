@@ -80,13 +80,12 @@ public static class {className}
         {{
             var result = await _db.{entity.Plural}
                 .AsNoTracking()
-                .ProjectTo<{readDto}>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName}, cancellationToken);
 
             if (result == null)
                 throw new NotFoundException(""{entity.Name}"", request.{primaryKeyPropName});
 
-            return result;
+            return _mapper.Map<{readDto}>(result);
         }}
     }}
 }}";

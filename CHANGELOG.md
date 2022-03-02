@@ -52,6 +52,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   return _mapper.Map<{readDto}>({entityNameLowercase}List);
   ```
 
+- Removed `ProjectTo` from `GetRecord` feature in favor of direct mapper.
+
 - Initial commit will use system git user and email as author.
 
   - **DOCS:** Can be toggled off to use a generic `Craftsman` author if desired using a `UseSystemGitUser` boolean on your Domain Template
