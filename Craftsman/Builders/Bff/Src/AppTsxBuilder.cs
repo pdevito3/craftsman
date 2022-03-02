@@ -33,8 +33,8 @@ function App() {{
 					{{/* private layout with private route children */}}
 					{{isLoggedIn ? (
 						<Route element={{<PrivateLayout />}}>
-							<Route path=""/"" element={{<Home />}} />
-							<Route path=""/recipes"" element={{<RecipeList />}} />
+							<Route path=""/"" element={{<Home />}} />							 
+							{{/* route marker - remove if you don't want feature routes added by default */}}
 						</Route>
 					) : null}}
 

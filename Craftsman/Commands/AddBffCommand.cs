@@ -122,9 +122,6 @@
             ViteEnvBuilder.CreateViteEnv(spaDirectory, fileSystem);
             MainTsxBuilder.CreateMainTsx(spaDirectory, fileSystem);
             CustomCssBuilder.CreateCustomCss(spaDirectory, fileSystem);
-            
-            // TODO dynamic routes?
-            // TODO at least clean up routes
             AppTsxBuilder.CreateAppTsx(spaDirectory, fileSystem);
             
             // SPA - src/components
@@ -146,6 +143,8 @@
                 DynamicFeatureBuilder.CreateDynamicFeatureIndex(spaDirectory, templateEntity.Plural, fileSystem);
                 DynamicFeatureRoutesBuilder.CreateDynamicFeatureRoutes(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
                 DynamicFeatureTypesBuilder.CreateDynamicFeatureTypes(spaDirectory, templateEntity.Name, templateEntity.Plural, templateEntity.Properties, fileSystem);
+                NavigationComponentModifier.AddFeatureListRouteToNav(spaDirectory, templateEntity.Name, templateEntity.Plural);
+                DynamicFeatureRoutesModifier.AddRoute(spaDirectory, templateEntity.Name, templateEntity.Plural);
                 
                 // apis
                 DynamicFeatureKeysBuilder.CreateDynamicFeatureKeys(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);

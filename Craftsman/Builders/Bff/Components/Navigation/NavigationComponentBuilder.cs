@@ -26,20 +26,18 @@ public class NavigationComponentBuilder
         return @$"import React from 'react';
 import {{ Fragment, useState, useEffect }} from 'react';
 import {{ Dialog, Transition }} from '@headlessui/react';
-import {{
-	FolderIcon,
-	HomeIcon,
-	MenuIcon,
-	CakeIcon,
-	XIcon,
-}} from '@heroicons/react/outline';
+import {{ IoHome, 
+	IoFolder, 
+	IoMenu,
+	IoClose
+}} from 'react-icons/io5'
 import clsx from 'clsx';
 import {{ NavLink, useLocation }} from 'react-router-dom';
 import logo from '@/assets/logo.svg';
 
 const navigation = [
-	{{ name: 'Home', href: '/', icon: HomeIcon, current: true }},
-	{{ name: 'Recipes', href: '/recipes', icon: CakeIcon, current: false }},
+	{{ name: 'Home', href: '/', icon: IoHome }},
+	/* route marker - remove if you don't want feature routes added by default */
 ];
 
 export default function PrivateSideNav() {{
@@ -93,7 +91,7 @@ export default function PrivateSideNav() {{
 												onClick={{() => setSidebarOpen(false)}}
 											>
 												<span className='sr-only'>Close sidebar</span>
-												<XIcon className='w-6 h-6 text-white' aria-hidden='true' />
+												<IoClose className='w-6 h-6 text-white' aria-hidden='true' />
 											</button>
 										</div>
 									</Transition.Child>
@@ -178,7 +176,7 @@ export default function PrivateSideNav() {{
 							onClick={{() => setSidebarOpen(true)}}
 						>
 							<span className='sr-only'>Open sidebar</span>
-							<MenuIcon className='w-6 h-6 text-gray-900' aria-hidden='true' />
+							<IoMenu className='w-6 h-6 text-gray-900' aria-hidden='true' />
 						</button>
 					</div>
 				</div>

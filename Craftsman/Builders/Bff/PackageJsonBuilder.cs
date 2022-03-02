@@ -25,7 +25,6 @@
 	""private"": true,
 	""dependencies"": {{
 		""@headlessui/react"": ""^1.4.3"",
-		""@heroicons/react"": ""^1.0.5"",
 		""@tailwindcss/forms"": ""^0.4.0"",
 		""axios"": ""^0.21.4"",
 		""clsx"": ""^1.1.1"",
@@ -54,6 +53,7 @@
 		""postcss"": ""^8.4.6"",
 		""prettier"": ""^2.5.1"",
 		""prettier-plugin-tailwindcss"": ""^0.1.5"",
+		""react-icons"": ""^4.3.1"",
 		""tailwindcss"": ""^3.0.19"",
 		""typescript"": ""^4.5.5""
 	}},
