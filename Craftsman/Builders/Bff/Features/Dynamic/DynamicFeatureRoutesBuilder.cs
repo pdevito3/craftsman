@@ -32,19 +32,22 @@ public class DynamicFeatureRoutesBuilder
 
 public static string GetEntityListRouteText(string entityName, string entityPlural)
 {
-	var actualDataVar = $"{entityName.LowercaseFirstLetter()}Data";
+	var entityResponseVar = $"{entityName.LowercaseFirstLetter()}Response";
+	var entityDataVar = $"{entityName.LowercaseFirstLetter()}Data";
+	var entityPaginationVar = $"{entityName.LowercaseFirstLetter()}Pagination";
 	var listRouteName = Utilities.BffEntityListRouteComponentName(entityName);
 	
     return @$"import React from 'react';
 import {{ use{entityPlural.UppercaseFirstLetter()} }} from '../api';
 
 function {listRouteName}() {{
-	const {{ data: {entityPlural.LowercaseFirstLetter()} }} = use{entityPlural.UppercaseFirstLetter()}();
-	const {actualDataVar} = {entityPlural.LowercaseFirstLetter()}?.data;
+	const {{ data: {entityResponseVar} }} = use{entityPlural.UppercaseFirstLetter()}();
+	const {entityDataVar} = {entityPlural.LowercaseFirstLetter()}?.data;
+	// const {entityPaginationVar} = {entityPlural.LowercaseFirstLetter()}?.pagination;
 
 	return <>
 		{{
-			{actualDataVar} && {actualDataVar}?.map(({entityName.LowercaseFirstLetter()}) => {{
+			{entityDataVar} && {entityDataVar}?.map(({entityName.LowercaseFirstLetter()}) => {{
 				return <div key={{{entityName.LowercaseFirstLetter()}.id}}>{{{entityName.LowercaseFirstLetter()}.id}}</div>;
 			}})
 		}}

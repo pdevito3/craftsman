@@ -35,7 +35,7 @@ import {{PagedResponse, Pagination}} from '@/types/api';
 const get{entityPluralUppercaseFirst} = (queryString: string) => {{
 	return api.get(`/api/{entityPluralLowercase}?${{queryString}}`).then((response) => {{
 		return {{
-			data: response,
+			data: response as {readDtoName}[],
 			pagination: JSON.parse(response.headers['x-pagination']) as Pagination
 		}} as PagedResponse<{readDtoName}>;
 	}});
