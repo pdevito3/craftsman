@@ -100,8 +100,8 @@ public static class {className}
             if ({updatedEntityProp} == null)
                 throw new NotFoundException(""{entity.Name}"", request.{primaryKeyPropName});
 
-            var {patchedEntityProp} = _mapper.Map<{updateDto}>({updatedEntityProp}); // map the {entityNameLowercase} we got from the database to an updatable {entityNameLowercase} model
-            request.PatchDoc.ApplyTo({patchedEntityProp}); // apply patchdoc updates to the updatable {entityNameLowercase}
+            var {patchedEntityProp} = _mapper.Map<{updateDto}>({updatedEntityProp}); // map the {entityNameLowercase} we got from the database to an updatable {entityNameLowercase} dto
+            request.PatchDoc.ApplyTo({patchedEntityProp}); // apply patchdoc updates to the updatable {entityNameLowercase} dto
 
             {updatedEntityProp}.Update({patchedEntityProp});
             await _db.SaveChangesAsync(cancellationToken);

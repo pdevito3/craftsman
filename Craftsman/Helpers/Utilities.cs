@@ -627,7 +627,7 @@ using {parentClassPath.ClassNamespace};";
                 srcDirectory,
                 new Dictionary<string, string>()
                 {
-                    { "ASPNETCORE_ENVIRONMENT", Guid.NewGuid().ToString() } // guid to not conflict with any given envs
+                    { "ASPNETCORE_ENVIRONMENT", "Development" }
                 },
                 20000,
                 $"{Emoji.Known.Warning} {template.ProjectName} Database Migrations timed out and will need to be run manually");
