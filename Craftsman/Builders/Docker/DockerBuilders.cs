@@ -100,7 +100,7 @@ volumes:";
     public static void AddVolumeToDockerComposeDb(string solutionDirectory, DockerConfig dockerConfig)
     {
         var services = "";
-        var volumes = GetVolumesTextForCompose(dockerConfig, out var dbService);
+        var volumes = GetDbTextForCompose(dockerConfig, out var dbService);
 
         services += $@"
   {dockerConfig.DbHostName}:{dbService}";
@@ -140,11 +140,90 @@ volumes:";
         File.Delete(classPath.FullClassPath);
         File.Move(tempPath, classPath.FullClassPath);
     }
+    
+    // TODO add props to make this configurable
+    public static void AddRmqToDockerCompose(string solutionDirectory)
+    {
+        var services = $@"
+
+  rmq-message-broker:
+    image: masstransit/rabbitmq
+    restart: always
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest";
+        
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
+
+        if (!Directory.Exists(classPath.ClassDirectory))
+            Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!File.Exists(classPath.FullClassPath))
+            return; //don't want to require this
+
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = File.OpenText(classPath.FullClassPath))
+        {
+            using (var output = new StreamWriter(tempPath))
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"services:"))
+                    {
+                        newText += @$"{services}";
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        File.Delete(classPath.FullClassPath);
+        File.Move(tempPath, classPath.FullClassPath);
+        
+        // now do docker compose data
+        classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
+
+        if (!Directory.Exists(classPath.ClassDirectory))
+            Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!File.Exists(classPath.FullClassPath))
+            return; //don't want to require this
+
+        tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = File.OpenText(classPath.FullClassPath))
+        {
+            using (var output = new StreamWriter(tempPath))
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"services:"))
+                    {
+                        newText += @$"{services}";
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        File.Delete(classPath.FullClassPath);
+        File.Move(tempPath, classPath.FullClassPath);
+    }
 
     public static void AddBoundaryToDockerCompose(string solutionDirectory, DockerConfig dockerConfig)
     {
         var services = "";
-        var volumes = GetVolumesTextForCompose(dockerConfig, out var dbService);
+        var volumes = GetDbTextForCompose(dockerConfig, out var dbService);
 
         services += $@"
   {dockerConfig.DbHostName}:{dbService}
@@ -201,7 +280,7 @@ volumes:";
         File.Move(tempPath, classPath.FullClassPath);
     }
 
-    private static string GetVolumesTextForCompose(DockerConfig dockerConfig, out string dbService)
+    private static string GetDbTextForCompose(DockerConfig dockerConfig, out string dbService)
     {
         var volumes = "";
         dbService = $@"

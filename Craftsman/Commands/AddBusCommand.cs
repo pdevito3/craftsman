@@ -8,6 +8,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using Builders.Docker;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Builders.Tests.Utilities;
@@ -95,8 +96,6 @@
 
         public static void AddBus(Bus template, string srcDirectory, string testDirectory, string projectBaseName, string solutionDirectory, IFileSystem fileSystem)
         {
-            var messagesDirectory = Path.Combine(solutionDirectory, "Messages");
-
             var massTransitPackages = new Dictionary<string, string>{
                     { "MassTransit", "7.2.4" },
                     { "MassTransit.AspNetCore", "7.2.4" },
@@ -111,6 +110,7 @@
             StartupModifier.RegisterMassTransitService(srcDirectory, projectBaseName);
 
             IntegrationTestFixtureModifier.AddMassTransit(testDirectory, projectBaseName);
+            DockerBuilders.AddRmqToDockerCompose(solutionDirectory);
         }
     }
 }
