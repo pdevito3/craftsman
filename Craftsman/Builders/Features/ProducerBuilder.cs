@@ -29,9 +29,9 @@
         {
             var context = Utilities.GetDbContext(srcDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
-            var dbReadOnly = producer.UsesDb ? @$"{Environment.NewLine}    private readonly {context} _db;" : "";
+            var dbReadOnly = producer.UsesDb ? @$"{Environment.NewLine}        private readonly {context} _db;" : "";
             var dbProp = producer.UsesDb ? @$"{context} db, " : "";
-            var assignDb = producer.UsesDb ? @$"{Environment.NewLine}        _db = db;" : "";
+            var assignDb = producer.UsesDb ? @$"{Environment.NewLine}            _db = db;" : "";
             var contextUsing = producer.UsesDb ? $@"
 using {contextClassPath.ClassNamespace};" : "";
 
@@ -77,7 +77,7 @@ public static class {producer.ProducerName}
             {{
                 // map content to message here or with automapper
             }};
-            await _publishEndpoint.Publish<{producer.MessageName}>(message);
+            await _publishEndpoint.Publish<{producer.MessageName}>(message, cancellationToken);
 
             return true;
         }}
