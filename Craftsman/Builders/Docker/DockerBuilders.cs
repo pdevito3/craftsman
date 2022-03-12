@@ -158,6 +158,9 @@ volumes:";
     environment:
       ASPNETCORE_ENVIRONMENT: ""Development""
       DB_CONNECTION_STRING: ""{dockerConfig.DbConnectionStringCompose}""
+      ASPNETCORE_URLS: ""https://+:8080;""
+      ASPNETCORE_Kestrel__Certificates__Default__Path: ""/https/aspnetappcert.pfx""
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ""password""
 
     volumes:
       - ~/.aspnet/https:/https:ro";
