@@ -77,6 +77,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Updated entity property definition with optional `ColumnType` attribute
 
+- Fixed a bug that broke registration of the bus in development env
+
 ### Removed
 
 - Removed seeders

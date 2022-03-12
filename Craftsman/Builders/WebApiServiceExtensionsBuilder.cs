@@ -176,8 +176,7 @@ public static class MassTransitServiceExtension
     public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {{
         if (!env.IsEnvironment(LocalConfig.IntegrationTestingEnvName) 
-            && !env.IsEnvironment(LocalConfig.FunctionalTestingEnvName) 
-            && !env.IsDevelopment())
+            && !env.IsEnvironment(LocalConfig.FunctionalTestingEnvName))
         {{
             services.AddMassTransit(mt =>
             {{
