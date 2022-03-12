@@ -207,9 +207,9 @@ volumes:";
     ports:
       - '{dockerConfig.DbPort}:5432'
     environment:
-      - POSTGRES_USER={dockerConfig.DbUser}
-      - POSTGRES_PASSWORD={dockerConfig.DbPassword}
-      - POSTGRES_DB={dockerConfig.DbName}
+      POSTGRES_USER: {dockerConfig.DbUser}
+      POSTGRES_PASSWORD: {dockerConfig.DbPassword}
+      POSTGRES_DB: {dockerConfig.DbName}
     volumes:
       - {dockerConfig.VolumeName}:/var/lib/postgresql/data";
 
