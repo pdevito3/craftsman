@@ -79,7 +79,7 @@
             {
                 PermissionsBuilder.GetPermissions(srcDirectory, projectBaseName, fileSystem); // <-- needs to run before entity features
                 RolesBuilder.GetRoles(solutionDirectory, fileSystem);
-                UserPolicyHandlerBuilder.CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
+                UserPolicyHandlerBuilder.CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName);
                 EntityScaffolding.ScaffoldRolePermissions(solutionDirectory,
                     srcDirectory,

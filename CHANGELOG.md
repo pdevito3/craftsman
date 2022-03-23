@@ -83,6 +83,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Removed seeders
 
+### Fixed
+
+- Dbcontext for userpolicyhandler uses template (#70)
+
 ## [0.13.1] - 02/25/2022
 
 ### Fixed
