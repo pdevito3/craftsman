@@ -17,6 +17,7 @@ namespace Craftsman.Builders
             return @$"namespace {classNamespace};
 
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Formatting.Json;
@@ -28,27 +29,22 @@ public static class LoggingConfiguration
         using var scope = host.Services.CreateScope();
         var services = scope.ServiceProvider;
         var env = services.GetService<IWebHostEnvironment>();
+
+        var loggingLevelSwitch = new LoggingLevelSwitch();
+        if (env.IsDevelopment())
+            loggingLevelSwitch.MinimumLevel = LogEventLevel.Warning;
+        if (env.IsProduction())
+            loggingLevelSwitch.MinimumLevel = LogEventLevel.Information;
         
         var logger = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .MinimumLevel.Override(""Microsoft"", LogEventLevel.Warning)
-            .MinimumLevel.Override(""System"", LogEventLevel.Warning)
+            .MinimumLevel.ControlledBy(loggingLevelSwitch)
             .MinimumLevel.Override(""Microsoft.Hosting.Lifetime"", LogEventLevel.Information)
             .MinimumLevel.Override(""Microsoft.AspNetCore.Authentication"", LogEventLevel.Information)
             .Enrich.FromLogContext()
             .Enrich.WithEnvironment(env.EnvironmentName)
             .Enrich.WithProperty(""ApplicationName"", env.ApplicationName)
             .Enrich.WithExceptionDetails()
-            .Enrich.WithProcessId()
-            .Enrich.WithThreadId()
-            .Enrich.WithMachineName()
             .WriteTo.Console();
-
-        if (env.IsProduction())
-            logger.MinimumLevel.Information();
-        
-        if (env.IsDevelopment())
-            logger.MinimumLevel.Debug();
 
         Log.Logger = logger.CreateLogger();
     }}
