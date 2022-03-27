@@ -62,6 +62,7 @@
             Utilities.IsSolutionDirectoryGuard(solutionDirectory);
 
             // base files needed before below is ran
+            template.DockerConfig.ApiPort ??= template.Port; // set to the launch settings port if needed... really need to refactor to a domain layer and dto layer 😪
             DbContextBuilder.CreateDbContext(srcDirectory,
                 template.Entities,
                 template.DbContext.ContextName,

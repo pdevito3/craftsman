@@ -43,7 +43,7 @@ public class DockerConfig
         set => _dbPort = value ?? _dbPort;
     }
     
-    private int? _apiPort = Utilities.GetFreePort();
+    private int? _apiPort = null; // Utilities.GetFreePort();
     public int? ApiPort
     {
         get => _apiPort;
