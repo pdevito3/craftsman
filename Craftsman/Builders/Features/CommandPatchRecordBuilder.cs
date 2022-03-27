@@ -95,7 +95,7 @@ public static class {className}
                     }});
 
             var {updatedEntityProp} = await _db.{entity.Plural}
-                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName});
+                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName}, cancellationToken);
 
             if ({updatedEntityProp} == null)
                 throw new NotFoundException(""{entity.Name}"", request.{primaryKeyPropName});
