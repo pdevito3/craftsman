@@ -83,6 +83,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Cleanup batch add feature
 
+- Updated `Created` response for batch add
+
 ### Removed
 
 - Removed seeders
