@@ -42,7 +42,7 @@
             var validatorsClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
             var batchFkCheck = !string.IsNullOrEmpty(feature.BatchPropertyDbSetName)
-                ? @$"var fkEntity = await _db.{feature.BatchPropertyDbSetName}.Where(x => x.Id == request.{feature.BatchPropertyName}).FirstOrDefaultAsync(cancellationToken);
+                ? @$"var fkEntity = await _db.{feature.BatchPropertyDbSetName}.FirstOrDefaultAsync(x => x.Id == request.{feature.BatchPropertyName}, cancellationToken);
             if (fkEntity == null)
                 throw new NotFoundException($""No {feature.BatchPropertyName} found with an id of '{{request.{feature.BatchPropertyName}}}'"");{Environment.NewLine}{Environment.NewLine}"
                 : "";
@@ -92,13 +92,13 @@ public static class {className}
                 .Select({entity.Lambda} => {{ {entity.Lambda}.{feature.BatchPropertyName} = request.{feature.BatchPropertyName}; return {entity.Lambda}; }})
                 .ToList();
             var {entityNameLowercaseListVar} = new List<{entityName}>();
-            {entityNameLowercaseListVar}ToAdd.ForEach({entityNameLowercase} => {entityNameLowercaseListVar}.Add(Ingredient.Create({entityNameLowercase})));
+            {entityNameLowercaseListVar}ToAdd.ForEach({entityNameLowercase} => {entityNameLowercaseListVar}.Add({entityName}.Create({entityNameLowercase})));
             
-            _db.{entity.Plural}.AddRange({entityNameLowercaseListVar});
+            _db.{entity.Plural}.AddRangeAsync({entityNameLowercaseListVar}, cancellationToken);
 
             await _db.SaveChangesAsync(cancellationToken);
 
-            var result = _db.{entity.Plural}.Where({entity.Lambda} => {entityNameLowercaseListVar}.Select({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName}).Contains({entity.Lambda}.{primaryKeyPropName}));
+            var result = _db.{entity.Plural}.Where({entity.Lambda} => {entityNameLowercaseListVar}.Select({entity.Lambda}l => {entity.Lambda}l.{primaryKeyPropName}).Contains({entity.Lambda}.{primaryKeyPropName}));
             return _mapper.Map<{readDto}>(result);
         }}
     }}
