@@ -42,6 +42,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * New `john` user to auth server (with no role)
   
   * Login hints for auth server
+  
+  * Minor helper override on fake generators 
 
 
 ### Updated

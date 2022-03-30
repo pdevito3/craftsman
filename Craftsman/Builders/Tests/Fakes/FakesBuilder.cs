@@ -84,6 +84,7 @@ public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
             var entitiesClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", entity.Plural, projectBaseName);
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
             var creationDtoName = Utilities.GetDtoName(entity.Name, Dto.Creation);
+            var fakeCreationDtoName = $"Fake{creationDtoName}";
 
             return @$"namespace {classNamespace};
 
@@ -96,6 +97,11 @@ public class Fake{objectToFakeClassName}
     public static {entity.Name} Generate({creationDtoName} {creationDtoName.LowercaseFirstLetter()})
     {{
         return {entity.Name}.Create({creationDtoName.LowercaseFirstLetter()});
+    }}
+
+    public static {entity.Name} Generate()
+    {{
+        return {entity.Name}.Create(new {fakeCreationDtoName}().Generate());
     }}
 }}";
         }
