@@ -37,7 +37,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
   * `SA` will always be default user for sqlserver so it can work properly
 
-  * If no ports are given for api or db, they'll be auto assigned a free port on your machine∂
+  * If no ports are given for api or db, they'll be auto assigned a free port on your machine
+  
+  * New `john` user to auth server (with no role)
+  
+  * Login hints for auth server
 
 
 ### Updated
