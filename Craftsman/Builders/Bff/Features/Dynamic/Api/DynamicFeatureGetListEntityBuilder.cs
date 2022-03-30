@@ -31,13 +31,15 @@ import {{ {keyExportName} }} from './{keysImport}';
 import queryString from 'query-string'
 import {{ QueryParams, {readDtoName} }} from '../types';
 import {{PagedResponse, Pagination}} from '@/types/api';
+import {{AxiosResponse}} from 'axios';
 
 const get{entityPluralUppercaseFirst} = (queryString: string) => {{
-	return api.get(`/api/{entityPluralLowercase}?${{queryString}}`).then((response) => {{
-		return {{
-			data: response as {readDtoName}[],
-			pagination: JSON.parse(response.headers['x-pagination']) as Pagination
-		}} as PagedResponse<{readDtoName}>;
+	return api.get(`/api/{entityPluralLowercase}?${{queryString}}`)
+		.then((response: AxiosResponse<{readDtoName}[]>) => {{
+			return {{
+				data: response.data as {readDtoName}[],
+				pagination: JSON.parse(response.headers['x-pagination']) as Pagination
+			}} as PagedResponse<{readDtoName}>;
 	}});
 }};
 
