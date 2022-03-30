@@ -13,11 +13,11 @@
         public static void CreateProject(string solutionDirectory, string projectBaseName, int? proxyPort, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-            var fileText = ProjectFileText(proxyPort);
+            var fileText = ProjectFileText(proxyPort, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static string ProjectFileText(int? proxyPort)
+        public static string ProjectFileText(int? proxyPort, string projectBaseName)
         {
             return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
@@ -31,7 +31,7 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <SpaProxyServerUrl>https://localhost:{proxyPort}</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>yarn start</SpaProxyLaunchCommand>
-    <RootNamespace>react_six</RootNamespace>
+    <RootNamespace>{projectBaseName}</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
