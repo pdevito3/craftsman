@@ -19,6 +19,7 @@
 
             var tempPath = $"{classPath.FullClassPath}temp";
             var listRouteName = Utilities.BffEntityListRouteComponentName(entityName);
+            var haveAddedImport = false;
             using (var input = File.OpenText(classPath.FullClassPath))
             {
                 using (var output = new StreamWriter(tempPath))
@@ -27,6 +28,11 @@
                     while (null != (line = input.ReadLine()))
                     {
                         var newText = $"{line}";
+                        if (line.Contains("import") && !haveAddedImport)
+                        {
+                            newText += @$"{Environment.NewLine}import {{ {listRouteName} }} from './features/{entityPlural}';";
+                            haveAddedImport = true;
+                        }
                         if (line.Contains("/* route marker"))
                         {
                             newText += @$"{Environment.NewLine}							<Route path=""/{entityPlural.LowercaseFirstLetter()}"" element={{<{listRouteName} />}} />";
