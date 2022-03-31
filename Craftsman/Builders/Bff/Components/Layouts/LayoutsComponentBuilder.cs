@@ -35,7 +35,7 @@ import {{ PrivateHeader }} from '../Headers';
 import {{ PrivateSideNav }} from '../Navigation';
 
 function PrivateLayout() {{
-	const {{ username, logoutUrl }} = useAuthUser();
+	const {{ username }} = useAuthUser();
 
 	return (
 		<div className='flex w-full h-full'>
@@ -51,15 +51,7 @@ function PrivateLayout() {{
 							>
 								Login
 							</a>
-						) : (
-							<div className='flex-shrink-0 block'>
-								<div className='flex items-center'>
-									<div className='ml-3'>
-										<p className='block text-base font-medium text-blue-500 md:text-sm'>{{`Hi, ${{username}}!`}}</p>
-									</div>
-								</div>
-							</div>
-						)}}
+						) : null}}
 					</div>
 					<Outlet />
 				</main>
