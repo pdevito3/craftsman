@@ -97,11 +97,13 @@ export default function PrivateSideNav() {{
 									</Transition.Child>
 									<div className='flex-1 h-0 pt-5 pb-4 overflow-y-auto'>
 										<div className='flex items-center flex-shrink-0 px-4'>
-											<img
-												className='w-auto h-8'
-												src={{logo}}
-												alt='Logo'
-											/>
+											<NavLink to={'/'}>
+												<img
+													className='w-auto h-8'
+													src={{logo}}
+													alt='Logo'
+												/>
+											</NavLink>
 										</div>
 										<nav className='mt-5'>
 											{{navigation.map((item) => (
@@ -138,11 +140,13 @@ export default function PrivateSideNav() {{
 					{{/* Sidebar component, swap this element with another sidebar if you like */}}
 					<div className='flex flex-col flex-1 min-h-0 bg-gray-800'>
 						<div className='flex items-center flex-shrink-0 h-16 px-4 bg-gray-900 shadow-lg'>
-							<img
-								className='w-auto h-8'
-								src={{logo}}
-								alt='Logo'
-							/>
+							<NavLink to={'/'}>
+								<img
+									className='w-auto h-8'
+									src={{logo}}
+									alt='Logo'
+								/>
+							</NavLink>
 						</div>
 						<div className='flex flex-col flex-1 py-2 overflow-y-auto'>
 							<nav className='flex-1 mt-6 space-y-1'>
