@@ -45,13 +45,21 @@ function {listRouteName}() {{
 	const {entityDataVar} = {entityResponseVar}?.data;
 	// const {entityPaginationVar} = {entityResponseVar}?.pagination;
 
-	return <>
-		{{
-			{entityDataVar} && {entityDataVar}?.map(({entityName.LowercaseFirstLetter()}) => {{
-				return <div key={{{entityName.LowercaseFirstLetter()}.id}}>{{{entityName.LowercaseFirstLetter()}.id}}</div>;
-			}})
-		}}
-	</>;
+	if(isLoading) 
+		return <div>Loading...</div>
+
+	return (
+		<>
+			{{
+				{entityDataVar} && {entityDataVar}.length > 0 ? (
+					{entityDataVar}?.map(({entityName.LowercaseFirstLetter()}) => {{
+						return <div key={{{entityName.LowercaseFirstLetter()}.id}}>{{{entityName.LowercaseFirstLetter()}.id}}</div>;
+					}})
+				) : (
+					<div>No {entityPlural} Found</div>
+				)}}
+		</>
+	)
 }}
 
 export {{ {listRouteName} }};
