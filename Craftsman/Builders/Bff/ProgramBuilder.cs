@@ -31,6 +31,7 @@ public class ProgramBuilder
 using Duende.Bff.Yarp;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.AddLoggingConfiguration(builder.Environment);
 
 builder.Services.AddControllers();
 builder.Services.AddBff()
@@ -105,7 +106,20 @@ app.UseEndpoints(endpoints =>
 
 app.MapFallbackToFile(""index.html"");
 
-app.Run();
-";
+try
+{{
+    Log.Information(""Starting application"");
+    await app.RunAsync();
+}}
+catch (Exception e)
+{{
+    Log.Error(e, ""The application failed to start correctly"");
+    throw;
+}}
+finally
+{{
+    Log.Information(""Shutting down application"");
+    Log.CloseAndFlush();
+}}";
     }
 }
