@@ -45,8 +45,9 @@ export interface {dtoForCreationName} extends {dtoForManipulationName} {{ }}
 export interface {dtoForUpdateName} extends {dtoForManipulationName} {{ }}
 
 // need a string enum list?
-// export const Status = ['Status1', 'Status2', null] as const;
-// status: typeof Status[number];
+// const StatusList = ['Status1', 'Status2', null] as const;
+// export type Status = typeof StatusList[number];
+// Then use as --> status: Status;
 ";
 	}
         
