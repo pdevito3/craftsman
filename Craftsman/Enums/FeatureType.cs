@@ -31,7 +31,7 @@
             public override string CommandName(string command, string entityName)
                 => command.EscapeSpaces() ?? $"Get{entityName}Query";
             public override string BffApiName(string entityName)
-                => $"Get{entityName}";
+                => $"get{entityName}";
         }
 
         private class GetListType : FeatureType
