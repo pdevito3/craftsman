@@ -69,7 +69,7 @@
             ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, fileSystem);
             StartupBuilder.CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName, fileSystem);
             LocalConfigBuilder.CreateLocalConfig(srcDirectory, projectBaseName, fileSystem);
-            LoggingConfigurationBuilder.CreateConfigFile(srcDirectory, projectBaseName, fileSystem);
+            LoggingConfigurationBuilder.CreateWebApiConfigFile(srcDirectory, projectBaseName, fileSystem);
             InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(srcDirectory, projectBaseName, fileSystem);
             
             BasePaginationParametersBuilder.CreateBasePaginationParameters(solutionDirectory, projectBaseName, fileSystem);

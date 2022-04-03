@@ -5,9 +5,16 @@ namespace Craftsman.Builders
 
     public class LoggingConfigurationBuilder
     {
-        public static void CreateConfigFile(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public static void CreateWebApiConfigFile(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiHostExtensionsClassPath(projectDirectory, "LoggingConfiguration.cs", authServerProjectName);
+            var fileText = GetConfigText(classPath.ClassNamespace);
+            Utilities.CreateFile(classPath, fileText, fileSystem);
+        }
+        
+        public static void CreateBffConfigFile(string solutionDirectory, string authServerProjectName, IFileSystem fileSystem)
+        {
+            var classPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", authServerProjectName);
             var fileText = GetConfigText(classPath.ClassNamespace);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
@@ -20,7 +27,6 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Exceptions;
-using Serilog.Formatting.Json;
 
 public static class LoggingConfiguration
 {{

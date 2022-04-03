@@ -45,7 +45,12 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Wrappers"), className);
         }
 
-        public static ClassPath WebApiHostExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath WebApiHostExtensionsClassPath(string projectDirectory, string className, string projectBaseName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine(projectBaseName, "Extensions", "Host"), className);
+        }
+
+        public static ClassPath BffHostExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine(projectBaseName, "Extensions", "Host"), className);
         }

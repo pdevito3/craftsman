@@ -7,6 +7,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using Builders;
     using Builders.Bff;
     using Builders.Bff.Components.Headers;
     using Builders.Bff.Components.Layouts;
@@ -22,6 +23,8 @@
     using Spectre.Console;
     using Craftsman.Builders.Tests.Utilities;
     using Enums;
+    using AppSettingsBuilder = Builders.Bff.AppSettingsBuilder;
+    using ProgramBuilder = Builders.Bff.ProgramBuilder;
 
     public static class AddBffCommand
     {
@@ -86,7 +89,7 @@
         {
             var projectName = template.ProjectName;
             var projectDirectory = $"{domainDirectory}{Path.DirectorySeparatorChar}{projectName}";
-            Builders.SolutionBuilder.BuildBffProject(domainDirectory, projectName, template.ProxyPort, fileSystem);
+            SolutionBuilder.BuildBffProject(domainDirectory, projectName, template.ProxyPort, fileSystem);
 
             var spaDirectory = Path.Combine(projectDirectory, "ClientApp");
             fileSystem.Directory.CreateDirectory(spaDirectory);
@@ -94,8 +97,8 @@
             // .NET Project
             LaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, projectName, template, fileSystem);
             AppSettingsBuilder.CreateBffAppSettings(projectDirectory, projectName, fileSystem);
+            LoggingConfigurationBuilder.CreateBffConfigFile(domainDirectory, projectName, fileSystem);
             
-            // TODO add logging
             ProgramBuilder.CreateProgram(projectDirectory, projectName, template, fileSystem);
             
             // TODO README at root

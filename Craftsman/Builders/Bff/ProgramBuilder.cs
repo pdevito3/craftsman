@@ -32,10 +32,6 @@ using Duende.Bff.Yarp;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ************************
-// TODO ADD LOGGING
-// ************************
-
 builder.Services.AddControllers();
 builder.Services.AddBff()
     .AddRemoteApis();
