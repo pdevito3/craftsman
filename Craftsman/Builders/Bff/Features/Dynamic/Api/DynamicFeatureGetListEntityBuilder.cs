@@ -45,6 +45,9 @@ const get{entityPluralUppercaseFirst} = (queryString: string) => {{
 
 export const use{entityPluralUppercaseFirst} = ({{ pageNumber, pageSize, filters, sortOrder }}: QueryParams) => {{
 	const queryParams = queryString.stringify({{ pageNumber, pageSize, filters, sortOrder }});
+	queryParams = queryParams == '?' 
+		? null 
+		: queryParams;
 
 	return useQuery(
 		{keyExportName}.list(queryParams ?? ''),
