@@ -165,6 +165,26 @@
                     AddEntityCommand.Run(filePath, solutionDir, fileSystem, verbosity);
                 }
             }
+            
+            if (args.Length == 2 && (args[0] == "add:bffentity" || args[0] == "add:bffentities" || args[0] == "new:bffentity"))
+            {
+                var filePath = args[1];
+                if (filePath == "-h" || filePath == "--help")
+                    AddBffEntityCommand.Help();
+                else
+                {
+                    CheckForLatestVersion();
+
+                    var solutionDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the solution directory.");
+                        solutionDir = Console.ReadLine();
+                    }
+
+                    AddBffEntityCommand.Run(filePath, solutionDir, fileSystem);
+                }
+            }
 
             if ((args[0] == "add:bus"))
             {

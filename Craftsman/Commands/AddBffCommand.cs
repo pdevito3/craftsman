@@ -106,10 +106,10 @@
         public static void AddBff(BffTemplate template, string domainDirectory, IFileSystem fileSystem)
         {
             var projectName = template.ProjectName;
-            var projectDirectory = $"{domainDirectory}{Path.DirectorySeparatorChar}{projectName}";
-            SolutionBuilder.BuildBffProject(domainDirectory, projectName, template.ProxyPort, fileSystem);
+            var projectDirectory = template.GetProjectDirectory(domainDirectory);
+            var spaDirectory = template.GetSpaDirectory(domainDirectory);
 
-            var spaDirectory = Path.Combine(projectDirectory, "ClientApp");
+            SolutionBuilder.BuildBffProject(domainDirectory, projectName, template.ProxyPort, fileSystem);
             fileSystem.Directory.CreateDirectory(spaDirectory);
 
             // .NET Project
@@ -159,34 +159,7 @@
             HomeFeatureRoutesBuilder.CreateHomeFeatureRoutes(spaDirectory, fileSystem);
             HomeFeatureBuilder.CreateHomeFeatureIndex(spaDirectory, fileSystem);
             
-            foreach (var templateEntity in template.Entities)
-            {
-                DynamicFeatureBuilder.CreateDynamicFeatureIndex(spaDirectory, templateEntity.Plural, fileSystem);
-                DynamicFeatureRoutesBuilder.CreateDynamicFeatureRoutes(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                DynamicFeatureTypesBuilder.CreateDynamicFeatureTypes(spaDirectory, templateEntity.Name, templateEntity.Plural, templateEntity.Properties, fileSystem);
-                NavigationComponentModifier.AddFeatureListRouteToNav(spaDirectory, templateEntity.Name, templateEntity.Plural);
-                DynamicFeatureRoutesModifier.AddRoute(spaDirectory, templateEntity.Name, templateEntity.Plural);
-                
-                // apis
-                DynamicFeatureKeysBuilder.CreateDynamicFeatureKeys(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                DynamicFeatureApiIndexBuilder.CreateDynamicFeatureApiIndex(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                foreach (var templateEntityFeature in templateEntity.Features)
-                {
-                    DynamicFeatureApiIndexModifier.AddFeature(spaDirectory, templateEntity.Name, templateEntity.Plural, FeatureType.FromName(templateEntityFeature.Type));
-                    
-                    if (templateEntityFeature.Type == FeatureType.AddRecord.Name)
-                        DynamicFeatureAddEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                    if (templateEntityFeature.Type == FeatureType.GetList.Name)
-                        DynamicFeatureGetListEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                    if (templateEntityFeature.Type == FeatureType.DeleteRecord.Name)
-                        DynamicFeatureDeleteEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                    if (templateEntityFeature.Type == FeatureType.UpdateRecord.Name)
-                        DynamicFeatureUpdateEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                    if (templateEntityFeature.Type == FeatureType.GetRecord.Name)
-                        DynamicFeatureGetEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural, fileSystem);
-                }
-            }
-            
+            EntityScaffolding.ScaffoldBffEntities(template.Entities, fileSystem, spaDirectory);
 
             // Docker
             // TODO add auth vars to docker compose
