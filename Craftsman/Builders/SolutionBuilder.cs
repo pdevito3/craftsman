@@ -66,8 +66,7 @@
             ErrorHandlerFilterAttributeBuilder.CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName, fileSystem);
             AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, fileSystem);
-            ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, fileSystem);
-            StartupBuilder.CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName, fileSystem);
+            ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, useJwtAuth, fileSystem);
             LocalConfigBuilder.CreateLocalConfig(srcDirectory, projectBaseName, fileSystem);
             LoggingConfigurationBuilder.CreateWebApiConfigFile(srcDirectory, projectBaseName, fileSystem);
             InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(srcDirectory, projectBaseName, fileSystem);

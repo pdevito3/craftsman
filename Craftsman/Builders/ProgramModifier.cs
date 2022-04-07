@@ -4,11 +4,11 @@
     using System;
     using System.IO;
 
-    public class StartupModifier
+    public class ProgramModifier
     {
         public static void RegisterMassTransitService(string srcDirectory, string projectBaseName)
         {
-            var classPath = Utilities.GetStartupClassPath(srcDirectory, projectBaseName);
+            var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Program.cs", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
@@ -24,8 +24,8 @@
                 while (null != (line = input.ReadLine()))
                 {
                     var newText = $"{line}";
-                    if (line.Contains($"services.AddInfrastructure"))
-                        newText += @$"{Environment.NewLine}        services.AddMassTransitServices(_config, _env);";
+                    if (line.Contains($"builder.Services.AddInfrastructure"))
+                        newText += @$"{Environment.NewLine}builder.Services.AddMassTransitServices(_config, _env);";
 
                     //if (line.Contains($@"{infraClassPath.ClassNamespace};"))
                     //    newText += @$"{ Environment.NewLine}    using { serviceRegistrationsClassPath.ClassNamespace}; ";

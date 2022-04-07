@@ -8,10 +8,10 @@
 
     public class ProgramBuilder
     {
-        public static void CreateWebApiProgram(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateWebApiProgram(string srcDirectory, string projectBaseName, bool useAuth, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Program.cs", projectBaseName);
-            var fileText = GetWebApiProgramText(classPath.ClassNamespace, srcDirectory, projectBaseName);
+            var fileText = GetWebApiProgramText(srcDirectory, projectBaseName, useAuth);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
@@ -22,50 +22,92 @@
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
 
-        public static string GetWebApiProgramText(string classNamespace, string srcDirectory, string projectBaseName)
+        public static string GetWebApiProgramText(string srcDirectory, string projectBaseName, bool useAuth)
         {
+            var appAuth = "";
             var hostExtClassPath = ClassPathHelper.WebApiHostExtensionsClassPath(srcDirectory, $"", projectBaseName);
+            var apiServiceExtensionsClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
+            var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(srcDirectory, "", projectBaseName);
+            var dbContextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
+            var corsName = $"{projectBaseName}CorsPolicy";
             
-            return @$"namespace {classNamespace};
+            if (useAuth)
+            {
+                appAuth = $@"
 
+        app.UseAuthentication();
+        app.UseAuthorization();";
+            }
+            
+            return @$"using {hostExtClassPath.ClassNamespace};
+using {apiServiceExtensionsClassPath.ClassNamespace};
+using {apiAppExtensionsClassPath.ClassNamespace};
+using {dbContextClassPath.ClassNamespace};
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
 using Serilog;
 using System.Reflection;
 using System.Threading.Tasks;
-using {hostExtClassPath.ClassNamespace};
 
-public class Program
+var builder = WebApplication.CreateBuilder(args);
+builder.Host.AddLoggingConfiguration(builder.Environment);
+
+// Add services to the container.
+builder.Services.AddSingleton(Log.Logger);
+// TODO update CORS for your env
+builder.Services.AddCorsService(""{corsName}"", _env);
+builder.Services.AddInfrastructure(_config, _env);
+builder.Services.AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddApiVersioningExtension();
+builder.Services.AddWebApiServices();
+builder.Services.AddHealthChecks();
+builder.Services.AddSwaggerExtension(_config);
+
+// Configure the HTTP request pipeline.
+var app = builder.Build();
+if (_env.IsDevelopment())
 {{
-    public async static Task Main(string[] args)
-    {{
-        var host = CreateHostBuilder(args).Build();
-        host.AddLoggingConfiguration();
+    app.UseDeveloperExceptionPage();
+}}
+else
+{{
+    app.UseExceptionHandler(""/Error"");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}}
 
-        try
-        {{
-            Log.Information(""Starting application"");
-            await host.RunAsync();
-        }}
-        catch (Exception e)
-        {{
-            Log.Error(e, ""The application failed to start correctly"");
-            throw;
-        }}
-        finally
-        {{
-            Log.Information(""Shutting down application"");
-            Log.CloseAndFlush();
-        }}
-    }}
+app.UseCors(""{corsName}"");
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .UseSerilog()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {{
-                webBuilder.UseStartup(typeof(Startup).GetTypeInfo().Assembly.FullName)
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseKestrel();
-            }});
+app.UseSerilogRequestLogging();
+app.UseRouting();{appAuth}
+
+app.UseEndpoints(endpoints =>
+{{
+    endpoints.MapHealthChecks(""/api/health"");
+    endpoints.MapControllers();
+}});
+
+app.UseSwaggerExtension(_config);
+
+try
+{{
+    Log.Information(""Starting application"");
+    await app.RunAsync();
+}}
+catch (Exception e)
+{{
+    Log.Error(e, ""The application failed to start correctly"");
+    throw;
+}}
+finally
+{{
+    Log.Information(""Shutting down application"");
+    Log.CloseAndFlush();
 }}";
         }
 

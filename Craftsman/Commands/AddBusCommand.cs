@@ -107,7 +107,7 @@
 
             WebApiServiceExtensionsBuilder.CreateMassTransitServiceExtension(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
             WebApiAppSettingsModifier.AddRmq(srcDirectory, template.Environment, projectBaseName, fileSystem);
-            StartupModifier.RegisterMassTransitService(srcDirectory, projectBaseName);
+            ProgramModifier.RegisterMassTransitService(srcDirectory, projectBaseName);
 
             IntegrationTestFixtureModifier.AddMassTransit(testDirectory, projectBaseName);
             DockerBuilders.AddRmqToDockerCompose(solutionDirectory);

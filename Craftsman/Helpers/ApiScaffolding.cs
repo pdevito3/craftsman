@@ -108,11 +108,9 @@
                 srcDirectory,
                 template.DbContext.DatabaseName,
                 template.Environment,
-                template.SwaggerConfig,
                 template.Port,
                 projectBaseName,
-                template.DockerConfig,
-                fileSystem
+                template.DockerConfig
             );
 
             // unit tests, test utils, and one offs∂

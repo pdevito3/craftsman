@@ -23,44 +23,6 @@
             UpdateWebApiCsProjSwaggerSettings(solutionDirectory, projectBaseName);
         }
 
-        public static void RegisterSwaggerInStartup(string srcDirectory, string projectBaseName = "")
-        {
-            var classPath = Utilities.GetStartupClassPath(srcDirectory, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
-
-            if (!File.Exists(classPath.FullClassPath))
-                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
-
-            var tempPath = $"{classPath.FullClassPath}temp";
-            using (var input = File.OpenText(classPath.FullClassPath))
-            {
-                using (var output = new StreamWriter(tempPath))
-                {
-                    string line;
-                    while (null != (line = input.ReadLine()))
-                    {
-                        var newText = $"{line}";
-                        if (line.Contains("Dynamic Services"))
-                        {
-                            newText += $"{Environment.NewLine}        services.AddSwaggerExtension(_config);";
-                        }
-                        else if (line.Contains("Dynamic App"))
-                        {
-                            newText += $"{Environment.NewLine}        app.UseSwaggerExtension(_config);";
-                        }
-
-                        output.WriteLine(newText);
-                    }
-                }
-            }
-
-            // delete the old file and set the name of the new one to the original name
-            File.Delete(classPath.FullClassPath);
-            File.Move(tempPath, classPath.FullClassPath);
-        }
-
         public static void AddSwaggerServiceExtension(string srcDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetSwaggerServiceExtensionName()}.cs", projectBaseName);

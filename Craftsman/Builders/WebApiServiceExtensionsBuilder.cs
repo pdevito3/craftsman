@@ -71,7 +71,6 @@ public static class ApiVersioningServiceExtension
 using {classPath.ClassNamespace};
 using AutoMapper;
 using FluentValidation.AspNetCore;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -144,7 +143,7 @@ public static class WebApiServiceExtension
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
         services.AddHttpContextAccessor();
 
-        services.AddMediatR(typeof(Startup));
+        services.AddMediatR(typeof(Program));
         services.AddScoped<SieveProcessor>();
         services.AddMvc(options => options.Filters.Add<ErrorHandlerFilterAttribute>())
             .AddFluentValidation(cfg => {{ cfg.AutomaticValidationEnabled = false; }});

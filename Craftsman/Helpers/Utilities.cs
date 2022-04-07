@@ -445,17 +445,12 @@ using {parentClassPath.ClassNamespace};";
             string solutionDirectory,
             string dbName,
             ApiEnvironment environment,
-            SwaggerConfig swaggerConfig,
             int port,
             string projectBaseName,
-            DockerConfig dockerConfig,
-            IFileSystem fileSystem)
+            DockerConfig dockerConfig)
         {
             AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, dbName, projectBaseName);
-
             WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, environment, port, dockerConfig, projectBaseName);
-            if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
-                SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, projectBaseName);
         }
 
         public static void CreateFile(ClassPath classPath, string fileText, IFileSystem fileSystem)

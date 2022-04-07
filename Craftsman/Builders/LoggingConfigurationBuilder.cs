@@ -5,16 +5,16 @@ namespace Craftsman.Builders
 
     public class LoggingConfigurationBuilder
     {
-        public static void CreateWebApiConfigFile(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public static void CreateWebApiConfigFile(string projectDirectory, string projectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiHostExtensionsClassPath(projectDirectory, "LoggingConfiguration.cs", authServerProjectName);
+            var classPath = ClassPathHelper.WebApiHostExtensionsClassPath(projectDirectory, "LoggingConfiguration.cs", projectName);
             var fileText = GetConfigText(classPath.ClassNamespace);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        public static void CreateBffConfigFile(string solutionDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public static void CreateBffConfigFile(string solutionDirectory, string projectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", authServerProjectName);
+            var classPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", projectName);
             var fileText = GetConfigTextForHostBuilder(classPath.ClassNamespace);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
