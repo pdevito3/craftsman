@@ -6,15 +6,16 @@ using Models;
 
 public class ProgramBuilder
 {
-    public static void CreateProgram(string spaDirectory, string projectName, BffTemplate template, IFileSystem fileSystem)
+    public static void CreateProgram(string spaDirectory, string solutionDirectory, string projectName, BffTemplate template, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.BffProjectRootClassPath(spaDirectory, $"Program.cs", projectName);
-        var fileText = GetProgramText(template);
+        var fileText = GetProgramText(template, solutionDirectory, projectName);
         Utilities.CreateFile(classPath, fileText, fileSystem);
     }
     
-    public static string GetProgramText(BffTemplate template)
+    public static string GetProgramText(BffTemplate template, string solutionDirectory, string projectName)
     {
+        var classPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", projectName);
         var boundaryScopes = "";
         foreach(var scope in template.BoundaryScopes)
             boundaryScopes +=
@@ -29,6 +30,7 @@ public class ProgramBuilder
         
         return @$"using Duende.Bff;
 using Duende.Bff.Yarp;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.AddLoggingConfiguration(builder.Environment);

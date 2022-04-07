@@ -12,9 +12,9 @@ namespace Craftsman.Builders
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        public static void CreateBffConfigFile(string solutionDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public static void CreateBffConfigFile(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", authServerProjectName);
+            var classPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", projectBaseName);
             var fileText = GetConfigTextForHostBuilder(classPath.ClassNamespace);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }

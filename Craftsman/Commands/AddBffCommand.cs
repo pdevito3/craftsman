@@ -99,7 +99,7 @@
             AppSettingsBuilder.CreateBffAppSettings(projectDirectory, projectName, fileSystem);
             LoggingConfigurationBuilder.CreateBffConfigFile(domainDirectory, projectName, fileSystem);
             
-            ProgramBuilder.CreateProgram(projectDirectory, projectName, template, fileSystem);
+            ProgramBuilder.CreateProgram(projectDirectory, domainDirectory, projectName, template, fileSystem);
             
             // TODO README at root
             
