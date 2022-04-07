@@ -45,7 +45,7 @@
         private static string GetProfileText(ApiEnvironment env, int port, DockerConfig dockerConfig)
         {
             return $@"
-    ""{env.ProfileName ?? env.EnvironmentName}"": {{
+    ""{env.ProfileName}"": {{
       ""commandName"": ""Project"",
       ""launchBrowser"": true,
       ""launchUrl"": ""swagger"",

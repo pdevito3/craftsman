@@ -42,14 +42,14 @@
             try
             {
                 FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                Utilities.SolutionGuard(domainDirectory);
+                var solutionName = Utilities.SolutionGuard(domainDirectory);
 
                 var boundedContexts = FileParsingHelper.GetTemplateFromFile<BoundedContextsTemplate>(filePath);
                 WriteHelpText($"Your template file was parsed successfully.");
 
                 foreach (var template in boundedContexts.BoundedContexts)
                 {
-                    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem);
+                    ApiScaffolding.ScaffoldApi(domainDirectory, template, solutionName, fileSystem);
                 }
 
                 // migrations

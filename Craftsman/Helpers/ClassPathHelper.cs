@@ -18,6 +18,10 @@
         {
             return new ClassPath(solutionDirectory, "", className);
         }
+        public static ClassPath DotRunClassPath(string solutionDirectory, string className)
+        {
+            return new ClassPath(solutionDirectory, ".run", className);
+        }
 
         public static ClassPath MessagesClassPath(string solutionDirectory, string className)
         {

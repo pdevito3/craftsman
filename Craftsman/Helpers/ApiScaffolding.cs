@@ -18,7 +18,7 @@
 
     public class ApiScaffolding
     {
-        public static void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template, IFileSystem fileSystem)
+        public static void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template, string solutionName, IFileSystem fileSystem)
         {
             var projectName = template.ProjectName;
             AnsiConsole.Status()
@@ -43,12 +43,12 @@
 
                     // add all files based on the given template config
                     ctx.Status($"[bold blue]Scaffolding Files for {projectName} [/]");
-                    RunTemplateBuilders(bcDirectory, srcDirectory, testDirectory, template, fileSystem);
+                    RunTemplateBuilders(bcDirectory, srcDirectory, testDirectory, template, solutionName, fileSystem);
                     WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
                 });
         }
 
-        private static void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem)
+        private static void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template, string solutionName, IFileSystem fileSystem)
         {
             var projectBaseName = template.ProjectName;
             
@@ -115,7 +115,7 @@
                 fileSystem
             );
 
-            // unit tests, test utils, and one offs∂
+            // unit tests, test utils, and one offs
             PagedListTestBuilder.CreateTests(srcDirectory, testDirectory, projectBaseName);
             IntegrationTestFixtureBuilder.CreateFixture(testDirectory, projectBaseName, template.DbContext.ContextName, template.DbContext.DatabaseName, template.DbContext.Provider, fileSystem);
             IntegrationTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
@@ -146,6 +146,8 @@
             
             DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory, template.DockerConfig);
             DockerBuilders.AddVolumeToDockerComposeDb(solutionDirectory, template.DockerConfig);
+            
+            DotRunModifier.AddRunItem(solutionDirectory, solutionName, template.Environment.ProfileName, projectBaseName);
         }
     }
 }

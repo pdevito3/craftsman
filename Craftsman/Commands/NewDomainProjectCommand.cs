@@ -97,11 +97,12 @@
             // need this before boundaries to give them something to build against
             DockerBuilders.CreateDockerComposeSkeleton(domainDirectory, fileSystem);
             DockerBuilders.CreateDockerComposeDbSkeleton(domainDirectory, fileSystem);
+            DotRunBuilder.BuildRunBoundariesXml(domainDirectory, domainProject.DomainName, fileSystem);
             
             //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
             //    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity));
             foreach (var bc in domainProject.BoundedContexts)
-                ApiScaffolding.ScaffoldApi(domainDirectory, bc, fileSystem);
+                ApiScaffolding.ScaffoldApi(domainDirectory, bc, domainProject.DomainName, fileSystem);
 
             // auth server
             if (domainProject.AuthServer != null)
