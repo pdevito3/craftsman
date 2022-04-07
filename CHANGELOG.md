@@ -43,7 +43,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   
   * Login hints for auth server
   
-  * Minor helper override on fake generators 
+  * Minor helper override on fake generators
+  
+  * New `add:bff` command to add a bff to your solution
 
 
 ### Updated

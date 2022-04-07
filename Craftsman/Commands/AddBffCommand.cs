@@ -30,7 +30,25 @@
     {
         public static void Help()
         {
-            // ************************* TODO TBD
+            WriteHelpHeader(@$"Description:");
+            WriteHelpText(@$"   This command will add a bff to your solution along with a React client using a formatted yaml or json file that describes the bff you want to add.{Environment.NewLine}");
+
+            WriteHelpHeader(@$"Usage:");
+            WriteHelpText(@$"   craftsman add:bff [options] <filepath>");
+
+            WriteHelpText(Environment.NewLine);
+            WriteHelpHeader(@$"Arguments:");
+            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that lists the bff information that you want to add to your solution.");
+
+            WriteHelpText(Environment.NewLine);
+            WriteHelpHeader(@$"Options:");
+            WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
+
+            WriteHelpText(Environment.NewLine);
+            WriteHelpHeader(@$"Example:");
+            WriteHelpText(@$"   craftsman add:bff C:\fullpath\mybffinfo.yaml");
+            WriteHelpText(@$"   craftsman add:bff C:\fullpath\mybffinfo.yml");
+            WriteHelpText(@$"   craftsman add:bff C:\fullpath\mybffinfo.json");
         }
 
         public static void Run(string filePath, string domainDirectory, IFileSystem fileSystem)
@@ -41,7 +59,7 @@
                 Utilities.SolutionGuard(domainDirectory);
 
                 var template = FileParsingHelper.GetTemplateFromFile<BffTemplate>(filePath);
-                WriteHelpText($"Your template file was parsed successfully.");
+                WriteHelpText($"Your bff template file was parsed successfully.");
 
                 AnsiConsole.Status()
                     .AutoRefresh(true)
@@ -53,7 +71,7 @@
                         WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
                     });
                 
-                WriteHelpHeader($"{Environment.NewLine}Your event bus has been successfully added. Keep up the good work!");
+                WriteHelpHeader($"{Environment.NewLine}Your bff has been successfully added. Keep up the good work!");
                 StarGithubRequest();
             }
             catch (Exception e)
