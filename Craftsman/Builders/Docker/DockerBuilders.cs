@@ -154,7 +154,8 @@ volumes:";
       - '5672:5672'
     environment:
       RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest";
+      RABBITMQ_DEFAULT_PASS: guest
+";
         
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
