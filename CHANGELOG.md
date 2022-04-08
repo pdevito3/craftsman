@@ -95,6 +95,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Updated `Created` response for batch add
 
+- Use entity plural directory for tests
+
 ### Removed
 
 - Removed seeders

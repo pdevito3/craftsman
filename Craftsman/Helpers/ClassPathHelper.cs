@@ -252,9 +252,9 @@
             return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "ServiceTests"), className);
         }
 
-        public static ClassPath FeatureTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        public static ClassPath FeatureTestClassPath(string solutionDirectory, string className, string entityPlural, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "FeatureTests", entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "FeatureTests", entityPlural), className);
         }
 
         public static ClassPath FunctionalTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)

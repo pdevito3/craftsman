@@ -46,11 +46,10 @@ public class {consumer.ConsumerName}Tests : TestBase
 
         private static string ConsumerTest(Consumer consumer)
         {
-            var lowerConsumerName = consumer.ConsumerName.ToLower();
             var messageName = consumer.MessageName;
 
             return $@"[Test]
-    public async Task {lowerConsumerName}_can_consume_{consumer.MessageName}_message()
+    public async Task can_consume_{consumer.MessageName}_message()
     {{
         // Arrange
         var message = new Mock<{messageName}>();
