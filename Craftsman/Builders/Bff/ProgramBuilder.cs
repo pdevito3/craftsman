@@ -15,7 +15,7 @@ public class ProgramBuilder
     
     public static string GetProgramText(BffTemplate template, string solutionDirectory, string projectName)
     {
-        var classPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", projectName);
+        var loggerClassPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", projectName);
         var boundaryScopes = "";
         foreach(var scope in template.BoundaryScopes)
             boundaryScopes +=
@@ -28,7 +28,8 @@ public class ProgramBuilder
         .RequireAccessToken();";
         
         
-        return @$"using Duende.Bff;
+        return @$"using {loggerClassPath.ClassNamespace};
+using Duende.Bff;
 using Duende.Bff.Yarp;
 using Serilog;
 
