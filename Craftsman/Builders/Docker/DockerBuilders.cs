@@ -165,6 +165,11 @@ volumes:";
         if (!File.Exists(classPath.FullClassPath))
             return; //don't want to require this
 
+        // don't add it again if it's already there
+        var fileText = File.ReadAllText(classPath.FullClassPath);
+        if (fileText.Contains($"masstransit/rabbitmq"))
+            return;
+        
         var tempPath = $"{classPath.FullClassPath}temp";
         using (var input = File.OpenText(classPath.FullClassPath))
         {
@@ -197,6 +202,11 @@ volumes:";
         if (!File.Exists(classPath.FullClassPath))
             return; //don't want to require this
 
+        // don't add it again if it's already there
+        fileText = File.ReadAllText(classPath.FullClassPath);
+        if (fileText.Contains($"masstransit/rabbitmq"))
+            return;
+        
         tempPath = $"{classPath.FullClassPath}temp";
         using (var input = File.OpenText(classPath.FullClassPath))
         {
