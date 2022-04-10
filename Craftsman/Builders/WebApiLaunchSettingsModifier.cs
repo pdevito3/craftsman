@@ -8,9 +8,9 @@
 
     public class WebApiLaunchSettingsModifier
     {
-        public static void AddProfile(string solutionDirectory, ApiEnvironment env, int port, DockerConfig dockerConfig, string projectBaseName)
+        public static void AddProfile(string srcDirectory, ApiEnvironment env, int port, DockerConfig dockerConfig, string projectBaseName)
         {
-            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(solutionDirectory, $"launchsettings.json", projectBaseName); // hard coding webapi here not great
+            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchsettings.json", projectBaseName); // hard coding webapi here not great
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -65,6 +65,40 @@
       }},
       ""applicationUrl"": ""https://localhost:{port}""
     }},";
+        }
+        
+        public static void UpdateLaunchSettingEnvVar(string srcDirectory, string envVarName, string envVarVal, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchsettings.json", projectBaseName); // hard coding webapi here not great
+
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
+
+            if (!File.Exists(classPath.FullClassPath))
+                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = File.OpenText(classPath.FullClassPath))
+            {
+                using (var output = new StreamWriter(tempPath))
+                {
+                    string line;
+                    while (null != (line = input.ReadLine()))
+                    {
+                        var newText = $"{line}";
+                        if (line.Contains(envVarName))
+                        {
+                            newText = $@"        ""{envVarName}"": ""{envVarVal}"",";
+                        }
+
+                        output.WriteLine(newText);
+                    }
+                }
+            }
+
+            // delete the old file and set the name of the new one to the original name
+            File.Delete(classPath.FullClassPath);
+            File.Move(tempPath, classPath.FullClassPath);
         }
     }
 }

@@ -106,7 +106,10 @@
             Utilities.AddPackages(webApiClassPath, massTransitPackages);
 
             WebApiServiceExtensionsBuilder.CreateMassTransitServiceExtension(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
-            WebApiAppSettingsModifier.AddRmq(srcDirectory, template.Environment, projectBaseName, fileSystem);
+            WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_HOST", template.Environment.BrokerSettings.Host, projectBaseName);
+            WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_VIRTUAL_HOST", template.Environment.BrokerSettings.VirtualHost, projectBaseName);
+            WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_USERNAME", template.Environment.BrokerSettings.Username, projectBaseName);
+            WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_PASSWORD", template.Environment.BrokerSettings.Password, projectBaseName);
             StartupModifier.RegisterMassTransitService(srcDirectory, projectBaseName);
 
             IntegrationTestFixtureModifier.AddMassTransit(testDirectory, projectBaseName);

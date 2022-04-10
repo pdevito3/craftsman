@@ -452,7 +452,7 @@ using {parentClassPath.ClassNamespace};";
         }
 
         public static void AddStartupEnvironmentsWithServices(
-            string solutionDirectory,
+            string srcDirectory,
             string dbName,
             ApiEnvironment environment,
             SwaggerConfig swaggerConfig,
@@ -461,11 +461,11 @@ using {parentClassPath.ClassNamespace};";
             DockerConfig dockerConfig,
             IFileSystem fileSystem)
         {
-            AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, dbName, projectBaseName);
+            AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
 
-            WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, environment, port, dockerConfig, projectBaseName);
+            WebApiLaunchSettingsModifier.AddProfile(srcDirectory, environment, port, dockerConfig, projectBaseName);
             if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
-                SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, projectBaseName);
+                SwaggerBuilder.RegisterSwaggerInStartup(srcDirectory, projectBaseName);
         }
 
         public static void CreateFile(ClassPath classPath, string fileText, IFileSystem fileSystem)

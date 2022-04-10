@@ -12,10 +12,10 @@
         /// <summary>
         /// this build will create environment based app settings files.
         /// </summary>
-        public static void CreateWebApiAppSettings(string solutionDirectory, string dbName, string projectBaseName)
+        public static void CreateWebApiAppSettings(string srcDirectory, string dbName, string projectBaseName)
         {
             var appSettingFilename = Utilities.GetAppSettingsName();
-            var classPath = ClassPathHelper.WebApiAppSettingsClassPath(solutionDirectory, $"{appSettingFilename}", projectBaseName);
+            var classPath = ClassPathHelper.WebApiAppSettingsClassPath(srcDirectory, $"{appSettingFilename}", projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
