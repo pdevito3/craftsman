@@ -169,6 +169,16 @@
             return $"TestFixture";
         }
 
+        public static string CreateEntityUnitTestName(string entityName)
+        {
+            return $"Create{entityName}Tests";
+        }
+
+        public static string UpdateEntityUnitTestName(string entityName)
+        {
+            return $"Update{entityName}Tests";
+        }
+
         public static string GetEntityFeatureClassName(string entityName)
         {
             return $"Get{entityName}";

@@ -48,6 +48,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * New `add:bff` command to add a bff to your solution
   
   * New `add:bffentity` command to add entities to your bff
+  
+  * Basic unit test scaffolding for create and update methods
 
 
 ### Updated

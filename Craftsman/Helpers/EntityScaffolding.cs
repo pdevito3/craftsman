@@ -57,6 +57,8 @@
 
                 // Shared Tests
                 FakesBuilder.CreateFakes(solutionDirectory, testDirectory, projectBaseName, entity, fileSystem);
+                CreateEntityUnitTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, fileSystem);
+                UpdateEntityUnitTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, fileSystem);
             }
         }
 
