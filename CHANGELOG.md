@@ -50,6 +50,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * New `add:bffentity` command to add entities to your bff
   
   * Basic unit test scaffolding for create and update methods
+  
+  * Unit tests for updating rolepermissions
 
 
 ### Updated

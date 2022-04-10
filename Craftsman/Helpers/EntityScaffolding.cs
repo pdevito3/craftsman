@@ -108,7 +108,8 @@
 
             // Shared Tests
             FakesBuilder.CreateRolePermissionFakes(solutionDirectory, testDirectory, projectBaseName, entity, fileSystem);
-            RolePermissionsUnitTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName, fileSystem);
+            RolePermissionsUnitTestBuilder.CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName, fileSystem);
+            RolePermissionsUnitTestBuilder.UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName, fileSystem);
             UserPolicyHandlerIntegrationTests.CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName, fileSystem);
             
             // need to do db modifier
