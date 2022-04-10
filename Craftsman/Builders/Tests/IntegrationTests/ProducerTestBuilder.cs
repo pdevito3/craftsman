@@ -46,11 +46,10 @@ public class {producer.ProducerName}Tests : TestBase
 
         private static string ProducerTest(Producer producer)
         {
-            var lowerProducerName = producer.ProducerName.ToLower();
             var messageName = producer.MessageName;
 
             return $@"[Test]
-    public async Task {lowerProducerName}_can_produce_{producer.MessageName}_message()
+    public async Task can_produce_{producer.MessageName}_message()
     {{
         // Arrange
         var command = new {producer.ProducerName}.{producer.ProducerName}Command();
