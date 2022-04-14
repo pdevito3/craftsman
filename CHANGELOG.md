@@ -101,6 +101,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Use entity plural directory for tests
 
+- MassTransit bumped to v8
+
 ### Removed
 
 - Removed seeders

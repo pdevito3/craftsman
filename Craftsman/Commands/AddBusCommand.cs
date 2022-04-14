@@ -97,10 +97,8 @@
         public static void AddBus(Bus template, string srcDirectory, string testDirectory, string projectBaseName, string solutionDirectory, IFileSystem fileSystem)
         {
             var massTransitPackages = new Dictionary<string, string>{
-                    { "MassTransit", "7.2.4" },
-                    { "MassTransit.AspNetCore", "7.2.4" },
-                    { "MassTransit.Extensions.DependencyInjection", "7.2.4" },
-                    { "MassTransit.RabbitMQ", "7.2.4" }
+                    { "MassTransit", "8.0.1" },
+                    { "MassTransit.RabbitMQ", "8.0.1" }
                 };
             var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
             Utilities.AddPackages(webApiClassPath, massTransitPackages);

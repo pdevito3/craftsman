@@ -168,7 +168,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using RabbitMQ.Client;
 using System.Reflection;
 
 public static class MassTransitServiceExtension
@@ -194,7 +193,7 @@ public static class MassTransitServiceExtension
                     // Consumers -- Do Not Delete This Comment
                 }});
             }});
-            services.AddMassTransitHostedService();
+            services.AddOptions<MassTransitHostOptions>();
         }}
     }}
 }}";
