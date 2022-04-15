@@ -172,7 +172,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     }}
     
     [Test]
-    public void can_NOT_updatE_rolepermission_with_invalid_permission()
+    public void can_NOT_update_rolepermission_with_invalid_permission()
     {{
         // Arrange
         var rolePermission = RolePermission.Create(new RolePermissionForCreationDto()
