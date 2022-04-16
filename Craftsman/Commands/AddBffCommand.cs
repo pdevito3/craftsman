@@ -19,6 +19,7 @@
     using Builders.Bff.Features.Dynamic.Types;
     using Builders.Bff.Features.Home;
     using Builders.Bff.Src;
+    using Builders.Docker;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Builders.Tests.Utilities;
@@ -162,10 +163,9 @@
             EntityScaffolding.ScaffoldBffEntities(template.Entities, fileSystem, spaDirectory);
 
             // Docker
-            // TODO add auth vars to docker compose
-            
+            // BffDockerfileBuilder.CreateBffDotNetDockerfile(projectDirectory, projectName, fileSystem);
+            // DockerComposeBuilders.CreateDockerIgnore(projectDirectory, projectDirectory, fileSystem);
             // TODO docs on ApiAddress and making a resource to abstract out the baseurl and that the `ApiAddress` can be a string that incorporates that
-
             // TODO AnsiConsole injection for status updates
         }
     }

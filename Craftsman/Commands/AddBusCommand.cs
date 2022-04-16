@@ -111,7 +111,7 @@
             StartupModifier.RegisterMassTransitService(srcDirectory, projectBaseName);
 
             IntegrationTestFixtureModifier.AddMassTransit(testDirectory, projectBaseName);
-            DockerBuilders.AddRmqToDockerCompose(solutionDirectory);
+            DockerComposeBuilders.AddRmqToDockerCompose(solutionDirectory);
         }
     }
 }

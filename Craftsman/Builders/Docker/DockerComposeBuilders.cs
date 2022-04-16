@@ -9,14 +9,8 @@ using System.Linq;
 using Enums;
 using Models;
 
-public static class DockerBuilders
+public static class DockerComposeBuilders
 {
-    public static void CreateDockerfile(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
-    {
-        var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Dockerfile", projectBaseName);
-        var fileText = GetDockerfileText(projectBaseName);
-        Utilities.CreateFile(classPath, fileText, fileSystem);
-    }
     
     public static void CreateDockerComposeSkeleton(string solutionDirectory, IFileSystem fileSystem)
     {
@@ -31,61 +25,6 @@ public static class DockerBuilders
         var fileText = GetDockerComposeSkeletonText();
         Utilities.CreateFile(classPath, fileText, fileSystem);
     }
-    
-    public static void CreateDockerIgnore(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
-    {
-        var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $".dockerignore", projectBaseName);
-        var fileText = GetDockerIgnoreText();
-        Utilities.CreateFile(classPath, fileText, fileSystem);
-    }
-
-    private static string GetDockerfileText(string projectBaseName)
-    {
-        return @$"FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
-WORKDIR /app
-
-# Copy csproj and restore as distinct layers
-COPY [""{projectBaseName}/src/{projectBaseName}/{projectBaseName}.csproj"", ""./{projectBaseName}/src/{projectBaseName}/""]
-COPY [""SharedKernel/SharedKernel.csproj"", ""./SharedKernel/""]
-RUN dotnet restore ""./{projectBaseName}/src/{projectBaseName}/{projectBaseName}.csproj""
-
-# Copy everything else and build
-COPY . ./
-RUN dotnet build ""{projectBaseName}/src/{projectBaseName}/{projectBaseName}.csproj"" -c Release -o /app/build
-
-FROM build-env AS publish
-RUN dotnet publish ""{projectBaseName}/src/{projectBaseName}/{projectBaseName}.csproj"" -c Release -o /app/out
-
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
-WORKDIR /app
-COPY --from=publish /app/out .
-
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
-
-ENTRYPOINT [""dotnet"", ""/app/{projectBaseName}.dll""]
-";
-        
-        /* if I want to do both 80 and 443, do
-```            
-ENV ASPNETCORE_URLS=http://+:80;https://+:443
-EXPOSE 80
-EXPOSE 443
-```
-
-also add an `80` port in `ports` in docker-compose.yaml like 
-```
-    ports:
-      #- ""{dockerConfig.ApiPort-1}:80""
-      - ""{dockerConfig.ApiPort}:443""
-```
-
-Then take off httpsredirect in startup
-
-
-         */
-    }
 
     private static string GetDockerComposeSkeletonText()
     {
@@ -95,17 +34,18 @@ services:
         
 volumes:";
     }
-
-
+    
     public static void AddVolumeToDockerComposeDb(string solutionDirectory, DockerConfig dockerConfig)
     {
         var services = "";
-        var volumes = GetDbTextForCompose(dockerConfig, out var dbService);
+        var volumes = GetDbVolumeAndServiceTextForCompose(dockerConfig, out var dbService);
 
         services += $@"
   {dockerConfig.DbHostName}:{dbService}";
         
-        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
+        // TODO change back to `.data` and use a regular compose that can do apis, bffs, auth server as well
+        // var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
         if (!Directory.Exists(classPath.ClassDirectory))
             Directory.CreateDirectory(classPath.ClassDirectory);
@@ -194,20 +134,25 @@ volumes:";
         File.Move(tempPath, classPath.FullClassPath);
         
         // now do docker compose data
-        classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
+        // AddRmqToComposeData(solutionDirectory, services);
+    }
+
+    private static void AddRmqToComposeData(string solutionDirectory, string rmqServicesText)
+    {
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
 
         if (!Directory.Exists(classPath.ClassDirectory))
             Directory.CreateDirectory(classPath.ClassDirectory);
 
         if (!File.Exists(classPath.FullClassPath))
-            return; //don't want to require this
+            return;
 
         // don't add it again if it's already there
-        fileText = File.ReadAllText(classPath.FullClassPath);
+        var fileText = File.ReadAllText(classPath.FullClassPath);
         if (fileText.Contains($"masstransit/rabbitmq"))
             return;
-        
-        tempPath = $"{classPath.FullClassPath}temp";
+
+        var tempPath = $"{classPath.FullClassPath}temp";
         using (var input = File.OpenText(classPath.FullClassPath))
         {
             using (var output = new StreamWriter(tempPath))
@@ -218,7 +163,7 @@ volumes:";
                     var newText = $"{line}";
                     if (line.Contains($"services:"))
                     {
-                        newText += @$"{services}";
+                        newText += @$"{rmqServicesText}";
                     }
 
                     output.WriteLine(newText);
@@ -231,11 +176,12 @@ volumes:";
         File.Move(tempPath, classPath.FullClassPath);
     }
 
-    public static void AddBoundaryToDockerCompose(string solutionDirectory, DockerConfig dockerConfig)
+    public static void AddBoundaryToDockerCompose(string solutionDirectory, DockerConfig dockerConfig, string clientId, string clientSecret, string audience)
     {
         var services = "";
-        var volumes = GetDbTextForCompose(dockerConfig, out var dbService);
+        var volumes = GetDbVolumeAndServiceTextForCompose(dockerConfig, out var dbService);
 
+        // just add all env vars potentially needed. can be ignored or deleted if not needed. updated if vals change?
         services += $@"
   {dockerConfig.DbHostName}:{dbService}
 
@@ -248,6 +194,72 @@ volumes:";
     environment:
       ASPNETCORE_ENVIRONMENT: ""Development""
       DB_CONNECTION_STRING: ""{dockerConfig.DbConnectionStringCompose}""
+      ASPNETCORE_URLS: ""https://+:8080;""
+      ASPNETCORE_Kestrel__Certificates__Default__Path: ""/https/aspnetappcert.pfx""
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ""password""
+      AUTH_AUDIENCE: {audience}
+      AUTH_AUTHORITY: https://auth-server:{dockerConfig.AuthServerPort}
+      AUTH_AUTHORIZATION_URL: https://auth-server:{dockerConfig.AuthServerPort}/connect/authorize
+      AUTH_TOKEN_URL: https://auth-server:{dockerConfig.AuthServerPort}/connect/token
+      AUTH_CLIENT_ID: {clientId}
+      AUTH_CLIENT_SECRET: {clientSecret}
+      RMQ_HOST: rabbitmq
+      RMQ_VIRTUAL_HOST: /
+      RMQ_USERNAME: guest
+      RMQ_PASSWORD: guest
+
+    volumes:
+      - ~/.aspnet/https:/https:ro";
+        
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
+
+        if (!Directory.Exists(classPath.ClassDirectory))
+            Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!File.Exists(classPath.FullClassPath))
+            return; //don't want to require this
+
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = File.OpenText(classPath.FullClassPath))
+        {
+            using (var output = new StreamWriter(tempPath))
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"services:"))
+                    {
+                        newText += @$"{services}";
+                    }
+                    if (line.Equals($"volumes:"))
+                    {
+                        newText += @$"{volumes}";
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        File.Delete(classPath.FullClassPath);
+        File.Move(tempPath, classPath.FullClassPath);
+    }
+
+    public static void AddAuthServerToDockerCompose(string solutionDirectory, string projectName, int port)
+    {
+        var services = "";
+
+        services += $@"
+  auth-server:
+    build:
+      context: .
+      dockerfile: {projectName}/Dockerfile
+    ports:
+      - ""{port}:8080""
+    environment:
+      ASPNETCORE_ENVIRONMENT: ""Development""
       ASPNETCORE_URLS: ""https://+:8080;""
       ASPNETCORE_Kestrel__Certificates__Default__Path: ""/https/aspnetappcert.pfx""
       ASPNETCORE_Kestrel__Certificates__Default__Password: ""password""
@@ -276,10 +288,6 @@ volumes:";
                     {
                         newText += @$"{services}";
                     }
-                    if (line.Contains($"volumes:"))
-                    {
-                        newText += @$"{volumes}";
-                    }
 
                     output.WriteLine(newText);
                 }
@@ -291,7 +299,7 @@ volumes:";
         File.Move(tempPath, classPath.FullClassPath);
     }
 
-    private static string GetDbTextForCompose(DockerConfig dockerConfig, out string dbService)
+    private static string GetDbVolumeAndServiceTextForCompose(DockerConfig dockerConfig, out string dbService)
     {
         var volumes = "";
         dbService = $@"
@@ -324,34 +332,5 @@ volumes:";
 
         volumes += $"{Environment.NewLine}  {dockerConfig.VolumeName}:";
         return volumes;
-    }
-
-    private static string GetDockerIgnoreText()
-    {
-        return @$"**/.dockerignore
-**/.env
-**/.git
-**/.gitignore
-**/.project
-**/.settings
-**/.toolstarget
-**/.vs
-**/.vscode
-**/.idea
-**/*.*proj.user
-**/*.dbmdl
-**/*.jfm
-**/azds.yaml
-**/bin
-**/charts
-**/docker-compose*
-**/Dockerfile*
-**/node_modules
-**/npm-debug.log
-**/obj
-**/secrets.dev.yaml
-**/values.dev.yaml
-LICENSE
-README.md";
     }
 }

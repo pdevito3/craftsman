@@ -37,20 +37,23 @@ This project is configured to reference a live database instead of an in-memory 
 By default, the database will be configured to run in a docker container and already has the connection 
 string configured in your launch settings.
 
-To set up your database you can either:
-1. Run `docker-compose up --build`  to spin up your database(s) along with all of your apis.
-2. Run `docker-compose -f docker-compose.data.yaml up --build` to just spin up your database(s) (and message broker, if applicable). 
+To set up your database(s):
+1. Run `docker-compose up --build` from your `sln` directory to spin up your database(s) (and RabbitMQ, if needed).
 
 After you have your database(s) running in docker, make sure you apply your migrations:
-1. `cd` to the boundary project root (e.g. `cd RecipeManagement/src/RecipeManagement`
-2. Run `dotnet ef database update` to apply your migrations
+1. Make sure you have a migrations in your boundary project (there should be a `Migrations` directory in the project directory). 
+If there isn't see [Running Migrations](#running-migrations) below.
+2. Confirm your environment (`ASPNETCORE_ENVIRONMENT`) is set to `Development` using 
+`$Env:ASPNETCORE_ENVIRONMENT = ""Development""` for powershell or `export ASPNETCORE_ENVIRONMENT=Development` for bash.
+3. `cd` to the boundary project root (e.g. `cd RecipeManagement/src/RecipeManagement`)
+4. Run `dotnet ef database update` to apply your migrations. 
 
-### Running Your Apis
-If you used `docker-compose.yaml` your api(s) will be running in docker containers; these settings will be set in your compose file.
-Otherwise, you can use the `dotnet run` command or the built in `Run` option in your IDE. Either way, those will be getting all their 
-settings from `launchSettings.json`.
+> You can also stay in the `sln` root and 
+run something like `dotnet ef database update --project RecipeManagement/src/RecipeManagement`
 
-For debugging, you can use docker compose debugging or stop a running container (if needed) and run it using your IDE or `dotnet run` command. 
+### Running Your Project(s)
+Once you have your database(s) running, you can run your API(s), BFF, and Auth Servers by using 
+the `dotnet run` command or running your project(s) from your IDE of choice.   
 
 ## Running Integration Tests
 To run integration tests:
@@ -67,7 +70,6 @@ To run integration tests:
 - If your entity has foreign keys, you'll likely need to adjust some of your tests after scaffolding to accomodate them.
 
 ## Running Migrations
-
 To create a new migration, make sure your environment is set to `Development`:
 
 ### Powershell

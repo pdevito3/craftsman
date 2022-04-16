@@ -95,8 +95,8 @@
             SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
 
             // need this before boundaries to give them something to build against
-            DockerBuilders.CreateDockerComposeSkeleton(domainDirectory, fileSystem);
-            DockerBuilders.CreateDockerComposeDbSkeleton(domainDirectory, fileSystem);
+            DockerComposeBuilders.CreateDockerComposeSkeleton(domainDirectory, fileSystem);
+            // DockerBuilders.CreateDockerComposeDbSkeleton(domainDirectory, fileSystem);
             
             //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
             //    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity));

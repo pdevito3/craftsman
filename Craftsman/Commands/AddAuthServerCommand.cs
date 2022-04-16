@@ -9,6 +9,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using Builders.AuthServer;
+    using Builders.Docker;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Validators;
@@ -127,6 +128,9 @@
             AuthServerTestUsersBuilder.CreateTestModels(solutionDirectory, template.Name, fileSystem);
             AuthServerExtensionsBuilder.CreateExtensions(solutionDirectory, template.Name, fileSystem);
             SecurityHeadersAttributeBuilder.CreateAttribute(solutionDirectory, template.Name, fileSystem);
+            AuthServerDockerfileBuilder.CreateAuthServerDotNetDockerfile(solutionDirectory, template.Name, fileSystem);
+            DockerIgnoreBuilder.CreateDockerIgnore(solutionDirectory, template.Name, fileSystem);
+            // DockerComposeBuilders.AddAuthServerToDockerCompose(projectDirectory, template.Name, template.Port);
         }
     }
 }

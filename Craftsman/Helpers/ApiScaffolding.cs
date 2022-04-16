@@ -63,6 +63,11 @@
 
             // base files needed before below is ran
             template.DockerConfig.ApiPort ??= template.Port; // set to the launch settings port if needed... really need to refactor to a domain layer and dto layer 😪
+            template.DockerConfig.AuthServerPort ??= template.Environment.AuthSettings.AuthorizationUrl
+                .Replace("localhost", "")
+                .Replace("https://", "")
+                .Replace("http://", "")
+                .Replace(":", ""); // this is fragile and i hate it. also not in domain...
             DbContextBuilder.CreateDbContext(srcDirectory,
                 template.Entities,
                 template.DbContext.ContextName,
@@ -132,9 +137,6 @@
             CurrentUserServiceBuilder.GetCurrentUserService(srcDirectory, projectBaseName, fileSystem);
             SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName, fileSystem);
 
-            DockerBuilders.CreateDockerfile(srcDirectory, projectBaseName, fileSystem);
-            DockerBuilders.CreateDockerIgnore(srcDirectory, projectBaseName, fileSystem);
-
             if (template.Bus.AddBus)
                 AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
 
@@ -144,8 +146,14 @@
             if (template.Producers.Count > 0)
                 AddProducerCommand.AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
             
-            DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory, template.DockerConfig);
-            DockerBuilders.AddVolumeToDockerComposeDb(solutionDirectory, template.DockerConfig);
+            WebApiDockerfileBuilder.CreateStandardDotNetDockerfile(srcDirectory, projectBaseName, fileSystem);
+            DockerIgnoreBuilder.CreateDockerIgnore(srcDirectory, projectBaseName, fileSystem);
+            // DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory,
+            //     template.DockerConfig,
+            //     template.Environment.AuthSettings.ClientId,
+            //     template.Environment.AuthSettings.ClientSecret,
+            //     template.Environment.AuthSettings.Audience);
+            DockerComposeBuilders.AddVolumeToDockerComposeDb(solutionDirectory, template.DockerConfig);
         }
     }
 }

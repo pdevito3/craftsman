@@ -13,8 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * A `Dockerfile` and `.dockerignore` will be added to each bounded context automatically
 
-* A `docker-compose.yaml` and `docker-compose.data.yaml` will be added to your solution root by default for local development
-  * Just run `docker-compose -f docker-compose.data.yaml up --build` in your project root to spin up everything or ` docker-compose up --build` to just spin up your databases (good for running your api(s) through VS or Rider)
+* A `docker-compose.yaml` will be added to your solution root by default for local development
+  * Just run `docker-compose up --build` to spin up your databases (and RMQ if needed)
 
   * Then set an env and apply migrations. For a postgres example:
     * env
