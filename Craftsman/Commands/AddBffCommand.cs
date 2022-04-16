@@ -161,6 +161,7 @@
             HomeFeatureBuilder.CreateHomeFeatureIndex(spaDirectory, fileSystem);
             
             EntityScaffolding.ScaffoldBffEntities(template.Entities, fileSystem, spaDirectory);
+            BffReadmeBuilder.CreateReadme(spaDirectory, projectName, fileSystem);
 
             // Docker
             // BffDockerfileBuilder.CreateBffDotNetDockerfile(projectDirectory, projectName, fileSystem);
