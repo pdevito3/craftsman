@@ -119,9 +119,8 @@
             LoggingConfigurationBuilder.CreateBffConfigFile(domainDirectory, projectName, fileSystem);
             
             ProgramBuilder.CreateProgram(projectDirectory, domainDirectory, projectName, template, fileSystem);
-            
-            // TODO README at root
-            
+            BffReadmeBuilder.CreateReadme(projectDirectory, projectName, fileSystem);
+
             // SPA - root
             ViteConfigBuilder.CreateViteConfig(spaDirectory, template.ProxyPort, fileSystem);
             TsConfigBuilder.CreateTsConfigPaths(spaDirectory, fileSystem);
@@ -161,7 +160,6 @@
             HomeFeatureBuilder.CreateHomeFeatureIndex(spaDirectory, fileSystem);
             
             EntityScaffolding.ScaffoldBffEntities(template.Entities, fileSystem, spaDirectory);
-            BffReadmeBuilder.CreateReadme(spaDirectory, projectName, fileSystem);
 
             // Docker
             // BffDockerfileBuilder.CreateBffDotNetDockerfile(projectDirectory, projectName, fileSystem);
