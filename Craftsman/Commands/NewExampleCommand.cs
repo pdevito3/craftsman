@@ -340,6 +340,8 @@ Bff:
   RemoteEndpoints:
     - LocalPath: /api/recipes
       ApiAddress: https://localhost:5375/api/recipes
+    - LocalPath: /api/ingredients
+      ApiAddress: https://localhost:5375/api/ingredients
   BoundaryScopes:
     - recipe_management
   Entities:
