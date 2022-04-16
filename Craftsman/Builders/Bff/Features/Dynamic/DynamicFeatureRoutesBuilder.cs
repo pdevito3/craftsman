@@ -41,7 +41,7 @@ public class DynamicFeatureRoutesBuilder
 import {{ use{entityPlural.UppercaseFirstLetter()} }} from '../api';
 
 function {listRouteName}() {{
-	const {{ data: {entityResponseVar} }} = use{entityPlural.UppercaseFirstLetter()}();
+	const {{ data: {entityResponseVar}, isLoading }} = use{entityPlural.UppercaseFirstLetter()}({{}});
 	const {entityDataVar} = {entityResponseVar}?.data;
 	// const {entityPaginationVar} = {entityResponseVar}?.pagination;
 

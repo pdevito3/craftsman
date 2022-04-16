@@ -97,7 +97,7 @@ export default function PrivateSideNav() {{
 									</Transition.Child>
 									<div className='flex-1 h-0 pt-5 pb-4 overflow-y-auto'>
 										<div className='flex items-center flex-shrink-0 px-4'>
-											<NavLink to={'/'}>
+											<NavLink to={{'/'}}>
 												<img
 													className='w-auto h-8'
 													src={{logo}}

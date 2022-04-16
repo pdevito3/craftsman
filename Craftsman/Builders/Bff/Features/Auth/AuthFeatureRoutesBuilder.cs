@@ -83,8 +83,8 @@ function Login() {{
 							Login
 						</a>
 					</div>
-					<a href='https://wrapt.dev' target='_blank' rel='noopener' className='border border-transparent rounded-md transition-colors ease-in cursor-pointer col-span-3 sm:col-span-1 p-4 flex flex-col hover:border-gray-600 hover:bg-gray-800'><svg width={40} height={40} viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
-						<path d='M20 10.4217C21.9467 9.12833 24.59 8.33333 27.5 8.33333C30.4117 8.33333 33.0533 9.12833 35 10.4217V32.0883C33.0533 30.795 30.4117 30 27.5 30C24.59 30 21.9467 30.795 20 32.0883M20 10.4217V32.0883V10.4217ZM20 10.4217C18.0533 9.12833 15.41 8.33333 12.5 8.33333C9.59 8.33333 6.94667 9.12833 5 10.4217V32.0883C6.94667 30.795 9.59 30 12.5 30C15.41 30 18.0533 30.795 20 32.0883V10.4217Z' stroke='currentColor' strokeWidth={2} strokeLinecap='round' strokeLinejoin='round' />
+					<a href='https://wrapt.dev' target='_blank' rel='noopener' className='border border-transparent rounded-md transition-colors ease-in cursor-pointer col-span-3 sm:col-span-1 p-4 flex flex-col hover:border-gray-600 hover:bg-gray-800'><svg width={{40}} height={{40}} viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
+						<path d='M20 10.4217C21.9467 9.12833 24.59 8.33333 27.5 8.33333C30.4117 8.33333 33.0533 9.12833 35 10.4217V32.0883C33.0533 30.795 30.4117 30 27.5 30C24.59 30 21.9467 30.795 20 32.0883M20 10.4217V32.0883V10.4217ZM20 10.4217C18.0533 9.12833 15.41 8.33333 12.5 8.33333C9.59 8.33333 6.94667 9.12833 5 10.4217V32.0883C6.94667 30.795 9.59 30 12.5 30C15.41 30 18.0533 30.795 20 32.0883V10.4217Z' stroke='currentColor' strokeWidth={{2}} strokeLinecap='round' strokeLinejoin='round' />
 						<rect x='23.3334' y='13.3333' width='8.33334' height='1.66667' rx='0.833333' fill='currentColor' />
 						<rect x='8.33337' y='13.3333' width='8.33333' height='1.66667' rx='0.833333' fill='currentColor' />
 						<rect x='8.33337' y='18.3333' width='8.33333' height='1.66667' rx='0.833333' fill='currentColor' />
@@ -96,25 +96,25 @@ function Login() {{
 						<p className='mt-2'>Find in depth information about the Wrapt framework.</p>
 					</a>
 					<a href='https://github.com/pdevito3/craftsman' target='_blank' rel='noopener' className='cursor-pointer border border-transparent rounded-md transition-colors ease-in col-span-3 sm:col-span-1 p-4 flex flex-col hover:border-gray-600 hover:bg-gray-800'>
-						<svg width={40} height={40} viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
+						<svg width={{40}} height={{40}} viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
 							<path fillRule='evenodd' clipRule='evenodd' d='M20 3.33333C10.795 3.33333 3.33337 10.8067 3.33337 20.0283C3.33337 27.4033 8.10837 33.6617 14.7317 35.8683C15.565 36.0217 15.8684 35.5067 15.8684 35.0633C15.8684 34.6683 15.855 33.6167 15.8467 32.225C11.21 33.2333 10.2317 29.9867 10.2317 29.9867C9.47504 28.0567 8.38171 27.5433 8.38171 27.5433C6.86837 26.51 8.49671 26.53 8.49671 26.53C10.1684 26.6467 11.0484 28.25 11.0484 28.25C12.535 30.8 14.95 30.0633 15.8984 29.6367C16.0517 28.5583 16.4817 27.8233 16.9584 27.4067C13.2584 26.985 9.36671 25.5517 9.36671 19.155C9.36671 17.3333 10.0167 15.8417 11.0817 14.675C10.91 14.2533 10.3384 12.555 11.245 10.2583C11.245 10.2583 12.645 9.80833 15.8284 11.9683C17.188 11.5975 18.5908 11.4087 20 11.4067C21.4167 11.4133 22.8417 11.5983 24.1734 11.9683C27.355 9.80833 28.7517 10.2567 28.7517 10.2567C29.6617 12.555 29.0884 14.2533 28.9184 14.675C29.985 15.8417 30.6317 17.3333 30.6317 19.155C30.6317 25.5683 26.7334 26.98 23.0217 27.3933C23.62 27.9083 24.1517 28.9267 24.1517 30.485C24.1517 32.715 24.1317 34.5167 24.1317 35.0633C24.1317 35.51 24.4317 36.03 25.2784 35.8667C28.5972 34.7535 31.4823 32.6255 33.5258 29.7834C35.5694 26.9413 36.6681 23.5289 36.6667 20.0283C36.6667 10.8067 29.2034 3.33333 20 3.33333Z' fill='currentColor' />
 						</svg>
 						<h5 className='font-semibold text-xl mt-4'>GitHub</h5>
 						<p className='mt-2'>Powered by an OS project called Craftsman, all the code available on GitHub. Stars ⭐️ are greatly appreciated!</p>
 					</a>
 					<a href='https://discord.gg/TBq2rVkSEj' target='_blank' rel='noopener' className='cursor-pointer border border-transparent rounded-md transition-colors ease-in col-span-3 sm:col-span-1 p-4 flex flex-col gap-y-4 hover:border-gray-600 hover:bg-gray-800'>
-						<svg className='w-10 h-10' width={71} height={55} viewBox='0 0 71 55' fill='none' xmlns='http://www.w3.org/2000/svg'>
+						<svg className='w-10 h-10' width={{71}} height={{55}} viewBox='0 0 71 55' fill='none' xmlns='http://www.w3.org/2000/svg'>
 							<g clipPath='url(#clip0)'>
 								<path d='M60.1045 4.8978C55.5792 2.8214 50.7265 1.2916 45.6527 0.41542C45.5603 0.39851 45.468 0.440769 45.4204 0.525289C44.7963 1.6353 44.105 3.0834 43.6209 4.2216C38.1637 3.4046 32.7345 3.4046 27.3892 4.2216C26.905 3.0581 26.1886 1.6353 25.5617 0.525289C25.5141 0.443589 25.4218 0.40133 25.3294 0.41542C20.2584 1.2888 15.4057 2.8186 10.8776 4.8978C10.8384 4.9147 10.8048 4.9429 10.7825 4.9795C1.57795 18.7309 -0.943561 32.1443 0.293408 45.3914C0.299005 45.4562 0.335386 45.5182 0.385761 45.5576C6.45866 50.0174 12.3413 52.7249 18.1147 54.5195C18.2071 54.5477 18.305 54.5139 18.3638 54.4378C19.7295 52.5728 20.9469 50.6063 21.9907 48.5383C22.0523 48.4172 21.9935 48.2735 21.8676 48.2256C19.9366 47.4931 18.0979 46.6 16.3292 45.5858C16.1893 45.5041 16.1781 45.304 16.3068 45.2082C16.679 44.9293 17.0513 44.6391 17.4067 44.3461C17.471 44.2926 17.5606 44.2813 17.6362 44.3151C29.2558 49.6202 41.8354 49.6202 53.3179 44.3151C53.3935 44.2785 53.4831 44.2898 53.5502 44.3433C53.9057 44.6363 54.2779 44.9293 54.6529 45.2082C54.7816 45.304 54.7732 45.5041 54.6333 45.5858C52.8646 46.6197 51.0259 47.4931 49.0921 48.2228C48.9662 48.2707 48.9102 48.4172 48.9718 48.5383C50.038 50.6034 51.2554 52.5699 52.5959 54.435C52.6519 54.5139 52.7526 54.5477 52.845 54.5195C58.6464 52.7249 64.529 50.0174 70.6019 45.5576C70.6551 45.5182 70.6887 45.459 70.6943 45.3942C72.1747 30.0791 68.2147 16.7757 60.1968 4.9823C60.1772 4.9429 60.1437 4.9147 60.1045 4.8978ZM23.7259 37.3253C20.2276 37.3253 17.3451 34.1136 17.3451 30.1693C17.3451 26.225 20.1717 23.0133 23.7259 23.0133C27.308 23.0133 30.1626 26.2532 30.1066 30.1693C30.1066 34.1136 27.28 37.3253 23.7259 37.3253ZM47.3178 37.3253C43.8196 37.3253 40.9371 34.1136 40.9371 30.1693C40.9371 26.225 43.7636 23.0133 47.3178 23.0133C50.9 23.0133 53.7545 26.2532 53.6986 30.1693C53.6986 34.1136 50.9 37.3253 47.3178 37.3253Z' fill='#ffffff' />
 							</g>
 							<defs>
 								<clipPath id='clip0'>
-									<rect width={71} height={55} fill='white' />
+									<rect width={{71}} height={{55}} fill='white' />
 								</clipPath>
 							</defs>
 						</svg>
 						<h5 className='font-semibold text-xl'>Discord</h5>
-						<p>Join the Wrapt Discord to particpate in community discussions and get latest news about releases.</p>
+						<p>Join the Wrapt Discord to participate in community discussions and get latest news about releases.</p>
 					</a>
 				</div>
 			)}}

@@ -26,7 +26,7 @@ public class DynamicFeatureGetListEntityBuilder
 		var keyExportName = Utilities.BffApiKeysExport(entityName);
 		
 		return @$"import {{ api }} from '@/lib/axios';
-import {{ useQuery, queryString }} from 'react-query';
+import {{ useQuery }} from 'react-query';
 import {{ {keyExportName} }} from './{keysImport}';
 import queryString from 'query-string'
 import {{ QueryParams, {readDtoName} }} from '../types';
@@ -34,6 +34,10 @@ import {{PagedResponse, Pagination}} from '@/types/api';
 import {{AxiosResponse}} from 'axios';
 
 const get{entityPluralUppercaseFirst} = (queryString: string) => {{
+	queryString = queryString == '' 
+		? queryString 
+		: `?${{queryString}}`;
+
 	return api.get(`/api/{entityPluralLowercase}?${{queryString}}`)
 		.then((response: AxiosResponse<{readDtoName}[]>) => {{
 			return {{
@@ -44,10 +48,7 @@ const get{entityPluralUppercaseFirst} = (queryString: string) => {{
 }};
 
 export const use{entityPluralUppercaseFirst} = ({{ pageNumber, pageSize, filters, sortOrder }}: QueryParams) => {{
-	const queryParams = queryString.stringify({{ pageNumber, pageSize, filters, sortOrder }});
-	queryParams = queryParams == '?' 
-		? null 
-		: queryParams;
+	let queryParams = queryString.stringify({{ pageNumber, pageSize, filters, sortOrder }});
 
 	return useQuery(
 		{keyExportName}.list(queryParams ?? ''),
