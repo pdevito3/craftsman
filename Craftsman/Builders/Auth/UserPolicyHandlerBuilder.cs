@@ -5,14 +5,14 @@
 
     public class UserPolicyHandlerBuilder
     {
-        public static void CreatePolicyBuilder(string solutionDirectory, string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreatePolicyBuilder(string solutionDirectory, string srcDirectory, string projectBaseName, string dbContextName, IFileSystem fileSystem)
         {
             var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
-            var fileText = GetPolicyBuilderText(classPath.ClassNamespace, solutionDirectory, srcDirectory, projectBaseName);
+            var fileText = GetPolicyBuilderText(classPath.ClassNamespace, solutionDirectory, srcDirectory, dbContextName, projectBaseName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
         
-        private static string GetPolicyBuilderText(string classNamespace, string solutionDirectory, string srcDirectory, string projectBaseName)
+        private static string GetPolicyBuilderText(string classNamespace, string solutionDirectory, string srcDirectory, string dbContextName, string projectBaseName)
         {
             var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
             var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
@@ -29,10 +29,10 @@ using Microsoft.EntityFrameworkCore;
 
 public class UserPolicyHandler : IUserPolicyHandler
 {{
-    private readonly RecipesDbContext _dbContext;
+    private readonly {dbContextName} _dbContext;
     private readonly ICurrentUserService _currentUserService;
 
-    public UserPolicyHandler(RecipesDbContext dbContext, ICurrentUserService currentUserService)
+    public UserPolicyHandler({dbContextName} dbContext, ICurrentUserService currentUserService)
     {{
         _dbContext = dbContext;
         _currentUserService = currentUserService;

@@ -8,6 +8,8 @@
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
+    using Builders.Docker;
+    using Builders.ScaffoldingExtensions;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Builders.Tests.Utilities;
@@ -43,7 +45,7 @@
             try
             {
                 var template = new Bus();
-                template.Environments.Add(new ApiEnvironment { EnvironmentName = "Development" });
+                template.Environment = new ApiEnvironment();
                 if (!string.IsNullOrEmpty(filePath))
                 {
                     FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
@@ -95,25 +97,22 @@
 
         public static void AddBus(Bus template, string srcDirectory, string testDirectory, string projectBaseName, string solutionDirectory, IFileSystem fileSystem)
         {
-            var messagesDirectory = Path.Combine(solutionDirectory, "Messages");
-
             var massTransitPackages = new Dictionary<string, string>{
-                    { "MassTransit", "7.2.4" },
-                    { "MassTransit.AspNetCore", "7.2.4" },
-                    { "MassTransit.Extensions.DependencyInjection", "7.2.4" },
-                    { "MassTransit.RabbitMQ", "7.2.4" }
+                    { "MassTransit", "8.0.1" },
+                    { "MassTransit.RabbitMQ", "8.0.1" }
                 };
             var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
             Utilities.AddPackages(webApiClassPath, massTransitPackages);
 
             WebApiServiceExtensionsBuilder.CreateMassTransitServiceExtension(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
-            foreach (var env in template.Environments)
-            {
-                WebApiAppSettingsModifier.AddRmq(srcDirectory, env, projectBaseName, fileSystem);
-                StartupModifier.RegisterMassTransitService(srcDirectory, env.EnvironmentName, projectBaseName);
-            }
+            WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_HOST", template.Environment.BrokerSettings.Host, projectBaseName);
+            WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_VIRTUAL_HOST", template.Environment.BrokerSettings.VirtualHost, projectBaseName);
+            WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_USERNAME", template.Environment.BrokerSettings.Username, projectBaseName);
+            WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_PASSWORD", template.Environment.BrokerSettings.Password, projectBaseName);
+            StartupModifier.RegisterMassTransitService(srcDirectory, projectBaseName);
 
             IntegrationTestFixtureModifier.AddMassTransit(testDirectory, projectBaseName);
+            DockerComposeBuilders.AddRmqToDockerCompose(solutionDirectory);
         }
     }
 }

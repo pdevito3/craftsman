@@ -107,7 +107,6 @@ public class Startup
 
 using {apiServiceExtensionsClassPath.ClassNamespace};
 using {apiAppExtensionsClassPath.ClassNamespace};
-using {seederClassPath.ClassNamespace};
 using {dbContextClassPath.ClassNamespace};
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -135,6 +134,7 @@ public class Startup
         services.AddSingleton(Log.Logger);
         // TODO update CORS for your env
         services.AddCorsService(""{corsName}"", _env);
+        services.OpenTelemetryRegistration(""{projectBaseName}"");
         services.AddInfrastructure(_config, _env);
         services.AddControllers()
             .AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);

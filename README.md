@@ -17,17 +17,47 @@ Craftsman is the workhorse behind the [Wrapt](https://wrapt.dev) framework and p
 
 For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wrapt.dev).
 
-## Upcoming Features in v0.13
+## Upcoming Features in v0.15
 
-v0.12 brought a ton of new features, but there are still several items I want to address before I slap the v1.0 sticker on things. I have some of the larger lifts below. Not everything here will be in the next release and this is certainly not an exhaustive list of everything, but I want to be open about what's on the horizon. 🌅
+The last few releases have brought a ton of new features, but there are still several items I want to address before I slap the v1.0 sticker on things. I have some of the larger lifts below. Not everything here will be in the next release and this is certainly not an exhaustive list of everything, but I want to be open about what's on the horizon. 🌅
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
+
+✅ OpenTelemetry & Jaeger Tracing	
+
+🚧 Auth Server rewrite
+
+🚧 Add Identity to Auth Server
+
+🚧 DDD Enhancements 
+
+🚧 Message Bus Enhancements
+
+🚧 React Cleanup
+
+🚧 React Permissions Integration
+
+🚧 Json Schema for easier file scaffolding
+
+🚧 Performance Upgrades
+
+
+
+### Some v0.14 highlights
+
+✅ Duende BFF scaffolding
+
+✅ React scaffolding
+
+✅ Dockerfile and Docker Compose scaffolding
+
+
+
+### Some v0.13 highlights
 
 ✅ DDD promoted entities (private setters, factory methods, associated fakers)
 
 ✅ Huge permissions upgrade. Significantly simplified setup which resulted in a new library ([HeimGuard](https://github.com/pdevito3/heimguard)) that can be used in any .NET project.
-
-✅ Message bus scaffolding and testing improvements
 
 ✅ New `register:producer` command
 
@@ -35,27 +65,9 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Added Shared Kernel
 
-✅ Added `Complex` example for `new:example` command
-
-✅ Better M1 chip compatabilities (courtesy of @sshquack)
-
-🚧 Add Identity to Auth Server
-
-🚧 BFF Scaffolding
-
-🚧 React Scaffolding
-
-🚧 Json Schema for easier file scaffolding
-
-🚧 Performance Upgrades
-
-🚧 Logging Updates and OpenTelemetry additions 
-
-🚧 Supporting infrastructure scaffolding
 
 
-
-### Some of the v0.12 highlights
+### Some v0.12 highlights
 
 ✅ .NET 6 Scaffolding
 
@@ -63,27 +75,13 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅  `add:feature` enhancement to add more than just ad-hoc features
 
-✅  new `AddListByFk` option for the `add:feature`  command and `FeatureType` property of an entity
-
-✅ Better foreign key support
-
-✅ `example` command to generate example projects with associated templates
+✅ `new:example` command to generate example projects with associated templates
 
 ✅ Auth Server Scaffolding (In-Memory)
 
-✅ First class environment variable usage
-
 ✅ Auditable entities
 
-✅ Current user service
 
-✅ Refactor error handling pipeline
-
-✅ Startup Consolidation
-
-✅ More test scaffolding
-
-✅ Db naming conventions
 
 ## Support
 

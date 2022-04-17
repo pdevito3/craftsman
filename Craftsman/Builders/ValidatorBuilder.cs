@@ -131,7 +131,7 @@ public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulati
     {{
         RuleFor(rp => rp.Permission)
             .Must(BeAnExistingPermission)
-            .WithMessage(""Please use a valid role."");
+            .WithMessage(""Please use a valid permission."");
         RuleFor(rp => rp.Role)
             .Must(BeAnExistingRole)
             .WithMessage(""Please use a valid role."");

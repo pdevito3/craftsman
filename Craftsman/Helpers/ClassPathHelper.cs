@@ -1,6 +1,7 @@
 ﻿namespace Craftsman.Helpers
 {
     using Craftsman.Models;
+    using Craftsman.Enums;
     using System.IO;
 
     public static class ClassPathHelper
@@ -44,7 +45,12 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Wrappers"), className);
         }
 
-        public static ClassPath WebApiHostExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath WebApiHostExtensionsClassPath(string projectDirectory, string className, string projectBaseName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine(projectBaseName, "Extensions", "Host"), className);
+        }
+
+        public static ClassPath BffHostExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             return new ClassPath(solutionDirectory, Path.Combine(projectBaseName, "Extensions", "Host"), className);
         }
@@ -106,6 +112,11 @@
             return new ClassPath(projectDirectory, authServerProjectName, className);
         }
 
+        public static ClassPath BffProjectRootClassPath(string projectDirectory, string className, string projectName)
+        {
+            return new ClassPath(projectDirectory, "", className);
+        }
+
         public static ClassPath WebApiLaunchSettingsClassPath(string solutionDirectory, string className, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
@@ -115,6 +126,52 @@
         public static ClassPath AuthServerLaunchSettingsClassPath(string projectDirectory, string className, string authServerProjectName)
         {
             return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Properties"), className);
+        }
+
+        public static ClassPath BffLaunchSettingsClassPath(string projectDirectory, string className, string projectName)
+        {
+            return new ClassPath(projectDirectory, Path.Combine("Properties"), className);
+        }
+
+        public static ClassPath BffSpaSrcClassPath(string spaDirectory, string className)
+        {
+            return new ClassPath(spaDirectory, "src", className);
+        }
+
+        public static ClassPath BffSpaFeatureClassPath(string spaDirectory, string featureName, BffFeatureCategory category, string className)
+        {
+            return category.Name switch
+            {
+                nameof(BffFeatureCategory.Routes) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "routes"), className),
+                nameof(BffFeatureCategory.Api) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "api"), className),
+                nameof(BffFeatureCategory.Types) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "types"), className),
+                _ => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter()), className)
+            };
+        }
+
+        public static ClassPath BffSpaComponentClassPath(string spaDirectory, string componentName,  string className)
+        {
+            return new ClassPath(spaDirectory, Path.Combine("src", "components", componentName.UppercaseFirstLetter()), className);
+        }
+
+        public static ClassPath BffSpaSrcAssetsClassPath(string spaDirectory, string className)
+        {
+            return new ClassPath(spaDirectory, Path.Combine("src", "assets"), className);
+        }
+
+        public static ClassPath BffSpaSrcApiTypesClassPath(string spaDirectory, string className)
+        {
+            return new ClassPath(spaDirectory, Path.Combine("src", "types", "api"), className);
+        }
+
+        public static ClassPath BffSpaSrcLibClassPath(string spaDirectory, string className)
+        {
+            return new ClassPath(spaDirectory, Path.Combine("src", "lib"), className);
+        }
+
+        public static ClassPath BffSpaRootClassPath(string spaDirectory, string className)
+        {
+            return new ClassPath(spaDirectory, "", className);
         }
 
         public static ClassPath AuthServerConfigClassPath(string projectDirectory, string className, string authServerProjectName)
@@ -195,9 +252,9 @@
             return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "ServiceTests"), className);
         }
 
-        public static ClassPath FeatureTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+        public static ClassPath FeatureTestClassPath(string solutionDirectory, string className, string entityPlural, string projectBaseName)
         {
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "FeatureTests", entityName), className);
+            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{IntegrationTestProjectSuffix}", "FeatureTests", entityPlural), className);
         }
 
         public static ClassPath FunctionalTestClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
@@ -372,6 +429,11 @@
         public static ClassPath AuthServerProjectClassPath(string projectDirectory, string authServerProjectName)
         {
             return new ClassPath(projectDirectory, $"{authServerProjectName}", $"{authServerProjectName}.csproj");
+        }
+
+        public static ClassPath BffProjectClassPath(string projectDirectory, string bffProjectName)
+        {
+            return new ClassPath(projectDirectory, $"{bffProjectName}", $"{bffProjectName}.csproj");
         }
     }
 }

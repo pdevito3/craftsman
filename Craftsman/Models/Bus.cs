@@ -38,6 +38,6 @@ namespace Craftsman.Models
         /// <summary>
         /// List of each environment to add into the API. Optional
         /// </summary>
-        public List<ApiEnvironment> Environments { get; set; } = new List<ApiEnvironment>();
+        public ApiEnvironment Environment { get; set; } = new ApiEnvironment();
     }
 }

@@ -80,6 +80,22 @@ public class TestUsers
                         new Claim(JwtClaimTypes.WebSite, ""http://bob.com""),
                         new Claim(JwtClaimTypes.Address, JsonSerializer.Serialize(address), IdentityServerConstants.ClaimValueTypes.Json)
                     }}
+                }},
+                new TestUser
+                {{
+                    SubjectId = ""884262290"",
+                    Username = ""john"",
+                    Password = ""john"",
+                    Claims =
+                    {{
+                        new Claim(JwtClaimTypes.Name, ""John Smith""),
+                        new Claim(JwtClaimTypes.GivenName, ""John""),
+                        new Claim(JwtClaimTypes.FamilyName, ""Smith""),
+                        new Claim(JwtClaimTypes.Email, ""JohnSmith@email.com""),
+                        new Claim(JwtClaimTypes.EmailVerified, ""true"", ClaimValueTypes.Boolean),
+                        new Claim(JwtClaimTypes.WebSite, ""http://john.com""),
+                        new Claim(JwtClaimTypes.Address, JsonSerializer.Serialize(address), IdentityServerConstants.ClaimValueTypes.Json)
+                    }}
                 }}
             }};
         }}

@@ -7,9 +7,9 @@
 
     public class WebApiLaunchSettingsBuilder
     {
-        public static void CreateLaunchSettings(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public static void CreateLaunchSettings(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(solutionDirectory, $"launchSettings.json", projectBaseName);
+            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchSettings.json", projectBaseName);
             var fileText = GetLaunchSettingsText();
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }

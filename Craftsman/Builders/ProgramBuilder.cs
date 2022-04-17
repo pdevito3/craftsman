@@ -28,7 +28,6 @@
             
             return @$"namespace {classNamespace};
 
-using Autofac.Extensions.DependencyInjection;
 using Serilog;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -61,7 +60,6 @@ public class Program
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
             .UseSerilog()
-            .UseServiceProviderFactory(new AutofacServiceProviderFactory())
             .ConfigureWebHostDefaults(webBuilder =>
             {{
                 webBuilder.UseStartup(typeof(Startup).GetTypeInfo().Assembly.FullName)

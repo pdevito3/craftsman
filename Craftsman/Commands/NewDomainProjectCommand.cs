@@ -95,7 +95,9 @@
             SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName, fileSystem);
 
             // need this before boundaries to give them something to build against
-            DockerBuilders.CreateDockerComposeSkeleton(domainDirectory, fileSystem);
+            DockerComposeBuilders.CreateDockerComposeSkeleton(domainDirectory, fileSystem);
+            DockerComposeBuilders.AddJaegerToDockerCompose(domainDirectory);
+            // DockerBuilders.CreateDockerComposeDbSkeleton(domainDirectory, fileSystem);
             
             //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
             //    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity));
@@ -106,6 +108,10 @@
             if (domainProject.AuthServer != null)
                 AddAuthServerCommand.AddAuthServer(domainDirectory, fileSystem, domainProject.AuthServer);
             
+            // bff
+            if (domainProject.AuthServer != null)
+                AddBffCommand.AddBff(domainProject.Bff, domainDirectory, fileSystem);
+
             // messages
             if (domainProject.Messages.Count > 0)
                 AddMessageCommand.AddMessages(domainDirectory, fileSystem, domainProject.Messages);

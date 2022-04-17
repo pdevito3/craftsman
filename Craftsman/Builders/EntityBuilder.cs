@@ -187,10 +187,32 @@ public abstract class BaseEntity
     [IgnoreDataMember]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)
                 attributeString += @$"    [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
-            if (!string.IsNullOrEmpty(entityProperty.ColumnName))
-                attributeString += @$"    [Column(""{entityProperty.ColumnName}"")]{Environment.NewLine}";
+
+            attributeString += ColumnAttributeBuilder(entityProperty);
 
             return attributeString;
+        }
+
+        private static string ColumnAttributeBuilder(EntityProperty entityProperty)
+        {
+            if (!string.IsNullOrEmpty(entityProperty.ColumnName) || !string.IsNullOrEmpty(entityProperty.ColumnType))
+            {
+                var columnString = "";
+                if (!string.IsNullOrEmpty(entityProperty.ColumnName))
+                    columnString += @$"""{entityProperty.ColumnName}""";
+
+                if (!string.IsNullOrEmpty(entityProperty.ColumnType))
+                {
+                    if (!string.IsNullOrEmpty(entityProperty.ColumnName))
+                        columnString += ",";
+
+                    columnString += @$"TypeName = ""{entityProperty.ColumnType}""";
+                }
+
+                return @$"    [Column({columnString})]{Environment.NewLine}";
+            }
+
+            return "";
         }
 
         private static string GetForeignProp(EntityProperty prop)

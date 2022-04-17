@@ -243,6 +243,10 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
+    - Name: Rating
+      Type: int?
+      CanFilter: true
+      CanSort: true
     - Name: Author
       Type: Author
       ForeignEntityName: Author
@@ -294,14 +298,14 @@ BoundedContexts:
     - Name: RecipeId
       Type: Guid
       ForeignEntityName: Recipe
-  Environments:
-    - EnvironmentName: Development
-      Authority: https://localhost:3385
-      Audience: recipe_management
-      AuthorizationUrl: https://localhost:3385/connect/authorize
-      TokenUrl: https://localhost:3385/connect/token
-      ClientId: recipe_management.swagger
-      ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+  Environment:
+      AuthSettings:
+        Authority: https://localhost:3385
+        Audience: recipe_management
+        AuthorizationUrl: https://localhost:3385/connect/authorize
+        TokenUrl: https://localhost:3385/connect/token
+        ClientId: recipe_management.swagger
+        ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
       BrokerSettings:
         Host: localhost
         VirtualHost: /
@@ -330,6 +334,48 @@ Messages:
   Properties:
   - Name: RecipeId
     Type: guid
+Bff:
+  ProjectName: RecipeManagementApp
+  ProxyPort: 4378
+  HeadTitle: Recipe Management App
+  Authority: https://localhost:3385
+  ClientId: recipe_management.bff
+  ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+  RemoteEndpoints:
+    - LocalPath: /api/recipes
+      ApiAddress: https://localhost:5375/api/recipes
+    - LocalPath: /api/ingredients
+      ApiAddress: https://localhost:5375/api/ingredients
+  BoundaryScopes:
+    - recipe_management
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Title
+      Type: string #optional if string
+    - Name: Directions
+    - Name: RecipeSourceLink
+    - Name: Description
+    - Name: Rating
+      Type: number?
+  - Name: Ingredient
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Name
+    - Name: Quantity
+    - Name: Measure
+    - Name: RecipeId
 AuthServer:
   Name: AuthServerWithDomain
   Port: 3385
@@ -346,6 +392,28 @@ AuthServer:
       AllowedCorsOrigins:
         - 'https://localhost:5375'
       FrontChannelLogoutUri: 'http://localhost:5375/signout-oidc'
+      AllowOfflineAccess: true
+      RequirePkce: true
+      RequireClientSecret: true
+      AllowPlainTextPkce: false
+      AllowedScopes:
+        - openid
+        - profile
+        - role
+        - recipe_management #this should match the scope in your boundary's swagger spec 
+    - Id: recipe_management.bff
+      Name: RecipeManagement BFF
+      Secrets:
+        - 974d6f71-d41b-4601-9a7a-a33081f80687
+      GrantType: Code
+      RedirectUris:
+        - https://localhost:4378/signin-oidc
+      PostLogoutRedirectUris:
+        - https://localhost:4378/signout-callback-oidc
+      AllowedCorsOrigins:
+        - https://localhost:5375
+        - https://localhost:4378
+      FrontChannelLogoutUri: https://localhost:4378/signout-oidc
       AllowOfflineAccess: true
       RequirePkce: true
       RequireClientSecret: true
@@ -459,26 +527,12 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
-  Environments:
-    - EnvironmentName: Development
+  Environment:
+    AuthSettings:
       Authority: https://localhost:5010
       Audience: recipeManagementDev
       AuthorizationUrl: https://localhost:5010/connect/authorize
       TokenUrl: https://localhost:5010/connect/token
-      ClientId: service.client.dev
-    - EnvironmentName: Qa
-      ConnectionString: ""MyQaConnectionString""
-      Authority: https://qaauth.com
-      Audience: recipeManagementQa
-      AuthorizationUrl: https://qaauth.com/connect/authorize
-      TokenUrl: https://qaauth.com/connect/token
-      ClientId: service.client.qa
-    - EnvironmentName: Production
-      ConnectionString: ""MyProdConnectionString""
-      Authority: https://auth.com
-      Audience: recipeManagement
-      AuthorizationUrl: https://auth.com/connect/authorize
-      TokenUrl: https://auth.com/connect/token
       ClientId: service.client";
         }
 
@@ -521,8 +575,7 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
-  Environments:
-    - EnvironmentName: Development
+  Environment:
       BrokerSettings:
         Host: localhost
         VirtualHost: /
@@ -601,14 +654,47 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
-  Environments:
-  - EnvironmentName: Development
-    Authority: https://localhost:3385
-    Audience: recipe_management
-    AuthorizationUrl: https://localhost:3385/connect/authorize
-    TokenUrl: https://localhost:3385/connect/token
-    ClientId: recipe_management.swagger
-    ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+    - Name: Rating
+      Type: int?
+      CanFilter: true
+      CanSort: true
+  Environment:
+    AuthSettings:
+      Authority: https://localhost:3385
+      Audience: recipe_management
+      AuthorizationUrl: https://localhost:3385/connect/authorize
+      TokenUrl: https://localhost:3385/connect/token
+      ClientId: recipe_management.swagger
+      ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+Bff:
+  ProjectName: RecipeManagementApp
+  ProxyPort: 4378
+  HeadTitle: Recipe Management App
+  Authority: https://localhost:3385
+  ClientId: recipe_management.bff
+  ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+  RemoteEndpoints:
+    - LocalPath: /api/recipes
+      ApiAddress: https://localhost:5375/api/recipes
+  BoundaryScopes:
+    - recipe_management
+  Entities:
+  - Name: Recipe
+    Features:
+    - Type: GetList
+    - Type: GetRecord
+    - Type: AddRecord
+    - Type: UpdateRecord
+    - Type: DeleteRecord
+    Properties:
+    - Name: Title
+      Type: string #optional if string
+    - Name: Directions
+    - Name: RecipeSourceLink
+    - Name: Description
+    - Name: ImageLink
+    - Name: Rating
+      Type: number?
 AuthServer:
   Name: AuthServerWithDomain
   Port: 3385
@@ -625,6 +711,28 @@ AuthServer:
       AllowedCorsOrigins:
         - 'https://localhost:5375'
       FrontChannelLogoutUri: 'http://localhost:5375/signout-oidc'
+      AllowOfflineAccess: true
+      RequirePkce: true
+      RequireClientSecret: true
+      AllowPlainTextPkce: false
+      AllowedScopes:
+        - openid
+        - profile
+        - role
+        - recipe_management #this should match the scope in your boundary's swagger spec
+    - Id: recipe_management.bff
+      Name: RecipeManagement BFF
+      Secrets:
+        - 974d6f71-d41b-4601-9a7a-a33081f80687
+      GrantType: Code
+      RedirectUris:
+        - https://localhost:4378/signin-oidc
+      PostLogoutRedirectUris:
+        - https://localhost:4378/signout-callback-oidc
+      AllowedCorsOrigins:
+        - https://localhost:5375
+        - https://localhost:4378
+      FrontChannelLogoutUri: https://localhost:4378/signout-oidc
       AllowOfflineAccess: true
       RequirePkce: true
       RequireClientSecret: true

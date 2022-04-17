@@ -31,19 +31,29 @@
 
 This project was created with [Craftsman](https://github.com/pdevito3/craftsman).
 
-## Get Started
+## Getting Started
+### Set Up Your Database
+This project is configured to reference a live database instead of an in-memory one for more robust development. 
+By default, the database will be configured to run in a docker container and already has the connection 
+string configured in your launch settings.
 
-Go to your solution directory:
+To set up your database(s):
+1. Run `docker-compose up --build` from your `sln` directory to spin up your database(s) (and RabbitMQ, if needed).
 
-```shell
-cd {domainName}
-```
+After you have your database(s) running in docker, make sure you apply your migrations:
+1. Make sure you have a migrations in your boundary project (there should be a `Migrations` directory in the project directory). 
+If there isn't see [Running Migrations](#running-migrations) below.
+2. Confirm your environment (`ASPNETCORE_ENVIRONMENT`) is set to `Development` using 
+`$Env:ASPNETCORE_ENVIRONMENT = ""Development""` for powershell or `export ASPNETCORE_ENVIRONMENT=Development` for bash.
+3. `cd` to the boundary project root (e.g. `cd RecipeManagement/src/RecipeManagement`)
+4. Run `dotnet ef database update` to apply your migrations. 
 
-Run your solution:
+> You can also stay in the `sln` root and 
+run something like `dotnet ef database update --project RecipeManagement/src/RecipeManagement`
 
-```shell
-dotnet run --project YourBoundedContextName
-```
+### Running Your Project(s)
+Once you have your database(s) running, you can run your API(s), BFF, and Auth Servers by using 
+the `dotnet run` command or running your project(s) from your IDE of choice.   
 
 ## Running Integration Tests
 To run integration tests:
@@ -60,31 +70,30 @@ To run integration tests:
 - If your entity has foreign keys, you'll likely need to adjust some of your tests after scaffolding to accomodate them.
 
 ## Running Migrations
-
-To create a new migration, make sure your environment is *not* set to `Development`:
+To create a new migration, make sure your environment is set to `Development`:
 
 ### Powershell
 ```powershell
-$Env:ASPNETCORE_ENVIRONMENT = ""anything""
+$Env:ASPNETCORE_ENVIRONMENT = ""Development""
 ```
 
 ### Bash
 ```bash
-export ASPNETCORE_ENVIRONMENT=anything
+export ASPNETCORE_ENVIRONMENT=Development
 ```
 
 Then run the following:
 
 ```shell
 cd YourBoundedContextName/src/YourBoundedContextName
-dotnet ef migrations add ""your-description-here""
+dotnet ef migrations add ""MigrationDescription""
 ```
 
-To apply your migrations to your local db, run the following:
+To apply your migrations to your local db, make sure your database is running in docker run the following:
 
 ```bash
-cd YourBoundedContextName/src
-dotnet ef database update --project YourBoundedContextName
+cd YourBoundedContextName/src/YourBoundedContextName
+dotnet ef database update
 ```
 ";
         }

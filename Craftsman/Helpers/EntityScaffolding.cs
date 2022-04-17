@@ -14,6 +14,11 @@
     using System.IO.Abstractions;
     using System.Linq;
     using Builders.Auth;
+    using Builders.Bff.Components.Navigation;
+    using Builders.Bff.Features.Dynamic;
+    using Builders.Bff.Features.Dynamic.Api;
+    using Builders.Bff.Features.Dynamic.Types;
+    using Builders.Bff.Src;
     using Builders.Endpoints;
     using Builders.Tests.UnitTests;
     using Builders.Tests.Utilities;
@@ -52,6 +57,8 @@
 
                 // Shared Tests
                 FakesBuilder.CreateFakes(solutionDirectory, testDirectory, projectBaseName, entity, fileSystem);
+                CreateEntityUnitTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, fileSystem);
+                UpdateEntityUnitTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, fileSystem);
             }
         }
 
@@ -101,7 +108,8 @@
 
             // Shared Tests
             FakesBuilder.CreateRolePermissionFakes(solutionDirectory, testDirectory, projectBaseName, entity, fileSystem);
-            RolePermissionsUnitTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName, fileSystem);
+            RolePermissionsUnitTestBuilder.CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName, fileSystem);
+            RolePermissionsUnitTestBuilder.UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName, fileSystem);
             UserPolicyHandlerIntegrationTests.CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName, fileSystem);
             
             // need to do db modifier
@@ -186,6 +194,47 @@
                 EmptyFeatureBuilder.CreateCommand(srcDirectory, dbContextName, projectBaseName, feature);
                 // TODO ad hoc feature endpoint
                 // TODO empty failing test to promote test writing?
+            }
+        }
+        
+        public static void ScaffoldBffEntities(List<BffEntity> entities, IFileSystem fileSystem, string spaDirectory)
+        {
+            foreach (var templateEntity in entities)
+            {
+                DynamicFeatureBuilder.CreateDynamicFeatureIndex(spaDirectory, templateEntity.Plural, fileSystem);
+                DynamicFeatureRoutesBuilder.CreateDynamicFeatureRoutes(spaDirectory, templateEntity.Name, templateEntity.Plural,
+                    fileSystem);
+                DynamicFeatureTypesBuilder.CreateDynamicFeatureTypes(spaDirectory, templateEntity.Name, templateEntity.Plural,
+                    templateEntity.Properties, fileSystem);
+                NavigationComponentModifier.AddFeatureListRouteToNav(spaDirectory, templateEntity.Name, templateEntity.Plural);
+                DynamicFeatureRoutesModifier.AddRoute(spaDirectory, templateEntity.Name, templateEntity.Plural);
+
+                // apis
+                DynamicFeatureKeysBuilder.CreateDynamicFeatureKeys(spaDirectory, templateEntity.Name, templateEntity.Plural,
+                    fileSystem);
+                DynamicFeatureApiIndexBuilder.CreateDynamicFeatureApiIndex(spaDirectory, templateEntity.Name,
+                    templateEntity.Plural, fileSystem);
+                foreach (var templateEntityFeature in templateEntity.Features)
+                {
+                    DynamicFeatureApiIndexModifier.AddFeature(spaDirectory, templateEntity.Name, templateEntity.Plural,
+                        FeatureType.FromName(templateEntityFeature.Type));
+
+                    if (templateEntityFeature.Type == FeatureType.AddRecord.Name)
+                        DynamicFeatureAddEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural,
+                            fileSystem);
+                    if (templateEntityFeature.Type == FeatureType.GetList.Name)
+                        DynamicFeatureGetListEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name,
+                            templateEntity.Plural, fileSystem);
+                    if (templateEntityFeature.Type == FeatureType.DeleteRecord.Name)
+                        DynamicFeatureDeleteEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name,
+                            templateEntity.Plural, fileSystem);
+                    if (templateEntityFeature.Type == FeatureType.UpdateRecord.Name)
+                        DynamicFeatureUpdateEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name,
+                            templateEntity.Plural, fileSystem);
+                    if (templateEntityFeature.Type == FeatureType.GetRecord.Name)
+                        DynamicFeatureGetEntityBuilder.CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural,
+                            fileSystem);
+                }
             }
         }
     }

@@ -7,14 +7,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 > Semantic versioning will come once I hit v1, but at this point each `0.x` release may have breaking changes as I iron out the kinks of the framework. 
 
-## [Unreleased]
+## Unreleased
 
 ### Added
 
-* A `Dockerfile` and `.dockerignore` will be added to each bounded context automatically
+* Open Telemetry and Jaeger tracing support
+
+## [0.14.0] - 04/16/2022
+
+### Added
+
+* A `Dockerfile` and `.dockerignore` will be added to each bounded context automatically (except BFFs)
 
 * A `docker-compose.yaml` will be added to your solution root by default for local development
-  * Just run `docker-compose up --build` in your project root
+  * Just run `docker-compose up --build` to spin up your databases (and RMQ if needed)
 
   * Then set an env and apply migrations. For a postgres example:
     * env
@@ -31,20 +37,93 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
       export ASPNETCORE_ENVIRONMENT=anything
       ```
     
-    * `dotnet ef database update --connection "Host=localhost;Port=3125;Database=dev_recipemanagement;Username=postgres;Password=postgres"`
+    * `dotnet ef database update` or  `dotnet ef database update --connection "Host=localhost;Port=3125;Database=dev_recipemanagement;Username=postgres;Password=postgres"`
     
-  * Default settings can be overriden using a `DockerConfig` object on an `ApiTemplate`
-
   * `SA` will always be default user for sqlserver so it can work properly
 
   * If no ports are given for api or db, they'll be auto assigned a free port on your machine
 
+  * New `john` user to auth server (with no role)
+  
+  * Login hints for auth server
+  
+  * Minor helper override on fake generators
+  
+  * New `add:bff` command to add a bff to your solution
+  
+  * New `add:bffentity` command to add entities to your bff
+  
+  * Basic unit test scaffolding for create and update methods
+  
+  * Unit tests for updating rolepermissions
+
 
 ### Updated
 
-- Initial commit will use system git user and email as author.
-  - **DOCS:** Can be toggled off to use a generic `Craftsman` author if desired using a `UseSystemGitUser` boolean on your Domain Template
+- Fixed bug in `Add` feature that had a chained action after `ProjectTo`. They will now be filtered like so:
+
+  ```c#
+  var {entityNameLowercase}List = await _db.{entity.Plural}
+  	.AsNoTracking()
+   	.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName}, cancellationToken);
+  
+  return _mapper.Map<{readDto}>({entityNameLowercase}List);
+  ```
+
+- Removed `ProjectTo` from `GetRecord` feature in favor of direct mapper.
+
+- Initial commit will use system git user and email as author. Courtesy of @sshquack
+
 - `Id` on `BaseEntity` is sortable and filterable by default
+
+- Minor logging updates for better json formatting and more information in prod
+
+- GET record, PUT, and DELETE all have typed ids (e.g. `{id:guid}`) on their controllers
+
+- `Development` environment uses a connection string to an actual database now, instead of an in memory db. This can easily be spun up with a `docker-compose` for local development
+
+- Environment is now a singular object that will take in values for local environment variables for development and placed in launch settings and your docker compose. When deploying to other environments, you will use these same environment variables, but pass the appropriate value for that env.
+
+  - Updated auth properties to be under an `AuthSettings` object like we do for broker settings
+  - Removed `ConnectionString` from env. Docker connection will be added automatically in launch settings
+  - Removed `EnvironmentName` as it will always be `Development`
+  - Updated examples to handle new environment setup
+
+- Removed unused mapper from delete feature
+
+- Updated entity property definition with optional `ColumnType` attribute
+
+- Fixed a bug that broke registration of the bus in development env
+
+- Logger modifications
+
+- Cleanup batch add feature
+
+- Updated `Created` response for batch add
+
+- Use entity plural directory for tests
+
+- MassTransit bumped to v8
+
+- Bumped Nuget packages to latest
+
+- Updated checkpoint in test fixture for major version bump
+
+### Removed
+
+- Removed seeders
+
+### Fixed
+
+- Dbcontext for userpolicyhandler uses template (#70)
+- Patch cancellation token added in feature
+- Typo in role permission validation
+
+## [0.13.1] - 02/25/2022
+
+### Fixed
+
+* `add:entity` command will now use the correct solution folder
 
 
 ## [0.13.0] - 01/27/2022

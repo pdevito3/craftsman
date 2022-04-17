@@ -14,12 +14,14 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using System.Net;
+    using System.Net.Sockets;
     using System.Text;
     using static Helpers.ConsoleWriter;
 
     public class Utilities
     {
-        public static string PropTypeCleanup(string prop)
+        public static string PropTypeCleanupDotNet(string prop)
         {
             var lowercaseProps = new string[] { "string", "int", "decimal", "double", "float", "object", "bool", "char", "byte", "ushort", "uint", "ulong" };
             if (lowercaseProps.Contains(prop.ToLower()))
@@ -44,6 +46,34 @@
                 return "Guid";
             else
                 return prop;
+        }
+        
+        public static string PropTypeCleanupTypeScript(string prop)
+        {
+            return prop.ToLower() switch
+            {
+                "boolean" => "boolean",
+                "bool" => "boolean",
+                "number" => "number",
+                "int" => "number",
+                "string" => "string",
+                "dateonly" => "Date",
+                "timeonly" => "Date",
+                "datetimeoffset" => "Date",
+                "guid" => "string",
+                "uuid" => "string",
+                "boolean?" => "boolean?",
+                "bool?" => "boolean?",
+                "number?" => "number?",
+                "int?" => "number?",
+                "string?" => "string?",
+                "dateonly?" => "Date?",
+                "timeonly?" => "Date?",
+                "datetimeoffset?" => "Date?",
+                "guid?" => "string?",
+                "uuid?" => "string?",
+                _ => prop
+            };
         }
 
         public static ClassPath GetStartupClassPath(string solutionDirectory, string projectBaseName)
@@ -114,6 +144,21 @@
             return asJson ? $"appsettings.json" : $"appsettings";
         }
 
+        public static string BffApiKeysFilename(string entityName)
+        {
+            return $"{entityName.LowercaseFirstLetter()}.keys";
+        }
+
+        public static string BffEntityListRouteComponentName(string entityName)
+        {
+            return $"{entityName.UppercaseFirstLetter()}List";
+        }
+        
+        public static string BffApiKeysExport(string entityName)
+        {
+            return $"{entityName.UppercaseFirstLetter()}Keys";
+        }
+
         public static string GetProfileName(string entityName)
         {
             return $"{entityName}Profile";
@@ -122,6 +167,16 @@
         public static string GetIntegrationTestFixtureName()
         {
             return $"TestFixture";
+        }
+
+        public static string CreateEntityUnitTestName(string entityName)
+        {
+            return $"Create{entityName}Tests";
+        }
+
+        public static string UpdateEntityUnitTestName(string entityName)
+        {
+            return $"Update{entityName}Tests";
         }
 
         public static string GetEntityFeatureClassName(string entityName)
@@ -312,6 +367,19 @@ using {parentClassPath.ClassNamespace};";
             }
         }
 
+        public static string GetBffApiFilenameBase(string entityName, FeatureType type)
+        {
+            return type.Name switch
+            {
+                nameof(FeatureType.AddRecord) => $"add{entityName.UppercaseFirstLetter()}",
+                nameof(FeatureType.GetList) => $"get{entityName.UppercaseFirstLetter()}List",
+                nameof(FeatureType.GetRecord) => $"get{entityName.UppercaseFirstLetter()}",
+                nameof(FeatureType.UpdateRecord) => $"update{entityName.UppercaseFirstLetter()}",
+                nameof(FeatureType.DeleteRecord) => $"delete{entityName.UppercaseFirstLetter()}",
+                _ => throw new Exception($"The '{type.Name}' feature is not supported in bff api scaffolding.")
+            };
+        }
+
         public static string ValidatorNameGenerator(string entityName, Validator validator)
         {
             switch (validator)
@@ -384,27 +452,20 @@ using {parentClassPath.ClassNamespace};";
         }
 
         public static void AddStartupEnvironmentsWithServices(
-            string solutionDirectory,
-            string projectName,
+            string srcDirectory,
             string dbName,
-            List<ApiEnvironment> environments,
+            ApiEnvironment environment,
             SwaggerConfig swaggerConfig,
             int port,
-            bool useJwtAuth,
             string projectBaseName,
+            DockerConfig dockerConfig,
             IFileSystem fileSystem)
         {
-            AppSettingsBuilder.CreateWebApiAppSettings(solutionDirectory, dbName, projectBaseName);
+            AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
 
-            if (environments.Where(e => e.EnvironmentName == "Development").Count() == 0)
-                environments.Add(new ApiEnvironment { EnvironmentName = "Development", ProfileName = $"{projectName} (Development)" });
-
-            foreach (var env in environments)
-            {
-                WebApiLaunchSettingsModifier.AddProfile(solutionDirectory, env, port, projectBaseName);
-            }
+            WebApiLaunchSettingsModifier.AddProfile(srcDirectory, environment, port, dockerConfig, projectBaseName);
             if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
-                SwaggerBuilder.RegisterSwaggerInStartup(solutionDirectory, projectBaseName);
+                SwaggerBuilder.RegisterSwaggerInStartup(srcDirectory, projectBaseName);
         }
 
         public static void CreateFile(ClassPath classPath, string fileText, IFileSystem fileSystem)
@@ -435,6 +496,17 @@ using {parentClassPath.ClassNamespace};";
             repo.Commit("Initial Commit", author, author);
         }
 
+
+        public static int GetFreePort()
+        {
+            // From https://stackoverflow.com/a/150974/4190785
+            var tcpListener = new TcpListener(IPAddress.Loopback, 0);
+            tcpListener.Start();
+            var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
+            tcpListener.Stop();
+            return port;
+        }
+        
         public static void AddPackages(ClassPath classPath, Dictionary<string, string> packagesToAdd)
         {
             if (!Directory.Exists(classPath.ClassDirectory))
@@ -565,7 +637,7 @@ using {parentClassPath.ClassNamespace};";
                 srcDirectory,
                 new Dictionary<string, string>()
                 {
-                    { "ASPNETCORE_ENVIRONMENT", Guid.NewGuid().ToString() } // guid to not conflict with any given envs
+                    { "ASPNETCORE_ENVIRONMENT", "Development" }
                 },
                 20000,
                 $"{Emoji.Known.Warning} {template.ProjectName} Database Migrations timed out and will need to be run manually");

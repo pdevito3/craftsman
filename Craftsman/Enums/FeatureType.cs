@@ -20,6 +20,7 @@
         }
         public abstract string FeatureName(string entityName, string featureName = null);
         public abstract string CommandName(string command, string entityName);
+        public abstract string BffApiName(string entityName);
         
         private class GetRecordType : FeatureType
         {
@@ -29,16 +30,20 @@
                 => featureName.EscapeSpaces() ?? $"Get{entityName}";
             public override string CommandName(string command, string entityName)
                 => command.EscapeSpaces() ?? $"Get{entityName}Query";
+            public override string BffApiName(string entityName)
+                => $"get{entityName}";
         }
 
         private class GetListType : FeatureType
         {
             public GetListType() : base(nameof(GetList), 2) {}
 
-            public override string FeatureName(string entityName, string featureName = null) =>
-                featureName.EscapeSpaces() ?? $"Get{entityName}List";
-            public override string CommandName(string command, string entityName) =>
-                command.EscapeSpaces() ?? $"Get{entityName}ListQuery";
+            public override string FeatureName(string entityName, string featureName = null) 
+                => featureName.EscapeSpaces() ?? $"Get{entityName}List";
+            public override string CommandName(string command, string entityName) 
+                => command.EscapeSpaces() ?? $"Get{entityName}ListQuery";
+            public override string BffApiName(string entityName) 
+                => $"get{entityName}List";
         }
 
         private class AddRecordType : FeatureType
@@ -49,6 +54,8 @@
                 => featureName.EscapeSpaces() ?? $"Add{entityName}";
             public override string CommandName(string command, string entityName)
                 => command.EscapeSpaces() ?? $"Add{entityName}Command";
+            public override string BffApiName(string entityName)
+                => $"add{entityName}";
         }
         
         private class DeleteRecordType : FeatureType
@@ -59,6 +66,8 @@
                 => featureName.EscapeSpaces() ?? $"Delete{entityName}";
             public override string CommandName(string command, string entityName)
                 => command.EscapeSpaces() ?? $"Delete{entityName}Command";
+            public override string BffApiName(string entityName)
+                => $"delete{entityName}";
         }
         
         
@@ -70,6 +79,8 @@
                 => featureName.EscapeSpaces() ?? $"Update{entityName}";
             public override string CommandName(string command, string entityName)
                 => command.EscapeSpaces() ?? $"Update{entityName}Command";
+            public override string BffApiName(string entityName)
+                => $"update{entityName}";
         }
         
         
@@ -81,6 +92,8 @@
                 => featureName.EscapeSpaces() ?? $"Patch{entityName}";
             public override string CommandName(string command, string entityName)
                 => command.EscapeSpaces() ?? $"Patch{entityName}Command";
+            public override string BffApiName(string entityName)
+                => throw new Exception("Patch Features need to be manually configured in a BFF.");
         }
         
         
@@ -92,6 +105,8 @@
                 => featureName.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");
             public override string CommandName(string command, string entityName)
                 => command.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");
+            public override string BffApiName(string entityName)
+                => throw new Exception("Ad Hoc Features need to be manually configured in a BFF.");
         }
 
         private class AddListByFkType : FeatureType
@@ -102,6 +117,8 @@
                 => featureName.EscapeSpaces() ?? $"Add{entityName}List";
             public override string CommandName(string command, string entityName)
                 => command.EscapeSpaces() ?? $"Add{entityName}ListCommand";
+            public override string BffApiName(string entityName)
+                => throw new Exception("Add List Features need to be manually configured in a BFF.");
         }
     }
 }

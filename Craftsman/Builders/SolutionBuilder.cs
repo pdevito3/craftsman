@@ -8,6 +8,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using AuthServer;
+    using ScaffoldingExtensions;
     using static Helpers.ConsoleWriter;
 
     public class SolutionBuilder
@@ -54,7 +55,7 @@
 
             // additional from what was other projects
             Directory.CreateDirectory(ClassPathHelper.DtoClassPath(solutionDirectory, "", "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.ExceptionsClassPath(srcDirectory, "").ClassDirectory);
+            Directory.CreateDirectory(ClassPathHelper.ExceptionsClassPath(solutionDirectory, "").ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.SharedDtoClassPath(solutionDirectory, "").ClassDirectory);
             Directory.CreateDirectory(ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
@@ -63,13 +64,14 @@
             WebApiServiceExtensionsBuilder.CreateApiVersioningServiceExtension(srcDirectory, projectBaseName, fileSystem);
             WebApiServiceExtensionsBuilder.CreateCorsServiceExtension(srcDirectory, projectBaseName, fileSystem);
             WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(srcDirectory, projectBaseName, fileSystem);
+            OpenTelemetryExtensionsBuilder.CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider, fileSystem);
             ErrorHandlerFilterAttributeBuilder.CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName, fileSystem);
             AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, fileSystem);
             ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, fileSystem);
             StartupBuilder.CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName, fileSystem);
             LocalConfigBuilder.CreateLocalConfig(srcDirectory, projectBaseName, fileSystem);
-            LoggingConfigurationBuilder.CreateConfigFile(srcDirectory, projectBaseName, fileSystem);
+            LoggingConfigurationBuilder.CreateWebApiConfigFile(srcDirectory, projectBaseName, fileSystem);
             InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(srcDirectory, projectBaseName, fileSystem);
             
             BasePaginationParametersBuilder.CreateBasePaginationParameters(solutionDirectory, projectBaseName, fileSystem);
@@ -132,6 +134,16 @@
             
             var projectClassPath = ClassPathHelper.AuthServerProjectClassPath(solutionDirectory, authServerProjectName);
             AuthServerProjBuilder.CreateProject(solutionDirectory, authServerProjectName, fileSystem);
+            Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
+        }
+
+        public static void BuildBffProject(string solutionDirectory, string projectName, int? proxyPort, IFileSystem fileSystem)
+        {
+            var projectExists = File.Exists(Path.Combine(solutionDirectory, projectName, $"{projectName}.csproj"));
+            if (projectExists) return;
+            
+            var projectClassPath = ClassPathHelper.BffProjectClassPath(solutionDirectory, projectName);
+            BffProjBuilder.CreateProject(solutionDirectory, projectName, proxyPort, fileSystem);
             Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
         }
     }

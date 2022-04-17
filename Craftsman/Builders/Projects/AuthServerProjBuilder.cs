@@ -29,7 +29,7 @@
   <ItemGroup>
     <PackageReference Include=""Duende.IdentityServer"" Version=""5.2.1"" />    
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.Google"" Version=""6.0.0"" />
-    <PackageReference Include=""Serilog.AspNetCore"" Version=""4.1.0"" />
+    <PackageReference Include=""Serilog.AspNetCore"" Version=""5.0.0"" />
   </ItemGroup>
 
   <Target Name=""Tailwind"" BeforeTargets=""Build"">

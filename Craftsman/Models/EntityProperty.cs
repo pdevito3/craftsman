@@ -24,7 +24,7 @@ namespace Craftsman.Models
         public string Type
         {
             get => _type;
-            set => _type = Utilities.PropTypeCleanup(value);
+            set => _type = Utilities.PropTypeCleanupDotNet(value);
         }
 
         /// <summary>
@@ -129,6 +129,11 @@ namespace Craftsman.Models
         /// Database field name to use when it doesn't match the property name
         /// </summary>
         public string ColumnName { get; set; }
+
+        /// <summary>
+        /// Database type to use when it doesn't match the property type
+        /// </summary>
+        public string ColumnType { get; set; }
 
         public static EntityProperty GetPrimaryKey()
         {

@@ -1,7 +1,6 @@
 ﻿namespace Craftsman.Helpers
 {
     using Craftsman.Builders;
-    using Craftsman.Builders.Seeders;
     using Craftsman.Builders.Tests.FunctionalTests;
     using Craftsman.Builders.Tests.UnitTests;
     using Craftsman.Builders.Tests.Utilities;
@@ -52,17 +51,30 @@
         private static void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template, IFileSystem fileSystem)
         {
             var projectBaseName = template.ProjectName;
+            
+            // docker config data transform
+            template.DockerConfig.ProjectName = template.ProjectName;
+            template.DockerConfig.Provider = template.DbContext.Provider;
+            
 
             // get solution dir from bcDir
             var solutionDirectory = Directory.GetParent(boundedContextDirectory)?.FullName;
             Utilities.IsSolutionDirectoryGuard(solutionDirectory);
 
             // base files needed before below is ran
+            template.DockerConfig.ApiPort ??= template.Port; // set to the launch settings port if needed... really need to refactor to a domain layer and dto layer 😪
+            if(template.AddJwtAuthentication)
+                template.DockerConfig.AuthServerPort ??= template?.Environment?.AuthSettings?.AuthorizationUrl
+                    .Replace("localhost", "")
+                    .Replace("https://", "")
+                    .Replace("http://", "")
+                    .Replace(":", ""); // this is fragile and i hate it. also not in domain...
             DbContextBuilder.CreateDbContext(srcDirectory,
                 template.Entities,
                 template.DbContext.ContextName,
                 template.DbContext.Provider,
                 template.DbContext.DatabaseName,
+                template.DockerConfig.DbConnectionString,
                 template.DbContext.NamingConventionEnum,
                 template.UseSoftDelete,
                 projectBaseName,
@@ -74,7 +86,7 @@
             {
                 PermissionsBuilder.GetPermissions(srcDirectory, projectBaseName, fileSystem); // <-- needs to run before entity features
                 RolesBuilder.GetRoles(solutionDirectory, fileSystem);
-                UserPolicyHandlerBuilder.CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, fileSystem);
+                UserPolicyHandlerBuilder.CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
                 InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName);
                 EntityScaffolding.ScaffoldRolePermissions(solutionDirectory,
                     srcDirectory,
@@ -100,13 +112,12 @@
             // environments
             Utilities.AddStartupEnvironmentsWithServices(
                 srcDirectory,
-                projectBaseName,
                 template.DbContext.DatabaseName,
-                template.Environments,
+                template.Environment,
                 template.SwaggerConfig,
                 template.Port,
-                template.AddJwtAuthentication,
                 projectBaseName,
+                template.DockerConfig,
                 fileSystem
             );
 
@@ -123,15 +134,9 @@
             EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete, fileSystem);
             CurrentUserServiceTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
 
-            //seeders
-            SeederBuilder.AddSeeders(srcDirectory, template.Entities, template.DbContext.ContextName, projectBaseName);
-
             //services
             CurrentUserServiceBuilder.GetCurrentUserService(srcDirectory, projectBaseName, fileSystem);
             SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName, fileSystem);
-
-            DockerBuilders.CreateDockerfile(srcDirectory, projectBaseName, fileSystem);
-            DockerBuilders.CreateDockerIgnore(srcDirectory, projectBaseName, fileSystem);
 
             if (template.Bus.AddBus)
                 AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
@@ -142,7 +147,14 @@
             if (template.Producers.Count > 0)
                 AddProducerCommand.AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
             
-            DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory, template.DockerConfig);
+            WebApiDockerfileBuilder.CreateStandardDotNetDockerfile(srcDirectory, projectBaseName, fileSystem);
+            DockerIgnoreBuilder.CreateDockerIgnore(srcDirectory, projectBaseName, fileSystem);
+            // DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory,
+            //     template.DockerConfig,
+            //     template.Environment.AuthSettings.ClientId,
+            //     template.Environment.AuthSettings.ClientSecret,
+            //     template.Environment.AuthSettings.Audience);
+            DockerComposeBuilders.AddVolumeToDockerComposeDb(solutionDirectory, template.DockerConfig);
         }
     }
 }

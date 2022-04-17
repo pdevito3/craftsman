@@ -32,13 +32,13 @@ using Npgsql;"
             var checkpoint = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
                 ? $@"_checkpoint = new Checkpoint
         {{
-            TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
+            TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
             SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
             DbAdapter = DbAdapter.Postgres
         }};"
                 : $@"_checkpoint = new Checkpoint
         {{
-            TablesToIgnore = new[] {{ ""__EFMigrationsHistory"" }},
+            TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
         }};";
 
             var resetString = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
@@ -64,6 +64,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;{usingStatement}
 using NUnit.Framework;
 using Respawn;
+using Respawn.Graph;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;

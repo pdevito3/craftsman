@@ -145,7 +145,7 @@
                 }
             }
             
-            if (args.Length == 2 && (args[0] == "add:entity" || args[0] == "add:entities"))
+            if (args.Length == 2 && (args[0] == "add:entity" || args[0] == "add:entities" || args[0] == "new:entity"))
             {
                 var filePath = args[1];
                 if (filePath == "-h" || filePath == "--help")
@@ -163,6 +163,26 @@
                     }
 
                     AddEntityCommand.Run(filePath, solutionDir, fileSystem, verbosity);
+                }
+            }
+            
+            if (args.Length == 2 && (args[0] == "add:bffentity" || args[0] == "add:bffentities" || args[0] == "new:bffentity"))
+            {
+                var filePath = args[1];
+                if (filePath == "-h" || filePath == "--help")
+                    AddBffEntityCommand.Help();
+                else
+                {
+                    CheckForLatestVersion();
+
+                    var solutionDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the solution directory.");
+                        solutionDir = Console.ReadLine();
+                    }
+
+                    AddBffEntityCommand.Run(filePath, solutionDir, fileSystem);
                 }
             }
 
@@ -186,6 +206,29 @@
                     }
 
                     AddBusCommand.Run(filePath, rootDir, fileSystem);
+                }
+            }
+
+            if ((args[0] == "add:bff"))
+            {
+                var filePath = "";
+                if (args.Length >= 2)
+                    filePath = args[1];
+
+                if (filePath == "-h" || filePath == "--help")
+                    AddBffCommand.Help();
+                else
+                {
+                    CheckForLatestVersion();
+
+                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
+                    if (myEnv == "Dev")
+                    {
+                        Console.WriteLine("Enter the root directory.");
+                        rootDir = Console.ReadLine();
+                    }
+
+                    AddBffCommand.Run(filePath, rootDir, fileSystem);
                 }
             }
 

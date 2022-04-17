@@ -29,9 +29,9 @@
 
         public static string GetWebApiCsProjFileText(string solutionDirectory, string projectBaseName, string dbProvider)
         {
-            var sqlPackage = @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""6.0.0"" />";
+            var sqlPackage = @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""6.0.4"" />";
             if (Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == dbProvider)
-                sqlPackage = @$"<PackageReference Include=""npgsql.entityframeworkcore.postgresql"" Version=""6.0.0"" />";
+                sqlPackage = @$"<PackageReference Include=""Npgsql.EntityFrameworkCore.PostgreSQL"" Version=""6.0.4"" />";
             //else if (Enum.GetName(typeof(DbProvider), DbProvider.MySql) == provider)
             //    return "UseMySql";
 
@@ -53,19 +53,17 @@
 
   <ItemGroup>
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
-    <PackageReference Include=""Bogus"" Version=""34.0.1"" />
-    <PackageReference Include=""Autofac.Extensions.DependencyInjection"" Version=""7.2.0"" />
-    <PackageReference Include=""AutoMapper.Extensions.Microsoft.DependencyInjection"" Version=""8.1.1"" />
+    <PackageReference Include=""Bogus"" Version=""34.0.2"" />
+    <PackageReference Include=""AutoMapper.Extensions.Microsoft.DependencyInjection"" Version=""11.0.0"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""6.0.0"" />
-    <PackageReference Include=""FluentValidation.AspNetCore"" Version=""10.3.4"" />
+    <PackageReference Include=""FluentValidation.AspNetCore"" Version=""10.4.0"" />
     <PackageReference Include=""HeimGuard"" Version=""0.1.1"" />
-    <PackageReference Include=""MediatR"" Version=""9.0.0"" />
-    <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""9.0.0"" />
+    <PackageReference Include=""MediatR"" Version=""10.0.1"" />
+    <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""10.0.1"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""6.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""6.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.0.0"" />
-    <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""6.0.0"" />
-    <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""6.0.0"" />
+    <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""6.0.4"" />
     {sqlPackage}
     <PackageReference Include=""Microsoft.Extensions.Configuration.Binder"" Version=""6.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.JwtBearer"" Version=""6.0.0"" />
@@ -73,18 +71,22 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include=""Swashbuckle.AspNetCore"" Version=""6.2.3"" />
+    <PackageReference Include=""Swashbuckle.AspNetCore"" Version=""6.3.0"" />
 
     <PackageReference Include=""Sieve"" Version=""2.5.1"" />
-    <PackageReference Include=""Serilog.AspNetCore"" Version=""4.1.0"" />
+    <PackageReference Include=""Serilog.AspNetCore"" Version=""5.0.0"" />
     <PackageReference Include=""Serilog.Enrichers.AspNetCore"" Version=""1.0.0"" />
     <PackageReference Include=""Serilog.Enrichers.Context"" Version=""4.2.0"" />
-    <PackageReference Include=""Serilog.Exceptions"" Version=""8.0.0"" />
+    <PackageReference Include=""Serilog.Exceptions"" Version=""8.1.0"" />
     <PackageReference Include=""Serilog.Enrichers.Process"" Version=""2.0.2"" />
     <PackageReference Include=""Serilog.Enrichers.Thread"" Version=""3.1.0"" />
     <PackageReference Include=""Serilog.Settings.Configuration"" Version=""3.3.0"" />
     <PackageReference Include=""Serilog.Sinks.Console"" Version=""4.0.1"" />
-    <PackageReference Include=""Serilog.Sinks.Seq"" Version=""5.1.0"" />
+    <PackageReference Include=""OpenTelemetry.Exporter.Jaeger"" Version=""1.2.0-rc5"" />
+    <PackageReference Include=""OpenTelemetry.Extensions.Hosting"" Version=""1.0.0-rc9.2"" />
+    <PackageReference Include=""OpenTelemetry.Instrumentation.AspNetCore"" Version=""1.0.0-rc9.2"" />
+    <PackageReference Include=""OpenTelemetry.Instrumentation.SqlClient"" Version=""1.0.0-rc9.2"" />
+    
   </ItemGroup>
 
 </Project>";

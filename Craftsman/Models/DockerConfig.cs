@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using Enums;
 using Exceptions;
+using Helpers;
 
 public class DockerConfig
 {
@@ -16,22 +17,37 @@ public class DockerConfig
         get => _dbName ?? $"dev_{ProjectName.ToLower()}"; 
         set => _dbName = value;
     }
-    public string DbUser { get; set; }
-    public string DbPassword { get; set; }
+
+    private string _dbUser;
+    public string DbUser
+    {
+        // Enforce SA for SqlServer
+        get => Enum.Parse<DbProvider>(Provider) == DbProvider.SqlServer ? "SA" : _dbUser ?? "postgres";
+        set => _dbUser = value;
+    }
+
+    private string _dbPassword;
+    public string DbPassword
+    {
+        get => _dbPassword ?? (Enum.Parse<DbProvider>(Provider) == DbProvider.SqlServer
+            ? "#localDockerPassword#"
+            : "postgres");
+        set => _dbPassword = value;
+    }
     public string AuthServerPort { get; set; }
     
-    private int? _dbPort;
-    public int DbPort
+    private int? _dbPort = Utilities.GetFreePort();
+    public int? DbPort
     {
-        get => _dbPort ?? GetFreePort(); 
-        set => _dbPort = value;
+        get => _dbPort;
+        set => _dbPort = value ?? _dbPort;
     }
     
-    private int? _apiPort;
-    public int ApiPort
+    private int? _apiPort = null; // Utilities.GetFreePort();
+    public int? ApiPort
     {
-        get => _apiPort ?? GetFreePort(); 
-        set => _apiPort = value;
+        get => _apiPort;
+        set => _apiPort = value ?? _apiPort;
     }
     
     private string _dbHostName;
@@ -39,6 +55,28 @@ public class DockerConfig
     {
         get => _dbHostName ?? $"{ProjectName.ToLower()}-db"; 
         set => _dbHostName = value;
+    }
+    
+    public string DbConnectionStringCompose
+    {
+        get {
+            var dbProvider = Enum.Parse<DbProvider>(Provider);
+            var dbConnectionString = dbProvider == DbProvider.SqlServer
+                ? $"Data Source={DbHostName},{1433};Integrated Security=False;Database={DbName};User ID={DbUser};Password={DbPassword}"
+                : $"Host={DbHostName};Port={5432};Database={DbName};Username={DbUser};Password={DbPassword}";
+            return dbConnectionString;
+        }
+    }
+    
+    public string DbConnectionString
+    {
+        get {
+            var dbProvider = Enum.Parse<DbProvider>(Provider);
+            var dbConnectionString = dbProvider == DbProvider.SqlServer
+                ? $"Data Source=localhost,{DbPort};Integrated Security=False;Database={DbName};User ID={DbUser};Password={DbPassword}"
+                : $"Host=localhost;Port={DbPort};Database={DbName};Username={DbUser};Password={DbPassword}";
+            return dbConnectionString;
+        }
     }
     
     private string _apiServiceName;
@@ -67,15 +105,5 @@ public class DockerConfig
             }
             DbProviderEnum = parsed;
         }
-    }
-    
-    private static int GetFreePort()
-    {
-        // From https://stackoverflow.com/a/150974/4190785
-        var tcpListener = new TcpListener(IPAddress.Loopback, 0);
-        tcpListener.Start();
-        var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
-        tcpListener.Stop();
-        return port;
     }
 }
