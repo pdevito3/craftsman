@@ -96,6 +96,7 @@
 
             // need this before boundaries to give them something to build against
             DockerComposeBuilders.CreateDockerComposeSkeleton(domainDirectory, fileSystem);
+            DockerComposeBuilders.AddJaegerToDockerCompose(domainDirectory);
             // DockerBuilders.CreateDockerComposeDbSkeleton(domainDirectory, fileSystem);
             
             //Parallel.ForEach(domainProject.BoundedContexts, (template) =>

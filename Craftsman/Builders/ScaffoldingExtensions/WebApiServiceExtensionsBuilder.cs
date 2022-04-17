@@ -1,9 +1,7 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders.ScaffoldingExtensions
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
     using System.IO.Abstractions;
-    using System.Text;
+    using Helpers;
 
     public class WebApiServiceExtensionsBuilder
     {

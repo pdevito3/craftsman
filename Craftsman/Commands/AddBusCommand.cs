@@ -9,6 +9,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using Builders.Docker;
+    using Builders.ScaffoldingExtensions;
     using static Helpers.ConsoleWriter;
     using Spectre.Console;
     using Craftsman.Builders.Tests.Utilities;

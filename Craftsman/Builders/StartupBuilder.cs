@@ -134,6 +134,7 @@ public class Startup
         services.AddSingleton(Log.Logger);
         // TODO update CORS for your env
         services.AddCorsService(""{corsName}"", _env);
+        services.OpenTelemetryRegistration(""{projectBaseName}"");
         services.AddInfrastructure(_config, _env);
         services.AddControllers()
             .AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);

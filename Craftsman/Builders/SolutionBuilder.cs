@@ -8,6 +8,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using AuthServer;
+    using ScaffoldingExtensions;
     using static Helpers.ConsoleWriter;
 
     public class SolutionBuilder
@@ -63,6 +64,7 @@
             WebApiServiceExtensionsBuilder.CreateApiVersioningServiceExtension(srcDirectory, projectBaseName, fileSystem);
             WebApiServiceExtensionsBuilder.CreateCorsServiceExtension(srcDirectory, projectBaseName, fileSystem);
             WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(srcDirectory, projectBaseName, fileSystem);
+            OpenTelemetryExtensionsBuilder.CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider, fileSystem);
             ErrorHandlerFilterAttributeBuilder.CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName, fileSystem);
             AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
             WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, fileSystem);

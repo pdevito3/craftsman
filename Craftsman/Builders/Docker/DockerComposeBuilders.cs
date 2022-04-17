@@ -81,6 +81,62 @@ volumes:";
         File.Move(tempPath, classPath.FullClassPath);
     }
     
+    public static void AddJaegerToDockerCompose(string solutionDirectory)
+    {
+        var services = $@"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+#    port mappings: https://www.jaegertracing.io/docs/1.32/getting-started/
+    ports:
+      - ""5775:5775/udp""
+      - ""6831:6831/udp""
+      - ""6832:6832/udp""
+      - ""5778:5778""
+      - ""16686:16686""
+      - ""14250:14250""
+      - ""14268:14268""
+      - ""14269:14269""
+      - ""9411:9411""
+";
+        
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
+
+        if (!Directory.Exists(classPath.ClassDirectory))
+            Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!File.Exists(classPath.FullClassPath))
+            return; //don't want to require this
+
+        // don't add it again if it's already there
+        var fileText = File.ReadAllText(classPath.FullClassPath);
+        if (fileText.Contains($"jaegertracing"))
+            return;
+        
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = File.OpenText(classPath.FullClassPath))
+        {
+            using (var output = new StreamWriter(tempPath))
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"services:"))
+                    {
+                        newText += @$"{services}";
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        File.Delete(classPath.FullClassPath);
+        File.Move(tempPath, classPath.FullClassPath);
+    }
+    
     // TODO add props to make this configurable
     public static void AddRmqToDockerCompose(string solutionDirectory)
     {

@@ -82,6 +82,11 @@
     <PackageReference Include=""Serilog.Enrichers.Thread"" Version=""3.1.0"" />
     <PackageReference Include=""Serilog.Settings.Configuration"" Version=""3.3.0"" />
     <PackageReference Include=""Serilog.Sinks.Console"" Version=""4.0.1"" />
+    <PackageReference Include=""OpenTelemetry.Exporter.Jaeger"" Version=""1.2.0-rc5"" />
+    <PackageReference Include=""OpenTelemetry.Extensions.Hosting"" Version=""1.0.0-rc9.2"" />
+    <PackageReference Include=""OpenTelemetry.Instrumentation.AspNetCore"" Version=""1.0.0-rc9.2"" />
+    <PackageReference Include=""OpenTelemetry.Instrumentation.SqlClient"" Version=""1.0.0-rc9.2"" />
+    
   </ItemGroup>
 
 </Project>";
