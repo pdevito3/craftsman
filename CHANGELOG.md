@@ -9,9 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+* Nothing, yet!
+
+## [0.14.0] - 04/16/2022
+
 ### Added
 
-* A `Dockerfile` and `.dockerignore` will be added to each bounded context automatically
+* A `Dockerfile` and `.dockerignore` will be added to each bounded context automatically (except BFFs)
 
 * A `docker-compose.yaml` will be added to your solution root by default for local development
   * Just run `docker-compose up --build` to spin up your databases (and RMQ if needed)
@@ -31,14 +35,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
       export ASPNETCORE_ENVIRONMENT=anything
       ```
     
-    * `dotnet ef database update --connection "Host=localhost;Port=3125;Database=dev_recipemanagement;Username=postgres;Password=postgres"`
+    * `dotnet ef database update` or  `dotnet ef database update --connection "Host=localhost;Port=3125;Database=dev_recipemanagement;Username=postgres;Password=postgres"`
     
-  * Default settings can be overriden using a `DockerConfig` object on an `ApiTemplate`
-
   * `SA` will always be default user for sqlserver so it can work properly
 
   * If no ports are given for api or db, they'll be auto assigned a free port on your machine
-  
+
   * New `john` user to auth server (with no role)
   
   * Login hints for auth server

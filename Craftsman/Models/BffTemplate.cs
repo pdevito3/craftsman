@@ -8,7 +8,7 @@ public class BffTemplate : BffBased
     public string ProfileName
     {
         get => _profileName;
-        set => _profileName = value ?? ProjectName;
+        set => _profileName = value ?? "Development";
     }
     
     private int _port = Utilities.GetFreePort();

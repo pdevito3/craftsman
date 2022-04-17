@@ -63,11 +63,12 @@
 
             // base files needed before below is ran
             template.DockerConfig.ApiPort ??= template.Port; // set to the launch settings port if needed... really need to refactor to a domain layer and dto layer 😪
-            template.DockerConfig.AuthServerPort ??= template.Environment.AuthSettings.AuthorizationUrl
-                .Replace("localhost", "")
-                .Replace("https://", "")
-                .Replace("http://", "")
-                .Replace(":", ""); // this is fragile and i hate it. also not in domain...
+            if(template.AddJwtAuthentication)
+                template.DockerConfig.AuthServerPort ??= template?.Environment?.AuthSettings?.AuthorizationUrl
+                    .Replace("localhost", "")
+                    .Replace("https://", "")
+                    .Replace("http://", "")
+                    .Replace(":", ""); // this is fragile and i hate it. also not in domain...
             DbContextBuilder.CreateDbContext(srcDirectory,
                 template.Entities,
                 template.DbContext.ContextName,

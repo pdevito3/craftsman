@@ -243,6 +243,10 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
+    - Name: Rating
+      Type: int?
+      CanFilter: true
+      CanSort: true
     - Name: Author
       Type: Author
       ForeignEntityName: Author
@@ -358,6 +362,8 @@ Bff:
     - Name: Directions
     - Name: RecipeSourceLink
     - Name: Description
+    - Name: Rating
+      Type: number?
   - Name: Ingredient
     Features:
     - Type: GetList
@@ -648,6 +654,10 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
+    - Name: Rating
+      Type: int?
+      CanFilter: true
+      CanSort: true
   Environment:
     AuthSettings:
       Authority: https://localhost:3385
@@ -683,6 +693,8 @@ Bff:
     - Name: RecipeSourceLink
     - Name: Description
     - Name: ImageLink
+    - Name: Rating
+      Type: number?
 AuthServer:
   Name: AuthServerWithDomain
   Port: 3385
