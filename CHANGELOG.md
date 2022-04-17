@@ -105,6 +105,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Bumped Nuget packages to latest
 
+- Updated checkpoint in test fixture for major version bump
+
 ### Removed
 
 - Removed seeders
