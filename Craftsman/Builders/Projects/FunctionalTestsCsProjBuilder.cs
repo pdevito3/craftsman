@@ -40,15 +40,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""6.0.0"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""6.0.4"" />
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
-    <PackageReference Include=""Bogus"" Version=""34.0.1"" />
+    <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""Docker.DotNet"" Version=""3.125.5"" />
-    <PackageReference Include=""FluentAssertions"" Version=""5.10.3"" />
-    <PackageReference Include=""MediatR"" Version=""9.0.0"" />
-    <PackageReference Include=""Moq"" Version=""4.16.1"" />
-    <PackageReference Include=""NUnit"" Version=""3.13.2"" />
-    <PackageReference Include=""NUnit3TestAdapter"" Version=""4.1.0"" />
+    <PackageReference Include=""FluentAssertions"" Version=""6.6.0"" />
+    <PackageReference Include=""MediatR"" Version=""10.0.1"" />
+    <PackageReference Include=""Moq"" Version=""4.17.2"" />
+    <PackageReference Include=""NUnit"" Version=""3.13.3"" />
+    <PackageReference Include=""NUnit3TestAdapter"" Version=""4.2.1"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.0.0"" />
     <PackageReference Include=""Respawn"" Version=""4.0.0"" />
     <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""6.0.0"" />
