@@ -61,7 +61,8 @@
         ""RMQ_HOST"": ""{env.BrokerSettings.Host}"",
         ""RMQ_VIRTUAL_HOST"": ""{env.BrokerSettings.VirtualHost}"",
         ""RMQ_USERNAME"": ""{env.BrokerSettings.Username}"",
-        ""RMQ_PASSWORD"": ""{env.BrokerSettings.Password}""        
+        ""RMQ_PASSWORD"": ""{env.BrokerSettings.Password}"",
+        ""JAEGER_HOST"": ""localhost"",
       }},
       ""applicationUrl"": ""https://localhost:{port}""
     }},";
