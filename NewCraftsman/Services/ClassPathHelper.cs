@@ -53,10 +53,10 @@
             return new ClassPath(solutionDirectory, Path.Combine(projectBaseName, "Extensions", "Host"), className);
         }
 
-        public static ClassPath WebApiServiceExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath WebApiServiceExtensionsClassPath(string srcDirectory, string className, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Extensions", "Services"), className);
+            return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Extensions", "Services"), className);
         }
 
         public static ClassPath WebApiConsumersServiceExtensionsClassPath(string solutionDirectory, string className, string projectBaseName)

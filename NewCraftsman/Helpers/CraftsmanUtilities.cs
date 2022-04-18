@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Text;
+using Exceptions;
 using Services;
 using Spectre.Console;
 
@@ -11,7 +13,8 @@ public interface ICraftsmanUtilities
 {
     bool ExecuteProcess(string command, string args, string directory, Dictionary<string, string> envVariables, int killInterval = 15000, string processKilledMessage = "Process Killed.");
     void ExecuteProcess(string command, string args, string directory);
-    void AddProjectReference(IClassPath classPath, string relativeProjectPath)
+    void AddProjectReference(IClassPath classPath, string relativeProjectPath);
+    public void CreateFile(IClassPath classPath, string fileText);
 }
 
 public class CraftsmanUtilities : ICraftsmanUtilities
@@ -23,6 +26,18 @@ public class CraftsmanUtilities : ICraftsmanUtilities
     {
         _consoleWriter = consoleWriter;
         _fileSystem = fileSystem;
+    }
+
+    public void CreateFile(IClassPath classPath, string fileText)
+    {
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (_fileSystem.File.Exists(classPath.FullClassPath))
+            throw new FileAlreadyExistsException(classPath.FullClassPath);
+
+        using var fs = _fileSystem.File.Create(classPath.FullClassPath);
+        fs.Write(Encoding.UTF8.GetBytes(fileText));
     }
     
     public static string PropTypeCleanupDotNet(string prop)

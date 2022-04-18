@@ -3,25 +3,22 @@
     using System.IO;
     using System.Text;
     using Exceptions;
+    using Helpers;
+    using Services;
 
     public class UnitTestsCsProjBuilder
     {
-        public static void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public UnitTestsCsProjBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.UnitTestProjectClassPath(solutionDirectory, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetTestsCsProjFileText(solutionDirectory, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            _utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName));
         }
 
         public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName)

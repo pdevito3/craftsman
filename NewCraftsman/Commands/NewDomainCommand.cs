@@ -1,6 +1,7 @@
 namespace NewCraftsman.Commands;
 
 using System.IO.Abstractions;
+using Builders;
 using Domain.DomainProject;
 using Domain.DomainProject.Dtos;
 using Helpers;
@@ -13,12 +14,14 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
     private IAnsiConsole _console;
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public NewDomainCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter)
+    public NewDomainCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities)
     {
         _console = console;
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
+        _utilities = utilities;
     }
 
     public class Settings : CommandSettings
@@ -50,40 +53,40 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         return 0;
     }
     
-    public void CreateNewDomainProject(string domainDirectory, DomainProject domainProject)
+    public void CreateNewDomainProject(string solutionDirectory, DomainProject domainProject)
     {
-        _fileSystem.Directory.CreateDirectory(domainDirectory);
-        SolutionBuilder.BuildSolution(domainDirectory, domainProject.DomainName);
+        _fileSystem.Directory.CreateDirectory(solutionDirectory);
+        new SolutionBuilder(_fileSystem, _utilities, _consoleWriter).BuildSolution(solutionDirectory, domainProject.DomainName);
         
         // // need this before boundaries to give them something to build against
-        // DockerComposeBuilders.CreateDockerComposeSkeleton(domainDirectory);
-        // DockerComposeBuilders.AddJaegerToDockerCompose(domainDirectory);
-        // // DockerBuilders.CreateDockerComposeDbSkeleton(domainDirectory);
+        // DockerComposeBuilders.CreateDockerComposeSkeleton(solutionDirectory);
+        // DockerComposeBuilders.AddJaegerToDockerCompose(solutionDirectory);
+        // // DockerBuilders.CreateDockerComposeDbSkeleton(solutionDirectory);
         //     
         // //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
-        // //    ApiScaffolding.ScaffoldApi(domainDirectory, template, verbosity));
+        // //    ApiScaffolding.ScaffoldApi(solutionDirectory, template, verbosity));
         // foreach (var bc in domainProject.BoundedContexts)
-        //     ApiScaffolding.ScaffoldApi(domainDirectory, bc);
+        //     ApiScaffolding.ScaffoldApi(solutionDirectory, bc);
         //
         // // auth server
         // if (domainProject.AuthServer != null)
-        //     AddAuthServerCommand.AddAuthServer(domainDirectory, domainProject.AuthServer);
+        //     AddAuthServerCommand.AddAuthServer(solutionDirectory, domainProject.AuthServer);
         //     
         // // bff
         // if (domainProject.AuthServer != null)
-        //     AddBffCommand.AddBff(domainProject.Bff, domainDirectory);
+        //     AddBffCommand.AddBff(domainProject.Bff, solutionDirectory);
         //
         // // messages
         // if (domainProject.Messages.Count > 0)
-        //     AddMessageCommand.AddMessages(domainDirectory, domainProject.Messages);
+        //     AddMessageCommand.AddMessages(solutionDirectory, domainProject.Messages);
         //
         // // migrations
-        // Utilities.RunDbMigrations(domainProject.BoundedContexts, domainDirectory);
+        // Utilities.RunDbMigrations(domainProject.BoundedContexts, solutionDirectory);
         //
         // //final
-        // ReadmeBuilder.CreateReadme(domainDirectory, domainProject.DomainName);
+        // ReadmeBuilder.CreateReadme(solutionDirectory, domainProject.DomainName);
         //
         // if (domainProject.AddGit)
-        //     Utilities.GitSetup(domainDirectory, domainProject.UseSystemGitUser);
+        //     Utilities.GitSetup(solutionDirectory, domainProject.UseSystemGitUser);
     }
 }

@@ -2,37 +2,30 @@
 {
     using System;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Text;
+    using Domain;
     using Exceptions;
+    using Helpers;
+    using Services;
 
     public class WebApiCsProjBuilder
     {
-        public static void CreateWebApiCsProj(string solutionDirectory, string projectBaseName, string dbProvider)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public WebApiCsProjBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+        
+        public void CreateWebApiCsProj(string solutionDirectory, string projectBaseName, DbProvider dbProvider)
         {
             var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetWebApiCsProjFileText(solutionDirectory, projectBaseName, dbProvider);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            _utilities.CreateFile(classPath, GetWebApiCsProjFileText(dbProvider));
         }
 
-        public static string GetWebApiCsProjFileText(string solutionDirectory, string projectBaseName, string dbProvider)
+        public static string GetWebApiCsProjFileText(DbProvider dbProvider)
         {
-            var sqlPackage = @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""6.0.4"" />";
-            if (Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == dbProvider)
-                sqlPackage = @$"<PackageReference Include=""Npgsql.EntityFrameworkCore.PostgreSQL"" Version=""6.0.4"" />";
-            //else if (Enum.GetName(typeof(DbProvider), DbProvider.MySql) == provider)
-            //    return "UseMySql";
-
             return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>
@@ -62,7 +55,7 @@
     <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""6.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.0.0"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""6.0.4"" />
-    {sqlPackage}
+    {dbProvider.PackageInclusionString("6.0.4")}
     <PackageReference Include=""Microsoft.Extensions.Configuration.Binder"" Version=""6.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.JwtBearer"" Version=""6.0.0"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.Design"" Version=""6.0.0"">
