@@ -23,7 +23,8 @@ app.Configure(config =>
     config.AddBranch("new", @new =>
     {
         @new.AddCommand<NewDomainCommand>("domain")
-            .WithDescription("Scaffolds a project based on a given template file in a json or yaml format.").WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithDescription("Scaffolds a project based on a given template file in a json or yaml format.")
+            .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
             .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
             .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
     });
@@ -36,6 +37,7 @@ try
 }
 catch (Exception e)
 {
+    // TODO update to check if exception inherits from ICraftsmanException
     if (e is FileAlreadyExistsException
         or DirectoryAlreadyExistsException
         or InvalidSolutionNameException
