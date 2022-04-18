@@ -2,6 +2,7 @@ namespace NewCraftsman.Commands;
 
 using System.IO.Abstractions;
 using Builders;
+using Builders.Docker;
 using Domain.DomainProject;
 using Domain.DomainProject.Dtos;
 using Helpers;
@@ -58,16 +59,16 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         _fileSystem.Directory.CreateDirectory(solutionDirectory);
         new SolutionBuilder(_fileSystem, _utilities, _consoleWriter).BuildSolution(solutionDirectory, domainProject.DomainName);
         
-        // // need this before boundaries to give them something to build against
-        // DockerComposeBuilders.CreateDockerComposeSkeleton(solutionDirectory);
-        // DockerComposeBuilders.AddJaegerToDockerCompose(solutionDirectory);
-        // // DockerBuilders.CreateDockerComposeDbSkeleton(solutionDirectory);
-        //     
-        // //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
-        // //    ApiScaffolding.ScaffoldApi(solutionDirectory, template, verbosity));
-        // foreach (var bc in domainProject.BoundedContexts)
-        //     ApiScaffolding.ScaffoldApi(solutionDirectory, bc);
-        //
+        // need this before boundaries to give them something to build against
+        new DockerComposeBuilders(_utilities).CreateDockerComposeSkeleton(solutionDirectory);
+        DockerComposeBuilders.AddJaegerToDockerCompose(solutionDirectory);
+        // DockerBuilders.CreateDockerComposeDbSkeleton(solutionDirectory);
+            
+        //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
+        //    ApiScaffolding.ScaffoldApi(solutionDirectory, template, verbosity));
+        foreach (var bc in domainProject.BoundedContexts)
+            ApiScaffolding.ScaffoldApi(solutionDirectory, bc);
+
         // // auth server
         // if (domainProject.AuthServer != null)
         //     AddAuthServerCommand.AddAuthServer(solutionDirectory, domainProject.AuthServer);
