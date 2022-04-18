@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Craftsman.Tests", "Craftsma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewCraftsman", "NewCraftsman\NewCraftsman.csproj", "{82238DC2-0A5C-4771-8CE3-232E46F67930}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewCraftsmanUnitTests", "NewCraftsmanUnitTests\NewCraftsmanUnitTests.csproj", "{33643F04-FA2E-450D-A924-BFD954B7C5EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{82238DC2-0A5C-4771-8CE3-232E46F67930}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82238DC2-0A5C-4771-8CE3-232E46F67930}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82238DC2-0A5C-4771-8CE3-232E46F67930}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33643F04-FA2E-450D-A924-BFD954B7C5EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33643F04-FA2E-450D-A924-BFD954B7C5EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33643F04-FA2E-450D-A924-BFD954B7C5EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33643F04-FA2E-450D-A924-BFD954B7C5EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

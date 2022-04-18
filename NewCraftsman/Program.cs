@@ -1,16 +1,20 @@
 ﻿using System.IO.Abstractions;
-using Craftsman.Exceptions;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using NewCraftsman;
 using NewCraftsman.Commands;
+using NewCraftsman.Exceptions;
 using NewCraftsman.Helpers;
 using NewCraftsman.Interceptors;
+using NewCraftsman.Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 var serviceCollection = new ServiceCollection();
 serviceCollection.AddSingleton<IFileSystem, FileSystem>();
 serviceCollection.AddSingleton<IConsoleWriter, ConsoleWriter>();
+serviceCollection.AddSingleton<ICraftsmanUtilities, CraftsmanUtilities>();
+serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var registrar = new TypeRegistrar(serviceCollection);
 var app = new CommandApp(registrar); // works without registrar

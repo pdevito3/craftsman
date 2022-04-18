@@ -4,7 +4,7 @@
     using System.Data;
     using System.IO;
     using System.Linq;
-    using Craftsman.Exceptions;
+    using Exceptions;
     using Newtonsoft.Json;
     using YamlDotNet.Serialization;
 

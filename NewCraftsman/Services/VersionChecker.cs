@@ -1,4 +1,4 @@
-namespace NewCraftsman;
+namespace NewCraftsman.Services;
 
 using System.Reflection;
 using RestSharp;

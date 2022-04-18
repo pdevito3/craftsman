@@ -1,4 +1,4 @@
-﻿namespace Craftsman.Exceptions
+﻿namespace NewCraftsman.Exceptions
 {
     using System;
 
