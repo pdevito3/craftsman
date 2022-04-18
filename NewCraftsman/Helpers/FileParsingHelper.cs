@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Data;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using Exceptions;
     using Newtonsoft.Json;
@@ -10,6 +11,13 @@
 
     public class FileParsingHelper
     {
+        private readonly IFileSystem _fileSystem;
+
+        public FileParsingHelper(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+        
         public static T GetTemplateFromFile<T>(string filePath)
         {
             var ext = Path.GetExtension(filePath);
@@ -46,9 +54,9 @@
             return validExtensions.Contains(Path.GetExtension(filePath));
         }
 
-        public static bool RunInitialTemplateParsingGuards(string filePath)
+        public bool RunInitialTemplateParsingGuards(string filePath)
         {
-            if (!File.Exists(filePath))
+            if (!_fileSystem.File.Exists(filePath))
             {
                 throw new FileNotFoundException();
             }

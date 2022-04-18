@@ -38,7 +38,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         if (myEnv == "Dev")
             rootDir = _console.Ask<string>("Enter the root directory of your project:");
         
-        FileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
+        new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(rootDir);
         var domainProjectDto = FileParsingHelper.GetTemplateFromFile<DomainProjectDto>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
         
@@ -47,7 +47,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         var solutionDirectory = $"{rootDir}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
         CreateNewDomainProject(solutionDirectory, domainProject); // TODO create DomainProject.Create?
 
-        AnsiConsole.MarkupLine($"{Environment.NewLine}[bold yellow1]Your domain project is ready! Build something amazing. [/]");
+        _console.MarkupLine($"{Environment.NewLine}[bold yellow1]Your domain project is ready! Build something amazing. [/]");
 
         _consoleWriter.StarGithubRequest();
         return 0;

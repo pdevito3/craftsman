@@ -42,7 +42,9 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         var (exampleType, projectName) = RunPrompt(settings.ProjectName);
         var templateString = GetExampleDomain(projectName, exampleType);
                 
-        var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(templateString);
+        var domainProjectDto = FileParsingHelper.ReadYamlString<DomainProjectDto>(templateString);
+        var domainProject = DomainProject.Create(domainProjectDto);
+        
         var solutionDirectory = $"{rootDir}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
         
         var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities);
@@ -59,7 +61,7 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
     private (ExampleType type, string name) RunPrompt(string projectName)
     {
         _console.WriteLine();
-        _console.Render(new Rule("[yellow]Create an Example Project[/]").RuleStyle("grey").Centered());
+        _console.Write(new Rule("[yellow]Create an Example Project[/]").RuleStyle("grey").Centered());
 
         var typeString = AskExampleType();
         var exampleType = ExampleType.FromName(typeString, ignoreCase: true);
@@ -418,6 +420,7 @@ AuthServer:
 
         private static string BasicTemplate(string name)
         {
+            return $@"DomainName: {name}";
             return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement
@@ -734,5 +737,5 @@ AuthServer:
         - profile
         - role
 ";
+        }
     }
-}

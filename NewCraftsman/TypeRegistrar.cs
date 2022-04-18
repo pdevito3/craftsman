@@ -3,7 +3,7 @@ namespace NewCraftsman;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-public class TypeRegistrar : ITypeRegistrar
+public sealed class TypeRegistrar : ITypeRegistrar
 {
     private readonly IServiceCollection _builder;
 
@@ -34,11 +34,11 @@ public class TypeRegistrar : ITypeRegistrar
             throw new ArgumentNullException(nameof(func));
         }
 
-        _builder.AddSingleton(service, _ => func());
+        _builder.AddSingleton(service, (provider) => func());
     }
 }
 
-public class TypeResolver : ITypeResolver
+public sealed class TypeResolver : ITypeResolver, IDisposable
 {
     private readonly IServiceProvider _provider;
 
@@ -53,7 +53,15 @@ public class TypeResolver : ITypeResolver
         {
             return null;
         }
-        
+
         return _provider.GetService(type);
+    }
+
+    public void Dispose()
+    {
+        if (_provider is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
     }
 }

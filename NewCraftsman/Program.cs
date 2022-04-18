@@ -17,7 +17,7 @@ serviceCollection.AddSingleton<ICraftsmanUtilities, CraftsmanUtilities>();
 serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var registrar = new TypeRegistrar(serviceCollection);
-var app = new CommandApp(registrar); // works without registrar
+var app = new CommandApp(registrar);
 
 app.Configure(config =>
 {
@@ -31,6 +31,11 @@ app.Configure(config =>
             .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
             .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
             .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+
+        @new.AddCommand<NewExampleCommand>("example")
+            .WithDescription("Scaffolds out an example project via CLI prompts into the current directory.")
+            .WithExample(new[] { "example" })
+            .WithExample(new[] { "example", "MyProjectName" });
     });
 });
 
