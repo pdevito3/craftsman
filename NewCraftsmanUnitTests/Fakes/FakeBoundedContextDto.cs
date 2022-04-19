@@ -1,11 +1,11 @@
-namespace NewCraftsmanUnitTests.Fakes.DomanProject;
+namespace NewCraftsmanUnitTests.Fakes;
 
 using AutoBogus;
-using NewCraftsman.Domain.DomainProject.Dtos;
+using NewCraftsman.Domain.BoundedContexts.Dtos;
 
-public class FakeDomainProjectDto : AutoFaker<DomainProjectDto>
+public class FakeBoundedContextDto : AutoFaker<BoundedContextDto>
 {
-    public FakeDomainProjectDto()
+    public FakeBoundedContextDto()
     {
         // if you want default values on any of your properties (e.g. an int between a certain range or a date always in the past), you can add `RuleFor` lines describing those defaults
         //RuleFor(c => c.ExampleIntProperty, c => c.Random.Number(50, 100000));

@@ -1,10 +1,12 @@
-namespace NewCraftsman.Domain.DomainProject.Dtos;
+namespace NewCraftsman.Domain.DomainProjects.Dtos;
+
+using BoundedContexts.Dtos;
 
 public class DomainProjectDto
 {
     public string DomainName { get; set; }
 
-    // public List<ApiTemplate> BoundedContexts { get; set; }
+    public List<BoundedContextDto> BoundedContexts { get; set; } = new List<BoundedContextDto>();
 
     public bool? AddGit { get; set; } = null;
 

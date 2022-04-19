@@ -1,4 +1,4 @@
-namespace NewCraftsman.Domain.DomainProject.Mappings;
+namespace NewCraftsman.Domain.DomainProjects.Mappings;
 
 using AutoMapper;
 using Dtos;

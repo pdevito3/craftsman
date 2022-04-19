@@ -3,9 +3,10 @@ namespace NewCraftsman.Commands;
 using System.IO.Abstractions;
 using Builders;
 using Domain;
-using Domain.DomainProject;
-using Domain.DomainProject.Dtos;
+using Domain.DomainProjects;
+using Domain.DomainProjects.Dtos;
 using Helpers;
+using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using static Helpers.ConsoleWriter;
@@ -16,13 +17,15 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
     private readonly ICraftsmanUtilities _utilities;
+    private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
 
-    public NewExampleCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities)
+    public NewExampleCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
     {
         _console = console;
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
+        _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
     }
 
     public class Settings : CommandSettings
@@ -45,10 +48,9 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         var domainProjectDto = FileParsingHelper.ReadYamlString<DomainProjectDto>(templateString);
         var domainProject = DomainProject.Create(domainProjectDto);
         
-        var solutionDirectory = $"{rootDir}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
-        
-        var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities);
-        domainCommand.CreateNewDomainProject(solutionDirectory, domainProject);
+        _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
+        var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore);
+        domainCommand.CreateNewDomainProject(domainProject);
         
         // TODO add this back
         // ExampleTemplateBuilder.CreateYamlFile(domainDirectory, templateString, fileSystem);
@@ -420,7 +422,15 @@ AuthServer:
 
         private static string BasicTemplate(string name)
         {
-            return $@"DomainName: {name}";
+            return $@"DomainName: {name}
+BoundedContexts:
+- ProjectName: RecipeManagement
+  Port: 5375
+  DbContext:
+   ContextName: RecipesDbContext
+   DatabaseName: RecipeManagement
+   Provider: postgres
+   NamingConvention: class";
             return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement

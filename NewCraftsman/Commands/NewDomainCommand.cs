@@ -3,8 +3,8 @@ namespace NewCraftsman.Commands;
 using System.IO.Abstractions;
 using Builders;
 using Builders.Docker;
-using Domain.DomainProject;
-using Domain.DomainProject.Dtos;
+using Domain.DomainProjects;
+using Domain.DomainProjects.Dtos;
 using Helpers;
 using Services;
 using Spectre.Console;
@@ -71,7 +71,8 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
         //    ApiScaffolding.ScaffoldApi(solutionDirectory, template, verbosity));
         foreach (var bc in domainProject.BoundedContexts)
-            ApiScaffolding.ScaffoldApi(solutionDirectory, bc);
+            _consoleWriter.WriteInfo("Scaffolding Bounded Context: " + bc.ProjectName);
+            // ApiScaffolding.ScaffoldApi(solutionDirectory, bc);
 
         // // auth server
         // if (domainProject.AuthServer != null)

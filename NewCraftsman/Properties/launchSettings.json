@@ -2,6 +2,7 @@
   "profiles": {
     "Craftsman Dev": {
       "commandName": "Project",
+      "commandLineArgs": "new example fromclinew",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Dev"
       }

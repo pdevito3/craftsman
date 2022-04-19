@@ -1,6 +1,9 @@
-namespace NewCraftsman.Domain.DomainProject;
+namespace NewCraftsman.Domain.DomainProjects;
 
 using AutoMapper;
+using BoundedContexts;
+using BoundedContexts.Mappings;
+using DbContextConfigs.Mappings;
 using Dtos;
 using FluentValidation;
 using Mappings;
@@ -10,7 +13,7 @@ public class DomainProject
 {
     public string DomainName { get; private set; }
 
-    // public List<ApiTemplate> BoundedContexts { get; private set; }
+    public List<BoundedContext> BoundedContexts { get; private set; }
 
     public bool AddGit { get; private set; }
 
@@ -33,9 +36,13 @@ public class DomainProject
         new DomainProjectDtoValidator().ValidateAndThrow(domainProjectDto);
         var mapper = new Mapper(new MapperConfiguration(cfg => {
             cfg.AddProfile<DomainProjectProfile>();
+            cfg.AddProfile<BoundedContextProfile>();
+            cfg.AddProfile<DbContextConfigProfile>();
         }));
         var newDomainProject = mapper.Map<DomainProject>(domainProjectDto);
-        
+        // domainProjectDto.BoundedContexts
+        //     .ForEach(bc => newDomainProject.BoundedContexts.Add(BoundedContext.Create(bc)));
+
         return newDomainProject;
     }
 }
