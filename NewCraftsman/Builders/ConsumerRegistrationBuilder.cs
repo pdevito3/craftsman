@@ -1,21 +1,28 @@
 ﻿namespace NewCraftsman.Builders
 {
     using System.IO;
+    using System.IO.Abstractions;
     using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Exceptions;
+    using Helpers;
+    using Services;
 
     public class ConsumerRegistrationBuilder
     {
-        public static void CreateConsumerRegistration(string solutionDirectory, Consumer consumer, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ConsumerRegistrationBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateConsumerRegistration(string solutionDirectory, Consumer consumer, string projectBaseName)
         {
             var className = $@"{consumer.EndpointRegistrationMethodName}Registration";
             var classPath = ClassPathHelper.WebApiConsumersServiceExtensionsClassPath(solutionDirectory, $"{className}.cs", projectBaseName);
             var consumerFeatureClassPath = ClassPathHelper.ConsumerFeaturesClassPath(solutionDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
 
             var quorumText = consumer.IsQuorum ? $@"
 
@@ -29,7 +36,6 @@
             re.SetQueueArgument(""declare"", ""lazy"");" : "";
             //re.Lazy = true;" : "";
 
-            using FileStream fs = File.Create(classPath.FullClassPath);
             var data = "";
 
             if (ExchangeTypeEnum.FromName(consumer.ExchangeType) == ExchangeTypeEnum.Direct
@@ -38,7 +44,7 @@
             else
                 data = GetFanoutConsumerRegistration(classPath.ClassNamespace, className, consumer, lazyText, quorumText, consumerFeatureClassPath.ClassNamespace);
 
-            fs.Write(Encoding.UTF8.GetBytes(data));
+            _utilities.CreateFile(classPath, data);
         }
 
         public static string GetDirectOrTopicConsumerRegistration(string classNamespace, string className, Consumer consumer, string lazyText, string quorumText, string consumerFeatureUsing)

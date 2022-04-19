@@ -2,36 +2,45 @@
 {
     using System.IO;
     using System.IO.Abstractions;
+    using Helpers;
+    using Services;
 
     public class CoreExceptionsBuilder
     {
-        public static void CreateExceptions(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public CoreExceptionsBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateExceptions(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
 
-            CreateNotFoundException(solutionDirectory, projectBaseName, fileSystem);
-            CreateValidationException(solutionDirectory, projectBaseName, fileSystem);
-            CreateForbiddenException(solutionDirectory, projectBaseName, fileSystem);
+            CreateNotFoundException(solutionDirectory, projectBaseName);
+            CreateValidationException(solutionDirectory, projectBaseName);
+            CreateForbiddenException(solutionDirectory, projectBaseName);
         }
 
-        public static void CreateValidationException(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public void CreateValidationException(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ValidationException.cs");
             var fileText = GetValidationExceptionFileText(classPath.ClassNamespace);
             _utilities.CreateFile(classPath, fileText);
         }
 
-        public static void CreateNotFoundException(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public void CreateNotFoundException(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"NotFoundException.cs");
             var fileText = GetNotFoundExceptionFileText(classPath.ClassNamespace);
             _utilities.CreateFile(classPath, fileText);
         }
 
-        public static void CreateForbiddenException(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public void CreateForbiddenException(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ForbiddenException.cs");
             var fileText = GetForbiddenExceptionFileText(classPath.ClassNamespace);
