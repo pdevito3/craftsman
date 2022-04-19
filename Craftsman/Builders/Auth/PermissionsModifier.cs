@@ -31,7 +31,7 @@
                         var newText = $"{line}";
                         if (line.Contains($"Permissions marker"))
                         {
-                            newText += @$"{Environment.NewLine}    public const string {permission} = ""{permission}"";";
+                            newText += @$"{Environment.NewLine}    public const string {permission} = nameof({permission});";
                         }
 
                         output.WriteLine(newText);
