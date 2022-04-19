@@ -14,6 +14,7 @@ var serviceCollection = new ServiceCollection();
 serviceCollection.AddSingleton<IFileSystem, FileSystem>();
 serviceCollection.AddSingleton<IConsoleWriter, ConsoleWriter>();
 serviceCollection.AddSingleton<ICraftsmanUtilities, CraftsmanUtilities>();
+serviceCollection.AddSingleton<IScaffoldingDirectoryStore, ScaffoldingDirectoryStore>();
 serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var registrar = new TypeRegistrar(serviceCollection);

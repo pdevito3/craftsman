@@ -6,6 +6,7 @@ using Builders.Docker;
 using Domain.DomainProject;
 using Domain.DomainProject.Dtos;
 using Helpers;
+using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using static Helpers.ConsoleWriter;
@@ -16,13 +17,15 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
     private readonly ICraftsmanUtilities _utilities;
+    private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
 
-    public NewDomainCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities)
+    public NewDomainCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
     {
         _console = console;
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
+        _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
     }
 
     public class Settings : CommandSettings
@@ -45,8 +48,8 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         
         var domainProject = DomainProject.Create(domainProjectDto);
 
-        var solutionDirectory = $"{rootDir}{Path.DirectorySeparatorChar}{domainProject.DomainName}";
-        CreateNewDomainProject(solutionDirectory, domainProject); // TODO create DomainProject.Create?
+        _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
+        CreateNewDomainProject(domainProject); // TODO create DomainProject.Create?
 
         _console.MarkupLine($"{Environment.NewLine}[bold yellow1]Your domain project is ready! Build something amazing. [/]");
 
@@ -54,8 +57,9 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         return 0;
     }
     
-    public void CreateNewDomainProject(string solutionDirectory, DomainProject domainProject)
+    public void CreateNewDomainProject(DomainProject domainProject)
     {
+        var solutionDirectory = _scaffoldingDirectoryStore.SolutionDirectory;
         _fileSystem.Directory.CreateDirectory(solutionDirectory);
         new SolutionBuilder(_fileSystem, _utilities, _consoleWriter).BuildSolution(solutionDirectory, domainProject.DomainName);
         
