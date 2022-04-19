@@ -2,7 +2,6 @@ namespace NewCraftsmanUnitTests;
 
 using Fakes;
 using FluentAssertions;
-using NewCraftsman.Domain.BoundedContexts;
 using NUnit.Framework;
 
 public class BoundedContextTests

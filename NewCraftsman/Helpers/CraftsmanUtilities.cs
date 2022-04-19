@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using Exceptions;
 using Services;
@@ -14,7 +16,8 @@ public interface ICraftsmanUtilities
     bool ExecuteProcess(string command, string args, string directory, Dictionary<string, string> envVariables, int killInterval = 15000, string processKilledMessage = "Process Killed.");
     void ExecuteProcess(string command, string args, string directory);
     void AddProjectReference(IClassPath classPath, string relativeProjectPath);
-    public void CreateFile(IClassPath classPath, string fileText);
+    void CreateFile(IClassPath classPath, string fileText);
+    string GetDbContext(string srcDirectory, string projectBaseName);
 }
 
 public class CraftsmanUtilities : ICraftsmanUtilities
@@ -28,6 +31,24 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         _fileSystem = fileSystem;
     }
 
+    public string GetDbContext(string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"", projectBaseName);
+        var directoryClasses = _fileSystem.Directory.GetFiles(classPath.FullClassPath, "*.cs");
+        foreach (var directoryClass in directoryClasses)
+        {
+            using var input = _fileSystem.File.OpenText(directoryClass);
+            string line;
+            while (null != (line = input.ReadLine()))
+            {
+                if (line.Contains($": DbContext"))
+                    return _fileSystem.Path.GetFileNameWithoutExtension(directoryClass);
+            }
+        }
+
+        return "";
+    }
+    
     public void CreateFile(IClassPath classPath, string fileText)
     {
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
@@ -38,6 +59,16 @@ public class CraftsmanUtilities : ICraftsmanUtilities
 
         using var fs = _fileSystem.File.Create(classPath.FullClassPath);
         fs.Write(Encoding.UTF8.GetBytes(fileText));
+    }
+    
+    public static int GetFreePort()
+    {
+        // From https://stackoverflow.com/a/150974/4190785
+        var tcpListener = new TcpListener(IPAddress.Loopback, 0);
+        tcpListener.Start();
+        var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
+        tcpListener.Stop();
+        return port;
     }
     
     public static string PropTypeCleanupDotNet(string prop)

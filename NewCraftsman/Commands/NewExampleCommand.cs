@@ -3,13 +3,10 @@ namespace NewCraftsman.Commands;
 using System.IO.Abstractions;
 using Builders;
 using Domain;
-using Domain.DomainProjects;
-using Domain.DomainProjects.Dtos;
 using Helpers;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using static Helpers.ConsoleWriter;
 
 public class NewExampleCommand : Command<NewExampleCommand.Settings>
 {
@@ -45,8 +42,7 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         var (exampleType, projectName) = RunPrompt(settings.ProjectName);
         var templateString = GetExampleDomain(projectName, exampleType);
                 
-        var domainProjectDto = FileParsingHelper.ReadYamlString<DomainProjectDto>(templateString);
-        var domainProject = DomainProject.Create(domainProjectDto);
+        var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(templateString);
         
         _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
         var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore);
@@ -425,12 +421,11 @@ AuthServer:
             return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement
-  Port: 5375
   DbContext:
    ContextName: RecipesDbContext
    DatabaseName: RecipeManagement
    Provider: postgres
-   NamingConvention: class";
+   NamingConvention: blah";
             return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement

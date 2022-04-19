@@ -1,6 +1,8 @@
 ﻿namespace NewCraftsman.Services
 {
     using System.IO;
+    using Domain.Enums;
+    using Helpers;
 
     public static class ClassPathHelper
     {
@@ -136,21 +138,21 @@
             return new ClassPath(spaDirectory, "src", className);
         }
 
-        // public static ClassPath BffSpaFeatureClassPath(string spaDirectory, string featureName, BffFeatureCategory category, string className)
-        // {
-        //     return category.Name switch
-        //     {
-        //         nameof(BffFeatureCategory.Routes) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "routes"), className),
-        //         nameof(BffFeatureCategory.Api) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "api"), className),
-        //         nameof(BffFeatureCategory.Types) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "types"), className),
-        //         _ => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter()), className)
-        //     };
-        // }
+        public static ClassPath BffSpaFeatureClassPath(string spaDirectory, string featureName, BffFeatureCategory category, string className)
+        {
+            return category.Name switch
+            {
+                nameof(BffFeatureCategory.Routes) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "routes"), className),
+                nameof(BffFeatureCategory.Api) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "api"), className),
+                nameof(BffFeatureCategory.Types) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "types"), className),
+                _ => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter()), className)
+            };
+        }
 
-        // public static ClassPath BffSpaComponentClassPath(string spaDirectory, string componentName,  string className)
-        // {
-        //     return new ClassPath(spaDirectory, Path.Combine("src", "components", componentName.UppercaseFirstLetter()), className);
-        // }
+        public static ClassPath BffSpaComponentClassPath(string spaDirectory, string componentName,  string className)
+        {
+            return new ClassPath(spaDirectory, Path.Combine("src", "components", componentName.UppercaseFirstLetter()), className);
+        }
 
         public static ClassPath BffSpaSrcAssetsClassPath(string spaDirectory, string className)
         {

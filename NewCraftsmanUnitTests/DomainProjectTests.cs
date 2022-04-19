@@ -13,7 +13,7 @@ public class DomainProjectTests
         var dto = new FakeDomainProjectDto().Generate();
         dto.AddGit = null;
         
-        var project = DomainProject.Create(dto);
+        var project = new DomainProject(dto);
 
         project.AddGit.Should().BeTrue();
     }
@@ -24,7 +24,7 @@ public class DomainProjectTests
         var dto = new FakeDomainProjectDto().Generate();
         dto.UseSystemGitUser = null;
         
-        var project = DomainProject.Create(dto);
+        var project = new DomainProject(dto);
 
         project.UseSystemGitUser.Should().BeTrue();
     }
@@ -38,7 +38,7 @@ public class DomainProjectTests
         FluentActions
             .Invoking( () =>
             {
-                DomainProject.Create(dto);
+                var _ = new DomainProject(dto);
             })
             .Should()
             .Throw<FluentValidation.ValidationException>();
