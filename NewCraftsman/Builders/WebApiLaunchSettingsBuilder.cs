@@ -1,10 +1,19 @@
 ﻿namespace NewCraftsman.Builders
 {
     using System.IO.Abstractions;
+    using Helpers;
+    using Services;
 
     public class WebApiLaunchSettingsBuilder
     {
-        public static void CreateLaunchSettings(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public WebApiLaunchSettingsBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateLaunchSettings(string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchSettings.json", projectBaseName);
             var fileText = GetLaunchSettingsText();

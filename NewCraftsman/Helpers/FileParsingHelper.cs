@@ -5,6 +5,7 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using Domain;
     using Exceptions;
     using Newtonsoft.Json;
     using YamlDotNet.Serialization;
@@ -70,12 +71,12 @@
             return true;
         }
 
-        // public static void RunPrimaryKeyGuard(List<Entity> entities)
-        // {
-        //     if (entities.Where(e => Entity.PrimaryKeyProperty == null).ToList().Count > 0)
-        //         throw new MissingPrimaryKeyException("One of your entity properties is missing a primary key designation. " +
-        //             "Please make sure you have an `IsPrimaryKey: true` option on whichever property you want to be used as your prmary key.");
-        // }
+        public static void RunPrimaryKeyGuard(List<Entity> entities)
+        {
+            if (entities.Where(e => Entity.PrimaryKeyProperty == null).ToList().Count > 0)
+                throw new MissingPrimaryKeyException("One of your entity properties is missing a primary key designation. " +
+                    "Please make sure you have an `IsPrimaryKey: true` option on whichever property you want to be used as your prmary key.");
+        }
 
         public static void RunSolutionNameAssignedGuard(string projectName)
         {
@@ -83,12 +84,12 @@
                 throw new InvalidSolutionNameException();
         }
 
-        // public static void SolutionNameDoesNotEqualEntityGuard(string projectName, List<Entity> entities)
-        // {
-        //     if(entities.Where(e => e.Name == projectName).ToList().Count > 0 
-        //         || entities.Where(e => e.Plural == projectName).ToList().Count > 0
-        //     )
-        //         throw new SolutiuonNameEntityMatchException();
-        // }
+        public static void SolutionNameDoesNotEqualEntityGuard(string projectName, List<Entity> entities)
+        {
+            if(entities.Where(e => e.Name == projectName).ToList().Count > 0 
+                || entities.Where(e => e.Plural == projectName).ToList().Count > 0
+            )
+                throw new SolutiuonNameEntityMatchException();
+        }
     }
 }

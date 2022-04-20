@@ -6,10 +6,22 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using Domain;
+    using Helpers;
+    using Services;
 
     public class DbContextBuilder
     {
-        public static void CreateDbContext(string srcDirectory,
+        private readonly ICraftsmanUtilities _utilities;
+        private readonly IFileSystem _fileSystem;
+
+        public DbContextBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+        {
+            _utilities = utilities;
+            _fileSystem = fileSystem;
+        }
+        
+        public void CreateDbContext(string srcDirectory,
             List<Entity> entities,
             string dbContextName,
             string dbProvider,
@@ -17,13 +29,12 @@
             string localDbConnection,
             NamingConventionEnum namingConventionEnum,
             bool useSoftDelete,
-            string projectBaseName,
-            IFileSystem fileSystem
+            string projectBaseName
         )
         {
             var classPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{dbContextName}.cs", projectBaseName);
             var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, srcDirectory, useSoftDelete, projectBaseName);
-            Utilities.CreateFile(classPath, data, fileSystem);
+            _utilities.CreateFile(classPath, data);
             
             RegisterContext(srcDirectory, dbProvider, dbContextName, dbName, localDbConnection, namingConventionEnum, projectBaseName);
         }
@@ -160,14 +171,14 @@ public class {dbContextName} : DbContext
             return dbSetText;
         }
 
-        private static void RegisterContext(string srcDirectory, string dbProvider, string dbContextName, string dbName, string localDbConnection, NamingConventionEnum namingConventionEnum, string projectBaseName)
+        private void RegisterContext(string srcDirectory, string dbProvider, string dbContextName, string dbName, string localDbConnection, NamingConventionEnum namingConventionEnum, string projectBaseName)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetInfraRegistrationName()}.cs", projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetInfraRegistrationName()}.cs", projectBaseName);
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+                _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-            if (!File.Exists(classPath.FullClassPath))
+            if (!_fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var usingDbStatement = GetDbUsingStatement(dbProvider);
@@ -180,9 +191,9 @@ public class {dbContextName} : DbContext
                             .{namingConventionEnum.ExtensionMethod()}()";
             
             var tempPath = $"{classPath.FullClassPath}temp";
-            using (var input = File.OpenText(classPath.FullClassPath))
+            using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
             {
-                using (var output = new StreamWriter(tempPath))
+                using var output = _fileSystem.File.CreateText(tempPath);
                 {
                     string line;
                     while (null != (line = input.ReadLine()))
@@ -219,8 +230,8 @@ public class {dbContextName} : DbContext
             }
 
             // delete the old file and set the name of the new one to the original name
-            File.Delete(classPath.FullClassPath);
-            File.Move(tempPath, classPath.FullClassPath);
+            _fileSystem.File.Delete(classPath.FullClassPath);
+            _fileSystem.File.Move(tempPath, classPath.FullClassPath);
         }
 
         private static void InstallDbProviderNugetPackages(string provider, string srcDirectory)

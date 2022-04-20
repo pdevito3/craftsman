@@ -1,18 +1,26 @@
 ﻿namespace NewCraftsman.Builders
 {
     using System.IO;
+    using System.IO.Abstractions;
+    using Services;
 
     public class InfrastructureServiceRegistrationModifier
     {
-        public static void InitializeAuthServices(string srcDirectory, string projectBaseName)
+        private readonly IFileSystem _fileSystem;
+
+        public InfrastructureServiceRegistrationModifier(IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetInfraRegistrationName()}.cs", projectBaseName);
+            _fileSystem = fileSystem;
+        }
+        public void InitializeAuthServices(string srcDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetInfraRegistrationName()}.cs", projectBaseName);
             var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+                _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-            if (!File.Exists(classPath.FullClassPath))
+            if (!_fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var authUsings = $@"
@@ -39,9 +47,9 @@ using {servicesClassPath.ClassNamespace};";
             .AutomaticallyCheckPermissions();";
 
             var tempPath = $"{classPath.FullClassPath}temp";
-            using (var input = File.OpenText(classPath.FullClassPath))
+            using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
             {
-                using (var output = new StreamWriter(tempPath))
+                using var output = _fileSystem.File.CreateText(tempPath);
                 {
                     string line;
                     bool usingsAdded = false;

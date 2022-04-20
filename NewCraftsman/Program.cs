@@ -15,6 +15,11 @@ serviceCollection.AddSingleton<IFileSystem, FileSystem>();
 serviceCollection.AddSingleton<IConsoleWriter, ConsoleWriter>();
 serviceCollection.AddSingleton<ICraftsmanUtilities, CraftsmanUtilities>();
 serviceCollection.AddSingleton<IScaffoldingDirectoryStore, ScaffoldingDirectoryStore>();
+serviceCollection.AddSingleton<IDbMigrator, DbMigrator>();
+serviceCollection.AddSingleton<IGitService, GitService>();
+
+create an IBuilder and an IModifier to reflect and register
+
 serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var registrar = new TypeRegistrar(serviceCollection);

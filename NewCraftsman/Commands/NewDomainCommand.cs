@@ -16,14 +16,24 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
     private readonly IConsoleWriter _consoleWriter;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IDbMigrator _dbMigrator;
+    private readonly IGitService _gitService;
 
-    public NewDomainCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+    public NewDomainCommand(IAnsiConsole console,
+        IFileSystem fileSystem,
+        IConsoleWriter consoleWriter,
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
+        IDbMigrator dbMigrator, 
+        IGitService gitService)
     {
         _console = console;
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
+        _dbMigrator = dbMigrator;
+        _gitService = gitService;
     }
 
     public class Settings : CommandSettings
@@ -40,6 +50,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         if (myEnv == "Dev")
             rootDir = _console.Ask<string>("Enter the root directory of your project:");
         
+        // TODO make injectable
         new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(rootDir);
         var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
@@ -82,12 +93,12 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
             AddMessageCommand.AddMessages(solutionDirectory, domainProject.Messages);
         
         // migrations
-        Utilities.RunDbMigrations(domainProject.BoundedContexts, solutionDirectory);
+        _dbMigrator.RunDbMigrations(domainProject.BoundedContexts, solutionDirectory);
         
         //final
-        ReadmeBuilder.CreateReadme(solutionDirectory, domainProject.DomainName);
+        new ReadmeBuilder(_utilities).CreateReadme(solutionDirectory, domainProject.DomainName);
         
         if (domainProject.AddGit)
-            Utilities.GitSetup(solutionDirectory, domainProject.UseSystemGitUser);
+            _gitService.GitSetup(solutionDirectory, domainProject.UseSystemGitUser);
     }
 }

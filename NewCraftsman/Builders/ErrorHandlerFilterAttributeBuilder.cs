@@ -1,10 +1,19 @@
 ﻿namespace NewCraftsman.Builders
 {
     using System.IO.Abstractions;
+    using Helpers;
+    using Services;
 
     public class ErrorHandlerFilterAttributeBuilder
     {
-        public static void CreateErrorHandlerFilterAttribute(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ErrorHandlerFilterAttributeBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+        
+        public void CreateErrorHandlerFilterAttribute(string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, $"ErrorHandlerFilterAttribute.cs", projectBaseName);
             var fileText = GetErrorHandlerFilterAttributeText(srcDirectory, projectBaseName, classPath.ClassNamespace);

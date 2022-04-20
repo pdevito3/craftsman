@@ -1,18 +1,27 @@
 ﻿namespace NewCraftsman.Builders
 {
     using System.IO.Abstractions;
+    using Helpers;
+    using Services;
     using static Helpers.ConstMessages;
 
     public class ProgramBuilder
     {
-        public static void CreateWebApiProgram(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ProgramBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateWebApiProgram(string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Program.cs", projectBaseName);
             var fileText = GetWebApiProgramText(classPath.ClassNamespace, srcDirectory, projectBaseName);
             _utilities.CreateFile(classPath, fileText);
         }
         
-        public static void CreateAuthServerProgram(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public void CreateAuthServerProgram(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.WebApiProjectRootClassPath(projectDirectory, $"Program.cs", authServerProjectName);
             var fileText = GetAuthServerProgramText(classPath.ClassNamespace);

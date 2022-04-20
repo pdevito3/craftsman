@@ -1,10 +1,19 @@
 ﻿namespace NewCraftsman.Builders
 {
     using System.IO.Abstractions;
+    using Helpers;
+    using Services;
 
     public class PagedListBuilder
     {
-        public static void CreatePagedList(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public PagedListBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreatePagedList(string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.WrappersClassPath(srcDirectory, $"PagedList.cs", projectBaseName);
             var fileText = GetPagedListText(classPath.ClassNamespace);

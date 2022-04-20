@@ -13,13 +13,13 @@ public class SolutionBuilder
 {
     private readonly IFileSystem _fileSystem;
     private readonly ICraftsmanUtilities _utilities;
-    private readonly IConsoleWriter _console;
+    private readonly IConsoleWriter _consoleWriter;
 
-    public SolutionBuilder(IFileSystem fileSystem, ICraftsmanUtilities utilities, IConsoleWriter console)
+    public SolutionBuilder(IFileSystem fileSystem, ICraftsmanUtilities utilities, IConsoleWriter consoleWriter)
     {
         _fileSystem = fileSystem;
         _utilities = utilities;
-        _console = console;
+        _consoleWriter = consoleWriter;
     }
     
     public void BuildSolution(string solutionDirectory, string projectName)

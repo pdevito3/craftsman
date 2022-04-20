@@ -3,17 +3,28 @@
     using System;
     using System.Collections.Generic;
     using System.IO.Abstractions;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
-    public static class EntityBuilder
+    public class EntityBuilder
     {
-        public static void CreateEntity(string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public EntityBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+        
+        public void CreateEntity(string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName)
         {
             var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
             var fileText = GetEntityFileText(classPath.ClassNamespace, solutionDirectory, srcDirectory, entity, projectBaseName);
             _utilities.CreateFile(classPath, fileText);
         }
 
-        public static void CreateBaseEntity(string srcDirectory, string projectBaseName, bool useSoftDelete, IFileSystem fileSystem)
+        public void CreateBaseEntity(string srcDirectory, string projectBaseName, bool useSoftDelete)
         {
             var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"BaseEntity.cs", "", projectBaseName);
             var fileText = GetBaseEntityFileText(classPath.ClassNamespace, useSoftDelete);
@@ -23,10 +34,10 @@
         public static string GetEntityFileText(string classNamespace, string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName)
         {
             var creationDtoName = FileNames.GetDtoName(entity.Name, Dto.Creation);
-            var creationValidatorName = Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation);
+            var creationValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation);
             var updateDtoName = FileNames.GetDtoName(entity.Name, Dto.Update);
-            var updateValidatorName = Utilities.ValidatorNameGenerator(entity.Name, Validator.Update);
-            var profileName = Utilities.GetProfileName(entity.Name);
+            var updateValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Update);
+            var profileName = FileNames.GetProfileName(entity.Name);
             var propString = EntityPropBuilder(entity.Properties);
             var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
             var tableAnnotation = EntityAnnotationBuilder(entity);
@@ -150,7 +161,7 @@ public abstract class BaseEntity
             {
                 var attributes = AttributeBuilder(property);
                 propString += attributes;
-                var defaultValue = Utilities.GetDefaultValueText(property.DefaultValue, property);
+                var defaultValue = GetDefaultValueText(property.DefaultValue, property);
                 var newLine = (property.IsForeignKey && !property.IsMany)
                     ? Environment.NewLine
                     : $"{Environment.NewLine}{Environment.NewLine}";
@@ -164,6 +175,17 @@ public abstract class BaseEntity
             return propString.RemoveLastNewLine().RemoveLastNewLine();
         }
 
+        private static string GetDefaultValueText(string defaultValue, EntityProperty prop)
+        {
+            if (prop.Type == "string")
+                return defaultValue == null ? "" : @$" = ""{defaultValue}"";";
+
+            if ((prop.Type.IsGuidPropertyType() && !prop.Type.Contains("?") && !prop.IsForeignKey))
+                return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : "";
+
+            return string.IsNullOrEmpty(defaultValue) ? "" : $" = {defaultValue};";
+        }
+        
         private static string AttributeBuilder(EntityProperty entityProperty)
         {
             var attributeString = "";

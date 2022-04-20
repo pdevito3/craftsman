@@ -1,10 +1,19 @@
 namespace NewCraftsman.Builders
 {
     using System.IO.Abstractions;
+    using Helpers;
+    using Services;
 
     public class LocalConfigBuilder
     {
-        public static void CreateLocalConfig(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public LocalConfigBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+        
+        public void CreateLocalConfig(string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "LocalConfig.cs", projectBaseName);
             var fileText = GetConfigText(classPath.ClassNamespace);

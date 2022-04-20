@@ -3,10 +3,20 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
+    using Domain;
+    using Services;
 
     public class DbContextModifier
     {
-        public static void AddDbSet(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
+        private readonly IFileSystem _fileSystem;
+
+        public DbContextModifier(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+        
+        public void AddDbSet(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
         {
             var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs", projectBaseName);
             var entitiesUsings = "";
@@ -16,16 +26,16 @@
                 entitiesUsings += $"using {entityClassPath.ClassNamespace};{Environment.NewLine}"; // note this foreach adds newline after where dbbuilder adds before
             }
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+                _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-            if (!File.Exists(classPath.FullClassPath))
+            if (!_fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var tempPath = $"{classPath.FullClassPath}temp";
-            using (var input = File.OpenText(classPath.FullClassPath))
+            using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
             {
-                using (var output = new StreamWriter(tempPath))
+                using var output = _fileSystem.File.CreateText(tempPath);
                 {
                     string line;
                     while (null != (line = input.ReadLine()))

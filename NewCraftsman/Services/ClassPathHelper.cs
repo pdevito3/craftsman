@@ -95,10 +95,10 @@
             return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Middleware"), className);
         }
 
-        public static ClassPath StartupClassPath(string solutionDirectory, string className, string projectBaseName)
+        public static ClassPath StartupClassPath(string solutionDirectory, string projectBaseName)
         {
             var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-            return new ClassPath(solutionDirectory, $"{projectBaseName}{withSuffix}", className);
+            return new ClassPath(solutionDirectory, $"{projectBaseName}{withSuffix}", "Startup.cs");
         }
 
         public static ClassPath WebApiAppSettingsClassPath(string solutionDirectory, string className, string projectBaseName)

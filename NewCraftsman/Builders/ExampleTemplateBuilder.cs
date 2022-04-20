@@ -1,21 +1,31 @@
 ﻿namespace NewCraftsman.Builders
 {
     using System.IO.Abstractions;
+    using Domain;
+    using Helpers;
     using RestSharp.Serialization.Json;
+    using Services;
 
     public class ExampleTemplateBuilder
     {
-        public static void CreateFile(string solutionDirectory, DomainProject domainProject, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ExampleTemplateBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+        
+        public void CreateFile(string solutionDirectory, DomainProject domainProject)
         {
             var classPath = ClassPathHelper.ExampleYamlRootClassPath(solutionDirectory, "exampleTemplate.json");
             var fileText = GetTemplateText(domainProject);
             _utilities.CreateFile(classPath, fileText);
         }
         
-        public static void CreateYamlFile(string solutionDirectory, string domainProject, IFileSystem fileSystem)
+        public void CreateYamlFile(string solutionDirectory, string domainProject)
         {
             var classPath = ClassPathHelper.ExampleYamlRootClassPath(solutionDirectory, "exampleTemplate.yaml");
-            Utilities.CreateFile(classPath, domainProject, fileSystem);
+            _utilities.CreateFile(classPath, domainProject);
         }
 
         public static string GetTemplateText(DomainProject domainProject)

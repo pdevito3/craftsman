@@ -4,9 +4,23 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Exceptions;
+    using Helpers;
+    using Services;
 
     public class ValidatorBuilder
     {
+        private readonly ICraftsmanUtilities _utilities;
+        private readonly IFileSystem _fileSystem;
+
+        public ValidatorBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+        {
+            _utilities = utilities;
+            _fileSystem = fileSystem;
+        }
+
         public static void CreateValidators(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity)
         {
             BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Manipulation);
@@ -14,19 +28,19 @@
             BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Update);
         }
         
-        public static void CreateRolePermissionValidators(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity, IFileSystem fileSystem)
+        public void CreateRolePermissionValidators(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity)
         {
             BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Creation);
             BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Update);
             
-            var manipulationClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"{Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}.cs", entity.Plural, projectBaseName);
+            var manipulationClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"{FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}.cs", entity.Plural, projectBaseName);
             var manipulationFileText = GetRolePermissionManipulationValidatorFileText(solutionDirectory, srcDirectory, projectBaseName, manipulationClassPath.ClassNamespace, entity);
-            Utilities.CreateFile(manipulationClassPath, manipulationFileText, fileSystem);
+            _utilities.CreateFile(manipulationClassPath, manipulationFileText);
         }
 
         private static void BuildValidatorClass(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity, Validator validator)
         {
-            var classPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"{Utilities.ValidatorNameGenerator(entity.Name, validator)}.cs", entity.Plural, projectBaseName);
+            var classPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"{FileNames.ValidatorNameGenerator(entity.Name, validator)}.cs", entity.Plural, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -54,9 +68,9 @@
 using {dtoClassPath.ClassNamespace};
 using FluentValidation;
 
-public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{FileNames.GetDtoName(entity.Name, Dto.Creation)}>
+public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation)}: {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{FileNames.GetDtoName(entity.Name, Dto.Creation)}>
 {{
-    public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}()
+    public {FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation)}()
     {{
         // add fluent validation rules that should only be run on creation operations here
         //https://fluentvalidation.net/
@@ -72,9 +86,9 @@ public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Creation)}
 using {dtoClassPath.ClassNamespace};
 using FluentValidation;
 
-public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{FileNames.GetDtoName(entity.Name, Dto.Update)}>
+public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Update)}: {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{FileNames.GetDtoName(entity.Name, Dto.Update)}>
 {{
-    public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}()
+    public {FileNames.ValidatorNameGenerator(entity.Name, Validator.Update)}()
     {{
         // add fluent validation rules that should only be run on update operations here
         //https://fluentvalidation.net/
@@ -90,9 +104,9 @@ public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Update)}: 
 using {dtoClassPath.ClassNamespace};
 using FluentValidation;
 
-public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {FileNames.GetDtoName(entity.Name, Dto.Manipulation)}
+public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {FileNames.GetDtoName(entity.Name, Dto.Manipulation)}
 {{
-    public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}()
+    public {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}()
     {{
         // add fluent validation rules that should be shared between creation and update operations here
         //https://fluentvalidation.net/
@@ -121,9 +135,9 @@ using {permissionsClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using FluentValidation;
 
-public class {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {FileNames.GetDtoName(entity.Name, Dto.Manipulation)}
+public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {FileNames.GetDtoName(entity.Name, Dto.Manipulation)}
 {{
-    public {Utilities.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}()
+    public {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}()
     {{
         RuleFor(rp => rp.Permission)
             .Must(BeAnExistingPermission)

@@ -4,22 +4,24 @@
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Text;
+    using Domain;
+    using Helpers;
+    using Services;
 
-    public static class MessageBuilder
+    public class MessageBuilder
     {
-        public static void CreateMessage(string solutionDirectory, Message message, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public MessageBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateMessage(string solutionDirectory, Message message)
         {
             var classPath = ClassPathHelper.MessagesClassPath(solutionDirectory, $"{message.Name}.cs");
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using var fs = fileSystem.File.Create(classPath.FullClassPath);
-            var data = GetMessageFileText(classPath.ClassNamespace, message);
-            fs.Write(Encoding.UTF8.GetBytes(data));
+            var fileText = GetMessageFileText(classPath.ClassNamespace, message);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetMessageFileText(string classNamespace, Message message)

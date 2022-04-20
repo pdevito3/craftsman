@@ -9,7 +9,6 @@ using System.Net.Sockets;
 using System.Text;
 using Exceptions;
 using Services;
-using Spectre.Console;
 
 public interface ICraftsmanUtilities
 {
@@ -18,6 +17,7 @@ public interface ICraftsmanUtilities
     void AddProjectReference(IClassPath classPath, string relativeProjectPath);
     void CreateFile(IClassPath classPath, string fileText);
     string GetDbContext(string srcDirectory, string projectBaseName);
+    void IsSolutionDirectoryGuard(string proposedDirectory);
 }
 
 public class CraftsmanUtilities : ICraftsmanUtilities
@@ -47,6 +47,12 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         }
 
         return "";
+    }
+
+    public void IsSolutionDirectoryGuard(string proposedDirectory)
+    {
+        if (!_fileSystem.Directory.EnumerateFiles(proposedDirectory, "*.sln").Any())
+            throw new SolutionNotFoundException();
     }
     
     public void CreateFile(IClassPath classPath, string fileText)
