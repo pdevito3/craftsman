@@ -8,7 +8,7 @@ public class ProgramBuilder
 {
     public static void CreateProgram(string projectDirectory, string solutionDirectory, string projectName, BffTemplate template, IFileSystem fileSystem)
     {
-        var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Program.cs", projectName);
+        var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Program.cs");
         var fileText = GetProgramText(template, solutionDirectory, projectName);
         Utilities.CreateFile(classPath, fileText, fileSystem);
     }

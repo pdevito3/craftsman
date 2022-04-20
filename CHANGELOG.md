@@ -17,6 +17,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Default db provider set to postgres
 
+## [0.14.1] - 04/19/2022
+
+### Fixed
+
+- Missing dependencies (#73)
+- LaunchSettings Casing (#72)
+
 ## [0.14.0] - 04/16/2022
 
 ### Added
