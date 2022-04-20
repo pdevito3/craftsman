@@ -8,7 +8,7 @@ public static class BffDockerfileBuilder
     
     public static void CreateBffDotNetDockerfile(string projectDirectory, string projectBaseName, IFileSystem fileSystem)
     {
-        var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Dockerfile", projectBaseName);
+        var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Dockerfile");
         var fileText = GetDockerfileText(projectBaseName, true, false);
         Utilities.CreateFile(classPath, fileText, fileSystem);
     }

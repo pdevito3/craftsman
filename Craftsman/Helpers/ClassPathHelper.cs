@@ -112,7 +112,7 @@
             return new ClassPath(projectDirectory, authServerProjectName, className);
         }
 
-        public static ClassPath BffProjectRootClassPath(string projectDirectory, string className, string projectName)
+        public static ClassPath BffProjectRootClassPath(string projectDirectory, string className)
         {
             return new ClassPath(projectDirectory, "", className);
         }
