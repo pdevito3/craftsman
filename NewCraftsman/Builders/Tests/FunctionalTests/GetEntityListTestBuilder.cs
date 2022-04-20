@@ -3,10 +3,20 @@
     using System;
     using System.IO;
     using System.IO.Abstractions;
+    using Domain;
+    using Helpers;
+    using Services;
 
     public class GetEntityListTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public GetEntityListTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName)
         {
             var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"Get{entity.Name}ListTests.cs", entity.Plural, projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, testDirectory, classPath, entity, isProtected, projectBaseName);

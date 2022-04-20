@@ -3,10 +3,21 @@
     using System;
     using System.IO;
     using System.IO.Abstractions;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
-    public static class FakesBuilder
+    public class FakesBuilder
     {
-        public static void CreateFakes(string solutionDirectory, string testDirectory, string projectBaseName, Entity entity, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public FakesBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateFakes(string solutionDirectory, string testDirectory, string projectBaseName, Entity entity)
         {
             // ****this class path will have an invalid FullClassPath. just need the directory
             var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"", entity.Name, projectBaseName);
@@ -14,27 +25,27 @@
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
 
-            CreateFakerEntityFile(solutionDirectory, testDirectory, entity.Name, entity, projectBaseName, fileSystem);
-            CreateFakerFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName, fileSystem);
-            CreateFakerFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Read), entity, projectBaseName, fileSystem);
-            CreateFakerFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName, fileSystem);
+            CreateFakerEntityFile(solutionDirectory, testDirectory, entity.Name, entity, projectBaseName);
+            CreateFakerFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName);
+            CreateFakerFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Read), entity, projectBaseName);
+            CreateFakerFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName);
         }
         
-        public static void CreateRolePermissionFakes(string solutionDirectory, string testDirectory, string projectBaseName, Entity entity, IFileSystem fileSystem)
+        public void CreateRolePermissionFakes(string solutionDirectory, string testDirectory, string projectBaseName, Entity entity)
         {
             var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"", entity.Name, projectBaseName);
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
 
-            CreateFakerEntityFile(solutionDirectory, testDirectory, entity.Name, entity, projectBaseName, fileSystem);
-            CreateFakerFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Read), entity, projectBaseName, fileSystem);
+            CreateFakerEntityFile(solutionDirectory, testDirectory, entity.Name, entity, projectBaseName);
+            CreateFakerFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Read), entity, projectBaseName);
             
-            CreateRolePermissionFakerForCreationOrUpdateFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName, fileSystem);
-            CreateRolePermissionFakerForCreationOrUpdateFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName, fileSystem);
+            CreateRolePermissionFakerForCreationOrUpdateFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName);
+            CreateRolePermissionFakerForCreationOrUpdateFile(solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName);
         }
 
-        private static void CreateFakerFile(string solutionDirectory, string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName, IFileSystem fileSystem)
+        private void CreateFakerFile(string solutionDirectory, string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName)
         {
             var fakeFilename = $"Fake{objectToFakeClassName}.cs";
             var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, entity.Name, projectBaseName);
@@ -66,7 +77,7 @@ public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
 }}";
         }
 
-        private static void CreateFakerEntityFile(string solutionDirectory, string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName, IFileSystem fileSystem)
+        private void CreateFakerEntityFile(string solutionDirectory, string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName)
         {
             var fakeFilename = $"Fake{objectToFakeClassName}.cs";
             var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, entity.Name, projectBaseName);
@@ -102,7 +113,7 @@ public class Fake{objectToFakeClassName}
         }
         
 
-        private static void CreateRolePermissionFakerForCreationOrUpdateFile(string solutionDirectory, string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName, IFileSystem fileSystem)
+        private void CreateRolePermissionFakerForCreationOrUpdateFile(string solutionDirectory, string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName)
         {
             var fakeFilename = $"Fake{objectToFakeClassName}.cs";
             var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, entity.Name, projectBaseName);

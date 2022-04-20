@@ -62,13 +62,13 @@ public class {commandName}Tests : TestBase
 
         private static string GetAddCommandTest(string commandName, Entity entity, string featureName, string lookupVal, EntityProperty prop)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
             var pkName = Entity.PrimaryKeyProperty.Name;
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
             

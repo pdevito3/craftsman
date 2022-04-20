@@ -56,8 +56,8 @@ public class {commandName}Tests : TestBase
 
         private static string GetDeleteTest(string commandName, Entity entity, string featureName)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeEntity = FileNames.FakerName(entity.Name);
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
             var dbResponseVariableName = $"{lowercaseEntityName}Response";
@@ -108,8 +108,8 @@ public class {commandName}Tests : TestBase
 
         private static string SoftDeleteTest(string commandName, Entity entity, string featureName)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeEntity = FileNames.FakerName(entity.Name);
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
             var pkName = Entity.PrimaryKeyProperty.Name;

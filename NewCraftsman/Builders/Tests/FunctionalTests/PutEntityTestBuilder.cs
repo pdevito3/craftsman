@@ -3,10 +3,21 @@
     using System;
     using System.IO;
     using System.IO.Abstractions;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class PutEntityTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public PutEntityTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName)
         {
             var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"Update{entity.Name}RecordTests.cs", entity.Plural, projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, testDirectory, classPath, entity, isProtected, projectBaseName);
@@ -45,12 +56,12 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string PutEntityTest(Entity entity, bool isProtected)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var fakeUpdateDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
+            var fakeEntity = FileNames.FakerName(entity.Name);
+            var fakeUpdateDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
             var pkName = Entity.PrimaryKeyProperty.Name;
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             var testName = $"put_{entity.Name.ToLower()}_returns_nocontent_when_entity_exists";
             testName += isProtected ? "_and_auth_credentials_are_valid" : "";
@@ -67,7 +78,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableName});
 
         // Act
-        var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var route = ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
         var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
         // Assert
@@ -77,12 +88,12 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string EntityTestUnauthorized(Entity entity)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var fakeUpdateDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
+            var fakeEntity = FileNames.FakerName(entity.Name);
+            var fakeUpdateDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
             var pkName = Entity.PrimaryKeyProperty.Name;
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             return $@"
     [Test]
@@ -95,7 +106,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableName});
 
         // Act
-        var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var route = ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
         var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
         // Assert
@@ -105,12 +116,12 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string EntityTestForbidden(Entity entity)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var fakeUpdateDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
+            var fakeEntity = FileNames.FakerName(entity.Name);
+            var fakeUpdateDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
             var fakeEntityVariableName = $"fake{entity.Name}";
             var fakeDtoVariableName = $"updated{entity.Name}Dto";
             var pkName = Entity.PrimaryKeyProperty.Name;
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             return $@"
     [Test]
@@ -124,7 +135,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableName});
 
         // Act
-        var route = ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{Utilities.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var route = ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
         var result = await _client.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
         // Assert

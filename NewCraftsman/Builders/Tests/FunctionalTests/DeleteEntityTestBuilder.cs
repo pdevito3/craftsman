@@ -3,10 +3,21 @@
     using System;
     using System.IO;
     using System.IO.Abstractions;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class DeleteEntityTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public DeleteEntityTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName)
         {
             var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"Delete{entity.Name}Tests.cs", entity.Plural, projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, testDirectory, classPath, entity, isProtected, projectBaseName);
@@ -45,10 +56,10 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string DeleteEntityTest(Entity entity, bool isProtected)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
             var pkName = Entity.PrimaryKeyProperty.Name;
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             var testName = $"delete_{entity.Name.ToLower()}_returns_nocontent_when_entity_exists";
             testName += isProtected ? "_and_auth_credentials_are_valid" : "";
@@ -74,10 +85,10 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string DeleteEntityTestUnauthorized(Entity entity)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
             var pkName = Entity.PrimaryKeyProperty.Name;
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             return $@"
     [Test]
@@ -99,10 +110,10 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string DeleteEntityTestForbidden(Entity entity)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
             var pkName = Entity.PrimaryKeyProperty.Name;
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             return $@"
     [Test]

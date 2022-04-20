@@ -70,12 +70,12 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         private static string GetEntitiesTest(Entity entity)
         {
             var queryName = Utilities.QueryListName(entity.Name);
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
             var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             var fakeParent = Utilities.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
             return @$"
@@ -101,13 +101,13 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         private static string GetEntitiesWithPageSizeAndNumberTest(Entity entity)
         {
             var queryName = Utilities.QueryListName(entity.Name);
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
             var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
             var fakeEntityVariableNameThree = $"fake{entity.Name}Three";
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             var fakeParent = Utilities.FakeParentTestHelpersThreeCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo, out var fakeParentIdRuleForThree);
             return $@"
@@ -134,12 +134,12 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         private static string GetEntitiesListSortedInAscOrder(Entity entity, EntityProperty prop)
         {
             var queryName = Utilities.QueryListName(entity.Name);
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
             var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             var alpha = @$"""alpha""";
             var bravo = @$"""bravo""";
@@ -205,12 +205,12 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         private static string GetEntitiesListSortedInDescOrder(Entity entity, EntityProperty prop)
         {
             var queryName = Utilities.QueryListName(entity.Name);
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
             var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             var alpha = @$"""alpha""";
             var bravo = @$"""bravo""";
@@ -276,13 +276,13 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         private static string GetEntitiesListFiltered(Entity entity, EntityProperty prop)
         {
             var queryName = Utilities.QueryListName(entity.Name);
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
             var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
             var expectedFilterableProperty = @$"fake{entity.Name}Two.{prop.Name}";
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
             var alpha = @$"""alpha""";
             var bravo = @$"""bravo""";

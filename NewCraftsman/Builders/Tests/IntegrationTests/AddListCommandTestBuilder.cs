@@ -53,7 +53,7 @@ public class {commandName}Tests : TestBase
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
             var fakeParentEntity = $"fake{feature.ParentEntity}";
-            var fakeParentCreationDto = Utilities.FakerName(FileNames.GetDtoName(feature.ParentEntity, Dto.Creation));
+            var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(feature.ParentEntity, Dto.Creation));
 
             return $@"[Test]
     public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()

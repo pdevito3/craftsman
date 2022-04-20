@@ -27,9 +27,9 @@
             var featureName = Utilities.UpdateEntityFeatureClassName(entity.Name);
             var testFixtureName = Utilities.GetIntegrationTestFixtureName();
             var commandName = Utilities.CommandUpdateName(entity.Name);
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var fakeUpdateDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeEntity = FileNames.FakerName(entity.Name);
+            var fakeUpdateDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
             var pkName = Entity.PrimaryKeyProperty.Name;

@@ -54,8 +54,8 @@ public class {queryName}Tests : TestBase
 
         private static string GetTest(string queryName, Entity entity, string featureName)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeEntity = FileNames.FakerName(entity.Name);
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
             var pkName = Entity.PrimaryKeyProperty.Name;

@@ -54,7 +54,7 @@ public class {commandName}Tests : TestBase
 
         private static string GetAddCommandTest(string commandName, Entity entity, string featureName)
         {
-            var fakeCreationDto = Utilities.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
 
@@ -64,8 +64,8 @@ public class {commandName}Tests : TestBase
             {
                 if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
                 {
-                    var fakeParentClass = Utilities.FakerName(entityProperty.ForeignEntityName);
-                    var fakeParentCreationDto = Utilities.FakerName(FileNames.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
+                    var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
+                    var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
                     fakeParent += @$"var fake{entityProperty.ForeignEntityName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
         await InsertAsync(fake{entityProperty.ForeignEntityName}One);{Environment.NewLine}{Environment.NewLine}        ";
                     fakeParentIdRuleFor +=
