@@ -51,20 +51,21 @@
     <PackageReference Include=""HeimGuard"" Version=""0.1.1"" />
     <PackageReference Include=""MediatR"" Version=""10.0.1"" />
     <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""10.0.1"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""6.0.0"" />
-    <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""6.0.0"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""6.0.4"" />
+    <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""6.0.4"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.0.0"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""6.0.4"" />
+    <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""6.0.4"" />
     {dbProvider.PackageInclusionString("6.0.4")}
     <PackageReference Include=""Microsoft.Extensions.Configuration.Binder"" Version=""6.0.0"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Authentication.JwtBearer"" Version=""6.0.0"" />
-    <PackageReference Include=""Microsoft.EntityFrameworkCore.Design"" Version=""6.0.0"">
+    <PackageReference Include=""Microsoft.AspNetCore.Authentication.JwtBearer"" Version=""6.0.4"" />
+    <PackageReference Include=""Microsoft.EntityFrameworkCore.Design"" Version=""6.0.4"">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include=""Swashbuckle.AspNetCore"" Version=""6.3.0"" />
 
-    <PackageReference Include=""Sieve"" Version=""2.5.1"" />
+    <PackageReference Include=""Sieve"" Version=""2.5.5"" />
     <PackageReference Include=""Serilog.AspNetCore"" Version=""5.0.0"" />
     <PackageReference Include=""Serilog.Enrichers.AspNetCore"" Version=""1.0.0"" />
     <PackageReference Include=""Serilog.Enrichers.Context"" Version=""4.2.0"" />

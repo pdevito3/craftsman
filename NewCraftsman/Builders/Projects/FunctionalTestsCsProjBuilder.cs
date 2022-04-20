@@ -45,8 +45,8 @@
     <PackageReference Include=""Moq"" Version=""4.17.2"" />
     <PackageReference Include=""NUnit"" Version=""3.13.3"" />
     <PackageReference Include=""NUnit3TestAdapter"" Version=""4.2.1"" />
-    <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.0.0"" />
-    <PackageReference Include=""Respawn"" Version=""4.0.0"" />
+    <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.1.0"" />
+    <PackageReference Include=""Respawn"" Version=""5.0.1"" />
     <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""6.0.0"" />
   </ItemGroup>
 
