@@ -15,7 +15,7 @@
 
         public void CreateBffAppSettings(string projectDirectory, string projectName)
         {
-            var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"appsettings.json", projectName);
+            var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"appsettings.json");
             var fileText = @$"{{
   ""AllowedHosts"": ""*""
 }}

@@ -6,7 +6,7 @@
     {
         public static void AddProfile(string srcDirectory, ApiEnvironment env, int port, DockerConfig dockerConfig, string projectBaseName)
         {
-            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchsettings.json", projectBaseName); // hard coding webapi here not great
+            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchSettings.json", projectBaseName); // hard coding webapi here not great
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);
@@ -66,7 +66,7 @@
         
         public static void UpdateLaunchSettingEnvVar(string srcDirectory, string envVarName, string envVarVal, string projectBaseName)
         {
-            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchsettings.json", projectBaseName); // hard coding webapi here not great
+            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchSettings.json", projectBaseName); // hard coding webapi here not great
 
             if (!Directory.Exists(classPath.ClassDirectory))
                 Directory.CreateDirectory(classPath.ClassDirectory);

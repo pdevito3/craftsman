@@ -15,7 +15,7 @@
 
         public void CreateReadme(string projectDirectory, string projectName)
         {
-            var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Program.cs", projectName);
+            var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"README.md");
             var fileText = GetReadmeFileText(projectName);
             _utilities.CreateFile(classPath, fileText);
         }

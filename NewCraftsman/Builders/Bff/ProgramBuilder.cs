@@ -16,7 +16,7 @@ public class ProgramBuilder
 
     public void CreateProgram(string projectDirectory, string solutionDirectory, string projectName, BffTemplate template)
     {
-        var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Program.cs", projectName);
+        var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Program.cs");
         var fileText = GetProgramText(template, solutionDirectory, projectName);
         _utilities.CreateFile(classPath, fileText);
     }
