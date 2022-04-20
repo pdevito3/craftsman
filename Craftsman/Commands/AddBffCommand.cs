@@ -115,7 +115,7 @@
 
             // .NET Project
             LaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, projectName, template, fileSystem);
-            AppSettingsBuilder.CreateBffAppSettings(projectDirectory, projectName, fileSystem);
+            AppSettingsBuilder.CreateBffAppSettings(projectDirectory, fileSystem);
             LoggingConfigurationBuilder.CreateBffConfigFile(domainDirectory, projectName, fileSystem);
             
             ProgramBuilder.CreateProgram(projectDirectory, domainDirectory, projectName, template, fileSystem);

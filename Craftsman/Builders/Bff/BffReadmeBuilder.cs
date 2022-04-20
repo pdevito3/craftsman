@@ -9,7 +9,7 @@
     {
         public static void CreateReadme(string projectDirectory, string projectName, IFileSystem fileSystem)
         {
-            var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Program.cs", projectName);
+            var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"README.md");
             var fileText = GetReadmeFileText(projectName);
             Utilities.CreateFile(classPath, fileText, fileSystem);
         }
