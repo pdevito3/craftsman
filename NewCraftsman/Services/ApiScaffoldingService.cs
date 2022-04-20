@@ -57,7 +57,7 @@ public class ApiScaffoldingService
 
                 // add all files based on the given template config
                 ctx.Status($"[bold blue]Scaffolding Files for {projectName} [/]");
-                RunTemplateBuilders(bcDirectory, srcDirectory, testDirectory, template, fileSystem);
+                RunTemplateBuilders(bcDirectory, srcDirectory, testDirectory, template);
                 _consoleWriter.WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
             });
     }
@@ -85,21 +85,20 @@ public class ApiScaffoldingService
         DbContextBuilder.CreateDbContext(srcDirectory,
             template.Entities,
             template.DbContext.ContextName,
-            template.DbContext.Provider,
+            template.DbContext.ProviderEnum,
             template.DbContext.DatabaseName,
             template.DockerConfig.DbConnectionString,
             template.DbContext.NamingConventionEnum,
             template.UseSoftDelete,
-            projectBaseName,
-            fileSystem
+            projectBaseName
         );
-        ApiRoutesBuilder.CreateClass(testDirectory, projectBaseName, fileSystem);
+        ApiRoutesBuilder.CreateClass(testDirectory, projectBaseName);
         
         if (template.AddJwtAuthentication)
         {
-            PermissionsBuilder.GetPermissions(srcDirectory, projectBaseName, fileSystem); // <-- needs to run before entity features
-            RolesBuilder.GetRoles(solutionDirectory, fileSystem);
-            UserPolicyHandlerBuilder.CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
+            PermissionsBuilder.GetPermissions(srcDirectory, projectBaseName); // <-- needs to run before entity features
+            RolesBuilder.GetRoles(solutionDirectory);
+            UserPolicyHandlerBuilder.CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, template.DbContext.ContextName);
             InfrastructureServiceRegistrationModifier.InitializeAuthServices(srcDirectory, projectBaseName);
             EntityScaffolding.ScaffoldRolePermissions(solutionDirectory,
                 srcDirectory,
@@ -107,8 +106,7 @@ public class ApiScaffoldingService
                 projectBaseName,
                 template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
-                template.UseSoftDelete,
-                fileSystem);
+                template.UseSoftDelete);
         }
         
         //entities
@@ -119,8 +117,7 @@ public class ApiScaffoldingService
             template.Entities,
             template.DbContext.ContextName,
             template.SwaggerConfig.AddSwaggerComments,
-            template.UseSoftDelete,
-            fileSystem);
+            template.UseSoftDelete);
 
         // environments
         Utilities.AddStartupEnvironmentsWithServices(
@@ -130,38 +127,37 @@ public class ApiScaffoldingService
             template.SwaggerConfig,
             template.Port,
             projectBaseName,
-            template.DockerConfig,
-            fileSystem
+            template.DockerConfig
         );
 
         // unit tests, test utils, and one offs∂
         PagedListTestBuilder.CreateTests(srcDirectory, testDirectory, projectBaseName);
-        IntegrationTestFixtureBuilder.CreateFixture(testDirectory, projectBaseName, template.DbContext.ContextName, template.DbContext.DatabaseName, template.DbContext.Provider, fileSystem);
-        IntegrationTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
-        DockerUtilitiesBuilder.CreateGeneralUtilityClass(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
-        DockerUtilitiesBuilder.CreateDockerDatabaseUtilityClass(testDirectory, projectBaseName, template.DbContext.Provider, fileSystem);
+        IntegrationTestFixtureBuilder.CreateFixture(testDirectory, projectBaseName, template.DbContext.ContextName, template.DbContext.DatabaseName, template.DbContext.Provider);
+        IntegrationTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.Provider);
+        DockerUtilitiesBuilder.CreateGeneralUtilityClass(testDirectory, projectBaseName, template.DbContext.Provider);
+        DockerUtilitiesBuilder.CreateDockerDatabaseUtilityClass(testDirectory, projectBaseName, template.DbContext.Provider);
         WebAppFactoryBuilder.CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
-        FunctionalTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, fileSystem);
-        HealthTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
+        FunctionalTestBaseBuilder.CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName);
+        HealthTestBuilder.CreateTests(testDirectory, projectBaseName);
         HttpClientExtensionsBuilder.Create(testDirectory, projectBaseName);
-        EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete, fileSystem);
-        CurrentUserServiceTestBuilder.CreateTests(testDirectory, projectBaseName, fileSystem);
+        EntityBuilder.CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete);
+        CurrentUserServiceTestBuilder.CreateTests(testDirectory, projectBaseName);
 
         //services
-        CurrentUserServiceBuilder.GetCurrentUserService(srcDirectory, projectBaseName, fileSystem);
-        SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName, fileSystem);
+        CurrentUserServiceBuilder.GetCurrentUserService(srcDirectory, projectBaseName);
+        SwaggerBuilder.AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName);
 
         if (template.Bus.AddBus)
-            AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory, fileSystem);
+            AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory);
 
         if (template.Consumers.Count > 0)
-            AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
+            AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
 
         if (template.Producers.Count > 0)
-            AddProducerCommand.AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
+            AddProducerCommand.AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
         
-        WebApiDockerfileBuilder.CreateStandardDotNetDockerfile(srcDirectory, projectBaseName, fileSystem);
-        DockerIgnoreBuilder.CreateDockerIgnore(srcDirectory, projectBaseName, fileSystem);
+        WebApiDockerfileBuilder.CreateStandardDotNetDockerfile(srcDirectory, projectBaseName);
+        DockerIgnoreBuilder.CreateDockerIgnore(srcDirectory, projectBaseName);
         // DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory,
         //     template.DockerConfig,
         //     template.Environment.AuthSettings.ClientId,
