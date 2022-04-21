@@ -50,20 +50,10 @@ try
 }
 catch (Exception e)
 {
-    // // TODO update to check if exception inherits from ICraftsmanException
-    // if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Dev" &&
-    //     e is FileAlreadyExistsException
-    //     or DirectoryAlreadyExistsException
-    //     or InvalidSolutionNameException
-    //     or FileNotFoundException
-    //     or InvalidDbProviderException
-    //     or InvalidFileTypeException
-    //     or SolutiuonNameEntityMatchException)
-    // {
-    //     AnsiConsole.MarkupLine($"{e.Message}");
-    // }
-    // else
-    // {
+    if (e is ICraftsmanException)
+        AnsiConsole.MarkupLine($"{e.Message}");
+    else
+    {
         AnsiConsole.WriteException(e, new ExceptionSettings
         {
             Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
@@ -80,7 +70,7 @@ catch (Exception e)
                 LineNumber = new Style().Foreground(Color.Cornsilk1),
             }
         });
-    // }
+    }
 }
 finally
 {

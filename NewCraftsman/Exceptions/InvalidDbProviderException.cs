@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    public class InvalidDbProviderException : Exception
+    public class InvalidDbProviderException : Exception, ICraftsmanException
     {
         public InvalidDbProviderException() : base($"The given database provider was not recognized.")
         {

@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    class DirectoryAlreadyExistsException : Exception
+    class DirectoryAlreadyExistsException : Exception, ICraftsmanException
     {
         public DirectoryAlreadyExistsException() : base($"This directory already exists.")
         {

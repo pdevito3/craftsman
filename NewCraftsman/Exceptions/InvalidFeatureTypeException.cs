@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    public class InvalidFeatureTypeException : Exception
+    public class InvalidFeatureTypeException : Exception, ICraftsmanException
     {
         public InvalidFeatureTypeException() : base($"The given feature type was not recognized.")
         {

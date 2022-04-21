@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    class EntityNotFoundException : Exception
+    class EntityNotFoundException : Exception, ICraftsmanException
     {
         public EntityNotFoundException() : base($"Invalid file type. You need to use a json or yml file.")
         {

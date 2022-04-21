@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    public class FileAlreadyExistsException : Exception
+    public class FileAlreadyExistsException : Exception, ICraftsmanException
     {
         public FileAlreadyExistsException() : base($"This file already exists.")
         {
