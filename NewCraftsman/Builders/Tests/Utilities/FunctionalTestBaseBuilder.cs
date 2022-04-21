@@ -2,25 +2,23 @@
 {
     using System.IO.Abstractions;
     using System.Text;
+    using Helpers;
+    using Services;
 
     public class FunctionalTestBaseBuilder
     {
-        public static void CreateBase(string solutionDirectory, string projectBaseName, string dbContextName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public FunctionalTestBaseBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateBase(string solutionDirectory, string projectBaseName, string dbContextName)
         {
             var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, "TestBase.cs", projectBaseName);
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetBaseText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = GetBaseText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetBaseText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName)
@@ -49,7 +47,7 @@ public class TestBase
     [SetUp]
     public void TestSetUp()
     {{
-        _factory = new {Utilities.GetWebHostFactoryName()}();
+        _factory = new {FileNames.GetWebHostFactoryName()}();
         _configuration = _factory.Services.GetRequiredService<IConfiguration>();
         _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
         _client = _factory.CreateClient(new WebApplicationFactoryClientOptions());

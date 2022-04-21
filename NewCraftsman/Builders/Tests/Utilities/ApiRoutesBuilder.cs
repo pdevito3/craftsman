@@ -2,23 +2,23 @@
 {
     using System.IO.Abstractions;
     using System.Text;
+    using Helpers;
+    using Services;
 
     public class ApiRoutesBuilder
     {
-        public static void CreateClass(string testDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ApiRoutesBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateClass(string testDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "ApiRoutes.cs");
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using var fs = fileSystem.File.Create(classPath.FullClassPath);
-            var data = "";
-            data = GetBaseText(classPath.ClassNamespace);
-            fs.Write(Encoding.UTF8.GetBytes(data));
+            var fileText = GetBaseText(classPath.ClassNamespace);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string GetBaseText(string classNamespace)

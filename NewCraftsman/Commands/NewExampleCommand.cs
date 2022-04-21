@@ -13,16 +13,20 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
     private IAnsiConsole _console;
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
+    private readonly IDbMigrator _dbMigrator;
+    private readonly IGitService _gitService;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
 
-    public NewExampleCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+    public NewExampleCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IDbMigrator dbMigrator, IGitService gitService)
     {
         _console = console;
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
+        _dbMigrator = dbMigrator;
+        _gitService = gitService;
     }
 
     public class Settings : CommandSettings
@@ -45,7 +49,7 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(templateString);
         
         _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
-        var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore);
+        var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _dbMigrator, _gitService);
         domainCommand.CreateNewDomainProject(domainProject);
         
         // TODO add this back
@@ -418,14 +422,6 @@ AuthServer:
 
         private static string BasicTemplate(string name)
         {
-            return $@"DomainName: {name}
-BoundedContexts:
-- ProjectName: RecipeManagement
-  DbContext:
-   ContextName: RecipesDbContext
-   DatabaseName: RecipeManagement
-   Provider: postgres
-   NamingConvention: blah";
             return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement

@@ -82,4 +82,24 @@ public class DockerConfig
             ProviderEnum = parsed;
         }
     }
+    
+    public string DbConnectionStringCompose
+    {
+        get {
+            var dbConnectionString = ProviderEnum == DbProvider.SqlServer
+                ? $"Data Source={DbHostName},{1433};Integrated Security=False;Database={DbName};User ID={DbUser};Password={DbPassword}"
+                : $"Host={DbHostName};Port={5432};Database={DbName};Username={DbUser};Password={DbPassword}";
+            return dbConnectionString;
+        }
+    }
+    
+    public string DbConnectionString
+    {
+        get {
+            var dbConnectionString = ProviderEnum == DbProvider.SqlServer
+                ? $"Data Source=localhost,{DbPort};Integrated Security=False;Database={DbName};User ID={DbUser};Password={DbPassword}"
+                : $"Host=localhost;Port={DbPort};Database={DbName};Username={DbUser};Password={DbPassword}";
+            return dbConnectionString;
+        }
+    }
 }

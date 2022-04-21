@@ -2,31 +2,33 @@
 {
     using System.IO;
     using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using NewCraftsman.Services;
+    using Services;
 
     public class DeleteCommandTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName, bool useSoftDelete)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public DeleteCommandTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName, bool useSoftDelete)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Delete{entity.Name}CommandTests.cs", entity.Plural, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName, useSoftDelete);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName, useSoftDelete);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName, bool useSoftDelete)
         {
-            var featureName = Utilities.DeleteEntityFeatureClassName(entity.Name);
-            var testFixtureName = Utilities.GetIntegrationTestFixtureName();
-            var commandName = Utilities.CommandDeleteName(entity.Name);
+            var featureName = FileNames.DeleteEntityFeatureClassName(entity.Name);
+            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
+            var commandName = FileNames.CommandDeleteName(entity.Name);
             var softDeleteTest = useSoftDelete ? SoftDeleteTest(commandName, entity, featureName) : "";
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
@@ -34,7 +36,7 @@
             var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
-            var foreignEntityUsings = Utilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
+            var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
             
             return @$"namespace {classPath.ClassNamespace};
 
@@ -64,7 +66,7 @@ public class {commandName}Tests : TestBase
             var pkName = Entity.PrimaryKeyProperty.Name;
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
             
-            var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+            var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
 
             return $@"[Test]
     public async Task can_delete_{entity.Name.ToLower()}_from_db()
@@ -87,7 +89,7 @@ public class {commandName}Tests : TestBase
 
         private static string GetDeleteWithoutKeyTest(string commandName, Entity entity, string featureName)
         {
-            var badId = Utilities.GetRandomId(Entity.PrimaryKeyProperty.Type);
+            var badId = IntegrationTestServices.GetRandomId(Entity.PrimaryKeyProperty.Type);
 
             return badId == "" ? "" : $@"
 
@@ -115,7 +117,7 @@ public class {commandName}Tests : TestBase
             var pkName = Entity.PrimaryKeyProperty.Name;
             var lowercaseEntityPk = pkName.LowercaseFirstLetter();
             
-            var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+            var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
 
             return $@"
 

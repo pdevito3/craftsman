@@ -2,24 +2,24 @@
 {
     using System.IO;
     using System.Text;
+    using Exceptions;
+    using Helpers;
+    using Services;
 
     public class PagedListTestBuilder
     {
-        public static void CreateTests(string srcDirectory, string testDirectory, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public PagedListTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string srcDirectory, string testDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(testDirectory, $"PagedListTests.cs", projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = WriteTestFileText(srcDirectory, classPath, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = WriteTestFileText(srcDirectory, classPath, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string srcDirectory, ClassPath classPath, string projectBaseName)

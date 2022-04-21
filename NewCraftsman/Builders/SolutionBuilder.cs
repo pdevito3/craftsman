@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using Domain;
+using Dtos;
 using ExtensionBuilders;
 using Helpers;
 using Projects;
@@ -58,24 +59,22 @@ public class SolutionBuilder
         _fileSystem.Directory.CreateDirectory(ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
         _fileSystem.Directory.CreateDirectory(ClassPathHelper.SharedDtoClassPath(solutionDirectory, "").ClassDirectory);
         _fileSystem.Directory.CreateDirectory(ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-        _fileSystem.Directory.CreateDirectory(ClassPathHelper.DummySeederClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
 
         new ApiVersioningExtensionsBuilder(_utilities).CreateApiVersioningServiceExtension(srcDirectory, projectBaseName);
         new CorsExtensionsBuilder(_utilities).CreateCorsServiceExtension(srcDirectory, projectBaseName);
         new WebApiServiceExtensionsBuilder(_utilities).CreateWebApiServiceExtension(srcDirectory, projectBaseName);
         new OpenTelemetryExtensionsBuilder(_utilities).CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider);
-        // ErrorHandlerFilterAttributeBuilder.CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName, _fileSystem);
-        // AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
-        // WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, _fileSystem);
-        // ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, _fileSystem);
-        // StartupBuilder.CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName, _fileSystem);
-        // LocalConfigBuilder.CreateLocalConfig(srcDirectory, projectBaseName, _fileSystem);
-        // LoggingConfigurationBuilder.CreateWebApiConfigFile(srcDirectory, projectBaseName, _fileSystem);
-        // InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(srcDirectory, projectBaseName, _fileSystem);
-        //
-        // BasePaginationParametersBuilder.CreateBasePaginationParameters(solutionDirectory, projectBaseName, _fileSystem);
-        // PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, _fileSystem);
-        // CoreExceptionsBuilder.CreateExceptions(solutionDirectory, projectBaseName, _fileSystem);
+        new ErrorHandlerFilterAttributeBuilder(_utilities).CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName);
+        new WebApiLaunchSettingsBuilder(_utilities).CreateLaunchSettings(srcDirectory, projectBaseName);
+        new ProgramBuilder(_utilities).CreateWebApiProgram(srcDirectory, projectBaseName);
+        new StartupBuilder(_utilities).CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName);
+        new LocalConfigBuilder(_utilities).CreateLocalConfig(srcDirectory, projectBaseName);
+        new LoggingConfigurationBuilder(_utilities).CreateWebApiConfigFile(srcDirectory, projectBaseName);
+        new InfrastructureServiceRegistrationBuilder(_utilities).CreateInfrastructureServiceExtension(srcDirectory, projectBaseName);
+        
+        new BasePaginationParametersBuilder(_utilities).CreateBasePaginationParameters(solutionDirectory);
+        new PagedListBuilder(_utilities).CreatePagedList(srcDirectory, projectBaseName);
+        new CoreExceptionsBuilder(_utilities, _fileSystem).CreateExceptions(solutionDirectory, projectBaseName);
         
         _utilities.AddProjectReference(webApiProjectClassPath, @"..\..\..\SharedKernel\SharedKernel.csproj");
     }

@@ -1,24 +1,35 @@
 ﻿namespace NewCraftsman.Builders.Tests.Utilities
 {
     using System.IO;
+    using System.IO.Abstractions;
+    using Domain;
+    using Helpers;
+    using Services;
 
     public class ApiRouteModifier
     {
-        public static void AddRoutes(string testDirectory, Entity entity, string projectBaseName)
+        private readonly IFileSystem _fileSystem;
+
+        public ApiRouteModifier(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+
+        public void AddRoutes(string testDirectory, Entity entity, string projectBaseName)
         {
             var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "ApiRoutes.cs");
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+                _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-            if (!File.Exists(classPath.FullClassPath))
+            if (!_fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
-            var entityRouteClasses = Utilities.CreateApiRouteClasses(entity);
+            var entityRouteClasses = CreateApiRouteClasses(entity);
             var tempPath = $"{classPath.FullClassPath}temp";
-            using (var input = File.OpenText(classPath.FullClassPath))
+            using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
             {
-                using (var output = new StreamWriter(tempPath))
+                using var output = _fileSystem.File.CreateText(tempPath);
                 {
                     string line;
                     while (null != (line = input.ReadLine()))
@@ -35,8 +46,30 @@
             }
 
             // delete the old file and set the name of the new one to the original name
-            File.Delete(classPath.FullClassPath);
-            File.Move(tempPath, classPath.FullClassPath);
+            _fileSystem.File.Delete(classPath.FullClassPath);
+            _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+        }
+        
+        private static string CreateApiRouteClasses(Entity entity)
+        {
+            var entityRouteClasses = "";
+
+            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+            var pkName = Entity.PrimaryKeyProperty.Name;
+
+            entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}public static class {entity.Plural}
+    {{
+        public const string {pkName} = ""{{{pkName.LowercaseFirstLetter()}}}"";
+        public const string GetList = $""{{Base}}/{lowercaseEntityPluralName}"";
+        public const string GetRecord = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
+        public const string Create = $""{{Base}}/{lowercaseEntityPluralName}"";
+        public const string Delete = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
+        public const string Put = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
+        public const string Patch = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
+        public const string CreateBatch = $""{{Base}}/{lowercaseEntityPluralName}/batch"";
+    }}";
+
+            return entityRouteClasses;
         }
     }
 }

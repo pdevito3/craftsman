@@ -3,30 +3,32 @@
     using System;
     using System.IO;
     using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using NewCraftsman.Services;
+    using Services;
 
     public class GetListQueryTestBuilder
     {
-        public static void CreateTests(string testDirectory, string solutionDirectory, Entity entity, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public GetListQueryTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string testDirectory, string solutionDirectory, Entity entity, string projectBaseName)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{entity.Name}ListQueryTests.cs", entity.Plural, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = WriteTestFileText(testDirectory, solutionDirectory, classPath, entity, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = WriteTestFileText(testDirectory, solutionDirectory, classPath, entity, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string testDirectory, string solutionDirectory, ClassPath classPath, Entity entity, string projectBaseName)
         {
-            var featureName = Utilities.GetEntityListFeatureClassName(entity.Name);
-            var testFixtureName = Utilities.GetIntegrationTestFixtureName();
+            var featureName = FileNames.GetEntityListFeatureClassName(entity.Name);
+            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
 
             var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
@@ -45,7 +47,7 @@
             foreach (var prop in entity.Properties.Where(e => e.CanFilter).ToList())
                 filterTests += GetEntitiesListFiltered(entity, prop);
 
-            var foreignEntityUsings = Utilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
+            var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
             
             return @$"namespace {classPath.ClassNamespace};
 
@@ -69,7 +71,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string GetEntitiesTest(Entity entity)
         {
-            var queryName = Utilities.QueryListName(entity.Name);
+            var queryName = FileNames.QueryListName(entity.Name);
             var fakeEntity = FileNames.FakerName(entity.Name);
             var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
@@ -77,7 +79,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
             var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
-            var fakeParent = Utilities.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
+            var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
             return @$"
     [Test]
     public async Task can_get_{entity.Name.ToLower()}_list()
@@ -90,7 +92,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
         // Act
-        var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
+        var query = new {FileNames.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
         var {lowercaseEntityPluralName} = await SendAsync(query);
 
         // Assert
@@ -100,7 +102,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string GetEntitiesWithPageSizeAndNumberTest(Entity entity)
         {
-            var queryName = Utilities.QueryListName(entity.Name);
+            var queryName = FileNames.QueryListName(entity.Name);
             var fakeEntity = FileNames.FakerName(entity.Name);
             var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
@@ -109,7 +111,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
             var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
-            var fakeParent = Utilities.FakeParentTestHelpersThreeCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo, out var fakeParentIdRuleForThree);
+            var fakeParent = IntegrationTestServices.FakeParentTestHelpersThreeCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo, out var fakeParentIdRuleForThree);
             return $@"
     [Test]
     public async Task can_get_{entity.Name.ToLower()}_list_with_expected_page_size_and_number()
@@ -123,7 +125,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}, {fakeEntityVariableNameThree});
 
         //Act
-        var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
+        var query = new {FileNames.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
         var {lowercaseEntityPluralName} = await SendAsync(query);
 
         // Assert
@@ -133,7 +135,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string GetEntitiesListSortedInAscOrder(Entity entity, EntityProperty prop)
         {
-            var queryName = Utilities.QueryListName(entity.Name);
+            var queryName = FileNames.QueryListName(entity.Name);
             var fakeEntity = FileNames.FakerName(entity.Name);
             var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
@@ -169,7 +171,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
                 return "";
             }
 
-            var fakeParent = Utilities.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
+            var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
             return $@"
     [Test]
     public async Task can_get_sorted_list_of_{entity.Name.ToLower()}_by_{prop.Name}_in_asc_order()
@@ -186,7 +188,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
         //Act
-        var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
+        var query = new {FileNames.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
         var {lowercaseEntityPluralName} = await SendAsync(query);
 
         // Assert
@@ -204,7 +206,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string GetEntitiesListSortedInDescOrder(Entity entity, EntityProperty prop)
         {
-            var queryName = Utilities.QueryListName(entity.Name);
+            var queryName = FileNames.QueryListName(entity.Name);
             var fakeEntity = FileNames.FakerName(entity.Name);
             var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
@@ -240,7 +242,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
                 return "";
             }
 
-            var fakeParent = Utilities.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
+            var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
             return $@"
     [Test]
     public async Task can_get_sorted_list_of_{entity.Name.ToLower()}_by_{prop.Name}_in_desc_order()
@@ -257,7 +259,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
         //Act
-        var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
+        var query = new {FileNames.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
         var {lowercaseEntityPluralName} = await SendAsync(query);
 
         // Assert
@@ -275,7 +277,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string GetEntitiesListFiltered(Entity entity, EntityProperty prop)
         {
-            var queryName = Utilities.QueryListName(entity.Name);
+            var queryName = FileNames.QueryListName(entity.Name);
             var fakeEntity = FileNames.FakerName(entity.Name);
             var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var fakeEntityVariableNameOne = $"fake{entity.Name}One";
@@ -321,7 +323,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
                 return "";
             }
 
-            var fakeParent = Utilities.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
+            var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
             return $@"
     [Test]
     public async Task can_filter_{entity.Name.ToLower()}_list_using_{prop.Name}()
@@ -338,7 +340,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
         //Act
-        var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
+        var query = new {FileNames.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
         var {lowercaseEntityPluralName} = await SendAsync(query);
 
         // Assert

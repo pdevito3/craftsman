@@ -2,12 +2,22 @@
 {
     using System.IO;
     using System.IO.Abstractions;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class UpdateEntityUnitTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public UpdateEntityUnitTestBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"{Utilities.UpdateEntityUnitTestName(entityName)}.cs", entityPlural, projectBaseName);
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"{FileNames.UpdateEntityUnitTestName(entityName)}.cs", entityPlural, projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, srcDirectory, classPath, entityName, entityPlural, projectBaseName);
             _utilities.CreateFile(classPath, fileText);
         }

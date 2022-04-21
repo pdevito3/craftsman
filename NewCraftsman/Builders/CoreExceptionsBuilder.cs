@@ -8,18 +8,20 @@
     public class CoreExceptionsBuilder
     {
         private readonly ICraftsmanUtilities _utilities;
+        private readonly IFileSystem _fileSystem;
 
-        public CoreExceptionsBuilder(ICraftsmanUtilities utilities)
+        public CoreExceptionsBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
         {
             _utilities = utilities;
+            _fileSystem = fileSystem;
         }
 
         public void CreateExceptions(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+                _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
             CreateNotFoundException(solutionDirectory, projectBaseName);
             CreateValidationException(solutionDirectory, projectBaseName);

@@ -2,17 +2,26 @@
 {
     using System.IO;
     using System.IO.Abstractions;
+    using Helpers;
+    using Services;
 
     public class RolePermissionsUnitTestBuilder
     {
-        public static void CreateRolePermissionTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public RolePermissionsUnitTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateRolePermissionTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"CreateRolePermissionTests.cs", "RolePermissions", projectBaseName);
             var fileText = CreateFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);
             _utilities.CreateFile(classPath, fileText);
         }
         
-        public static void UpdateRolePermissionTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        public void UpdateRolePermissionTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"UpdateRolePermissionTests.cs", "RolePermissions", projectBaseName);
             var fileText = UpdateFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);

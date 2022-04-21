@@ -63,8 +63,8 @@
             }
 
             // delete the old file and set the name of the new one to the original name
-            File.Delete(classPath.FullClassPath);
-            File.Move(tempPath, classPath.FullClassPath);
+            _fileSystem.File.Delete(classPath.FullClassPath);
+            _fileSystem.File.Move(tempPath, classPath.FullClassPath);
         }
     }
 }

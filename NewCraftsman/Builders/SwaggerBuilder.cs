@@ -20,7 +20,7 @@
             _fileSystem = fileSystem;
         }
 
-        public void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string projectBaseName, IFileSystem fileSystem)
+        public void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string projectBaseName)
         {
             if (swaggerConfig.IsSameOrEqualTo(new SwaggerConfig())) return;
             

@@ -14,6 +14,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
 
     public abstract string PackageInclusionString(string version);
     public abstract string OTelSource();
+    public abstract int Port();
     public abstract string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword);
     public abstract string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword);
 
@@ -24,7 +25,8 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => @$"<PackageReference Include=""Npgsql.EntityFrameworkCore.PostgreSQL"" Version=""{version}"" />";
         public override string OTelSource()
             => @$"Npgsql";
-
+        public override int Port()
+            => 5432;
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser,
             string dbPassword)
             => $"Host={dbHostName};Port={5432};Database={dbName};Username={dbUser};Password={dbPassword}";
@@ -39,6 +41,8 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""{version}"" />";
         public override string OTelSource()
             => @$"Microsoft.EntityFrameworkCore.SqlServer";
+        public override int Port()
+            => 1433;
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword)
             => $"Data Source={dbHostName},{1433};Integrated Security=False;Database={dbName};User ID={dbUser};Password={dbPassword}";
         public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)
@@ -52,6 +56,8 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => throw new Exception("MySql is not supported");
         public override string OTelSource()
             => throw new Exception("MySql is not supported");
+        public override int Port()
+            =>  throw new Exception("MySql is not supported");
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword)
             => throw new Exception("MySql is not supported");
        public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)

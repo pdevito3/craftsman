@@ -2,24 +2,33 @@
 {
     using System;
     using System.IO;
+    using System.IO.Abstractions;
+    using Services;
 
     public class IntegrationTestFixtureModifier
     {
-        public static void AddMassTransit(string testDirectory, string projectBaseName)
+        private readonly IFileSystem _fileSystem;
+
+        public IntegrationTestFixtureModifier(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+
+        public void AddMassTransit(string testDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
 
-            if (!Directory.Exists(classPath.ClassDirectory))
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
-
-            if (!File.Exists(classPath.FullClassPath))
+            
+            if (!_fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var usingsAdded = false;
             var tempPath = $"{classPath.FullClassPath}temp";
-            using (var input = File.OpenText(classPath.FullClassPath))
+            using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
             {
-                using var output = new StreamWriter(tempPath);
+                using var output = _fileSystem.File.CreateText(tempPath);
                 string line;
                 while (null != (line = input.ReadLine()))
                 {

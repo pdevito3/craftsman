@@ -56,7 +56,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 
         _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
-        CreateNewDomainProject(domainProject); // TODO create DomainProject.Create?
+        CreateNewDomainProject(domainProject);
 
         _console.MarkupLine($"{Environment.NewLine}[bold yellow1]Your domain project is ready! Build something amazing. [/]");
 
@@ -71,26 +71,26 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         new SolutionBuilder(_fileSystem, _utilities, _consoleWriter).BuildSolution(solutionDirectory, domainProject.DomainName);
         
         // need this before boundaries to give them something to build against
-        new DockerComposeBuilders(_utilities).CreateDockerComposeSkeleton(solutionDirectory);
-        DockerComposeBuilders.AddJaegerToDockerCompose(solutionDirectory);
+        new DockerComposeBuilders(_utilities, _fileSystem).CreateDockerComposeSkeleton(solutionDirectory);
+        new DockerComposeBuilders(_utilities, _fileSystem).AddJaegerToDockerCompose(solutionDirectory);
         // DockerBuilders.CreateDockerComposeDbSkeleton(solutionDirectory);
             
         //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
         //    ApiScaffolding.ScaffoldApi(solutionDirectory, template, verbosity));
         foreach (var bc in domainProject.BoundedContexts)
-            ApiScaffolding.ScaffoldApi(solutionDirectory, bc);
+            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem).ScaffoldApi(solutionDirectory, bc);
 
         // auth server
-        if (domainProject.AuthServer != null)
-            AddAuthServerCommand.AddAuthServer(solutionDirectory, domainProject.AuthServer);
-            
-        // bff
-        if (domainProject.AuthServer != null)
-            AddBffCommand.AddBff(domainProject.Bff, solutionDirectory);
-        
-        // messages
-        if (domainProject.Messages.Count > 0)
-            AddMessageCommand.AddMessages(solutionDirectory, domainProject.Messages);
+        // if (domainProject.AuthServer != null)
+        //     AddAuthServerCommand.AddAuthServer(solutionDirectory, domainProject.AuthServer);
+        //     
+        // // bff
+        // if (domainProject.AuthServer != null)
+        //     AddBffCommand.AddBff(domainProject.Bff, solutionDirectory);
+        //
+        // // messages
+        // if (domainProject.Messages.Count > 0)
+        //     AddMessageCommand.AddMessages(solutionDirectory, domainProject.Messages);
         
         // migrations
         _dbMigrator.RunDbMigrations(domainProject.BoundedContexts, solutionDirectory);

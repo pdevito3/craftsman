@@ -2,10 +2,19 @@
 {
     using System.IO;
     using System.IO.Abstractions;
+    using Helpers;
+    using Services;
 
     public class CurrentUserServiceTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public CurrentUserServiceTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(solutionDirectory, $"CurrentUserServiceTests.cs", projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, classPath, projectBaseName);

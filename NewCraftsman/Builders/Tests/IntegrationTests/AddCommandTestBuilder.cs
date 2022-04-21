@@ -3,36 +3,40 @@
     using System;
     using System.IO;
     using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using NewCraftsman.Services;
+    using Services;
 
     public class AddCommandTestBuilder
     {
-        public static void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public AddCommandTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Add{entity.Name}CommandTests.cs", entity.Plural, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
-            fs.Write(Encoding.UTF8.GetBytes(data));
+            var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
         {
-            var featureName = Utilities.AddEntityFeatureClassName(entity.Name);
-            var testFixtureName = Utilities.GetIntegrationTestFixtureName();
-            var commandName = Utilities.CommandAddName(entity.Name);
+            var featureName = FileNames.AddEntityFeatureClassName(entity.Name);
+            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
+            var commandName = FileNames.CommandAddName(entity.Name);
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
             var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
-            var foreignEntityUsings = Utilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
+            var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
             return @$"namespace {classPath.ClassNamespace};
 

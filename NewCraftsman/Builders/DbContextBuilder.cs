@@ -24,7 +24,7 @@
         public void CreateDbContext(string srcDirectory,
             List<Entity> entities,
             string dbContextName,
-            string dbProvider,
+            DbProvider dbProvider,
             string dbName,
             string localDbConnection,
             NamingConventionEnum namingConventionEnum,
@@ -171,7 +171,7 @@ public class {dbContextName} : DbContext
             return dbSetText;
         }
 
-        private void RegisterContext(string srcDirectory, string dbProvider, string dbContextName, string dbName, string localDbConnection, NamingConventionEnum namingConventionEnum, string projectBaseName)
+        private void RegisterContext(string srcDirectory, DbProvider dbProvider, string dbContextName, string dbName, string localDbConnection, NamingConventionEnum namingConventionEnum, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetInfraRegistrationName()}.cs", projectBaseName);
 
@@ -234,11 +234,11 @@ public class {dbContextName} : DbContext
             _fileSystem.File.Move(tempPath, classPath.FullClassPath);
         }
 
-        private static void InstallDbProviderNugetPackages(string provider, string srcDirectory)
+        private static void InstallDbProviderNugetPackages(DbProvider provider, string srcDirectory)
         {
             var installCommand = $"add Infrastructure.Persistence{Path.DirectorySeparatorChar}Infrastructure.Persistence.csproj package Microsoft.EntityFrameworkCore.SqlServer --version 5.0.0";
 
-            if (Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider)
+            if (DbProvider.Postgres == provider)
                 installCommand = $"add Infrastructure.Persistence{Path.DirectorySeparatorChar}Infrastructure.Persistence.csproj package npgsql.entityframeworkcore.postgresql  --version 5.0.0";
             //else if (Enum.GetName(typeof(DbProvider), DbProvider.MySql) == provider)
             //    installCommand = $"add Infrastructure.Persistence{Path.DirectorySeparatorChar}Infrastructure.Persistence.csproj package Pomelo.EntityFrameworkCore.MySql";
@@ -261,9 +261,9 @@ public class {dbContextName} : DbContext
             process.WaitForExit();
         }
 
-        private static object GetDbUsingStatement(string provider)
+        private static object GetDbUsingStatement(DbProvider provider)
         {
-            if (Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider)
+            if (DbProvider.Postgres == provider)
                 return "UseNpgsql";
             //else if (Enum.GetName(typeof(DbProvider), DbProvider.MySql) == provider)
             //    return "UseMySql";

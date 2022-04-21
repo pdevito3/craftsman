@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Domain;
 using Exceptions;
 using Services;
 
@@ -18,6 +19,7 @@ public interface ICraftsmanUtilities
     void CreateFile(IClassPath classPath, string fileText);
     string GetDbContext(string srcDirectory, string projectBaseName);
     void IsSolutionDirectoryGuard(string proposedDirectory);
+    bool ProjectUsesSoftDelete(string srcDirectory, string projectBaseName);
 }
 
 public class CraftsmanUtilities : ICraftsmanUtilities
@@ -75,6 +77,26 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
         tcpListener.Stop();
         return port;
+    }
+    
+    public static string GetForeignEntityUsings(string testDirectory, Entity entity,
+        string projectBaseName)
+    {
+        var foreignEntityUsings = "";
+        var foreignProps = entity.Properties.Where(e => e.IsForeignKey).ToList();
+        foreach (var entityProperty in foreignProps)
+        {
+            if (entityProperty.IsForeignKey && !entityProperty.IsMany)
+            {
+                var parentClassPath =
+                    ClassPathHelper.TestFakesClassPath(testDirectory, $"", entityProperty.ForeignEntityName, projectBaseName);
+
+                foreignEntityUsings += $@"
+using {parentClassPath.ClassNamespace};";
+            }
+        }
+
+        return foreignEntityUsings;
     }
     
     public static string PropTypeCleanupDotNet(string prop)
@@ -179,7 +201,7 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
 
-        if (_fileSystem.File.Exists(classPath.FullClassPath))
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
         var tempPath = $"{classPath.FullClassPath}temp";
@@ -209,6 +231,27 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         // delete the old file and set the name of the new one to the original name
         _fileSystem.File.Delete(classPath.FullClassPath);
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+    }
+
+    public bool ProjectUsesSoftDelete(string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"BaseEntity.cs", "", projectBaseName);
+
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+            return false;
+
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+            return false;
+
+        using var input = _fileSystem.File.OpenText(classPath.FullClassPath);
+        string line;
+        while (null != (line = input.ReadLine()))
+        {
+            if (line.Contains($"Deleted"))
+                return true;
+        }
+
+        return false;
     }
 }
 

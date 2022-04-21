@@ -1,10 +1,22 @@
 ﻿namespace NewCraftsman.Builders.Tests.IntegrationTests
 {
     using System.IO.Abstractions;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using NewCraftsman.Services;
+    using Services;
 
     public class AddListCommandTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, Feature feature, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public AddListCommandTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, Feature feature, string projectBaseName)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{feature.Command}Tests.cs", entity.Plural, projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, feature, projectBaseName);
@@ -13,8 +25,8 @@
 
         private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, Feature feature, string projectBaseName)
         {
-            var featureName = Utilities.AddEntityFeatureClassName(entity.Name);
-            var testFixtureName = Utilities.GetIntegrationTestFixtureName();
+            var featureName = FileNames.AddEntityFeatureClassName(entity.Name);
+            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
             var commandName = feature.Command;
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
@@ -24,7 +36,7 @@
             var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", feature.ParentEntity, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
             
-            var foreignEntityUsings = Utilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
+            var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
             
             return @$"namespace {classPath.ClassNamespace};
 

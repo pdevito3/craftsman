@@ -13,15 +13,13 @@
     public class ValidatorBuilder
     {
         private readonly ICraftsmanUtilities _utilities;
-        private readonly IFileSystem _fileSystem;
 
-        public ValidatorBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+        public ValidatorBuilder(ICraftsmanUtilities utilities)
         {
             _utilities = utilities;
-            _fileSystem = fileSystem;
         }
 
-        public static void CreateValidators(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity)
+        public void CreateValidators(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity)
         {
             BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Manipulation);
             BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Creation);
