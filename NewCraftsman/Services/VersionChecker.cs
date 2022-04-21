@@ -36,7 +36,7 @@ public static class VersionChecker
         }
     }
 
-    private static string GetInstalledCraftsmanVersion()
+    public static string GetInstalledCraftsmanVersion()
     {
         var installedVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         installedVersion = installedVersion[0..^2]; // equivalent to installedVersion.Substring(0, installedVersion.Length - 2);

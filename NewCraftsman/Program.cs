@@ -32,15 +32,33 @@ app.Configure(config =>
     {
         @new.AddCommand<NewDomainCommand>("domain")
             .WithDescription("Scaffolds a project based on a given template file in a json or yaml format.")
-            .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new [] { "new domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new [] { "new domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new [] { "new domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
         @new.AddCommand<NewExampleCommand>("example")
             .WithDescription("Scaffolds out an example project via CLI prompts into the current directory.")
-            .WithExample(new[] { "example" })
-            .WithExample(new[] { "example", "MyProjectName" });
+            .WithExample(new[] { "new example" })
+            .WithExample(new[] { "new example", "MyProjectName" });
+        
+        @new.AddCommand<AddEntityCommand>("entity")
+            .WithAlias("entities")
+            .WithDescription("An alias for the `add entity` command.")
+            .WithExample(new [] { "new entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new [] { "new entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new [] { "new entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
     });
+
+    config.AddBranch("add", @new =>
+    {
+        @new.AddCommand<AddEntityCommand>("entity")
+            .WithAlias("entities")
+            .WithDescription("Add one or more new entities to your Wrapt project using a formatted yaml or json file.")
+            .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+    });
+    
 });
 
 

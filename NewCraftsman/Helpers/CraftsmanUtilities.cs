@@ -10,6 +10,7 @@ using System.Text;
 using Domain;
 using Exceptions;
 using Services;
+using Spectre.Console;
 
 public interface ICraftsmanUtilities
 {
@@ -20,17 +21,23 @@ public interface ICraftsmanUtilities
     string GetDbContext(string srcDirectory, string projectBaseName);
     void IsSolutionDirectoryGuard(string proposedDirectory);
     bool ProjectUsesSoftDelete(string srcDirectory, string projectBaseName);
+    string GetRootDir();
+    void IsBoundedContextDirectoryGuard();
 }
 
 public class CraftsmanUtilities : ICraftsmanUtilities
 {
     private readonly IConsoleWriter _consoleWriter;
     private readonly IFileSystem _fileSystem;
+    private readonly IAnsiConsole _console;
+    private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
 
-    public CraftsmanUtilities(IConsoleWriter consoleWriter, IFileSystem fileSystem)
+    public CraftsmanUtilities(IConsoleWriter consoleWriter, IFileSystem fileSystem, IAnsiConsole console, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
     {
         _consoleWriter = consoleWriter;
         _fileSystem = fileSystem;
+        _console = console;
+        _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
     }
 
     public string GetDbContext(string srcDirectory, string projectBaseName)
@@ -252,6 +259,21 @@ using {parentClassPath.ClassNamespace};";
         }
 
         return false;
+    }
+
+    public string GetRootDir()
+    {
+        var rootDir = _fileSystem.Directory.GetCurrentDirectory();
+        var myEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        if (myEnv == "Dev")
+            rootDir = _console.Ask<string>("Enter the root directory of your project:");
+        return rootDir;
+    }
+
+    public void IsBoundedContextDirectoryGuard()
+    {
+        if (!_fileSystem.Directory.Exists(_scaffoldingDirectoryStore.SrcDirectory) || !Directory.Exists(_scaffoldingDirectoryStore.TestDirectory))
+            throw new IsNotBoundedContextDirectoryException();
     }
 }
 

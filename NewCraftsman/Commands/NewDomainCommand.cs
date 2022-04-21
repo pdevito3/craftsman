@@ -44,11 +44,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
     
     public override int Execute(CommandContext context, Settings settings)
     {
-        var rootDir = _fileSystem.Directory.GetCurrentDirectory();
-        var myEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        
-        if (myEnv == "Dev")
-            rootDir = _console.Ask<string>("Enter the root directory of your project:");
+        var rootDir = _utilities.GetRootDir();
         
         // TODO make injectable
         new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(rootDir);
