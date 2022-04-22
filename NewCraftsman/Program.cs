@@ -1,5 +1,7 @@
 ﻿using System.IO.Abstractions;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using NewCraftsman;
 using NewCraftsman.Commands;
@@ -22,6 +24,13 @@ serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var registrar = new TypeRegistrar(serviceCollection);
 var app = new CommandApp(registrar);
+
+if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+{
+    // this makes emojis come up more reliably. might get built into spectre better in the future, so give a go deleting this at some point
+    // they seem to show up fine on osx and actually need this to be off to work there
+    Console.OutputEncoding = Encoding.Unicode;
+}
 
 app.Configure(config =>
 {
@@ -86,6 +95,14 @@ app.Configure(config =>
             .WithExample(new [] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
     });
     
+    config.AddBranch("register", @new =>
+    {
+        @new.AddCommand<RegisterProducerCommand>("producer")
+            .WithDescription("Register a producer with MassTransit using CLI prompts. This is especially useful for adding a new publish action to an existing feature (e.g. EntityCreated).")
+            .WithExample(new [] { "register producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new [] { "register producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new [] { "register producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+    });
 });
 
 
