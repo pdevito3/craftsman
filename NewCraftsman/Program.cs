@@ -58,6 +58,13 @@ app.Configure(config =>
             .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
             .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
             .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+        
+        @new.AddCommand<AddBoundedContextCommand>("bc")
+            .WithAlias("boundedcontext")
+            .WithDescription("Scaffolds a new bounded context for a Wrapt domain project based on a given template file in a json or yaml format.")
+            .WithExample(new [] { "add bc", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new [] { "add bc", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new [] { "add bc", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
         @new.AddCommand<AddFeatureCommand>("feature")
             .WithDescription("Scaffolds out a new feature using CLI prompts.")
@@ -73,7 +80,7 @@ app.Configure(config =>
 
         @new.AddCommand<AddAuthServerCommand>("authserver")
             .WithDescription(
-                "Adds a Duende based auth server project to your solution.")
+                "Adds a Duende based auth server project to your solution using a formatted yaml or json file.")
             .WithExample(new [] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
             .WithExample(new [] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
             .WithExample(new [] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
