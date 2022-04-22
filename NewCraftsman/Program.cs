@@ -70,6 +70,13 @@ app.Configure(config =>
             .WithExample(new[] { "add bus" })
             .WithExample(new[]
                 { "add bus", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" });
+
+        @new.AddCommand<AddAuthServerCommand>("authserver")
+            .WithDescription(
+                "Adds a Duende based auth server project to your solution.")
+            .WithExample(new [] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new [] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new [] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
     });
     
 });

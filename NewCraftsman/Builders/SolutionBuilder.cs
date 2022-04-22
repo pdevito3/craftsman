@@ -125,25 +125,25 @@ public class SolutionBuilder
         _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
     }
 
-    // public void BuildAuthServerProject(string solutionDirectory, string authServerProjectName)
-    // {
-    //     var projectExists = File.Exists(Path.Combine(solutionDirectory, authServerProjectName, $"{authServerProjectName}.csproj"));
-    //     if (projectExists) return;
-    //     
-    //     var projectClassPath = ClassPathHelper.AuthServerProjectClassPath(solutionDirectory, authServerProjectName);
-    //     AuthServerProjBuilder.CreateProject(solutionDirectory, authServerProjectName, _fileSystem);
-    //     _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
-    // }
-    //
-    // public void BuildBffProject(string solutionDirectory, string projectName, int? proxyPort)
-    // {
-    //     var projectExists = File.Exists(Path.Combine(solutionDirectory, projectName, $"{projectName}.csproj"));
-    //     if (projectExists) return;
-    //     
-    //     var projectClassPath = ClassPathHelper.BffProjectClassPath(solutionDirectory, projectName);
-    //     BffProjBuilder.CreateProject(solutionDirectory, projectName, proxyPort, _fileSystem);
-    //     _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
-    // }
+    public void BuildAuthServerProject(string solutionDirectory, string authServerProjectName)
+    {
+        var projectExists = File.Exists(Path.Combine(solutionDirectory, authServerProjectName, $"{authServerProjectName}.csproj"));
+        if (projectExists) return;
+        
+        var projectClassPath = ClassPathHelper.AuthServerProjectClassPath(solutionDirectory, authServerProjectName);
+        new AuthServerProjBuilder(_utilities).CreateProject(solutionDirectory, authServerProjectName);
+        _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
+    }
+    
+    public void BuildBffProject(string solutionDirectory, string projectName, int? proxyPort)
+    {
+        var projectExists = File.Exists(Path.Combine(solutionDirectory, projectName, $"{projectName}.csproj"));
+        if (projectExists) return;
+        
+        var projectClassPath = ClassPathHelper.BffProjectClassPath(solutionDirectory, projectName);
+        new BffProjBuilder(_utilities).CreateProject(solutionDirectory, projectName, proxyPort);
+        _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
+    }
 }
 
 public static class Extensions
