@@ -41,12 +41,13 @@ app.Configure(config =>
             .WithExample(new[] { "new example" })
             .WithExample(new[] { "new example", "MyProjectName" });
         
+        // hidden commands for aliases, etc.
         @new.AddCommand<AddEntityCommand>("entity")
             .WithAlias("entities")
-            .WithDescription("An alias for the `add entity` command.")
-            .WithExample(new [] { "new entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "new entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "new entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .IsHidden();
+        
+        @new.AddCommand<AddFeatureCommand>("feature")
+            .IsHidden();
     });
 
     config.AddBranch("add", @new =>
@@ -57,6 +58,10 @@ app.Configure(config =>
             .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
             .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
             .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+
+        @new.AddCommand<AddFeatureCommand>("feature")
+            .WithDescription("Scaffolds out a new feature using CLI prompts.")
+            .WithExample(new[] { "add feature" });
     });
     
 });

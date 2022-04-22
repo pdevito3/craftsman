@@ -50,7 +50,8 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
         _utilities.IsSolutionDirectoryGuard(solutionDirectory);
         _scaffoldingDirectoryStore.SetSolutionDirectory(solutionDirectory);
         
-        _scaffoldingDirectoryStore.SetBoundedContextDirectoryAndProject(potentialBoundaryDirectory);
+        var projectName = new DirectoryInfo(potentialBoundaryDirectory).Name;
+        _scaffoldingDirectoryStore.SetBoundedContextDirectoryAndProject(projectName);
         _utilities.IsBoundedContextDirectoryGuard();
 
         // TODO make injectable
@@ -61,10 +62,8 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
         FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
         
         RunEntityBuilders(solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory, template);
-
-        _console.MarkupLine($"{Environment.NewLine}[bold yellow1]Your domain project is ready! Build something amazing. [/]");
-
-        _consoleWriter.StarGithubRequest();
+        
+        _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
         return 0;
     }
 

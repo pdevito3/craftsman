@@ -49,5 +49,4 @@ public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
         BoundedContextDirectory = $"{SolutionDirectory}{Path.DirectorySeparatorChar}{projectName}";
         return SolutionDirectory;
     }
-    
 }
