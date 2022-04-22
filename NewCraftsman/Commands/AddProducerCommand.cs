@@ -21,18 +21,20 @@ public class AddProducerCommand : Command<AddProducerCommand.Settings>
     private readonly IConsoleWriter _consoleWriter;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
     public AddProducerCommand(IAnsiConsole console,
         IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileParsingHelper fileParsingHelper)
     {
         _console = console;
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
+        _fileParsingHelper = fileParsingHelper;
     }
 
     public class Settings : CommandSettings
@@ -54,7 +56,7 @@ public class AddProducerCommand : Command<AddProducerCommand.Settings>
         _utilities.IsBoundedContextDirectoryGuard();
 
         // TODO make injectable
-        new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
         var template = FileParsingHelper.ReadYamlString<ProducerTemplate>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
         

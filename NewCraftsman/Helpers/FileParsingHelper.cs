@@ -8,9 +8,15 @@
     using Domain;
     using Exceptions;
     using Newtonsoft.Json;
+    using Services;
     using YamlDotNet.Serialization;
 
-    public class FileParsingHelper
+    public interface IFileParsingHelper : ICraftsmanService
+    {
+        bool RunInitialTemplateParsingGuards(string filePath);
+    }
+
+    public class FileParsingHelper : IFileParsingHelper
     {
         private readonly IFileSystem _fileSystem;
 

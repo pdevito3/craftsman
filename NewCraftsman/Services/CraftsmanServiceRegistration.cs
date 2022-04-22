@@ -3,18 +3,14 @@ namespace NewCraftsman.Services;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-public interface IBuilderService
-{
-    
-}
-public interface IModifierService
+public interface ICraftsmanService
 {
     
 }
 
 public static class CraftsmanServiceRegistration
 {
-    public static IServiceCollection AddCraftsmanBuildersAndModifiers(this IServiceCollection services, params Type[] handlerAssemblyMarkerTypes)
+    public static IServiceCollection AddCraftsmanServices(this IServiceCollection services, params Type[] handlerAssemblyMarkerTypes)
     {
         var assemblies = handlerAssemblyMarkerTypes.Select(t => t.GetTypeInfo().Assembly);
 
@@ -26,8 +22,7 @@ public static class CraftsmanServiceRegistration
         foreach (var assembly in assemblies)
         {
             var rules = assembly.GetTypes()
-                .Where(x => !x.IsAbstract && x.IsClass &&
-                            (x.GetInterface(nameof(IBuilderService)) == typeof(IBuilderService) || x.GetInterface(nameof(IModifierService)) == typeof(IModifierService)));
+                .Where(x => !x.IsAbstract && x.IsClass && x.GetInterface(nameof(ICraftsmanService)) == typeof(ICraftsmanService));
 
             foreach (var rule in rules)
             {

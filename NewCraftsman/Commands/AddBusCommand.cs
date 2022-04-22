@@ -19,18 +19,20 @@ public class AddBusCommand : Command<AddBusCommand.Settings>
     private readonly IAnsiConsole _console;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
     public AddBusCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
-        IAnsiConsole console)
+        IAnsiConsole console, IFileParsingHelper fileParsingHelper)
     {
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _console = console;
+        _fileParsingHelper = fileParsingHelper;
     }
 
     public class Settings : CommandSettings
@@ -56,7 +58,7 @@ public class AddBusCommand : Command<AddBusCommand.Settings>
         template.Environment = new ApiEnvironment();
         if (!string.IsNullOrEmpty(settings.Filepath))
         {
-            new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(settings.Filepath);
+            _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
             template = FileParsingHelper.GetTemplateFromFile<Bus>(settings.Filepath);
         }
         template.ProjectBaseName = _scaffoldingDirectoryStore.ProjectBaseName;

@@ -16,24 +16,21 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
     private readonly IConsoleWriter _consoleWriter;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
-    private readonly IDbMigrator _dbMigrator;
-    private readonly IGitService _gitService;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
     public AddEntityCommand(IAnsiConsole console,
         IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
-        IDbMigrator dbMigrator, 
-        IGitService gitService)
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore,
+        IFileParsingHelper fileParsingHelper)
     {
         _console = console;
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
-        _dbMigrator = dbMigrator;
-        _gitService = gitService;
+        _fileParsingHelper = fileParsingHelper;
     }
 
     public class Settings : CommandSettings
@@ -55,7 +52,7 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
         _utilities.IsBoundedContextDirectoryGuard();
 
         // TODO make injectable
-        new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
         var template = FileParsingHelper.ReadYamlString<AddEntityTemplate>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 

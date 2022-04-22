@@ -17,8 +17,9 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
     private readonly IGitService _gitService;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
-    public NewExampleCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IDbMigrator dbMigrator, IGitService gitService)
+    public NewExampleCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IDbMigrator dbMigrator, IGitService gitService, IFileParsingHelper fileParsingHelper)
     {
         _console = console;
         _fileSystem = fileSystem;
@@ -27,6 +28,7 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _dbMigrator = dbMigrator;
         _gitService = gitService;
+        _fileParsingHelper = fileParsingHelper;
     }
 
     public class Settings : CommandSettings
@@ -49,7 +51,7 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(templateString);
         
         _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
-        var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _dbMigrator, _gitService);
+        var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _dbMigrator, _gitService, _fileParsingHelper);
         domainCommand.CreateNewDomainProject(domainProject);
         
         // TODO add this back

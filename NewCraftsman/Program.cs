@@ -19,7 +19,7 @@ serviceCollection.AddSingleton<ICraftsmanUtilities, CraftsmanUtilities>();
 serviceCollection.AddSingleton<IScaffoldingDirectoryStore, ScaffoldingDirectoryStore>();
 serviceCollection.AddSingleton<IDbMigrator, DbMigrator>();
 serviceCollection.AddSingleton<IGitService, GitService>();
-serviceCollection.AddCraftsmanBuildersAndModifiers(typeof(Program));
+serviceCollection.AddCraftsmanServices(typeof(Program));
 serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var registrar = new TypeRegistrar(serviceCollection);

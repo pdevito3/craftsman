@@ -18,6 +18,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
     private readonly IDbMigrator _dbMigrator;
     private readonly IGitService _gitService;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
     public NewDomainCommand(IAnsiConsole console,
         IFileSystem fileSystem,
@@ -25,7 +26,8 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
         IDbMigrator dbMigrator, 
-        IGitService gitService)
+        IGitService gitService, 
+        IFileParsingHelper fileParsingHelper)
     {
         _console = console;
         _fileSystem = fileSystem;
@@ -34,6 +36,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _dbMigrator = dbMigrator;
         _gitService = gitService;
+        _fileParsingHelper = fileParsingHelper;
     }
 
     public class Settings : CommandSettings
@@ -47,7 +50,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         var rootDir = _utilities.GetRootDir();
         
         // TODO make injectable
-        new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(rootDir);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(rootDir);
         var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 

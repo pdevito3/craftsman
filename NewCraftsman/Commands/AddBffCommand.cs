@@ -11,22 +11,18 @@ using Builders.Bff.Components.Notifications;
 using Builders.Bff.Features.Auth;
 using Builders.Bff.Features.Home;
 using Builders.Bff.Src;
-using Builders.Docker;
-using Builders.ExtensionBuilders;
-using Builders.Tests.Utilities;
 using Domain;
 using Domain.Enums;
 using Helpers;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using AppSettingsBuilder = Builders.AppSettingsBuilder;
-using ProgramBuilder = Builders.ProgramBuilder;
 
 public class AddBffCommand : Command<AddBffCommand.Settings>
 {
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
+    private readonly IFileParsingHelper _fileParsingHelper;
     private readonly IAnsiConsole _console;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
@@ -35,13 +31,14 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
-        IAnsiConsole console)
+        IAnsiConsole console, IFileParsingHelper fileParsingHelper)
     {
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _console = console;
+        _fileParsingHelper = fileParsingHelper;
     }
 
     public class Settings : CommandSettings
@@ -57,7 +54,7 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
         _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
-        new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(settings.Filepath);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
         var template = FileParsingHelper.GetTemplateFromFile<BffTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
         

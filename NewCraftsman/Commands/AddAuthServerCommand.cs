@@ -17,21 +17,20 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
 {
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
-    private readonly IAnsiConsole _console;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
     public AddAuthServerCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
-        IAnsiConsole console)
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileParsingHelper fileParsingHelper)
     {
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
-        _console = console;
+        _fileParsingHelper = fileParsingHelper;
     }
 
     public class Settings : CommandSettings
@@ -47,7 +46,7 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
         _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
-        new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(settings.Filepath);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
         var template = FileParsingHelper.GetTemplateFromFile<AuthServerTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
         

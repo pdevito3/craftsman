@@ -19,18 +19,20 @@ public class AddBoundedContextCommand : Command<AddBoundedContextCommand.Setting
     private readonly IAnsiConsole _console;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
     public AddBoundedContextCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore,
-        IAnsiConsole console)
+        IAnsiConsole console, IFileParsingHelper fileParsingHelper)
     {
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _console = console;
+        _fileParsingHelper = fileParsingHelper;
     }
 
     public class Settings : CommandSettings
@@ -45,7 +47,7 @@ public class AddBoundedContextCommand : Command<AddBoundedContextCommand.Setting
         _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
-        new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(settings.Filepath);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
         var boundedContexts = FileParsingHelper.GetTemplateFromFile<BoundedContextsTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
