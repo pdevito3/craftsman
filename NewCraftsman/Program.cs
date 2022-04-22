@@ -114,6 +114,13 @@ app.Configure(config =>
             .WithExample(new [] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
             .WithExample(new [] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
             .WithExample(new [] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+
+        @new.AddCommand<AddProducerCommand>("producer")
+            .WithDescription(
+                "Adds a distinct feature that produces a message and registers it with MassTransit using a formatted yaml or json file.")
+            .WithExample(new [] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new [] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new [] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
     });
     
     config.AddBranch("register", @new =>
