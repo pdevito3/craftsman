@@ -23,6 +23,7 @@ public interface ICraftsmanUtilities
     bool ProjectUsesSoftDelete(string srcDirectory, string projectBaseName);
     string GetRootDir();
     void IsBoundedContextDirectoryGuard();
+    void AddPackages(ClassPath classPath, Dictionary<string, string> packagesToAdd);
 }
 
 public class CraftsmanUtilities : ICraftsmanUtilities
@@ -274,6 +275,49 @@ using {parentClassPath.ClassNamespace};";
     {
         if (!_fileSystem.Directory.Exists(_scaffoldingDirectoryStore.SrcDirectory) || !Directory.Exists(_scaffoldingDirectoryStore.TestDirectory))
             throw new IsNotBoundedContextDirectoryException();
+    }
+        
+    public void AddPackages(ClassPath classPath, Dictionary<string, string> packagesToAdd)
+    {
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+            throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
+
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+            throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
+        {
+            using var output = _fileSystem.File.CreateText(tempPath);
+            string line;
+            var packagesAdded = false;
+            while (null != (line = input.ReadLine()))
+            {
+                var newText = $"{line}";
+                if (line.Contains($"PackageReference") && !packagesAdded)
+                {
+                    newText += @$"{ProjectReferencePackagesString(packagesToAdd)}";
+                    packagesAdded = true;
+                }
+
+                output.WriteLine(newText);
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        _fileSystem.File.Delete(classPath.FullClassPath);
+        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+    }
+    
+    private static string ProjectReferencePackagesString(Dictionary<string, string> packagesToAdd)
+    {
+        var packageString = "";
+        foreach (var package in packagesToAdd)
+        {
+            packageString += $@"{Environment.NewLine}    <PackageReference Include=""{package.Key}"" Version=""{package.Value}"" />";
+        }
+
+        return packageString;
     }
 }
 

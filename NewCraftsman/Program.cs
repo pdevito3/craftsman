@@ -62,6 +62,14 @@ app.Configure(config =>
         @new.AddCommand<AddFeatureCommand>("feature")
             .WithDescription("Scaffolds out a new feature using CLI prompts.")
             .WithExample(new[] { "add feature" });
+
+        @new.AddCommand<AddBusCommand>("bus")
+            .WithDescription(
+                "Adds a message bus to your web api and a messages directory to your shared kernel using a formatted yaml or " +
+                "json file. A template file is optional.")
+            .WithExample(new[] { "add bus" })
+            .WithExample(new[]
+                { "add bus", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" });
     });
     
 });
