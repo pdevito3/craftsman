@@ -107,6 +107,13 @@ app.Configure(config =>
             .WithExample(new [] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
             .WithExample(new [] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
             .WithExample(new [] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+
+        @new.AddCommand<AddConsumerCommand>("consumer")
+            .WithDescription(
+                "Add a receive endpoint and register it with MassTransit using a formatted yaml or json file.")
+            .WithExample(new [] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new [] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new [] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
     });
     
     config.AddBranch("register", @new =>
