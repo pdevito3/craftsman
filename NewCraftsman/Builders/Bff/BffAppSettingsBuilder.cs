@@ -4,16 +4,16 @@
     using Helpers;
     using Services;
 
-    public class AppSettingsBuilder
+    public class BffAppSettingsBuilder
     {
         private readonly ICraftsmanUtilities _utilities;
 
-        public AppSettingsBuilder(ICraftsmanUtilities utilities)
+        public BffAppSettingsBuilder(ICraftsmanUtilities utilities)
         {
             _utilities = utilities;
         }
 
-        public void CreateBffAppSettings(string projectDirectory, string projectName)
+        public void CreateBffAppSettings(string projectDirectory)
         {
             var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"appsettings.json");
             var fileText = @$"{{

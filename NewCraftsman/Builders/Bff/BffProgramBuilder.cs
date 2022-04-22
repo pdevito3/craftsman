@@ -5,11 +5,11 @@ using Domain;
 using Helpers;
 using Services;
 
-public class ProgramBuilder
+public class BffProgramBuilder
 {
     private readonly ICraftsmanUtilities _utilities;
 
-    public ProgramBuilder(ICraftsmanUtilities utilities)
+    public BffProgramBuilder(ICraftsmanUtilities utilities)
     {
         _utilities = utilities;
     }

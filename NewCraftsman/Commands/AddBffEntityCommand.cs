@@ -13,7 +13,7 @@ using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
+public class AddBffEntityCommand : Command<AddBffEntityCommand.Settings>
 {
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
@@ -21,7 +21,7 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
 
-    public AddAuthServerCommand(IFileSystem fileSystem,
+    public AddBffEntityCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
@@ -48,10 +48,10 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
         new FileParsingHelper(_fileSystem).RunInitialTemplateParsingGuards(settings.Filepath);
-        var template = FileParsingHelper.GetTemplateFromFile<AuthServerTemplate>(settings.Filepath);
+        var template = FileParsingHelper.GetTemplateFromFile<BffEntityTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
         
-        AddAuthServer(_scaffoldingDirectoryStore.SolutionDirectory, template);
+        new EntityScaffoldingService(_utilities, _fileSystem).ScaffoldBffEntities(template.Entities, _scaffoldingDirectoryStore.SpaDirectory);
 
         _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
         return 0;

@@ -3,6 +3,7 @@ namespace NewCraftsman.Services;
 public interface IScaffoldingDirectoryStore
 {
     string SolutionDirectory { get; }
+    public string SpaDirectory { get; }
     string BoundedContextDirectory { get; }
     string SrcDirectory { get; }
     string TestDirectory { get; }
@@ -15,6 +16,7 @@ public interface IScaffoldingDirectoryStore
 public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
 {
     public string SolutionDirectory { get; private set; }
+    public string SpaDirectory => SolutionDirectory;
     public string BoundedContextDirectory { get; private set; }
     public string ProjectBaseName { get; private set; }
     public string SrcDirectory => Path.Combine(BoundedContextDirectory, "src");

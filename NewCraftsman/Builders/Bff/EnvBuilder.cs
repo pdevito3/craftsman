@@ -19,7 +19,7 @@
             var fileText = GetEnvDevText(spaPort);
             _utilities.CreateFile(classPath, fileText);
         }
-        public void CreateEnv(string spaDirectory, IFileSystem fileSystem)
+        public void CreateEnv(string spaDirectory)
         {
             var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, ".env");
             var fileText = GetEnvText();

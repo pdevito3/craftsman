@@ -50,7 +50,7 @@ public class ApiScaffoldingService
 
                 ctx.Spinner(Spinner.Known.BouncingBar);
                 ctx.Status($"[bold blue]Building {projectName} Projects [/]");
-                new SolutionBuilder(_fileSystem, _utilities, _consoleWriter)
+                new SolutionBuilder(_utilities, _fileSystem)
                     .AddProjects(buildSolutionDirectory,
                         srcDirectory,
                         testDirectory,
