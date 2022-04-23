@@ -1,47 +1,51 @@
-﻿namespace Craftsman.Builders.Auth
+﻿namespace Craftsman.Builders.Auth;
+
+using System.IO.Abstractions;
+using Services;
+
+public class PermissionsModifier
 {
-    using System;
-    using System.IO;
-    using Helpers;
+    private readonly IFileSystem _fileSystem;
 
-    public class PermissionsModifier
+    public PermissionsModifier(IFileSystem fileSystem)
     {
-        public static void AddPermission(string srcDirectory, string permission, string projectBaseName)
+        _fileSystem = fileSystem;
+    }
+    
+    public void AddPermission(string srcDirectory, string permission, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, $"Permissions.cs", projectBaseName);
+
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+            throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+
+        var fileText = _fileSystem.File.ReadAllText(classPath.FullClassPath);
+        if (fileText.Contains($"const string {permission}"))
+            return;
+
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
         {
-            var classPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, $"Permissions.cs", projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (!File.Exists(classPath.FullClassPath))
-                throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
-
-            var fileText = File.ReadAllText(classPath.FullClassPath);
-            if (fileText.Contains($"const string {permission}"))
-                return;
-
-            var tempPath = $"{classPath.FullClassPath}temp";
-            using (var input = File.OpenText(classPath.FullClassPath))
+            using var output = _fileSystem.File.CreateText(tempPath);
+            string line;
+            while (null != (line = input.ReadLine()))
             {
-                using (var output = new StreamWriter(tempPath))
+                var newText = $"{line}";
+                if (line.Contains($"Permissions marker"))
                 {
-                    string line;
-                    while (null != (line = input.ReadLine()))
-                    {
-                        var newText = $"{line}";
-                        if (line.Contains($"Permissions marker"))
-                        {
-                            newText += @$"{Environment.NewLine}    public const string {permission} = nameof({permission});";
-                        }
-
-                        output.WriteLine(newText);
-                    }
+                    newText += @$"{Environment.NewLine}    public const string {permission} = nameof({permission});";
                 }
-            }
 
-            // delete the old file and set the name of the new one to the original name
-            File.Delete(classPath.FullClassPath);
-            File.Move(tempPath, classPath.FullClassPath);
+                output.WriteLine(newText);
+            }
         }
+
+        // delete the old file and set the name of the new one to the original name
+        _fileSystem.File.Delete(classPath.FullClassPath);
+        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 }
+

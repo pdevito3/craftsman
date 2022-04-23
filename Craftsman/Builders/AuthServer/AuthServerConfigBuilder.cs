@@ -1,23 +1,28 @@
 ﻿namespace Craftsman.Builders.AuthServer
 {
     using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
+    using Domain;
+    using Domain.Enums;
     using Helpers;
-    using Models;
+    using Services;
     using static Helpers.ConstMessages;
 
     public class AuthServerConfigBuilder
     {
-        public static void CreateConfig(string projectDirectory, AuthServerTemplate authServer, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public AuthServerConfigBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateConfig(string projectDirectory, AuthServerTemplate authServer)
         {
             var classPath = ClassPathHelper.AuthServerConfigClassPath(projectDirectory, "Config.cs", authServer.Name);
             var fileText = GetConfigText(classPath.ClassNamespace, authServer);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
-        
-        
+
         public static string GetConfigText(string classNamespace, AuthServerTemplate authServer)
         {
             var apiResources = authServer.Apis.Aggregate("", (current, api) => current + ApiResourceTextBuilder(api));

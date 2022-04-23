@@ -1,35 +1,29 @@
 ﻿namespace Craftsman.Builders.Features
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
-    using System.Text;
+    using Domain;
+    using Helpers;
+    using Services;
 
     public class CommandDeleteRecordBuilder
     {
-        public static void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public CommandDeleteRecordBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{Utilities.DeleteEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            _utilities = utilities;
+        }
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+        public void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.DeleteEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            var fileText = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
         {
-            var className = Utilities.DeleteEntityFeatureClassName(entity.Name);
-            var deleteCommandName = Utilities.CommandDeleteName(entity.Name);
+            var className = FileNames.DeleteEntityFeatureClassName(entity.Name);
+            var deleteCommandName = FileNames.CommandDeleteName(entity.Name);
 
             var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
             var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;

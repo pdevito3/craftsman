@@ -1,27 +1,27 @@
 ﻿namespace Craftsman.Builders.Tests.IntegrationTests
 {
-    using System;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
-    using Enums;
+    using Craftsman.Services;
+    using Helpers;
 
     public class UserPolicyHandlerIntegrationTests
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName,
-            IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public UserPolicyHandlerIntegrationTests(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.ServicesTestClassPath(testDirectory, $"UserPolicyHandlerTests.cs", projectBaseName);
             var fileText =  WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, projectBaseName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
         {
-            var testFixtureName = Utilities.GetIntegrationTestFixtureName();
+            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
             
             var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
             var policyDomainClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);

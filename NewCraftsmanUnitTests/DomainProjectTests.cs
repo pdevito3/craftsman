@@ -1,8 +1,8 @@
 namespace NewCraftsmanUnitTests;
 
+using Craftsman.Domain;
 using Fakes;
 using FluentAssertions;
-using NewCraftsman.Domain.DomainProjects;
 using NUnit.Framework;
 
 public class DomainProjectTests

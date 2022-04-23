@@ -1,26 +1,28 @@
 ﻿namespace Craftsman.Builders.Bff.Src;
 
-using System;
-using System.IO.Abstractions;
-using System.Linq;
-using Enums;
 using Helpers;
-using Models;
-using static Helpers.ConstMessages;
+using Services;
 
 public class AssetsBuilder
 {
-    public static void CreateFavicon(string spaDirectory, IFileSystem fileSystem)
+    private readonly ICraftsmanUtilities _utilities;
+
+    public AssetsBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
+
+    public void CreateFavicon(string spaDirectory)
     {
         var classPath = ClassPathHelper.BffSpaSrcAssetsClassPath(spaDirectory, "favicon.svg");
         var fileText = GetFaviconTag();
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
-    public static void CreateLogo(string spaDirectory, IFileSystem fileSystem)
+    public void CreateLogo(string spaDirectory)
     {
         var classPath = ClassPathHelper.BffSpaSrcAssetsClassPath(spaDirectory, "logo.svg");
         var fileText = GetLogoTag();
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
     
     public static string GetFaviconTag()

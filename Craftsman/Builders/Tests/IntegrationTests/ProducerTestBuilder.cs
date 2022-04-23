@@ -1,25 +1,28 @@
 ﻿namespace Craftsman.Builders.Tests.IntegrationTests
 {
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Craftsman.Services;
+    using Domain;
+    using Helpers;
 
     public class ProducerTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Producer producer, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ProducerTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Producer producer, string projectBaseName)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{producer.ProducerName}Tests.cs", "EventHandlers", projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, producer, projectBaseName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Producer producer, string projectBaseName)
         {
-            var testFixtureName = Utilities.GetIntegrationTestFixtureName();
+            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
             var producerClassPath = ClassPathHelper.ProducerFeaturesClassPath(srcDirectory, "", producer.DomainDirectory, projectBaseName);
             

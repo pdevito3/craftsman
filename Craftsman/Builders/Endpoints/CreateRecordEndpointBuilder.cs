@@ -1,9 +1,9 @@
 ﻿namespace Craftsman.Builders.Endpoints
 {
-    using System.Collections.Generic;
-    using Enums;
+    using Domain;
+    using Domain.Enums;
     using Helpers;
-    using Models;
+    using Services;
 
     public class CreateRecordEndpointBuilder
     {
@@ -11,10 +11,10 @@
         {
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
-            var readDto = Utilities.GetDtoName(entityName, Dto.Read);
-            var creationDto = Utilities.GetDtoName(entityName, Dto.Creation);
+            var readDto = FileNames.GetDtoName(entityName, Dto.Read);
+            var creationDto = FileNames.GetDtoName(entityName, Dto.Creation);
             var primaryKeyProp = Entity.PrimaryKeyProperty;
-            var addRecordCommandMethodName = Utilities.CommandAddName(entityName);
+            var addRecordCommandMethodName = FileNames.CommandAddName(entityName);
             var singleResponse = $@"{readDto}";
             var addRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
             var creationPropName = $"{lowercaseEntityVariable}ForCreation";
@@ -25,7 +25,7 @@
     [HttpPost(Name = ""Add{entityName}"")]
     public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {creationPropName})
     {{
-        var command = new {Utilities.AddEntityFeatureClassName(entity.Name)}.{addRecordCommandMethodName}({creationPropName});
+        var command = new {FileNames.AddEntityFeatureClassName(entity.Name)}.{addRecordCommandMethodName}({creationPropName});
         var commandResponse = await _mediator.Send(command);
 
         return CreatedAtRoute(""Get{entityName}"",
@@ -38,8 +38,8 @@
         {
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
-            var readDto = Utilities.GetDtoName(entityName, Dto.Read);
-            var creationDto = $"IEnumerable<{Utilities.GetDtoName(entityName, Dto.Creation)}>";
+            var readDto = FileNames.GetDtoName(entityName, Dto.Read);
+            var creationDto = $"IEnumerable<{FileNames.GetDtoName(entityName, Dto.Creation)}>";
             var primaryKeyProp = Entity.PrimaryKeyProperty;
             var responseObj = $@"IEnumerable<{readDto}>";
             var addRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";

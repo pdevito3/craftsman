@@ -1,30 +1,36 @@
 ﻿namespace Craftsman.Builders.Bff.Features.Dynamic.Api;
 
-using System.IO.Abstractions;
-using Enums;
+using Domain.Enums;
 using Helpers;
-using Models;
+using Services;
 
 public class DynamicFeatureAddEntityBuilder
 {
-	public static void CreateApiFile(string spaDirectory, string entityName, string entityPlural, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public DynamicFeatureAddEntityBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+	public void CreateApiFile(string spaDirectory, string entityName, string entityPlural)
 	{
 		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
 			entityPlural, 
 			BffFeatureCategory.Api , 
 			$"{FeatureType.AddRecord.BffApiName(entityName)}.ts");
 		var routesIndexFileText = GetApiText(entityName, entityPlural);
-		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
+		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
 	}
 	
 	public static string GetApiText(string entityName, string entityPlural)
 	{
-		var dtoForCreationName = Utilities.GetDtoName(entityName, Dto.Creation);
-		var readDtoName = Utilities.GetDtoName(entityName, Dto.Read);
+		var dtoForCreationName = FileNames.GetDtoName(entityName, Dto.Creation);
+		var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
 		var entityPluralLowercase = entityPlural.ToLower();
 		var entityUpperFirst = entityName.UppercaseFirstLetter();
-		var keysImport = Utilities.BffApiKeysFilename(entityName);
-		var keyExportName = Utilities.BffApiKeysExport(entityName);
+		var keysImport = FileNames.BffApiKeysFilename(entityName);
+		var keyExportName = FileNames.BffApiKeysExport(entityName);
 		
 		return @$"import {{ api }} from '@/lib/axios';
 import {{ AxiosError }} from 'axios';

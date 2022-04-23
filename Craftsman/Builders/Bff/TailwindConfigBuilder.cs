@@ -1,20 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
     using Helpers;
-    using Models;
-    using static Helpers.ConstMessages;
+    using Services;
 
     public class TailwindConfigBuilder
     {
-        public static void CreateTailwindConfig(string spaDirectory, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public TailwindConfigBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTailwindConfig(string spaDirectory)
         {
             var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "tailwind.config.js");
             var fileText = GetPostCssText();
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         public static string GetPostCssText()

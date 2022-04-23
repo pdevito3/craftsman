@@ -4,7 +4,7 @@
     using System.Runtime.Serialization;
 
     [Serializable]
-    internal class SolutionNotFoundException : Exception
+    internal class SolutionNotFoundException : Exception, ICraftsmanException
     {
         public SolutionNotFoundException() : base($"A solution file was not found in your current durectory. Please make sure you are in the solution directory for your project.")
         {

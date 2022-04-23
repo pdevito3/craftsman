@@ -1,30 +1,34 @@
 ﻿namespace Craftsman.Builders.Features
 {
     using System;
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class CommandAddListBuilder
     {
-        public static void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName, Feature feature, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public CommandAddListBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName, Feature feature)
         {
             var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{feature.Name}.cs", entity.Plural, projectBaseName);
             var fileText = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, feature, projectBaseName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, Feature feature, string projectBaseName)
         {
             var className = feature.Name;
             var addCommandName = feature.Command;
-            var readDto = Utilities.GetDtoName(entity.Name, Dto.Read);
+            var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
             readDto = $"IEnumerable<{readDto}>";
-            var createDto = Utilities.GetDtoName(entity.Name, Dto.Creation);
+            var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
             createDto = $"IEnumerable<{createDto}>";
             var featurePropNameLowerFirst = feature.BatchPropertyName.LowercaseFirstLetter();
 

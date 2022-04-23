@@ -1,29 +1,30 @@
 ﻿namespace Craftsman.Builders.Endpoints
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
-    using Enums;
-    using Exceptions;
     using Helpers;
-    using Models;
+    using Services;
 
-    public static class ControllerBuilder
+    public class ControllerBuilder
     {
-        public static void CreateController(string solutionDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName, bool isProtected, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ControllerBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{Utilities.GetControllerName(entityPlural)}.cs", projectBaseName, "v1");
+            _utilities = utilities;
+        }
+
+        public void CreateController(string solutionDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName, bool isProtected)
+        {
+            var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{FileNames.GetControllerName(entityPlural)}.cs", projectBaseName, "v1");
             var fileText = GetControllerFileText(classPath.ClassNamespace, entityName, entityPlural, solutionDirectory, srcDirectory, projectBaseName, isProtected);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetControllerFileText(string classNamespace, string entityName, string entityPlural, string solutionDirectory, string srcDirectory, string projectBaseName, bool usesJwtAuth)
         {
             // TODO create an attribute factory that can order them how i want and work more dynamically
 
-            var endpointBase = Utilities.EndpointBaseGenerator(entityPlural);
+            var endpointBase = FileNames.EndpointBaseGenerator(entityPlural);
 
             var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
             var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);

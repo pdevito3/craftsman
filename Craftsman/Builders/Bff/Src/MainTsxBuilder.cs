@@ -1,15 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff.Src
 {
-	using System.IO.Abstractions;
 	using Helpers;
+	using Services;
 
 	public class MainTsxBuilder
   {
-    public static void CreateMainTsx(string spaDirectory, IFileSystem fileSystem)
+	  private readonly ICraftsmanUtilities _utilities;
+
+	  public MainTsxBuilder(ICraftsmanUtilities utilities)
+	  {
+		  _utilities = utilities;
+	  }
+
+    public void CreateMainTsx(string spaDirectory)
     {
       var classPath = ClassPathHelper.BffSpaSrcClassPath(spaDirectory, "main.tsx");
       var fileText = GetMainTsxText();
-      Utilities.CreateFile(classPath, fileText, fileSystem);
+      _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetMainTsxText()

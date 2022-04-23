@@ -1,6 +1,6 @@
 namespace Craftsman.Tests.ModelTests
 {
-    using Craftsman.Models;
+    using Domain;
     using FluentAssertions;
     using Xunit;
 

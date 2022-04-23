@@ -1,16 +1,30 @@
 ﻿namespace Craftsman.Helpers
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Models;
-    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Data;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
+    using Domain;
+    using Exceptions;
+    using Newtonsoft.Json;
+    using Services;
     using YamlDotNet.Serialization;
 
-    public class FileParsingHelper
+    public interface IFileParsingHelper : ICraftsmanService
     {
+        bool RunInitialTemplateParsingGuards(string filePath);
+    }
+
+    public class FileParsingHelper : IFileParsingHelper
+    {
+        private readonly IFileSystem _fileSystem;
+
+        public FileParsingHelper(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+        
         public static T GetTemplateFromFile<T>(string filePath)
         {
             var ext = Path.GetExtension(filePath);
@@ -47,9 +61,9 @@
             return validExtensions.Contains(Path.GetExtension(filePath));
         }
 
-        public static bool RunInitialTemplateParsingGuards(string filePath)
+        public bool RunInitialTemplateParsingGuards(string filePath)
         {
-            if (!File.Exists(filePath))
+            if (!_fileSystem.File.Exists(filePath))
             {
                 throw new FileNotFoundException();
             }

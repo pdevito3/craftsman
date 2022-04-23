@@ -1,159 +1,154 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders;
+
+using System.IO;
+using System.IO.Abstractions;
+using Domain;
+using Dtos;
+using ExtensionBuilders;
+using Helpers;
+using Projects;
+using Services;
+
+public class SolutionBuilder
 {
-    using Craftsman.Builders.Dtos;
-    using Craftsman.Builders.Projects;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System;
-    using System.IO;
-    using System.IO.Abstractions;
-    using AuthServer;
-    using ScaffoldingExtensions;
-    using static Helpers.ConsoleWriter;
+    private readonly IFileSystem _fileSystem;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class SolutionBuilder
+    public SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
     {
-        public static void BuildSolution(string solutionDirectory, string projectName, IFileSystem fileSystem)
-        {
-            try
-            {
-                fileSystem.Directory.CreateDirectory(solutionDirectory);
-                Utilities.ExecuteProcess("dotnet", @$"new sln -n {projectName}", solutionDirectory);
-                BuildSharedKernelProject(solutionDirectory, fileSystem);
-            }
-            catch (Exception e)
-            {
-                WriteError(e.Message);
-                throw;
-
-                // custom error that you must be using the .net 6 sdk?
-            }
-        }
-
-        public static void AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, string dbProvider, string dbName, string projectBaseName, bool addJwtAuth, IFileSystem fileSystem)
-        {
-            // add webapi first so it is default project
-            BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, dbName, fileSystem);
-            BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
-            BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName, addJwtAuth);
-            BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName);
-            BuildUnitTestProject(solutionDirectory, testDirectory, projectBaseName);
-        }
-
-        private static void BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, string dbProvider, string dbName, IFileSystem fileSystem)
-        {
-            var solutionFolder = srcDirectory.GetSolutionFolder(solutionDirectory);
-            var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
-
-            WebApiCsProjBuilder.CreateWebApiCsProj(srcDirectory, projectBaseName, dbProvider);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{webApiProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
-
-            // base folders
-            Directory.CreateDirectory(ClassPathHelper.ControllerClassPath(srcDirectory, "", projectBaseName, "v1").ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-
-            // additional from what was other projects
-            Directory.CreateDirectory(ClassPathHelper.DtoClassPath(solutionDirectory, "", "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.ExceptionsClassPath(solutionDirectory, "").ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.SharedDtoClassPath(solutionDirectory, "").ClassDirectory);
-            Directory.CreateDirectory(ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-
-            WebApiServiceExtensionsBuilder.CreateApiVersioningServiceExtension(srcDirectory, projectBaseName, fileSystem);
-            WebApiServiceExtensionsBuilder.CreateCorsServiceExtension(srcDirectory, projectBaseName, fileSystem);
-            WebApiServiceExtensionsBuilder.CreateWebApiServiceExtension(srcDirectory, projectBaseName, fileSystem);
-            OpenTelemetryExtensionsBuilder.CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider, fileSystem);
-            ErrorHandlerFilterAttributeBuilder.CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName, fileSystem);
-            AppSettingsBuilder.CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
-            WebApiLaunchSettingsBuilder.CreateLaunchSettings(srcDirectory, projectBaseName, fileSystem);
-            ProgramBuilder.CreateWebApiProgram(srcDirectory, projectBaseName, fileSystem);
-            StartupBuilder.CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName, fileSystem);
-            LocalConfigBuilder.CreateLocalConfig(srcDirectory, projectBaseName, fileSystem);
-            LoggingConfigurationBuilder.CreateWebApiConfigFile(srcDirectory, projectBaseName, fileSystem);
-            InfrastructureServiceRegistrationBuilder.CreateInfrastructureServiceExtension(srcDirectory, projectBaseName, fileSystem);
-            
-            BasePaginationParametersBuilder.CreateBasePaginationParameters(solutionDirectory, projectBaseName, fileSystem);
-            PagedListBuilder.CreatePagedList(srcDirectory, projectBaseName, fileSystem);
-            CoreExceptionsBuilder.CreateExceptions(solutionDirectory, projectBaseName, fileSystem);
-            
-            Utilities.AddProjectReference(webApiProjectClassPath, @"..\..\..\SharedKernel\SharedKernel.csproj");
-        }
-
-        private static void BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)
-        {
-            var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
-            var testProjectClassPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "", projectBaseName);
-
-            IntegrationTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName, addJwtAuth);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
-        }
-
-        private static void BuildFunctionalTestProject(string solutionDirectory, string testDirectory, string projectBaseName, bool addJwtAuth)
-        {
-            var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
-            var testProjectClassPath = ClassPathHelper.FunctionalTestProjectRootClassPath(testDirectory, "", projectBaseName);
-
-            FunctionalTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName, addJwtAuth);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
-        }
-
-        private static void BuildSharedTestProject(string solutionDirectory, string testDirectory, string projectBaseName)
-        {
-            var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
-            var testProjectClassPath = ClassPathHelper.SharedTestProjectRootClassPath(testDirectory, "", projectBaseName);
-
-            SharedTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
-        }
-
-        private static void BuildUnitTestProject(string solutionDirectory, string testDirectory, string projectBaseName)
-        {
-            var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
-            var testProjectClassPath = ClassPathHelper.UnitTestProjectRootClassPath(testDirectory, "", projectBaseName);
-
-            UnitTestsCsProjBuilder.CreateTestsCsProj(testDirectory, projectBaseName);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
-        }
-
-        public static void BuildSharedKernelProject(string solutionDirectory, IFileSystem fileSystem)
-        {
-            var projectExists = File.Exists(Path.Combine(solutionDirectory, "SharedKernel", "SharedKernel.csproj"));
-            if (projectExists) return;
-            
-            var projectClassPath = ClassPathHelper.SharedKernelProjectRootClassPath(solutionDirectory, "");
-            SharedKernelCsProjBuilder.CreateMessagesCsProj(solutionDirectory, fileSystem);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
-        }
-
-        public static void BuildAuthServerProject(string solutionDirectory, string authServerProjectName, IFileSystem fileSystem)
-        {
-            var projectExists = File.Exists(Path.Combine(solutionDirectory, authServerProjectName, $"{authServerProjectName}.csproj"));
-            if (projectExists) return;
-            
-            var projectClassPath = ClassPathHelper.AuthServerProjectClassPath(solutionDirectory, authServerProjectName);
-            AuthServerProjBuilder.CreateProject(solutionDirectory, authServerProjectName, fileSystem);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
-        }
-
-        public static void BuildBffProject(string solutionDirectory, string projectName, int? proxyPort, IFileSystem fileSystem)
-        {
-            var projectExists = File.Exists(Path.Combine(solutionDirectory, projectName, $"{projectName}.csproj"));
-            if (projectExists) return;
-            
-            var projectClassPath = ClassPathHelper.BffProjectClassPath(solutionDirectory, projectName);
-            BffProjBuilder.CreateProject(solutionDirectory, projectName, proxyPort, fileSystem);
-            Utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
-        }
+        _fileSystem = fileSystem;
+        _utilities = utilities;
+    }
+    
+    public void BuildSolution(string solutionDirectory, string projectName)
+    {
+        _fileSystem.Directory.CreateDirectory(solutionDirectory);
+        _utilities.ExecuteProcess("dotnet", @$"new sln -n {projectName}", solutionDirectory);
+        BuildSharedKernelProject(solutionDirectory);
     }
 
-    public static class Extensions
+    public void AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, DbProvider dbProvider, string dbName, string projectBaseName, bool addJwtAuth)
     {
-        public static string GetSolutionFolder(this string projectDir, string solutionDir)
-        {
-            var folder = projectDir.Replace(solutionDir, "");
+        // add webapi first so it is default project
+        BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, dbName);
+        BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName);
+        BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName);
+        BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName);
+        BuildUnitTestProject(solutionDirectory, testDirectory, projectBaseName);
+    }
 
-            return folder.Length > 0 ? folder.Substring(1) : folder;
-        }
+    private void BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, DbProvider dbProvider, string dbName)
+    {
+        var solutionFolder = srcDirectory.GetSolutionFolder(solutionDirectory);
+        var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
+
+        new WebApiCsProjBuilder(_utilities).CreateWebApiCsProj(srcDirectory, projectBaseName, dbProvider);
+        _utilities.ExecuteProcess("dotnet", $@"sln add ""{webApiProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
+
+        // base folders
+        _fileSystem.Directory.CreateDirectory(ClassPathHelper.ControllerClassPath(srcDirectory, "", projectBaseName, "v1").ClassDirectory);
+        _fileSystem.Directory.CreateDirectory(ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+        _fileSystem.Directory.CreateDirectory(ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+
+        // additional from what was other projects
+        _fileSystem.Directory.CreateDirectory(ClassPathHelper.DtoClassPath(solutionDirectory, "", "", projectBaseName).ClassDirectory);
+        _fileSystem.Directory.CreateDirectory(ClassPathHelper.ExceptionsClassPath(solutionDirectory, "").ClassDirectory);
+        _fileSystem.Directory.CreateDirectory(ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+        _fileSystem.Directory.CreateDirectory(ClassPathHelper.SharedDtoClassPath(solutionDirectory, "").ClassDirectory);
+        _fileSystem.Directory.CreateDirectory(ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
+
+        new ApiVersioningExtensionsBuilder(_utilities).CreateApiVersioningServiceExtension(srcDirectory, projectBaseName);
+        new CorsExtensionsBuilder(_utilities).CreateCorsServiceExtension(srcDirectory, projectBaseName);
+        new WebApiServiceExtensionsBuilder(_utilities).CreateWebApiServiceExtension(srcDirectory, projectBaseName);
+        new OpenTelemetryExtensionsBuilder(_utilities).CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider);
+        new ErrorHandlerFilterAttributeBuilder(_utilities).CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName);
+        new WebApiLaunchSettingsBuilder(_utilities).CreateLaunchSettings(srcDirectory, projectBaseName);
+        new ProgramBuilder(_utilities).CreateWebApiProgram(srcDirectory, projectBaseName);
+        new StartupBuilder(_utilities).CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName);
+        new LocalConfigBuilder(_utilities).CreateLocalConfig(srcDirectory, projectBaseName);
+        new LoggingConfigurationBuilder(_utilities).CreateWebApiConfigFile(srcDirectory, projectBaseName);
+        new InfrastructureServiceRegistrationBuilder(_utilities).CreateInfrastructureServiceExtension(srcDirectory, projectBaseName);
+        
+        new BasePaginationParametersBuilder(_utilities).CreateBasePaginationParameters(solutionDirectory);
+        new PagedListBuilder(_utilities).CreatePagedList(srcDirectory, projectBaseName);
+        new CoreExceptionsBuilder(_utilities, _fileSystem).CreateExceptions(solutionDirectory, projectBaseName);
+        
+        _utilities.AddProjectReference(webApiProjectClassPath, @"..\..\..\SharedKernel\SharedKernel.csproj");
+    }
+
+    private void BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName)
+    {
+        var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
+        var testProjectClassPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "", projectBaseName);
+
+        new IntegrationTestsCsProjBuilder(_utilities).CreateTestsCsProj(testDirectory, projectBaseName);
+        _utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
+    }
+
+    private void BuildFunctionalTestProject(string solutionDirectory, string testDirectory, string projectBaseName)
+    {
+        var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
+        var testProjectClassPath = ClassPathHelper.FunctionalTestProjectRootClassPath(testDirectory, "", projectBaseName);
+
+        new FunctionalTestsCsProjBuilder(_utilities).CreateTestsCsProj(testDirectory, projectBaseName);
+        _utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
+    }
+
+    private void BuildSharedTestProject(string solutionDirectory, string testDirectory, string projectBaseName)
+    {
+        var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
+        var testProjectClassPath = ClassPathHelper.SharedTestProjectRootClassPath(testDirectory, "", projectBaseName);
+
+        new SharedTestsCsProjBuilder(_utilities).CreateTestsCsProj(testDirectory, projectBaseName);
+        _utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
+    }
+
+    private void BuildUnitTestProject(string solutionDirectory, string testDirectory, string projectBaseName)
+    {
+        var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
+        var testProjectClassPath = ClassPathHelper.UnitTestProjectRootClassPath(testDirectory, "", projectBaseName);
+
+        new UnitTestsCsProjBuilder(_utilities).CreateTestsCsProj(testDirectory, projectBaseName);
+        _utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
+    }
+
+    public void BuildSharedKernelProject(string solutionDirectory)
+    {
+        var projectExists = File.Exists(Path.Combine(solutionDirectory, "SharedKernel", "SharedKernel.csproj"));
+        if (projectExists) return;
+        
+        var projectClassPath = ClassPathHelper.SharedKernelProjectRootClassPath(solutionDirectory, "");
+        new SharedKernelCsProjBuilder(_utilities).CreateSharedKernelCsProj(solutionDirectory);
+        _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
+    }
+
+    public void BuildAuthServerProject(string solutionDirectory, string authServerProjectName)
+    {
+        var projectExists = File.Exists(Path.Combine(solutionDirectory, authServerProjectName, $"{authServerProjectName}.csproj"));
+        if (projectExists) return;
+        
+        var projectClassPath = ClassPathHelper.AuthServerProjectClassPath(solutionDirectory, authServerProjectName);
+        new AuthServerProjBuilder(_utilities).CreateProject(solutionDirectory, authServerProjectName);
+        _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
+    }
+    
+    public void BuildBffProject(string solutionDirectory, string projectName, int? proxyPort)
+    {
+        var projectExists = File.Exists(Path.Combine(solutionDirectory, projectName, $"{projectName}.csproj"));
+        if (projectExists) return;
+        
+        var projectClassPath = ClassPathHelper.BffProjectClassPath(solutionDirectory, projectName);
+        new BffProjBuilder(_utilities).CreateProject(solutionDirectory, projectName, proxyPort);
+        _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
+    }
+}
+
+public static class Extensions
+{
+    public static string GetSolutionFolder(this string projectDir, string solutionDir)
+    {
+        var folder = projectDir.Replace(solutionDir, "");
+
+        return folder.Length > 0 ? folder.Substring(1) : folder;
     }
 }

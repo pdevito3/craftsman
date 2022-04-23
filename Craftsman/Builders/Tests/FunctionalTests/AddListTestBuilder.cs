@@ -1,22 +1,26 @@
 ﻿namespace Craftsman.Builders.Tests.FunctionalTests
 {
     using System;
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.Collections.Generic;
     using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class AddListTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, Entity entity, Feature feature, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public AddListTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, Entity entity, Feature feature, string projectBaseName)
         {
             var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"{feature.Name}Tests.cs", entity.Plural, projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, testDirectory, classPath, entity, feature.IsProtected, feature, projectBaseName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, Entity entity, bool isProtected, Feature feature, string projectBaseName)
@@ -57,11 +61,11 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string CreateEntityTest(Entity entity, Feature feature, bool isProtected)
         {
-            var createDto = Utilities.GetDtoName(entity.Name, Dto.Creation);
+            var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
             var fakeEntityForCreation = $"Fake{createDto}";
             var fakeEntityVariableName = $"fake{entity.Name}List";
             var fakeParentEntity = $"fake{feature.ParentEntity}";
-            var fakeParentCreationDto = Utilities.FakerName(Utilities.GetDtoName(feature.ParentEntity, Dto.Creation));
+            var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(feature.ParentEntity, Dto.Creation));
 
             var testName = $"create_{entity.Name.ToLower()}_list_returns_created_using_valid_dto";
             testName += isProtected ? "_and_valid_auth_credentials" : "";
@@ -88,7 +92,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string NotFoundCreationTest(Entity entity, Feature feature, bool isProtected)
         {
-            var createDto = Utilities.GetDtoName(entity.Name, Dto.Creation);
+            var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
             var fakeEntityForCreation = $"Fake{createDto}";
             var fakeEntityVariableName = $"fake{entity.Name}List";
 
@@ -115,7 +119,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string InvalidCreationTest(Entity entity, Feature feature, bool isProtected)
         {
-            var createDto = Utilities.GetDtoName(entity.Name, Dto.Creation);
+            var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
             var fakeEntityForCreation = $"Fake{createDto}";
             var fakeEntityVariableName = $"fake{entity.Name}List";
 
@@ -141,7 +145,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string CreateEntityTestUnauthorized(Entity entity)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
 
             return $@"
@@ -164,7 +168,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         private static string CreateEntityTestForbidden(Entity entity)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
+            var fakeEntity = FileNames.FakerName(entity.Name);
             var fakeEntityVariableName = $"fake{entity.Name}";
 
             return $@"

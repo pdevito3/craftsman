@@ -1,15 +1,22 @@
 ﻿namespace Craftsman.Builders.AuthServer
 {
-  using System.IO.Abstractions;
   using Helpers;
+  using Services;
 
-    public class AuthServerTailwindConfigBuilder
+  public class AuthServerTailwindConfigBuilder
     {
-        public static void CreateTailwindConfig(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+      private readonly ICraftsmanUtilities _utilities;
+
+      public AuthServerTailwindConfigBuilder(ICraftsmanUtilities utilities)
+      {
+        _utilities = utilities;
+      }
+
+        public void CreateTailwindConfig(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerTailwindConfigClassPath(projectDirectory, "tailwind.config.js", authServerProjectName);
             var fileText = GetPostCssText();
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         public static string GetPostCssText()

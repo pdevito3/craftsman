@@ -1,27 +1,31 @@
 ﻿namespace Craftsman.Builders.Tests.UnitTests
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
-    using Enums;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class CreateEntityUnitTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public CreateEntityUnitTestBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"{Utilities.CreateEntityUnitTestName(entityName)}.cs", entityPlural, projectBaseName);
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"{FileNames.CreateEntityUnitTestName(entityName)}.cs", entityPlural, projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, srcDirectory, classPath, entityName, entityPlural, projectBaseName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string entityName, string entityPlural, string projectBaseName)
         {
             var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
-            var createDto = Utilities.GetDtoName(entityName, Dto.Creation);
+            var createDto = FileNames.GetDtoName(entityName, Dto.Creation);
             var fakeEntityForCreation = $"Fake{createDto}";
 
             return @$"namespace {classPath.ClassNamespace};

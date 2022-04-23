@@ -1,19 +1,11 @@
-﻿namespace Craftsman.Tests.FileTextTests
+﻿namespace Craftsman.Tests.BuilderTests
 {
     using System.Collections.Generic;
-    using Craftsman.Builders;
-    using Craftsman.Models;
-    using Craftsman.Tests.Fakes;
+    using Builders;
+    using Domain;
     using FluentAssertions;
     using Xunit;
-    using System.IO.Abstractions.TestingHelpers;
-    using AutoBogus;
-    using Bogus;
-    using Craftsman.Helpers;
-    using Craftsman.Exceptions;
 
-    
-    
     public class EntityBuilderTests
     {
         [Fact]

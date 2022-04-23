@@ -1,5 +1,6 @@
 namespace NewCraftsmanUnitTests;
 
+using Craftsman.Domain;
 using Fakes;
 using FluentAssertions;
 using NUnit.Framework;
@@ -15,7 +16,7 @@ public class BoundedContextTests
         FluentActions
             .Invoking( () =>
             {
-                BoundedContext.Create(dto);
+                ApiTemplate.Create(dto);
             })
             .Should()
             .Throw<FluentValidation.ValidationException>();

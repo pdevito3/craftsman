@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    public class InvalidEndpointException : Exception
+    public class InvalidEndpointException : Exception, ICraftsmanException
     {
         public InvalidEndpointException() : base($"The given endpoint was not recognized.")
         {

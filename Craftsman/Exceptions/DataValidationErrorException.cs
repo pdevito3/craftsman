@@ -1,8 +1,8 @@
 ﻿namespace Craftsman.Exceptions
 {
-    using FluentValidation.Results;
     using System;
     using System.Collections.Generic;
+    using FluentValidation.Results;
 
     [Serializable]
     internal class DataValidationErrorException : Exception

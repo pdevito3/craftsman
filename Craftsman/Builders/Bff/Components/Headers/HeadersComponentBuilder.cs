@@ -1,20 +1,26 @@
 ﻿namespace Craftsman.Builders.Bff.Components.Headers;
 
-using System.IO.Abstractions;
-using Enums;
 using Helpers;
+using Services;
 
 public class HeadersComponentBuilder
 {
-    public static void CreateHeaderComponentItems(string spaDirectory, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public HeadersComponentBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+    public void CreateHeaderComponentItems(string spaDirectory)
     {
       var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Headers", "index.ts");
       var indexFileText = GetHeaderIndexText();
-      Utilities.CreateFile(indexCassPath, indexFileText, fileSystem);
+      _utilities.CreateFile(indexCassPath, indexFileText);
       
       var privateHeaderClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Headers", "PrivateHeader.tsx");
       var privateHeaderFileText = GetPrivateHeaderText();
-      Utilities.CreateFile(privateHeaderClassPath, privateHeaderFileText, fileSystem);
+      _utilities.CreateFile(privateHeaderClassPath, privateHeaderFileText);
     }
 
     public static string GetHeaderIndexText()

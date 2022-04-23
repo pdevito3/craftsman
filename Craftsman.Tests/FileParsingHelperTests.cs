@@ -1,7 +1,7 @@
 ﻿namespace Craftsman.Tests
 {
     using Craftsman.Helpers;
-    using Craftsman.Models;
+    using Domain;
     using FluentAssertions;
     using System;
     using System.Collections.Generic;

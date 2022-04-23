@@ -1,15 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff.Src
 {
-  using System.IO.Abstractions;
   using Helpers;
+  using Services;
 
   public class CustomCssBuilder
   {
-    public static void CreateCustomCss(string spaDirectory, IFileSystem fileSystem)
+    private readonly ICraftsmanUtilities _utilities;
+
+    public CustomCssBuilder(ICraftsmanUtilities utilities)
+    {
+      _utilities = utilities;
+    }
+
+    public void CreateCustomCss(string spaDirectory)
     {
       var classPath = ClassPathHelper.BffSpaSrcClassPath(spaDirectory, "custom.css");
       var fileText = GetCustomCssText();
-      Utilities.CreateFile(classPath, fileText, fileSystem);
+      _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetCustomCssText()

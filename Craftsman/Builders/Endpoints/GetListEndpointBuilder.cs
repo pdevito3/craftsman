@@ -1,9 +1,9 @@
 ﻿namespace Craftsman.Builders.Endpoints
 {
-    using System.Collections.Generic;
-    using Enums;
+    using Domain;
+    using Domain.Enums;
     using Helpers;
-    using Models;
+    using Services;
 
     public class GetListEndpointBuilder
     {
@@ -12,9 +12,9 @@
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var entityNamePlural = entity.Plural;
-            var readDto = Utilities.GetDtoName(entityName, Dto.Read);
-            var readParamDto = Utilities.GetDtoName(entityName, Dto.ReadParamaters);
-            var queryListMethodName = Utilities.QueryListName(entityName);
+            var readDto = FileNames.GetDtoName(entityName, Dto.Read);
+            var readParamDto = FileNames.GetDtoName(entityName, Dto.ReadParamaters);
+            var queryListMethodName = FileNames.QueryListName(entityName);
             var listResponse = $@"IEnumerable<{readDto}>";
             var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
             var getListAuthorization = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
@@ -24,7 +24,7 @@
     [HttpGet(Name = ""{getListEndpointName}"")]
     public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
     {{
-        var query = new {Utilities.GetEntityListFeatureClassName(entity.Name)}.{queryListMethodName}({lowercaseEntityVariable}ParametersDto);
+        var query = new {FileNames.GetEntityListFeatureClassName(entity.Name)}.{queryListMethodName}({lowercaseEntityVariable}ParametersDto);
         var queryResponse = await _mediator.Send(query);
 
         var paginationMetadata = new

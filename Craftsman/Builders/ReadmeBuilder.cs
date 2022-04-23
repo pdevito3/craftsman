@@ -1,28 +1,22 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class ReadmeBuilder
     {
-        public static void CreateReadme(string solutionDirectory, string domainName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ReadmeBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateReadme(string solutionDirectory, string domainName)
         {
             var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"README.md");
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetReadmeFileText(domainName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = GetReadmeFileText(domainName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetReadmeFileText(string domainName)

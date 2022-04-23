@@ -1,7 +1,7 @@
 ﻿namespace Craftsman.Tests.Fakes
 {
-    using Craftsman.Models;
     using System.Collections.Generic;
+    using Domain;
 
     public static class CannedGenerator
     {
@@ -28,7 +28,7 @@
             return new ApiTemplate()
             {
                 ProjectName = "BespokedBikes.Api",
-                DbContext = new TemplateDbContext()
+                DbContextConfig = new DbContextConfig()
                 {
                     ContextName = "BespokedBikesDbContext",
                     DatabaseName = "BespokedBikes",

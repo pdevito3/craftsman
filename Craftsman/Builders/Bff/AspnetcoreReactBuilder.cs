@@ -1,20 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff
 {
-  using System;
-  using System.IO.Abstractions;
-  using System.Linq;
-  using Enums;
-  using Helpers;
-  using Models;
-  using static Helpers.ConstMessages;
+	using Helpers;
+	using Services;
 
-public class AspnetcoreReactBuilder
+	public class AspnetcoreReactBuilder
 {
-	public static void CreateAspnetcoreReact(string spaDirectory, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public AspnetcoreReactBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+	public void CreateAspnetcoreReact(string spaDirectory)
     {
       var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "aspnetcore-react.js");
       var fileText = GetAspnetcoreReactText();
-      Utilities.CreateFile(classPath, fileText, fileSystem);
+      _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetAspnetcoreReactText()

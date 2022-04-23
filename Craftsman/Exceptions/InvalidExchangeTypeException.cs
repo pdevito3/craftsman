@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    public class InvalidExchangeTypeException : Exception
+    public class InvalidExchangeTypeException : Exception, ICraftsmanException
     {
         public InvalidExchangeTypeException() : base($"The given message broker was not recognized.")
         {

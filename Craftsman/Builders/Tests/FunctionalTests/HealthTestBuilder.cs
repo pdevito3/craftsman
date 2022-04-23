@@ -1,19 +1,23 @@
 ﻿namespace Craftsman.Builders.Tests.FunctionalTests
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class HealthTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public HealthTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"HealthCheckTests.cs", "HealthChecks", projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, classPath, projectBaseName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, string projectBaseName)

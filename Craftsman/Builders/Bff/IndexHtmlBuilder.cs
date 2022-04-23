@@ -1,20 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff
 {
-  using System;
-  using System.IO.Abstractions;
-  using System.Linq;
-  using Enums;
-  using Helpers;
-  using Models;
-  using static Helpers.ConstMessages;
+	using Helpers;
+	using Services;
 
-  public class IndexHtmlBuilder
+	public class IndexHtmlBuilder
   {
-    public static void CreateIndexHtml(string spaDirectory, string headTitle, IFileSystem fileSystem)
+	  private readonly ICraftsmanUtilities _utilities;
+
+	  public IndexHtmlBuilder(ICraftsmanUtilities utilities)
+	  {
+		  _utilities = utilities;
+	  }
+
+    public void CreateIndexHtml(string spaDirectory, string headTitle)
     {
       var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "index.html");
       var fileText = GetIndexHtmlText(headTitle);
-      Utilities.CreateFile(classPath, fileText, fileSystem);
+      _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetIndexHtmlText(string headTitle)

@@ -1,9 +1,9 @@
 ﻿namespace Craftsman.Builders.Endpoints
 {
-    using System.Collections.Generic;
-    using Enums;
+    using Domain;
+    using Domain.Enums;
     using Helpers;
-    using Models;
+    using Services;
 
     public class GetRecordEndpointBuilder
     {
@@ -12,9 +12,9 @@
             var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var entityNamePlural = entity.Plural;
-            var readDto = Utilities.GetDtoName(entityName, Dto.Read);
+            var readDto = FileNames.GetDtoName(entityName, Dto.Read);
             var primaryKeyProp = Entity.PrimaryKeyProperty;
-            var queryRecordMethodName = Utilities.QueryRecordName(entityName);
+            var queryRecordMethodName = FileNames.QueryRecordName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
             var singleResponse = $@"{readDto}";
             var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";
@@ -26,7 +26,7 @@
     [HttpGet(""{{{lowercasePrimaryKey}:guid}}"", Name = ""{getRecordEndpointName}"")]
     public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercasePrimaryKey})
     {{
-        var query = new {Utilities.GetEntityFeatureClassName(entity.Name)}.{queryRecordMethodName}({lowercasePrimaryKey});
+        var query = new {FileNames.GetEntityFeatureClassName(entity.Name)}.{queryRecordMethodName}({lowercasePrimaryKey});
         var queryResponse = await _mediator.Send(query);
 
         return Ok(queryResponse);

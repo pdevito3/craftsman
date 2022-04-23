@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    class InvalidFileTypeException : Exception
+    class InvalidFileTypeException : Exception, ICraftsmanException
     {
         public InvalidFileTypeException() : base($"Invalid file type. You need to use a json or yml file.")
         {

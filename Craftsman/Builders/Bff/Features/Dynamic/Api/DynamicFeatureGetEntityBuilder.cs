@@ -1,29 +1,35 @@
 ﻿namespace Craftsman.Builders.Bff.Features.Dynamic.Api;
 
-using System.IO.Abstractions;
-using Enums;
+using Domain.Enums;
 using Helpers;
-using Models;
+using Services;
 
 public class DynamicFeatureGetEntityBuilder
 {
-	public static void CreateApiFile(string spaDirectory, string entityName, string entityPlural, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public DynamicFeatureGetEntityBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+	public void CreateApiFile(string spaDirectory, string entityName, string entityPlural)
 	{
 		var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
 			entityPlural, 
 			BffFeatureCategory.Api , 
 			$"{FeatureType.GetRecord.BffApiName(entityName)}.ts");
 		var fileText = GetApiText(entityName, entityPlural);
-		Utilities.CreateFile(classPath, fileText, fileSystem);
+		_utilities.CreateFile(classPath, fileText);
 	}
 	
 	public static string GetApiText(string entityName, string entityPlural)
 	{
 		var entityPluralLowercase = entityPlural.ToLower();
-		var readDtoName = Utilities.GetDtoName(entityName, Dto.Read);
+		var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
 		var entityUpperFirst = entityName.UppercaseFirstLetter();
-		var keysImport = Utilities.BffApiKeysFilename(entityName);
-		var keyExportName = Utilities.BffApiKeysExport(entityName);
+		var keysImport = FileNames.BffApiKeysFilename(entityName);
+		var keyExportName = FileNames.BffApiKeysExport(entityName);
 		
 		return @$"import {{ api }} from '@/lib/axios';
 import {{ AxiosResponse }} from 'axios';

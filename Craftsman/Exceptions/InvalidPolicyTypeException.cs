@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    public class InvalidPolicyTypeException : Exception
+    public class InvalidPolicyTypeException : Exception, ICraftsmanException
     {
         public InvalidPolicyTypeException() : base($"The given endpoint was not recognized.")
         {

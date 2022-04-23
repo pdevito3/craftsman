@@ -1,42 +1,48 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using FluentAssertions.Common;
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
-    using System.Linq;
-    using System.Text;
+    using Domain;
+    using FluentAssertions.Common;
+    using Helpers;
     using Humanizer;
+    using Services;
 
     public class SwaggerBuilder
     {
-        public static void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+        private readonly IFileSystem _fileSystem;
+
+        public SwaggerBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+        {
+            _utilities = utilities;
+            _fileSystem = fileSystem;
+        }
+
+        public void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string projectBaseName)
         {
             if (swaggerConfig.IsSameOrEqualTo(new SwaggerConfig())) return;
             
-            AddSwaggerServiceExtension(solutionDirectory, projectBaseName, swaggerConfig, projectName, addJwtAuthentication, policyName, fileSystem);
-            WebApiAppExtensionsBuilder.CreateSwaggerWebApiAppExtension(solutionDirectory, swaggerConfig, addJwtAuthentication, projectBaseName, fileSystem);
+            AddSwaggerServiceExtension(solutionDirectory, projectBaseName, swaggerConfig, projectName, addJwtAuthentication, policyName);
+            new WebApiAppExtensionsBuilder(_utilities).CreateSwaggerWebApiAppExtension(solutionDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
             UpdateWebApiCsProjSwaggerSettings(solutionDirectory, projectBaseName);
         }
 
-        public static void RegisterSwaggerInStartup(string srcDirectory, string projectBaseName = "")
+        public void RegisterSwaggerInStartup(string srcDirectory, string projectBaseName = "")
         {
-            var classPath = Utilities.GetStartupClassPath(srcDirectory, projectBaseName);
+            var classPath = ClassPathHelper.StartupClassPath(srcDirectory, projectBaseName);
 
-            if (!Directory.Exists(classPath.ClassDirectory))
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
 
-            if (!File.Exists(classPath.FullClassPath))
+            if (!_fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var tempPath = $"{classPath.FullClassPath}temp";
-            using (var input = File.OpenText(classPath.FullClassPath))
+            using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
             {
-                using (var output = new StreamWriter(tempPath))
+                using var output = _fileSystem.File.CreateText(tempPath);
                 {
                     string line;
                     while (null != (line = input.ReadLine()))
@@ -57,15 +63,15 @@
             }
 
             // delete the old file and set the name of the new one to the original name
-            File.Delete(classPath.FullClassPath);
-            File.Move(tempPath, classPath.FullClassPath);
+            _fileSystem.File.Delete(classPath.FullClassPath);
+            _fileSystem.File.Move(tempPath, classPath.FullClassPath);
         }
 
-        public static void AddSwaggerServiceExtension(string srcDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, IFileSystem fileSystem)
+        public void AddSwaggerServiceExtension(string srcDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetSwaggerServiceExtensionName()}.cs", projectBaseName);
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetSwaggerServiceExtensionName()}.cs", projectBaseName);
             var fileText = GetSwaggerServiceExtensionText(classPath.ClassNamespace, swaggerConfig, projectName, addJwtAuthentication, policyName);
-            Utilities.CreateFile(classPath,fileText, fileSystem);
+            _utilities.CreateFile(classPath,fileText);
         }
 
         public static string GetSwaggerServiceExtensionText(string classNamespace, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName)

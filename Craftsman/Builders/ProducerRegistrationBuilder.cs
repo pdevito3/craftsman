@@ -1,36 +1,32 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System;
-    using System.IO;
-    using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class ProducerRegistrationBuilder
     {
-        public static void CreateProducerRegistration(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ProducerRegistrationBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateProducerRegistration(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
         {
             var className = $@"{producer.EndpointRegistrationMethodName}Registration";
             var classPath = ClassPathHelper.WebApiProducersServiceExtensionsClassPath(srcDirectory, $"{className}.cs", projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = "";
+            var fileText = "";
 
             if (ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct
                 || ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Topic)
-                data = GetDirectOrTopicProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
+                fileText = GetDirectOrTopicProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
             else
-                data = GetFanoutProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
+                fileText = GetFanoutProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
 
-            fs.Write(Encoding.UTF8.GetBytes(data));
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetDirectOrTopicProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)

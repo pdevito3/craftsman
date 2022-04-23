@@ -1,26 +1,33 @@
 ﻿namespace Craftsman.Builders.Bff.Features.Home;
 
-using System.IO.Abstractions;
-using Enums;
+using Domain.Enums;
 using Helpers;
+using Services;
 
 public class HomeFeatureRoutesBuilder
 {
-	public static void CreateHomeFeatureRoutes(string spaDirectory, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public HomeFeatureRoutesBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+	public void CreateHomeFeatureRoutes(string spaDirectory)
 	{
 		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
 			"Home", 
 			BffFeatureCategory.Routes , 
 			"index.ts");
 		var routesIndexFileText = GetHomeFeatureRoutesIndexText();
-		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
+		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
 
 		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
 			"Home", 
 			BffFeatureCategory.Routes , 
 			"Home.tsx");
 		var routesLoginFileText = GetHomeFeatureRoutesLoginText();
-		Utilities.CreateFile(routesLoginClassPath, routesLoginFileText, fileSystem);
+		_utilities.CreateFile(routesLoginClassPath, routesLoginFileText);
 	}
 	
 	public static string GetHomeFeatureRoutesIndexText()

@@ -1,28 +1,34 @@
 ﻿namespace Craftsman.Builders.Tests.Utilities
 {
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System;
-    using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
+    using Services;
 
     public class IntegrationTestFixtureModifier
     {
-        public static void AddMassTransit(string testDirectory, string projectBaseName)
+        private readonly IFileSystem _fileSystem;
+
+        public IntegrationTestFixtureModifier(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+
+        public void AddMassTransit(string testDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
 
-            if (!Directory.Exists(classPath.ClassDirectory))
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
-
-            if (!File.Exists(classPath.FullClassPath))
+            
+            if (!_fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var usingsAdded = false;
             var tempPath = $"{classPath.FullClassPath}temp";
-            using (var input = File.OpenText(classPath.FullClassPath))
+            using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
             {
-                using var output = new StreamWriter(tempPath);
+                using var output = _fileSystem.File.CreateText(tempPath);
                 string line;
                 while (null != (line = input.ReadLine()))
                 {
@@ -128,23 +134,23 @@ using MassTransit;";
             File.Move(tempPath, classPath.FullClassPath);
         }
 
-        public static void AddMTConsumer(string testDirectory, string consumerName, string domainDirectory, string projectBaseName, string srcDirectory)
+        public void AddMTConsumer(string testDirectory, string consumerName, string domainDirectory, string projectBaseName, string srcDirectory)
         {
             var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
 
-            if (!Directory.Exists(classPath.ClassDirectory))
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
                 throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
 
-            if (!File.Exists(classPath.FullClassPath))
+            if (!_fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
             var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"", domainDirectory, projectBaseName);
 
             var tempPath = $"{classPath.FullClassPath}temp";
             var hasUsingForConsumerNamespace = false;
-            using (var input = File.OpenText(classPath.FullClassPath))
+            using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
             {
-                using var output = new StreamWriter(tempPath);
+                using var output = _fileSystem.File.CreateText(tempPath);
                 string line;
                 while (null != (line = input.ReadLine()))
                 {
@@ -164,14 +170,14 @@ using MassTransit;";
             }
 
             // delete the old file and set the name of the new one to the original name
-            File.Delete(classPath.FullClassPath);
-            File.Move(tempPath, classPath.FullClassPath);
+            _fileSystem.File.Delete(classPath.FullClassPath);
+            _fileSystem.File.Move(tempPath, classPath.FullClassPath);
 
             if (!hasUsingForConsumerNamespace)
             {
-                using (var input = File.OpenText(classPath.FullClassPath))
+                using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
                 {
-                    using var output = new StreamWriter(tempPath);
+                    using var output = _fileSystem.File.CreateText(tempPath);
                     string line;
                     while (null != (line = input.ReadLine()))
                     {
@@ -184,8 +190,8 @@ using MassTransit;";
                 }
 
                 // delete the old file and set the name of the new one to the original name
-                File.Delete(classPath.FullClassPath);
-                File.Move(tempPath, classPath.FullClassPath);
+                _fileSystem.File.Delete(classPath.FullClassPath);
+                _fileSystem.File.Move(tempPath, classPath.FullClassPath);
             }
         }
     }

@@ -1,17 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff
 {
-    using System.IO.Abstractions;
-    using System.Text;
-    using Exceptions;
     using Helpers;
+    using Services;
 
     public class BffReadmeBuilder
     {
-        public static void CreateReadme(string projectDirectory, string projectName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public BffReadmeBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateReadme(string projectDirectory, string projectName)
         {
             var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"README.md");
             var fileText = GetReadmeFileText(projectName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetReadmeFileText(string projectName)

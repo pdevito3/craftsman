@@ -1,20 +1,25 @@
 ﻿namespace Craftsman.Builders.Tests.FunctionalTests
 {
     using System;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Domain;
+    using Helpers;
+    using Services;
 
     public class GetEntityListTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public GetEntityListTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName)
         {
             var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"Get{entity.Name}ListTests.cs", entity.Plural, projectBaseName);
             var fileText = WriteTestFileText(solutionDirectory, testDirectory, classPath, entity, isProtected, projectBaseName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string solutionDirectory, string testDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)

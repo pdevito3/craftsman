@@ -1,16 +1,23 @@
 namespace Craftsman.Builders.Bff;
 
-using System.IO.Abstractions;
+using Domain;
 using Helpers;
-using Models;
+using Services;
 
 public class LaunchSettingsBuilder
 {
-    public static void CreateLaunchSettings(string projectDirectory, string projectName, BffTemplate template, IFileSystem fileSystem)
+    private readonly ICraftsmanUtilities _utilities;
+
+    public LaunchSettingsBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
+
+    public void CreateLaunchSettings(string projectDirectory, string projectName, BffTemplate template)
     {
         var classPath = ClassPathHelper.BffLaunchSettingsClassPath(projectDirectory, $"launchSettings.json", projectName);
         var fileText = GetLaunchSettingsText(template);
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetLaunchSettingsText(BffTemplate template)

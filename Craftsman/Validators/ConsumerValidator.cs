@@ -1,6 +1,6 @@
 ﻿namespace Craftsman.Validators
 {
-    using Craftsman.Models;
+    using Domain;
     using FluentValidation;
 
     public class ConsumerValidator : AbstractValidator<Consumer>

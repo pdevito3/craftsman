@@ -1,20 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff
 {
-  using System;
-  using System.IO.Abstractions;
-  using System.Linq;
-  using Enums;
-  using Helpers;
-  using Models;
-  using static Helpers.ConstMessages;
+	using Helpers;
+	using Services;
 
-  public class PackageJsonBuilder
+	public class PackageJsonBuilder
   {
-    public static void CreatePackageJson(string spaDirectory, string projectName, IFileSystem fileSystem)
+	  private readonly ICraftsmanUtilities _utilities;
+
+	  public PackageJsonBuilder(ICraftsmanUtilities utilities)
+	  {
+		  _utilities = utilities;
+	  }
+
+    public void CreatePackageJson(string spaDirectory, string projectName)
     {
       var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "package.json");
       var fileText = GetPackageJsonText(projectName);
-      Utilities.CreateFile(classPath, fileText, fileSystem);
+      _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetPackageJsonText(string projectName)

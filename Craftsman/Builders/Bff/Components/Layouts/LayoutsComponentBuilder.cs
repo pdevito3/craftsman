@@ -1,23 +1,30 @@
 ﻿namespace Craftsman.Builders.Bff.Components.Layouts;
 
-using System.IO.Abstractions;
 using Helpers;
+using Services;
 
 public class LayoutComponentBuilder
 {
-    public static void CreateLayoutComponentItems(string spaDirectory, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public LayoutComponentBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+    public void CreateLayoutComponentItems(string spaDirectory)
     {
       var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "index.ts");
       var indexFileText = GetLayoutIndexText();
-      Utilities.CreateFile(indexCassPath, indexFileText, fileSystem);
+      _utilities.CreateFile(indexCassPath, indexFileText);
       
       var privateLayoutClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "PrivateLayout.tsx");
       var privateLayoutFileText = GetPrivateLayoutText();
-      Utilities.CreateFile(privateLayoutClassPath, privateLayoutFileText, fileSystem);
+      _utilities.CreateFile(privateLayoutClassPath, privateLayoutFileText);
       
       var publicLayoutClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "PublicLayout.tsx");
       var publicLayoutFileText = GetPublicLayoutText();
-      Utilities.CreateFile(publicLayoutClassPath, publicLayoutFileText, fileSystem);
+      _utilities.CreateFile(publicLayoutClassPath, publicLayoutFileText);
     }
 
     public static string GetLayoutIndexText()

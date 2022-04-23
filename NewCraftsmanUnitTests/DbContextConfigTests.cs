@@ -1,9 +1,8 @@
 namespace NewCraftsmanUnitTests;
 
+using Craftsman.Domain;
 using Fakes;
 using FluentAssertions;
-using NewCraftsman.Domain;
-using NewCraftsman.Domain.DbContextConfigs;
 using NUnit.Framework;
 
 public class DbContextConfigTests

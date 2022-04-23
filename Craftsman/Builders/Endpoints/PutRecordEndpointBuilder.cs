@@ -1,9 +1,9 @@
 ﻿namespace Craftsman.Builders.Endpoints
 {
-    using System.Collections.Generic;
-    using Enums;
+    using Domain;
+    using Domain.Enums;
     using Helpers;
-    using Models;
+    using Services;
 
     public class PutRecordEndpointBuilder
     {
@@ -12,9 +12,9 @@
             var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
             var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
-            var updateDto = Utilities.GetDtoName(entityName, Dto.Update);
+            var updateDto = FileNames.GetDtoName(entityName, Dto.Update);
             var primaryKeyProp = Entity.PrimaryKeyProperty;
-            var updateRecordCommandMethodName = Utilities.CommandUpdateName(entityName);
+            var updateRecordCommandMethodName = FileNames.CommandUpdateName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
             var updateRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
 
@@ -23,7 +23,7 @@
     [HttpPut(""{{{lowercasePrimaryKey}:guid}}"", Name = ""Update{entityName}"")]
     public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercasePrimaryKey}, {updateDto} {lowercaseEntityVariable})
     {{
-        var command = new {Utilities.UpdateEntityFeatureClassName(entity.Name)}.{updateRecordCommandMethodName}({lowercasePrimaryKey}, {lowercaseEntityVariable});
+        var command = new {FileNames.UpdateEntityFeatureClassName(entity.Name)}.{updateRecordCommandMethodName}({lowercasePrimaryKey}, {lowercaseEntityVariable});
         await _mediator.Send(command);
 
         return NoContent();

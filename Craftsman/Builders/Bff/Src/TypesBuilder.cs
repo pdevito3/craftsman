@@ -1,20 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff.Src;
 
-using System;
-using System.IO.Abstractions;
-using System.Linq;
-using Enums;
 using Helpers;
-using Models;
-using static Helpers.ConstMessages;
+using Services;
 
 public class TypesBuilder
 {
-    public static void CreateApiTypes(string spaDirectory, IFileSystem fileSystem)
+    private readonly ICraftsmanUtilities _utilities;
+
+    public TypesBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
+
+    public void CreateApiTypes(string spaDirectory)
     {
         var classPath = ClassPathHelper.BffSpaSrcApiTypesClassPath(spaDirectory, "index.ts");
         var fileText = GetApiTypesText();
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
     
     public static string GetApiTypesText()

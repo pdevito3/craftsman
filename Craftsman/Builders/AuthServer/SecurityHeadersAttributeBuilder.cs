@@ -1,20 +1,23 @@
 namespace Craftsman.Builders.AuthServer
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
     using Helpers;
-    using Models;
+    using Services;
     using static Helpers.ConstMessages;
 
     public class SecurityHeadersAttributeBuilder
     {
-        public static void CreateAttribute(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public SecurityHeadersAttributeBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateAttribute(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerAttributesClassPath(projectDirectory, "SecurityHeadersAttribute.cs", authServerProjectName);
             var fileText = GetTestUserText(classPath.ClassNamespace);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         public static string GetTestUserText(string classNamespace)

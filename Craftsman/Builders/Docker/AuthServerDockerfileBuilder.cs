@@ -1,15 +1,22 @@
 namespace Craftsman.Builders.Docker;
 
-using System.IO.Abstractions;
 using Helpers;
+using Services;
 
-public static class AuthServerDockerfileBuilder
+public class AuthServerDockerfileBuilder
 {
-    public static void CreateAuthServerDotNetDockerfile(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+    private readonly ICraftsmanUtilities _utilities;
+
+    public AuthServerDockerfileBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
+
+    public void CreateAuthServerDotNetDockerfile(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Dockerfile", projectBaseName);
         var fileText = GetAuthServerDockerfileText(projectBaseName, true, false);
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
 
     private static string GetAuthServerDockerfileText(string projectBaseName, bool addNodeInstall, bool addSharedKernel)

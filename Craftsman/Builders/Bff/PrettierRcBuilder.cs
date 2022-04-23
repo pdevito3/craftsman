@@ -1,20 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
     using Helpers;
-    using Models;
-    using static Helpers.ConstMessages;
+    using Services;
 
     public class PrettierRcBuilder
     {
-        public static void CreatePrettierRc(string spaDirectory, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public PrettierRcBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreatePrettierRc(string spaDirectory)
         {
             var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, ".prettierrc");
             var fileText = GetPrettierRcText();
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         public static string GetPrettierRcText()

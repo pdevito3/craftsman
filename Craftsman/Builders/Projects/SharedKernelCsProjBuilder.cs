@@ -1,18 +1,22 @@
 ﻿namespace Craftsman.Builders.Projects
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class SharedKernelCsProjBuilder
     {
-        public static void CreateMessagesCsProj(string solutionDirectory, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public SharedKernelCsProjBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+        
+        public void CreateSharedKernelCsProj(string solutionDirectory)
         {
             var classPath = ClassPathHelper.SharedKernelProjectClassPath(solutionDirectory);
             var fileText = GetMessagesCsProjFileText();
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetMessagesCsProjFileText()

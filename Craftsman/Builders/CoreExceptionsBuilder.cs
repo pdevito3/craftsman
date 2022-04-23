@@ -1,44 +1,51 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using System.IO;
     using System.IO.Abstractions;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class CoreExceptionsBuilder
     {
-        public static void CreateExceptions(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+        private readonly IFileSystem _fileSystem;
+
+        public CoreExceptionsBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+        {
+            _utilities = utilities;
+            _fileSystem = fileSystem;
+        }
+
+        public void CreateExceptions(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+                _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-            CreateNotFoundException(solutionDirectory, projectBaseName, fileSystem);
-            CreateValidationException(solutionDirectory, projectBaseName, fileSystem);
-            CreateForbiddenException(solutionDirectory, projectBaseName, fileSystem);
+            CreateNotFoundException(solutionDirectory, projectBaseName);
+            CreateValidationException(solutionDirectory, projectBaseName);
+            CreateForbiddenException(solutionDirectory, projectBaseName);
         }
 
-        public static void CreateValidationException(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public void CreateValidationException(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ValidationException.cs");
             var fileText = GetValidationExceptionFileText(classPath.ClassNamespace);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
-        public static void CreateNotFoundException(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public void CreateNotFoundException(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"NotFoundException.cs");
             var fileText = GetNotFoundExceptionFileText(classPath.ClassNamespace);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
-        public static void CreateForbiddenException(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        public void CreateForbiddenException(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ForbiddenException.cs");
             var fileText = GetForbiddenExceptionFileText(classPath.ClassNamespace);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetNotFoundExceptionFileText(string classNamespace)
@@ -47,7 +54,7 @@
 {{
     using System;
 
-    public class NotFoundException : Exception
+    public class NotFoundException : Exception, ICraftsmanException
     {{
         public NotFoundException()
             : base()
@@ -79,7 +86,7 @@
     using System;
     using System.Globalization;
 
-    public class ForbiddenAccessException : Exception
+    public class ForbiddenAccessException : Exception, ICraftsmanException
     {{
         public ForbiddenAccessException() : base() {{ }}
     }}
@@ -95,7 +102,7 @@
     using System.Linq;
     using System;
 
-    public class ValidationException : Exception
+    public class ValidationException : Exception, ICraftsmanException
     {{
         public ValidationException()
             : base(""One or more validation failures have occurred."")

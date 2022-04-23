@@ -1,7 +1,7 @@
 ﻿namespace Craftsman.Tests.FileTextTests
 {
     using Craftsman.Builders;
-    using Craftsman.Models;
+    using Domain;
     using Craftsman.Tests.Fakes;
     using FluentAssertions;
     using Xunit;

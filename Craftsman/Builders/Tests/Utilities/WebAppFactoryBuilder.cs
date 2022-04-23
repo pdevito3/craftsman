@@ -1,27 +1,23 @@
 ﻿namespace Craftsman.Builders.Tests.Utilities
 {
-    using Craftsman.Helpers;
-    using Craftsman.Models;
     using System.IO;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class WebAppFactoryBuilder
     {
-        public static void CreateWebAppFactory(string solutionDirectory, string projectName, string dbContextName, bool addJwtAuthentication)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public WebAppFactoryBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, $"{Utilities.GetWebHostFactoryName()}.cs", projectName);
+            _utilities = utilities;
+        }
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                File.Delete(classPath.FullClassPath); // saves me from having to make a remover!
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = GetWebAppFactoryFileText(classPath, dbContextName, solutionDirectory, projectName, addJwtAuthentication);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+        public void CreateWebAppFactory(string solutionDirectory, string projectName, string dbContextName, bool addJwtAuthentication)
+        {
+            var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, $"{FileNames.GetWebHostFactoryName()}.cs", projectName);
+            var fileText = GetWebAppFactoryFileText(classPath, dbContextName, solutionDirectory, projectName, addJwtAuthentication);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string GetWebAppFactoryFileText(ClassPath classPath, string dbContextName, string solutionDirectory, string projectBaseName, bool addJwtAuthentication)

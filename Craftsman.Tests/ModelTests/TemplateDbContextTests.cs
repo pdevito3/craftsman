@@ -1,8 +1,7 @@
 namespace Craftsman.Tests.ModelTests
 {
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
-    using Craftsman.Models;
+    using Domain;
     using FluentAssertions;
     using System;
     using Xunit;
@@ -17,7 +16,7 @@ namespace Craftsman.Tests.ModelTests
         [InlineData("SqlServer", DbProvider.SqlServer)]
         public void DbProviderAssignedAccurately(string providerString, DbProvider expectedProvider)
         {
-            var context = new TemplateDbContext()
+            var context = new DbContextConfig()
             {
                 Provider = providerString
             };
@@ -31,7 +30,7 @@ namespace Craftsman.Tests.ModelTests
         [InlineData("hjgujafha", DbProvider.SqlServer)]
         public void DbProviderThrowsExceptionWhenInvalid(string providerString, DbProvider expectedProvider)
         {
-            Action act = () => new TemplateDbContext()
+            Action act = () => new DbContextConfig()
             {
                 Provider = providerString
             };

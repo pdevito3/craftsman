@@ -1,20 +1,22 @@
 ﻿namespace Craftsman.Builders.Projects
 {
-    using System;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
-    using Enums;
+    using Helpers;
+    using Services;
 
     public class AuthServerProjBuilder
     {
-        public static void CreateProject(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public AuthServerProjBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+        
+        public void CreateProject(string solutionDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var fileText = ProjectFileText();
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string ProjectFileText()

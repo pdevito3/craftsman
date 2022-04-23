@@ -1,19 +1,26 @@
 ﻿namespace Craftsman.Builders.Bff.Components.Navigation;
 
-using System.IO.Abstractions;
 using Helpers;
+using Services;
 
 public class NavigationComponentBuilder
 {
-    public static void CreateNavigationComponentItems(string spaDirectory, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public NavigationComponentBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+    public void CreateNavigationComponentItems(string spaDirectory)
     {
       var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Navigation", "index.ts");
       var indexFileText = GetNavigationIndexText();
-      Utilities.CreateFile(indexCassPath, indexFileText, fileSystem);
+      _utilities.CreateFile(indexCassPath, indexFileText);
       
       var privateNavigationClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Navigation", "PrivateSideNav.tsx");
       var privateNavigationFileText = GetPrivateNavigationText();
-      Utilities.CreateFile(privateNavigationClassPath, privateNavigationFileText, fileSystem);
+      _utilities.CreateFile(privateNavigationClassPath, privateNavigationFileText);
     }
 
     public static string GetNavigationIndexText()

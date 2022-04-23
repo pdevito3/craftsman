@@ -1,22 +1,26 @@
 ﻿namespace Craftsman.Builders.Tests.Utilities
 {
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using System;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Domain;
+    using Helpers;
+    using Services;
 
     public class IntegrationTestFixtureBuilder
     {
-        public static void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, string dbName, string provider, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public IntegrationTestFixtureBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestFixture.cs", projectBaseName);
-            var fileText = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, dbName, provider);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities = utilities;
         }
 
-        public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName, string dbName, string provider)
+        public void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, DbProvider provider)
+        {
+            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestFixture.cs", projectBaseName);
+            var fileText = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, provider);
+            _utilities.CreateFile(classPath, fileText);
+        }
+
+        public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName, DbProvider provider)
         {
             var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
@@ -24,12 +28,12 @@
             var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(solutionDirectory, "", projectBaseName);
             var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(solutionDirectory, "", projectBaseName);
 
-            var usingStatement = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
+            var usingStatement = provider == DbProvider.Postgres
                 ? $@"
 using Npgsql;"
                 : null;
 
-            var checkpoint = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
+            var checkpoint = provider == DbProvider.Postgres
                 ? $@"_checkpoint = new Checkpoint
         {{
             TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
@@ -41,7 +45,7 @@ using Npgsql;"
             TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
         }};";
 
-            var resetString = Enum.GetName(typeof(DbProvider), DbProvider.Postgres) == provider
+            var resetString = provider == DbProvider.Postgres
                 ? $@"using var conn = new NpgsqlConnection(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
         await conn.OpenAsync();
         await _checkpoint.Reset(conn);"

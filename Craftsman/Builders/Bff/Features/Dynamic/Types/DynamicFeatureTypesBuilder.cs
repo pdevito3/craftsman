@@ -1,28 +1,35 @@
 ﻿namespace Craftsman.Builders.Bff.Features.Dynamic.Types;
 
-using System.IO.Abstractions;
-using Enums;
+using Domain;
+using Domain.Enums;
 using Helpers;
-using Models;
+using Services;
 
 public class DynamicFeatureTypesBuilder
 {
-	public static void CreateDynamicFeatureTypes(string spaDirectory, string entityName, string entityPlural, List<BffEntityProperty> props, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public DynamicFeatureTypesBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+	public void CreateDynamicFeatureTypes(string spaDirectory, string entityName, string entityPlural, List<BffEntityProperty> props)
 	{
 		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
 			entityPlural, 
 			BffFeatureCategory.Types , 
 			"index.ts");
 		var routesIndexFileText = GetAuthFeatureRoutesIndexText(entityName, props);
-		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
+		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
 	}
 	
 	public static string GetAuthFeatureRoutesIndexText(string entityName, List<BffEntityProperty> props)
 	{
-		var readDtoName = Utilities.GetDtoName(entityName, Dto.Read);
-		var dtoForCreationName = Utilities.GetDtoName(entityName, Dto.Creation);
-		var dtoForUpdateName = Utilities.GetDtoName(entityName, Dto.Update);
-		var dtoForManipulationName = Utilities.GetDtoName(entityName, Dto.Manipulation);
+		var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
+		var dtoForCreationName = FileNames.GetDtoName(entityName, Dto.Creation);
+		var dtoForUpdateName = FileNames.GetDtoName(entityName, Dto.Update);
+		var dtoForManipulationName = FileNames.GetDtoName(entityName, Dto.Manipulation);
 
 		var propList = TypePropsBuilder(props);
 		

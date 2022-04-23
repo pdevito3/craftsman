@@ -1,16 +1,15 @@
 ﻿namespace Craftsman.Builders.Dtos
 {
-    using Craftsman.Enums;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using Craftsman.Models.Interfaces;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public static class DtoFileTextGenerator
     {
-        public static string GetReadParameterDtoText(string solutionDirectory, string classNamespace, Entity entity, Dto dto, string projectBaseName)
+        public static string GetReadParameterDtoText(string solutionDirectory, string classNamespace, Entity entity, Dto dto)
         {
             var sharedDtoClassPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, "");
 
@@ -18,7 +17,7 @@
 {{
     using {sharedDtoClassPath.ClassNamespace};
 
-    public class {Utilities.GetDtoName(entity.Name, dto)} : BasePaginationParameters
+    public class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
     {{
         public string Filters {{ get; set; }}
         public string SortOrder {{ get; set; }}
@@ -37,14 +36,14 @@
 
             var inheritanceString = "";
             if (dto is Dto.Creation or Dto.Update)
-                inheritanceString = $": {Utilities.GetDtoName(entity.Name, Dto.Manipulation)}";
+                inheritanceString = $": {FileNames.GetDtoName(entity.Name, Dto.Manipulation)}";
 
             return @$"namespace {dtoClassPath.ClassNamespace}
 {{
     using System.Collections.Generic;
     using System;
 
-    public {abstractString}class {Utilities.GetDtoName(entity.Name, dto)} {inheritanceString}
+    public {abstractString}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanceString}
     {{
     {propString}
     }}

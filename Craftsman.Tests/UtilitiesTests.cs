@@ -1,6 +1,7 @@
 ﻿namespace Craftsman.Tests
 {
     using System;
+    using Domain;
     using FluentAssertions;
     using Helpers;
     using Models;
