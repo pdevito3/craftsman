@@ -1,21 +1,28 @@
 ﻿namespace Craftsman.Builders.Bff.Features.Dynamic.Api;
 
-using System.IO.Abstractions;
-using Enums;
+using Domain.Enums;
 using Helpers;
+using Services;
 
 public class DynamicFeatureApiIndexBuilder
 {
-	public static void CreateDynamicFeatureApiIndex(string spaDirectory, string entityName, string entityPlural, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public DynamicFeatureApiIndexBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+	public void CreateDynamicFeatureApiIndex(string spaDirectory, string entityName, string entityPlural)
 	{
 		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityPlural, BffFeatureCategory.Api , "index.ts");
 		var routesIndexFileText = GetDynamicFeatureApisIndexText(entityName);
-		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
+		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
 	}
 	
 	public static string GetDynamicFeatureApisIndexText(string entityName)
 	{
-		var keysImport = Utilities.BffApiKeysFilename(entityName);
+		var keysImport = FileNames.BffApiKeysFilename(entityName);
 	    return @$"export * from './{keysImport}';";
 	}
 }

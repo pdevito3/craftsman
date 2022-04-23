@@ -1,26 +1,21 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class InfrastructureServiceRegistrationBuilder
     {
-        public static void CreateInfrastructureServiceExtension(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public InfrastructureServiceRegistrationBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{Utilities.GetInfraRegistrationName()}.cs", projectBaseName);
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using var fs = fileSystem.File.Create(classPath.FullClassPath);
-            var data = "";
-            data = GetServiceRegistrationText(srcDirectory, projectBaseName, classPath.ClassNamespace);
-            fs.Write(Encoding.UTF8.GetBytes(data));
+            _utilities = utilities;
+        }
+        public void CreateInfrastructureServiceExtension(string srcDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetInfraRegistrationName()}.cs", projectBaseName);
+            var fileText = GetServiceRegistrationText(srcDirectory, projectBaseName, classPath.ClassNamespace);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetServiceRegistrationText(string srcDirectory, string projectBaseName, string classNamespace)

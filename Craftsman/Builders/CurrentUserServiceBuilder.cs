@@ -1,20 +1,21 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class CurrentUserServiceBuilder
     {
-        public static void GetCurrentUserService(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public CurrentUserServiceBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+        public void GetCurrentUserService(string srcDirectory, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "CurrentUserService.cs", projectBaseName);
             var fileText = GetCurrentUserServiceText(classPath.ClassNamespace);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         private static string GetCurrentUserServiceText(string classNamespace)

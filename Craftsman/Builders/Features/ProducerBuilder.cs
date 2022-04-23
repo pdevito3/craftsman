@@ -1,33 +1,29 @@
 ﻿namespace Craftsman.Builders.Features
 {
     using System;
-    using System.IO;
-    using System.Text;
-    using Exceptions;
+    using Domain;
     using Helpers;
-    using Models;
+    using Services;
 
     public class ProducerBuilder
     {
-        public static void CreateProducerFeature(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ProducerBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.ProducerFeaturesClassPath(srcDirectory, $"{producer.ProducerName}.cs", producer.DomainDirectory, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = GetProducerRegistration(classPath.ClassNamespace, producer, solutionDirectory, srcDirectory, projectBaseName);
-
-            fs.Write(Encoding.UTF8.GetBytes(data));
+            _utilities = utilities;
         }
 
-        public static string GetProducerRegistration(string classNamespace, Producer producer, string solutionDirectory, string srcDirectory, string projectBaseName)
+        public void CreateProducerFeature(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
         {
-            var context = Utilities.GetDbContext(srcDirectory, projectBaseName);
+            var classPath = ClassPathHelper.ProducerFeaturesClassPath(srcDirectory, $"{producer.ProducerName}.cs", producer.DomainDirectory, projectBaseName);
+            var fileText = GetProducerRegistration(classPath.ClassNamespace, producer, solutionDirectory, srcDirectory, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
+        }
+
+        public string GetProducerRegistration(string classNamespace, Producer producer, string solutionDirectory, string srcDirectory, string projectBaseName)
+        {
+            var context = _utilities.GetDbContext(srcDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
             var dbReadOnly = producer.UsesDb ? @$"{Environment.NewLine}        private readonly {context} _db;" : "";
             var dbProp = producer.UsesDb ? @$"{context} db, " : "";

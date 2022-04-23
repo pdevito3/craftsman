@@ -2,27 +2,35 @@
 {
     using System;
     using System.IO;
-    using Enums;
-    using Helpers;
+    using System.IO.Abstractions;
+    using Domain.Enums;
+    using Services;
 
     public class DynamicFeatureApiIndexModifier
     {
-        public static void AddFeature(string spaDirectory, string entityName, string entityPlural, FeatureType type)
+        private readonly IFileSystem _fileSystem;
+
+        public DynamicFeatureApiIndexModifier(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+
+        public void AddFeature(string spaDirectory, string entityName, string entityPlural, FeatureType type)
         {
             var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityPlural, BffFeatureCategory.Api , "index.ts");
-            var featureFilenameBase = Utilities.GetBffApiFilenameBase(entityName, type);
+            var featureFilenameBase = FileNames.GetBffApiFilenameBase(entityName, type);
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+                _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-            if (!File.Exists(classPath.FullClassPath))
+            if (!_fileSystem.File.Exists(classPath.FullClassPath))
                 throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
-            var tempPath = $"{classPath.FullClassPath}temp";
             var exportIsAddedToFile = false;
-            using (var input = File.OpenText(classPath.FullClassPath))
+            var tempPath = $"{classPath.FullClassPath}temp";
+            using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
             {
-                using (var output = new StreamWriter(tempPath))
+                using var output = _fileSystem.File.CreateText(tempPath);
                 {
                     string line;
                     while (null != (line = input.ReadLine()))
@@ -40,8 +48,8 @@
             }
 
             // delete the old file and set the name of the new one to the original name
-            File.Delete(classPath.FullClassPath);
-            File.Move(tempPath, classPath.FullClassPath);
+            _fileSystem.File.Delete(classPath.FullClassPath);
+            _fileSystem.File.Move(tempPath, classPath.FullClassPath);
         }
     }
 }

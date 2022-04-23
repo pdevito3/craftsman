@@ -1,8 +1,7 @@
 namespace Craftsman.Tests.ModelTests
 {
-    using Craftsman.Models;
+    using Domain;
     using Craftsman.Tests.Fakes;
-    using Enums;
     using Exceptions;
     using FluentAssertions;
     using NSubstitute.ExceptionExtensions;

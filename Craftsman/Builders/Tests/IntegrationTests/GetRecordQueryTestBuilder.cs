@@ -1,43 +1,38 @@
 ﻿namespace Craftsman.Builders.Tests.IntegrationTests
 {
-    using System;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
-    using System.Text;
-    using Enums;
+    using Craftsman.Services;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class GetRecordQueryTestBuilder
     {
-        public static void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public GetRecordQueryTestBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
         {
             var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{entity.Name}QueryTests.cs", entity.Plural, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
         {
-            var featureName = Utilities.GetEntityFeatureClassName(entity.Name);
-            var testFixtureName = Utilities.GetIntegrationTestFixtureName();
-            var queryName = Utilities.QueryRecordName(entity.Name);
+            var featureName = FileNames.GetEntityFeatureClassName(entity.Name);
+            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
+            var queryName = FileNames.QueryRecordName(entity.Name);
 
             var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
             var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
             var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
             var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
-            var foreignEntityUsings = Utilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
+            var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
             return @$"namespace {classPath.ClassNamespace};
 
@@ -59,13 +54,13 @@ public class {queryName}Tests : TestBase
 
         private static string GetTest(string queryName, Entity entity, string featureName)
         {
-            var fakeEntity = Utilities.FakerName(entity.Name);
-            var fakeCreationDto = Utilities.FakerName(Utilities.GetDtoName(entity.Name, Dto.Creation));
+            var fakeEntity = FileNames.FakerName(entity.Name);
+            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
             var fakeEntityVariableName = $"fake{entity.Name}One";
             var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
             var pkName = Entity.PrimaryKeyProperty.Name;
 
-            var fakeParent = Utilities.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+            var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
             
             return $@"[Test]
     public async Task can_get_existing_{entity.Name.ToLower()}_with_accurate_props()
@@ -86,7 +81,7 @@ public class {queryName}Tests : TestBase
 
         private static string GetWithoutKeyTest(string queryName, Entity entity, string featureName)
         {
-            var badId = Utilities.GetRandomId(Entity.PrimaryKeyProperty.Type);
+            var badId = IntegrationTestServices.GetRandomId(Entity.PrimaryKeyProperty.Type);
 
             return badId == "" ? "" : $@"
 

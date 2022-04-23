@@ -1,52 +1,61 @@
 ﻿namespace Craftsman.Helpers
 {
-    using Spectre.Console;
     using System;
     using System.Diagnostics;
     using System.Runtime.InteropServices;
+    using Spectre.Console;
 
-    public static class ConsoleWriter
+    public interface IConsoleWriter
     {
-        public static void WriteInfo(string message)
+        void WriteInfo(string message);
+        void WriteError(string message);
+        void WriteWarning(string message);
+        void WriteHelpHeader(string message);
+        void WriteHelpText(string message);
+        void WriteLogMessage(string message);
+        void StarGithubRequest();
+    }
+
+    public class ConsoleWriter : IConsoleWriter
+    {
+        private readonly IAnsiConsole _console;
+
+        public ConsoleWriter(IAnsiConsole console)
         {
-            AnsiConsole.MarkupLine($"[bold mediumpurple3_1]{message.EscapeMarkup()}[/]");
+            _console = console;
+        }
+        
+        public void WriteInfo(string message)
+        {
+            _console.MarkupLine($"[bold mediumpurple3_1]{message.EscapeMarkup()}[/]");
         }
 
-        public static void WriteError(string message)
+        public void WriteError(string message)
         {
-            AnsiConsole.MarkupLine($"[bold indianred1]ERROR: {message.EscapeMarkup()}[/]");
+            _console.MarkupLine($"[bold indianred1]ERROR: {message.EscapeMarkup()}[/]");
         }
 
-        public static void WriteWarning(string message)
+        public void WriteWarning(string message)
         {
-            AnsiConsole.MarkupLine($"[bold olive]WARNING: {message.EscapeMarkup()}[/]");
+            _console.MarkupLine($"[bold olive]WARNING: {message.EscapeMarkup()}[/]");
         }
 
-        public static void WriteHelpHeader(string message)
+        public void WriteHelpHeader(string message)
         {
-            AnsiConsole.MarkupLine($"[bold olive]{message.EscapeMarkup()}[/]");
+            _console.MarkupLine($"[bold olive]{message.EscapeMarkup()}[/]");
         }
 
-        public static void WriteHelpText(string message)
+        public void WriteHelpText(string message)
         {
-            AnsiConsole.MarkupLine($"[green3]{message.EscapeMarkup()}[/]");
+            _console.MarkupLine($"[green3]{message.EscapeMarkup()}[/]");
         }
 
-        public static void WriteLogMessage(string message)
+        public void WriteLogMessage(string message)
         {
-            AnsiConsole.MarkupLine($"[grey]{message}.[/]");
+            _console.MarkupLine($"[grey]{message}.[/]");
         }
 
-        public static void WriteGettingStarted(string projectName)
-        {
-            WriteHelpText(@$"{Environment.NewLine}
-    To get started:");
-            WriteHelpText(@$"
-        cd {projectName}
-        dotnet run --project webapi{Environment.NewLine}");
-        }
-
-        public static void StarGithubRequest()
+        public void StarGithubRequest()
         {
             WriteHelpText(@$"{Environment.NewLine}Would you like to show some love by starring the repo? {Emoji.Known.Star} (y/n) [n]");
             var starRepo = Console.ReadKey();

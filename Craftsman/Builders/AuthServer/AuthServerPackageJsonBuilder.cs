@@ -1,20 +1,22 @@
 ﻿namespace Craftsman.Builders.AuthServer
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
     using Helpers;
-    using Models;
-    using static Helpers.ConstMessages;
+    using Services;
 
     public class AuthServerPackageJsonBuilder
     {
-        public static void CreatePackageJson(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public AuthServerPackageJsonBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreatePackageJson(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerPackageJsonClassPath(projectDirectory, "package.json", authServerProjectName);
             var fileText = GetPackageJsonText();
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         public static string GetPackageJsonText()

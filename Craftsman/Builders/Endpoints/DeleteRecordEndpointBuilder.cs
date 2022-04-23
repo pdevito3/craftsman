@@ -1,8 +1,8 @@
 ﻿namespace Craftsman.Builders.Endpoints
 {
-    using System.Collections.Generic;
+    using Domain;
     using Helpers;
-    using Models;
+    using Services;
 
     public class DeleteRecordEndpointBuilder
     {
@@ -11,7 +11,7 @@
             var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
             var entityName = entity.Name;
             var primaryKeyProp = Entity.PrimaryKeyProperty;
-            var deleteRecordCommandMethodName = Utilities.CommandDeleteName(entityName);
+            var deleteRecordCommandMethodName = FileNames.CommandDeleteName(entityName);
             var pkPropertyType = primaryKeyProp.Type;
             var deleteRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
 
@@ -20,7 +20,7 @@
     [HttpDelete(""{{{lowercasePrimaryKey}:guid}}"", Name = ""Delete{entityName}"")]
     public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercasePrimaryKey})
     {{
-        var command = new {Utilities.DeleteEntityFeatureClassName(entity.Name)}.{deleteRecordCommandMethodName}({lowercasePrimaryKey});
+        var command = new {FileNames.DeleteEntityFeatureClassName(entity.Name)}.{deleteRecordCommandMethodName}({lowercasePrimaryKey});
         await _mediator.Send(command);
 
         return NoContent();

@@ -1,31 +1,24 @@
 ﻿namespace Craftsman.Builders.Projects
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using System.IO;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class FunctionalTestsCsProjBuilder
     {
-        public static void CreateTestsCsProj(string solutionDirectory, string projectBaseName, bool addJwtAuth)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public FunctionalTestsCsProjBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.FunctionalTestProjectClassPath(solutionDirectory, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetTestsCsProjFileText(addJwtAuth, solutionDirectory, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            _utilities = utilities;
         }
 
-        public static string GetTestsCsProjFileText(bool addJwtAuth, string solutionDirectory, string projectBaseName)
+        public void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.FunctionalTestProjectClassPath(solutionDirectory, projectBaseName);
+            _utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName));
+        }
+
+        public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName)
         {
             var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
             var sharedTestClassPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);

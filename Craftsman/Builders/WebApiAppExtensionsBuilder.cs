@@ -1,29 +1,23 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Domain;
+    using Helpers;
+    using Services;
 
     public class WebApiAppExtensionsBuilder
     {
-        public static void CreateSwaggerWebApiAppExtension(string solutionDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public WebApiAppExtensionsBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateSwaggerWebApiAppExtension(string solutionDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication, string projectBaseName)
         {
             var classPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(solutionDirectory, $"SwaggerAppExtension.cs", projectBaseName);
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetSwaggerAppExtensionText(classPath.ClassNamespace, solutionDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = GetSwaggerAppExtensionText(classPath.ClassNamespace, solutionDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetSwaggerAppExtensionText(string classNamespace, string solutionDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication, string projectBaseName)

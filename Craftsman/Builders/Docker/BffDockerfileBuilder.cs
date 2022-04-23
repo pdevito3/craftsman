@@ -1,16 +1,23 @@
 namespace Craftsman.Builders.Docker;
 
-using System.IO.Abstractions;
 using Helpers;
+using Services;
 
-public static class BffDockerfileBuilder
+public class BffDockerfileBuilder
 {
+    private readonly ICraftsmanUtilities _utilities;
+
+    public BffDockerfileBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
+
     
-    public static void CreateBffDotNetDockerfile(string projectDirectory, string projectBaseName, IFileSystem fileSystem)
+    public void CreateBffDotNetDockerfile(string projectDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Dockerfile");
         var fileText = GetDockerfileText(projectBaseName, true, false);
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
     
     private static string GetDockerfileText(string projectBaseName, bool addNodeInstall, bool addSharedKernel)

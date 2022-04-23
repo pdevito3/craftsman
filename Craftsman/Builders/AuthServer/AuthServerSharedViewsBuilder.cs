@@ -1,34 +1,36 @@
 namespace Craftsman.Builders.AuthServer
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
     using Helpers;
-    using Models;
-    using static Helpers.ConstMessages;
+    using Services;
 
     public class AuthServerSharedViewsBuilder
     {
-        public static void CreateLayoutView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public AuthServerSharedViewsBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateLayoutView(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory, "_Layout.cshtml", authServerProjectName, ClassPathHelper.AuthServerViewSubDir.Shared);
             var fileText = GetLayoutText(classPath.ClassNamespace);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
-        public static void CreateStartView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public void CreateStartView(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "_ViewStart.cshtml", authServerProjectName);
             var fileText = GetStartViewTest();
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
-        public static void CreateViewImports(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public void CreateViewImports(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "_ViewImports.cshtml", authServerProjectName);
             var fileText = GetViewImportsTest(projectDirectory, authServerProjectName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         private static string GetStartViewTest()

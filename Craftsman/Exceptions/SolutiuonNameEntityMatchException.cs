@@ -4,7 +4,7 @@
     using System.Runtime.Serialization;
 
     [Serializable]
-    internal class SolutiuonNameEntityMatchException : Exception
+    internal class SolutiuonNameEntityMatchException : Exception, ICraftsmanException
     {
         public SolutiuonNameEntityMatchException() : base($"Your solution name can not match an entity name. This will cause namespace issues in your project.")
         {

@@ -1,16 +1,22 @@
 namespace Craftsman.Builders.Bff;
 
-using System.IO.Abstractions;
 using Helpers;
-using Models;
+using Services;
 
 public class ViteConfigBuilder
 {
-    public static void CreateViteConfig(string spaDirectory, int? proxyPort, IFileSystem fileSystem)
+    private readonly ICraftsmanUtilities _utilities;
+
+    public ViteConfigBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
+
+    public void CreateViteConfig(string spaDirectory, int? proxyPort)
     {
         var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, $"vite.config.ts");
         var fileText = GetViteConfigText(proxyPort);
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetViteConfigText(int? proxyPort)

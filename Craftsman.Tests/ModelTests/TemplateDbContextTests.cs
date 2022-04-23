@@ -1,43 +1,59 @@
 namespace Craftsman.Tests.ModelTests
 {
-    using Craftsman.Enums;
     using Craftsman.Exceptions;
-    using Craftsman.Models;
+    using Domain;
     using FluentAssertions;
     using System;
+    using Bogus;
     using Xunit;
 
     public class TemplateDbContextTests
     {
-        [Theory]
-        [InlineData("sqlserver", DbProvider.SqlServer)]
-        [InlineData("mysql", DbProvider.MySql)]
-        [InlineData("postgres", DbProvider.Postgres)]
-        [InlineData("Sqlserver", DbProvider.SqlServer)]
-        [InlineData("SqlServer", DbProvider.SqlServer)]
-        public void DbProviderAssignedAccurately(string providerString, DbProvider expectedProvider)
+        [Fact]
+        public void DbProviderAssignedAccurately()
         {
-            var context = new TemplateDbContext()
+            var lowerConfig = new DbContextConfig()
             {
-                Provider = providerString
+                Provider = "sqlserver"
+            };
+            var mysqlConfig = new DbContextConfig()
+            {
+                Provider = "mysql"
+            };
+            var postgresConfig = new DbContextConfig()
+            {
+                Provider = "postgres"
+            };
+            var partialCasingConfig = new DbContextConfig()
+            {
+                Provider = "Sqlserver"
+            };
+            var properCasingConfig = new DbContextConfig()
+            {
+                Provider = "SqlServer"
             };
 
-            var expectedProviderString = Enum.GetName(typeof(DbProvider), expectedProvider);
-            context.Provider.Should().Be(expectedProviderString);
+            lowerConfig.ProviderEnum.Should().Be(DbProvider.SqlServer);
+            mysqlConfig.ProviderEnum.Should().Be(DbProvider.MySql);
+            postgresConfig.ProviderEnum.Should().Be(DbProvider.Postgres);
+            partialCasingConfig.ProviderEnum.Should().Be(DbProvider.SqlServer);
+            properCasingConfig.ProviderEnum.Should().Be(DbProvider.SqlServer);
         }
 
-        [Theory]
-        [InlineData("", DbProvider.SqlServer)]
-        [InlineData("hjgujafha", DbProvider.SqlServer)]
-        public void DbProviderThrowsExceptionWhenInvalid(string providerString, DbProvider expectedProvider)
+        [Fact]
+        public void DbProviderThrowsExceptionWhenInvalid()
         {
-            Action act = () => new TemplateDbContext()
+            Action actEmpty = () => new DbContextConfig()
             {
-                Provider = providerString
+                Provider = ""
+            };
+            Action actBad = () => new DbContextConfig()
+            {
+                Provider = new Faker().Lorem.Word()
             };
 
-            var expectedProviderString = Enum.GetName(typeof(DbProvider), expectedProvider);
-            act.Should().Throw<InvalidDbProviderException>();
+            actEmpty.Should().Throw<InvalidDbProviderException>();
+            actBad.Should().Throw<InvalidDbProviderException>();
         }
     }
 }

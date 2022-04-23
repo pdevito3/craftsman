@@ -1,24 +1,31 @@
 ﻿namespace Craftsman.Builders.Bff.Features.Dynamic.Api;
 
-using System.IO.Abstractions;
-using Enums;
+using Domain.Enums;
 using Helpers;
+using Services;
 
 public class DynamicFeatureKeysBuilder
 {
-	public static void CreateDynamicFeatureKeys(string spaDirectory, string entityName, string entityPlural, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public DynamicFeatureKeysBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+	public void CreateDynamicFeatureKeys(string spaDirectory, string entityName, string entityPlural)
 	{
 		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
 			entityPlural, 
 			BffFeatureCategory.Api , 
-			$"{Utilities.BffApiKeysFilename(entityName)}.ts");
+			$"{FileNames.BffApiKeysFilename(entityName)}.ts");
 		var routesIndexFileText = GetDynamicFeatureKeysText(entityName);
-		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
+		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
 	}
 	
 	public static string GetDynamicFeatureKeysText(string entityName)
 	{
-		var keyExportName = Utilities.BffApiKeysExport(entityName);
+		var keyExportName = FileNames.BffApiKeysExport(entityName);
 	    return @$"const {keyExportName} = {{
   all: ['{entityName.UppercaseFirstLetter()}s'] as const,
   lists: () => [...{keyExportName}.all, 'list'] as const,

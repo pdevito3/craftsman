@@ -1,9 +1,7 @@
 ﻿namespace Craftsman.Builders.Endpoints
 {
     using System;
-    using System.Collections.Generic;
-    using Helpers;
-    using Models;
+    using Domain;
 
     public class EndpointSwaggerCommentBuilders
     {

@@ -1,8 +1,8 @@
 namespace Craftsman.Tests.ModelTests;
 
 using Bogus;
+using Domain;
 using FluentAssertions;
-using Models;
 using Xunit;
 
 public class ApiTemplateTests

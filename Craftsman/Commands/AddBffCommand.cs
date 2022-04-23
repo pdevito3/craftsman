@@ -1,171 +1,136 @@
-﻿namespace Craftsman.Commands
+namespace Craftsman.Commands;
+
+using System.IO.Abstractions;
+using Builders;
+using Builders.Bff;
+using Builders.Bff.Components.Headers;
+using Builders.Bff.Components.Layouts;
+using Builders.Bff.Components.Navigation;
+using Builders.Bff.Components.Notifications;
+using Builders.Bff.Features.Auth;
+using Builders.Bff.Features.Home;
+using Builders.Bff.Src;
+using Domain;
+using Helpers;
+using Services;
+using Spectre.Console;
+using Spectre.Console.Cli;
+
+public class AddBffCommand : Command<AddBffCommand.Settings>
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.IO.Abstractions;
-    using Builders;
-    using Builders.Bff;
-    using Builders.Bff.Components.Headers;
-    using Builders.Bff.Components.Layouts;
-    using Builders.Bff.Components.Navigation;
-    using Builders.Bff.Components.Notifications;
-    using Builders.Bff.Features.Auth;
-    using Builders.Bff.Features.Dynamic;
-    using Builders.Bff.Features.Dynamic.Api;
-    using Builders.Bff.Features.Dynamic.Types;
-    using Builders.Bff.Features.Home;
-    using Builders.Bff.Src;
-    using Builders.Docker;
-    using static Helpers.ConsoleWriter;
-    using Spectre.Console;
-    using Craftsman.Builders.Tests.Utilities;
-    using Enums;
-    using AppSettingsBuilder = Builders.Bff.AppSettingsBuilder;
-    using ProgramBuilder = Builders.Bff.ProgramBuilder;
+    private readonly IFileSystem _fileSystem;
+    private readonly IConsoleWriter _consoleWriter;
+    private readonly IFileParsingHelper _fileParsingHelper;
+    private readonly IAnsiConsole _console;
+    private readonly ICraftsmanUtilities _utilities;
+    private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
 
-    public static class AddBffCommand
+    public AddBffCommand(IFileSystem fileSystem,
+        IConsoleWriter consoleWriter,
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
+        IAnsiConsole console, IFileParsingHelper fileParsingHelper)
     {
-        public static void Help()
-        {
-            WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   This command will add a bff to your solution along with a React client using a formatted yaml or json file that describes the bff you want to add.{Environment.NewLine}");
+        _fileSystem = fileSystem;
+        _consoleWriter = consoleWriter;
+        _utilities = utilities;
+        _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
+        _console = console;
+        _fileParsingHelper = fileParsingHelper;
+    }
 
-            WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman add:bff [options] <filepath>");
+    public class Settings : CommandSettings
+    {
+        [CommandArgument(0, "<Filepath>")]
+        public string Filepath { get; set; }
+    }
+    
+    public override int Execute(CommandContext context, Settings settings)
+    {
+        var potentialSolutionDir = _utilities.GetRootDir();
+        
+        _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
+        _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Arguments:");
-            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that lists the bff information that you want to add to your solution.");
-
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Options:");
-            WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
-
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"   craftsman add:bff C:\fullpath\mybffinfo.yaml");
-            WriteHelpText(@$"   craftsman add:bff C:\fullpath\mybffinfo.yml");
-            WriteHelpText(@$"   craftsman add:bff C:\fullpath\mybffinfo.json");
-        }
-
-        public static void Run(string filePath, string domainDirectory, IFileSystem fileSystem)
-        {
-            try
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
+        var template = FileParsingHelper.GetTemplateFromFile<BffTemplate>(settings.Filepath);
+        _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
+        
+        _console.Status()
+            .AutoRefresh(true)
+            .Spinner(Spinner.Known.Dots2)
+            .Start($"[yellow]Creating {template.ProjectName} [/]", ctx =>
             {
-                FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                Utilities.SolutionGuard(domainDirectory);
-
-                var template = FileParsingHelper.GetTemplateFromFile<BffTemplate>(filePath);
-                WriteHelpText($"Your bff template file was parsed successfully.");
-
-                AnsiConsole.Status()
-                    .AutoRefresh(true)
-                    .Spinner(Spinner.Known.Dots2)
-                    .Start($"[yellow]Creating {template.ProjectName} [/]", ctx =>
-                    {
-                        AddBff(template, domainDirectory, fileSystem);
+                AddBff(template, potentialSolutionDir);
                         
-                        WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
-                    });
-                
-                WriteHelpHeader($"{Environment.NewLine}Your bff has been successfully added. Keep up the good work!");
-                StarGithubRequest();
-            }
-            catch (Exception e)
-            {
-                if (e is InvalidMessageBrokerException
-                    || e is IsNotBoundedContextDirectory)
-                {
-                    WriteError($"{e.Message}");
-                }
-                else
-                {
-                    AnsiConsole.WriteException(e, new ExceptionSettings
-                    {
-                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
-                        Style = new ExceptionStyle
-                        {
-                            Exception = new Style().Foreground(Color.Grey),
-                            Message = new Style().Foreground(Color.White),
-                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
-                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
-                            Method = new Style().Foreground(Color.Red),
-                            ParameterName = new Style().Foreground(Color.Cornsilk1),
-                            ParameterType = new Style().Foreground(Color.Red),
-                            Path = new Style().Foreground(Color.Red),
-                            LineNumber = new Style().Foreground(Color.Cornsilk1),
-                        }
-                    });
-                }
-            }
-        }
+                _consoleWriter.WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
+            });
 
-        public static void AddBff(BffTemplate template, string domainDirectory, IFileSystem fileSystem)
-        {
-            var projectName = template.ProjectName;
-            var projectDirectory = template.GetProjectDirectory(domainDirectory);
-            var spaDirectory = template.GetSpaDirectory(domainDirectory);
+        _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
+        return 0;
+    }
 
-            SolutionBuilder.BuildBffProject(domainDirectory, projectName, template.ProxyPort, fileSystem);
-            fileSystem.Directory.CreateDirectory(spaDirectory);
+    public void AddBff(BffTemplate template, string domainDirectory)
+    {
+        var projectName = template.ProjectName;
+        var projectDirectory = template.GetProjectDirectory(domainDirectory);
+        var spaDirectory = template.GetSpaDirectory(domainDirectory);
 
-            // .NET Project
-            LaunchSettingsBuilder.CreateLaunchSettings(projectDirectory, projectName, template, fileSystem);
-            AppSettingsBuilder.CreateBffAppSettings(projectDirectory, fileSystem);
-            LoggingConfigurationBuilder.CreateBffConfigFile(domainDirectory, projectName, fileSystem);
-            
-            ProgramBuilder.CreateProgram(projectDirectory, domainDirectory, projectName, template, fileSystem);
-            BffReadmeBuilder.CreateReadme(projectDirectory, projectName, fileSystem);
+        new SolutionBuilder(_utilities, _fileSystem).BuildBffProject(domainDirectory, projectName, template.ProxyPort);
+        _fileSystem.Directory.CreateDirectory(spaDirectory);
 
-            // SPA - root
-            ViteConfigBuilder.CreateViteConfig(spaDirectory, template.ProxyPort, fileSystem);
-            TsConfigBuilder.CreateTsConfigPaths(spaDirectory, fileSystem);
-            TsConfigBuilder.CreateTsConfig(spaDirectory, fileSystem);
-            TailwindConfigBuilder.CreateTailwindConfig(spaDirectory, fileSystem);
-            PostCssBuilder.CreatePostCss(spaDirectory, fileSystem);
-            PackageJsonBuilder.CreatePackageJson(spaDirectory, projectName, fileSystem);
-            IndexHtmlBuilder.CreateIndexHtml(spaDirectory, template.HeadTitle, fileSystem);
-            AspnetcoreReactBuilder.CreateAspnetcoreReact(spaDirectory, fileSystem);
-            AspnetcoreHttpsBuilder.CreateAspnetcoreHttps(spaDirectory, fileSystem);
-            EnvBuilder.CreateEnv(spaDirectory, fileSystem);
-            EnvBuilder.CreateDevEnv(spaDirectory, template.ProxyPort, fileSystem);
-            PrettierRcBuilder.CreatePrettierRc(spaDirectory, fileSystem);
-            
-            // SPA - src
-            AssetsBuilder.CreateFavicon(spaDirectory, fileSystem);
-            AssetsBuilder.CreateLogo(spaDirectory, fileSystem);
-            LibBuilder.CreateAxios(spaDirectory, fileSystem);
-            TypesBuilder.CreateApiTypes(spaDirectory, fileSystem);
-            ViteEnvBuilder.CreateViteEnv(spaDirectory, fileSystem);
-            MainTsxBuilder.CreateMainTsx(spaDirectory, fileSystem);
-            CustomCssBuilder.CreateCustomCss(spaDirectory, fileSystem);
-            AppTsxBuilder.CreateAppTsx(spaDirectory, fileSystem);
-            
-            // SPA - src/components
-            HeadersComponentBuilder.CreateHeaderComponentItems(spaDirectory, fileSystem);
-            NotificationsComponentBuilder.CreateNotificationComponentItems(spaDirectory, fileSystem);
-            NavigationComponentBuilder.CreateNavigationComponentItems(spaDirectory, fileSystem);
-            LayoutComponentBuilder.CreateLayoutComponentItems(spaDirectory, fileSystem);
-            
-            // SPA - src/features
-            AuthFeatureApiBuilder.CreateAuthFeatureApis(spaDirectory, fileSystem);
-            AuthFeatureRoutesBuilder.CreateAuthFeatureRoutes(spaDirectory, fileSystem);
-            AuthFeatureBuilder.CreateAuthFeatureIndex(spaDirectory, fileSystem);
-            
-            HomeFeatureRoutesBuilder.CreateHomeFeatureRoutes(spaDirectory, fileSystem);
-            HomeFeatureBuilder.CreateHomeFeatureIndex(spaDirectory, fileSystem);
-            
-            EntityScaffolding.ScaffoldBffEntities(template.Entities, fileSystem, spaDirectory);
+        // .NET Project
+        new LaunchSettingsBuilder(_utilities).CreateLaunchSettings(projectDirectory, projectName, template);
+        new BffAppSettingsBuilder(_utilities).CreateBffAppSettings(projectDirectory);
+        new LoggingConfigurationBuilder(_utilities).CreateBffConfigFile(domainDirectory, projectName);
+        
+        new BffProgramBuilder(_utilities).CreateProgram(projectDirectory, domainDirectory, projectName, template);
+        new BffReadmeBuilder(_utilities).CreateReadme(projectDirectory, projectName);
 
-            // Docker
-            // BffDockerfileBuilder.CreateBffDotNetDockerfile(projectDirectory, projectName, fileSystem);
-            // DockerComposeBuilders.CreateDockerIgnore(projectDirectory, projectDirectory, fileSystem);
-            // TODO docs on ApiAddress and making a resource to abstract out the baseurl and that the `ApiAddress` can be a string that incorporates that
-            // TODO AnsiConsole injection for status updates
-        }
+        // SPA - root
+        new ViteConfigBuilder(_utilities).CreateViteConfig(spaDirectory, template.ProxyPort);
+        new TsConfigBuilder(_utilities).CreateTsConfigPaths(spaDirectory);
+        new TsConfigBuilder(_utilities).CreateTsConfig(spaDirectory);
+        new TailwindConfigBuilder(_utilities).CreateTailwindConfig(spaDirectory);
+        new PostCssBuilder(_utilities).CreatePostCss(spaDirectory);
+        new PackageJsonBuilder(_utilities).CreatePackageJson(spaDirectory, projectName);
+        new IndexHtmlBuilder(_utilities).CreateIndexHtml(spaDirectory, template.HeadTitle);
+        new AspnetcoreReactBuilder(_utilities).CreateAspnetcoreReact(spaDirectory);
+        new AspnetcoreHttpsBuilder(_utilities).CreateAspnetcoreHttps(spaDirectory);
+        new EnvBuilder(_utilities).CreateEnv(_scaffoldingDirectoryStore.SpaDirectory);
+        new EnvBuilder(_utilities).CreateDevEnv(spaDirectory, template.ProxyPort);
+        new PrettierRcBuilder(_utilities).CreatePrettierRc(spaDirectory);
+        
+        // SPA - src
+        new AssetsBuilder(_utilities).CreateFavicon(spaDirectory);
+        new AssetsBuilder(_utilities).CreateLogo(spaDirectory);
+        new LibBuilder(_utilities).CreateAxios(spaDirectory);
+        new TypesBuilder(_utilities).CreateApiTypes(spaDirectory);
+        new ViteEnvBuilder(_utilities).CreateViteEnv(spaDirectory);
+        new MainTsxBuilder(_utilities).CreateMainTsx(spaDirectory);
+        new CustomCssBuilder(_utilities).CreateCustomCss(spaDirectory);
+        new AppTsxBuilder(_utilities).CreateAppTsx(spaDirectory);
+        
+        // SPA - src/components
+        new HeadersComponentBuilder(_utilities).CreateHeaderComponentItems(spaDirectory);
+        new NotificationsComponentBuilder(_utilities).CreateNotificationComponentItems(spaDirectory);
+        new NavigationComponentBuilder(_utilities).CreateNavigationComponentItems(spaDirectory);
+        new LayoutComponentBuilder(_utilities).CreateLayoutComponentItems(spaDirectory);
+        
+        // SPA - src/features
+        new AuthFeatureApiBuilder(_utilities).CreateAuthFeatureApis(spaDirectory);
+        new AuthFeatureRoutesBuilder(_utilities).CreateAuthFeatureRoutes(spaDirectory);
+        new AuthFeatureBuilder(_utilities).CreateAuthFeatureIndex(spaDirectory);
+        
+        new HomeFeatureRoutesBuilder(_utilities).CreateHomeFeatureRoutes(spaDirectory);
+        new HomeFeatureBuilder(_utilities).CreateHomeFeatureIndex(spaDirectory);
+        
+        new EntityScaffoldingService(_utilities, _fileSystem).ScaffoldBffEntities(template.Entities, spaDirectory);
+
+        // Docker
+        // new BffDockerfileBuilder(_utilities).CreateBffDotNetDockerfile(projectDirectory, projectName);
+        // DockerComposeBuilders.CreateDockerIgnore(projectDirectory, projectDirectory);
+        // TODO docs on ApiAddress and making a resource to abstract out the baseurl and that the `ApiAddress` can be a string that incorporates that
+        // TODO AnsiConsole injection for status updates
     }
 }

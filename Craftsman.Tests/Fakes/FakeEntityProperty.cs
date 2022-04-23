@@ -1,7 +1,7 @@
 ﻿namespace Craftsman.Tests.Fakes
 {
     using AutoBogus;
-    using Craftsman.Models;
+    using Domain;
 
     public class FakeEntityProperty : AutoFaker<EntityProperty>
     {

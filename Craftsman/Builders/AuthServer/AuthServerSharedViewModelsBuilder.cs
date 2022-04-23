@@ -1,20 +1,23 @@
 ﻿namespace Craftsman.Builders.AuthServer
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
     using Helpers;
-    using Models;
+    using Services;
     using static Helpers.ConstMessages;
 
     public class AuthServerSharedViewModelsBuilder
     {
-        public static void CreateViewModels(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public AuthServerSharedViewModelsBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateViewModels(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "SharedViewModels.cs", authServerProjectName);
             var fileText = GetControllerText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         private static string GetControllerText(string classNamespace, string projectDirectory, string authServerProjectName)

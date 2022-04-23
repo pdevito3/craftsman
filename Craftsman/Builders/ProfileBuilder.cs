@@ -1,30 +1,24 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
-    using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class ProfileBuilder
     {
-        public static void CreateProfile(string solutionDirectory, Entity entity, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ProfileBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.ProfileClassPath(solutionDirectory, $"{Utilities.GetProfileName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            _utilities = utilities;
+        }
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetProfileFileText(classPath.ClassNamespace, entity, solutionDirectory, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+        public void CreateProfile(string solutionDirectory, Entity entity, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.ProfileClassPath(solutionDirectory, $"{FileNames.GetProfileName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            var fileText = GetProfileFileText(classPath.ClassNamespace, entity, solutionDirectory, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetProfileFileText(string classNamespace, Entity entity, string solutionDirectory, string projectBaseName)
@@ -38,15 +32,15 @@ using {dtoClassPath.ClassNamespace};
 using AutoMapper;
 using {entitiesClassPath.ClassNamespace};
 
-public class {Utilities.GetProfileName(entity.Name)} : Profile
+public class {FileNames.GetProfileName(entity.Name)} : Profile
 {{
-    public {Utilities.GetProfileName(entity.Name)}()
+    public {FileNames.GetProfileName(entity.Name)}()
     {{
         //createmap<to this, from this>
-        CreateMap<{entity.Name}, {Utilities.GetDtoName(entity.Name, Dto.Read)}>()
+        CreateMap<{entity.Name}, {FileNames.GetDtoName(entity.Name, Dto.Read)}>()
             .ReverseMap();
-        CreateMap<{Utilities.GetDtoName(entity.Name, Dto.Creation)}, {entity.Name}>();
-        CreateMap<{Utilities.GetDtoName(entity.Name, Dto.Update)}, {entity.Name}>()
+        CreateMap<{FileNames.GetDtoName(entity.Name, Dto.Creation)}, {entity.Name}>();
+        CreateMap<{FileNames.GetDtoName(entity.Name, Dto.Update)}, {entity.Name}>()
             .ReverseMap();
     }}
 }}";

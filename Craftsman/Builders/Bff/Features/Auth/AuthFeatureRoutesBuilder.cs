@@ -1,20 +1,27 @@
 ﻿namespace Craftsman.Builders.Bff.Features.Auth;
 
-using System.IO.Abstractions;
-using Enums;
+using Domain.Enums;
 using Helpers;
+using Services;
 
 public class AuthFeatureRoutesBuilder
 {
-	public static void CreateAuthFeatureRoutes(string spaDirectory, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public AuthFeatureRoutesBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+	public void CreateAuthFeatureRoutes(string spaDirectory)
 	{
 		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Routes , "index.ts");
 		var routesIndexFileText = GetAuthFeatureRoutesIndexText();
-		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
+		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
 
 		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Routes , "Login.tsx");
 		var routesLoginFileText = GetAuthFeatureRoutesLoginText();
-		Utilities.CreateFile(routesLoginClassPath, routesLoginFileText, fileSystem);
+		_utilities.CreateFile(routesLoginClassPath, routesLoginFileText);
 	}
 	
 	public static string GetAuthFeatureRoutesIndexText()

@@ -1,116 +1,86 @@
-﻿namespace Craftsman.Commands
+namespace Craftsman.Commands;
+
+using System.IO.Abstractions;
+using Builders;
+using Builders.Features;
+using Builders.Tests.IntegrationTests;
+using Domain;
+using Exceptions;
+using Helpers;
+using Services;
+using Spectre.Console;
+using Spectre.Console.Cli;
+using Validators;
+
+public class AddProducerCommand : Command<AddProducerCommand.Settings>
 {
-    using Craftsman.Builders;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.IO.Abstractions;
-    using Builders.Features;
-    using Builders.Tests.IntegrationTests;
-    using static Helpers.ConsoleWriter;
-    using Spectre.Console;
-    using Craftsman.Validators;
+    private IAnsiConsole _console;
+    private readonly IFileSystem _fileSystem;
+    private readonly IConsoleWriter _consoleWriter;
+    private readonly ICraftsmanUtilities _utilities;
+    private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
-    public static class AddProducerCommand
+    public AddProducerCommand(IAnsiConsole console,
+        IFileSystem fileSystem,
+        IConsoleWriter consoleWriter,
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileParsingHelper fileParsingHelper)
     {
-        public static void Help()
+        _console = console;
+        _fileSystem = fileSystem;
+        _consoleWriter = consoleWriter;
+        _utilities = utilities;
+        _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
+        _fileParsingHelper = fileParsingHelper;
+    }
+
+    public class Settings : CommandSettings
+    {
+        [CommandArgument(0, "<Filepath>")]
+        public string Filepath { get; set; }
+    }
+    
+    public override int Execute(CommandContext context, Settings settings)
+    {
+        var potentialBoundaryDirectory = _utilities.GetRootDir();
+        
+        var solutionDirectory = _fileSystem.Directory.GetParent(potentialBoundaryDirectory)?.FullName;
+        _utilities.IsSolutionDirectoryGuard(solutionDirectory);
+        _scaffoldingDirectoryStore.SetSolutionDirectory(solutionDirectory);
+        
+        var projectName = new DirectoryInfo(potentialBoundaryDirectory).Name;
+        _scaffoldingDirectoryStore.SetBoundedContextDirectoryAndProject(projectName);
+        _utilities.IsBoundedContextDirectoryGuard();
+
+        // TODO make injectable
+        _fileParsingHelper.RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
+        var template = FileParsingHelper.ReadYamlString<ProducerTemplate>(settings.Filepath);
+        _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
+        
+        AddProducers(template.Producers, _scaffoldingDirectoryStore.ProjectBaseName, solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory);
+        
+        _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your consumer has been successfully added. Keep up the good work!");
+        return 0;
+    }
+
+    public void AddProducers(List<Producer> producers, string projectBaseName, string solutionDirectory, string srcDirectory, string testDirectory)
+    {
+        var validator = new ProducerValidator();
+        foreach (var producer in producers)
         {
-            WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   This command will add a MassTransit configuration for a message producer using a formatted yaml or json file.{Environment.NewLine}");
-
-            WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman add:producer [options] <filepath>");
-            WriteHelpText(@$"   OR");
-            WriteHelpText(@$"   craftsman add:producers [options] <filepath>");
-
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Arguments:");
-            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that lists the bus information that you want to add to your API.");
-
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Options:");
-            WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
-
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"   craftsman add:producer C:\fullpath\producerinfo.yaml");
-            WriteHelpText(@$"   craftsman add:producer C:\fullpath\producerinfo.yml");
-            WriteHelpText(@$"   craftsman add:producer C:\fullpath\producerinfo.json");
-            WriteHelpText(Environment.NewLine);
+            var results = validator.Validate(producer);
+            if (!results.IsValid)
+                throw new DataValidationErrorException(results.Errors);
         }
 
-        public static void Run(string filePath, string boundedContextDirectory, IFileSystem fileSystem)
+        producers.ForEach(producer =>
         {
-            try
-            {
-                FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetTemplateFromFile<ProducerTemplate>(filePath);
-
-                var srcDirectory = Path.Combine(boundedContextDirectory, "src");
-                var testDirectory = Path.Combine(boundedContextDirectory, "tests");
-
-                Utilities.IsBoundedContextDirectoryGuard(srcDirectory, testDirectory);
-                var projectBaseName = Directory.GetParent(srcDirectory).Name;
-                template.SolutionName = projectBaseName;
-
-                // get solution dir
-                var solutionDirectory = Directory.GetParent(boundedContextDirectory).FullName;
-                Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-                AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory, fileSystem);
-
-                WriteHelpHeader($"{Environment.NewLine}Your producer has been successfully added. Keep up the good work!");
-            }
-            catch (Exception e)
-            {
-                if (e is IsNotBoundedContextDirectory
-                    || e is DataValidationErrorException)
-                {
-                    WriteError($"{e.Message}");
-                }
-                else
-                {
-                    AnsiConsole.WriteException(e, new ExceptionSettings
-                    {
-                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
-                        Style = new ExceptionStyle
-                        {
-                            Exception = new Style().Foreground(Color.Grey),
-                            Message = new Style().Foreground(Color.White),
-                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
-                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
-                            Method = new Style().Foreground(Color.Red),
-                            ParameterName = new Style().Foreground(Color.Cornsilk1),
-                            ParameterType = new Style().Foreground(Color.Red),
-                            Path = new Style().Foreground(Color.Red),
-                            LineNumber = new Style().Foreground(Color.Cornsilk1),
-                        }
-                    });
-                }
-            }
-        }
-
-        public static void AddProducers(List<Producer> producers, string projectBaseName, string solutionDirectory, string srcDirectory,
-            string testDirectory, IFileSystem fileSystem)
-        {
-            var validator = new ProducerValidator();
-            foreach (var producer in producers)
-            {
-                var results = validator.Validate(producer);
-                if (!results.IsValid)
-                    throw new DataValidationErrorException(results.Errors);
-            }
-
-            producers.ForEach(producer =>
-            {
-                ProducerBuilder.CreateProducerFeature(solutionDirectory, srcDirectory, producer, projectBaseName);
-                ProducerRegistrationBuilder.CreateProducerRegistration(solutionDirectory, srcDirectory, producer, projectBaseName);
-                MassTransitModifier.AddProducerRegistation(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
+            new ProducerBuilder(_utilities).CreateProducerFeature(solutionDirectory, srcDirectory, producer, projectBaseName);
+            new ProducerRegistrationBuilder(_utilities).CreateProducerRegistration(solutionDirectory, srcDirectory, producer, projectBaseName);
+            new MassTransitModifier(_fileSystem).AddProducerRegistration(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
                 
-                ProducerTestBuilder.CreateTests(solutionDirectory, testDirectory, srcDirectory, producer, projectBaseName, fileSystem);
-            });
-        }
+            new ProducerTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, producer, projectBaseName);
+        });
     }
 }

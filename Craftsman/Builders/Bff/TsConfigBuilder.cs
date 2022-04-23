@@ -1,22 +1,28 @@
 namespace Craftsman.Builders.Bff;
 
-using System.IO.Abstractions;
 using Helpers;
-using Models;
+using Services;
 
 public class TsConfigBuilder
 {
-    public static void CreateTsConfigPaths(string spaDirectory, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public TsConfigBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+    public void CreateTsConfigPaths(string spaDirectory)
     {
         var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, $"tsconfig.paths.json");
         var fileText = GetTsConfigPathText();
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
-    public static void CreateTsConfig(string spaDirectory, IFileSystem fileSystem)
+    public void CreateTsConfig(string spaDirectory)
     {
 	    var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, $"tsconfig.json");
 	    var fileText = GetTsConfigText();
-	    Utilities.CreateFile(classPath, fileText, fileSystem);
+	    _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetTsConfigPathText()

@@ -1,33 +1,29 @@
 ﻿namespace Craftsman.Builders.Features
 {
     using System;
-    using System.IO;
-    using System.Text;
-    using Exceptions;
+    using Domain;
     using Helpers;
-    using Models;
+    using Services;
 
     public class ConsumerBuilder
     {
-        public static void CreateConsumerFeature(string solutionDirectory, string srcDirectory, Consumer consumer, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public ConsumerBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, consumer, solutionDirectory, srcDirectory, projectBaseName);
-
-            fs.Write(Encoding.UTF8.GetBytes(data));
+            _utilities = utilities;
         }
 
-        public static string GetDirectOrTopicConsumerRegistration(string classNamespace, Consumer consumer, string solutionDirectory, string srcDirectory, string projectBaseName)
+        public void CreateConsumerFeature(string solutionDirectory, string srcDirectory, Consumer consumer, string projectBaseName)
         {
-            var context = Utilities.GetDbContext(srcDirectory, projectBaseName);
+            var classPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
+            var fileText = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, consumer, solutionDirectory, srcDirectory, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
+        }
+
+        public string GetDirectOrTopicConsumerRegistration(string classNamespace, Consumer consumer, string solutionDirectory, string srcDirectory, string projectBaseName)
+        {
+            var context = _utilities.GetDbContext(srcDirectory, projectBaseName);
             var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
             var dbReadOnly = consumer.UsesDb ? @$"{Environment.NewLine}    private readonly {context} _db;" : "";
             var dbProp = consumer.UsesDb ? @$"{context} db, " : "";

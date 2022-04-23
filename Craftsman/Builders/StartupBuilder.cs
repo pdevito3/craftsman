@@ -1,24 +1,27 @@
 ﻿namespace Craftsman.Builders
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using System.IO;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Helpers;
+    using Services;
     using static Helpers.ConstMessages;
 
     public class StartupBuilder
     {
-        public static void CreateWebApiStartup(string srcDirectory, bool useJwtAuth, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public StartupBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = Utilities.GetStartupClassPath(srcDirectory, projectBaseName);
+            _utilities = utilities;
+        }
+        public void CreateWebApiStartup(string srcDirectory, bool useJwtAuth, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.StartupClassPath(srcDirectory, projectBaseName);
             var fileText = GetWebApiStartupText(srcDirectory, classPath.ClassNamespace, useJwtAuth, projectBaseName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
-        public static void CreateAuthServerStartup(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public void CreateAuthServerStartup(string projectDirectory, string authServerProjectName)
         {
-            var classPath = Utilities.GetStartupClassPath(projectDirectory, authServerProjectName);
+            var classPath = ClassPathHelper.StartupClassPath(projectDirectory, authServerProjectName);
             var testUsersClassPath = ClassPathHelper.AuthServerSeederClassPath(projectDirectory, "", authServerProjectName);
 
             var fileText = @$"{DuendeDisclosure}namespace {classPath.ClassNamespace};
@@ -82,7 +85,7 @@ public class Startup
         }});
     }}
 }}";
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetWebApiStartupText(string solutionDirectory, string classNamespace, bool useJwtAuth, string projectBaseName)

@@ -1,20 +1,23 @@
 namespace Craftsman.Builders.AuthServer
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
     using Helpers;
-    using Models;
+    using Services;
     using static Helpers.ConstMessages;
 
     public class AuthServerTestUsersBuilder
     {
-        public static void CreateTestModels(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public AuthServerTestUsersBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateTestModels(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerSeederClassPath(projectDirectory, "TestUsers.cs", authServerProjectName);
             var fileText = GetTestUserText(classPath.ClassNamespace);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         public static string GetTestUserText(string classNamespace)

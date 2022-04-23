@@ -1,15 +1,22 @@
 ﻿namespace Craftsman.Builders.Auth
 {
-    using System.IO.Abstractions;
     using Helpers;
+    using Services;
 
     public class UserPolicyHandlerBuilder
     {
-        public static void CreatePolicyBuilder(string solutionDirectory, string srcDirectory, string projectBaseName, string dbContextName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public UserPolicyHandlerBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+        
+        public void CreatePolicyBuilder(string solutionDirectory, string srcDirectory, string projectBaseName, string dbContextName)
         {
             var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
             var fileText = GetPolicyBuilderText(classPath.ClassNamespace, solutionDirectory, srcDirectory, dbContextName, projectBaseName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         private static string GetPolicyBuilderText(string classNamespace, string solutionDirectory, string srcDirectory, string dbContextName, string projectBaseName)

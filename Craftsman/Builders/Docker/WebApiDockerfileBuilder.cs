@@ -1,15 +1,22 @@
 namespace Craftsman.Builders.Docker;
 
-using System.IO.Abstractions;
 using Helpers;
+using Services;
 
-public static class WebApiDockerfileBuilder
+public class WebApiDockerfileBuilder
 {
-    public static void CreateStandardDotNetDockerfile(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+    private readonly ICraftsmanUtilities _utilities;
+
+    public WebApiDockerfileBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
+
+    public void CreateStandardDotNetDockerfile(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Dockerfile", projectBaseName);
         var fileText = GetDockerfileText(projectBaseName);
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
 
     private static string GetDockerfileText(string projectBaseName)

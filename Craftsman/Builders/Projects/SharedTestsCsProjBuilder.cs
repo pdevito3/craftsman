@@ -1,31 +1,24 @@
 ﻿namespace Craftsman.Builders.Projects
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using System.IO;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class SharedTestsCsProjBuilder
     {
-        public static void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public SharedTestsCsProjBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetInfrastructurePersistenceCsProjFileText(solutionDirectory, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            _utilities = utilities;
         }
 
-        public static string GetInfrastructurePersistenceCsProjFileText(string solutionDirectory, string projectBaseName)
+        public void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
+            _utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName));
+        }
+
+        public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName)
         {
             var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
 

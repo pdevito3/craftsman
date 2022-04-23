@@ -1,38 +1,32 @@
 ﻿namespace Craftsman.Builders.Features
 {
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
-    using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class QueryGetListBuilder
     {
-        public static void CreateQuery(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public QueryGetListBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{Utilities.GetEntityListFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            _utilities = utilities;
+        }
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetQueryFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+        public void CreateQuery(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityListFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            var fileText = GetQueryFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetQueryFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
         {
-            var className = Utilities.GetEntityListFeatureClassName(entity.Name);
-            var queryListName = Utilities.QueryListName(entity.Name);
-            var readDto = Utilities.GetDtoName(entity.Name, Dto.Read);
-            var paramsDto = Utilities.GetDtoName(entity.Name, Dto.ReadParamaters);
+            var className = FileNames.GetEntityListFeatureClassName(entity.Name);
+            var queryListName = FileNames.QueryListName(entity.Name);
+            var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
+            var paramsDto = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
             var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
 
             var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);

@@ -1,27 +1,22 @@
 ﻿namespace Craftsman.Builders.Tests.Utilities
 {
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class HttpClientExtensionsBuilder
     {
-        public static void Create(string solutionDirectory, string projectName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public HttpClientExtensionsBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void Create(string solutionDirectory, string projectName)
         {
             var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectName, $"HttpClientExtensions.cs");
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                File.Delete(classPath.FullClassPath); // saves me from having to make a remover!
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = CreateHttpClientExtensionsText(classPath);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = CreateHttpClientExtensionsText(classPath);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         private static string CreateHttpClientExtensionsText(ClassPath classPath)

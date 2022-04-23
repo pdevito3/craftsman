@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    class InvalidSolutionNameException : Exception
+    class InvalidSolutionNameException : Exception, ICraftsmanException
     {
         public InvalidSolutionNameException() : base($"Invalid template file. Please enter a valid solution name.")
         {

@@ -1,95 +1,79 @@
-﻿namespace Craftsman.Commands
+namespace Craftsman.Commands;
+
+using System.IO.Abstractions;
+using Builders;
+using Builders.Bff;
+using Builders.Bff.Components.Headers;
+using Builders.Bff.Components.Layouts;
+using Builders.Bff.Components.Navigation;
+using Builders.Bff.Components.Notifications;
+using Builders.Bff.Features.Auth;
+using Builders.Bff.Features.Home;
+using Builders.Bff.Src;
+using Domain;
+using Exceptions;
+using Helpers;
+using Services;
+using Spectre.Console;
+using Spectre.Console.Cli;
+using Validators;
+
+public class AddMessageCommand : Command<AddMessageCommand.Settings>
 {
-    using Craftsman.Builders;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System;
-    using System.Collections.Generic;
-    using System.IO.Abstractions;
-    using static Helpers.ConsoleWriter;
-    using Spectre.Console;
-    using Craftsman.Validators;
+    private readonly IFileSystem _fileSystem;
+    private readonly IConsoleWriter _consoleWriter;
+    private readonly IFileParsingHelper _fileParsingHelper;
+    private readonly IAnsiConsole _console;
+    private readonly ICraftsmanUtilities _utilities;
+    private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
 
-    public static class AddMessageCommand
+    public AddMessageCommand(IFileSystem fileSystem,
+        IConsoleWriter consoleWriter,
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
+        IAnsiConsole console, IFileParsingHelper fileParsingHelper)
     {
-        public static void Help()
+        _fileSystem = fileSystem;
+        _consoleWriter = consoleWriter;
+        _utilities = utilities;
+        _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
+        _console = console;
+        _fileParsingHelper = fileParsingHelper;
+    }
+
+    public class Settings : CommandSettings
+    {
+        [CommandArgument(0, "<Filepath>")]
+        public string Filepath { get; set; }
+    }
+    
+    public override int Execute(CommandContext context, Settings settings)
+    {
+        var potentialSolutionDir = _utilities.GetRootDir();
+        
+        _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
+        _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
+
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
+        var template = FileParsingHelper.GetTemplateFromFile<MessageTemplate>(settings.Filepath);
+        _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
+        
+        AddMessages(_scaffoldingDirectoryStore.SolutionDirectory, template.Messages);
+
+        _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
+        return 0;
+    }
+
+    public void AddMessages(string solutionDirectory, List<Message> messages)
+    {
+        var validator = new MessageValidator();
+        foreach (var message in messages)
         {
-            WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   This command will add a messageto your messages project using a formatted yaml or json file.{Environment.NewLine}");
-
-            WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman add:message [options] <filepath>");
-
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Arguments:");
-            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that lists the message information that you want to add to your project.");
-
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Options:");
-            WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
-
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"   craftsman add:message C:\fullpath\mymessageinfo.yaml");
-            WriteHelpText(@$"   craftsman add:message C:\fullpath\mymessageinfo.yml");
-            WriteHelpText(@$"   craftsman add:message C:\fullpath\mymessageinfo.json");
-            WriteHelpText(Environment.NewLine);
+            var results = validator.Validate(message);
+            if (!results.IsValid)
+                throw new DataValidationErrorException(results.Errors);
         }
 
-        public static void Run(string filePath, string solutionDirectory, IFileSystem fileSystem)
-        {
-            try
-            {
-                FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetTemplateFromFile<MessageTemplate>(filePath);
-
-                // get solution dir
-                Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-                AddMessages(solutionDirectory, fileSystem, template.Messages);
-
-                WriteHelpHeader($"{Environment.NewLine}Your messages have been successfully added. Keep up the good work!");
-            }
-            catch (Exception e)
-            {
-                if (e is SolutionNotFoundException
-                    || e is DataValidationErrorException)
-                {
-                    WriteError($"{e.Message}");
-                }
-                else
-                {
-                    AnsiConsole.WriteException(e, new ExceptionSettings
-                    {
-                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
-                        Style = new ExceptionStyle
-                        {
-                            Exception = new Style().Foreground(Color.Grey),
-                            Message = new Style().Foreground(Color.White),
-                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
-                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
-                            Method = new Style().Foreground(Color.Red),
-                            ParameterName = new Style().Foreground(Color.Cornsilk1),
-                            ParameterType = new Style().Foreground(Color.Red),
-                            Path = new Style().Foreground(Color.Red),
-                            LineNumber = new Style().Foreground(Color.Cornsilk1),
-                        }
-                    });
-                }
-            }
-        }
-
-        public static void AddMessages(string solutionDirectory, IFileSystem fileSystem, List<Message> messages)
-        {
-            var validator = new MessageValidator();
-            foreach (var message in messages)
-            {
-                var results = validator.Validate(message);
-                if (!results.IsValid)
-                    throw new DataValidationErrorException(results.Errors);
-            }
-
-            messages.ForEach(message => MessageBuilder.CreateMessage(solutionDirectory, message, fileSystem));
-        }
+        messages.ForEach(message => new MessageBuilder(_utilities).CreateMessage(solutionDirectory, message));
     }
 }

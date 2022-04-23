@@ -1,27 +1,29 @@
 namespace Craftsman.Builders.AuthServer
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
     using Helpers;
-    using Models;
-    using static Helpers.ConstMessages;
+    using Services;
 
     public class AuthServerCssBuilder
     {
-        public static void CreateSiteCss(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public AuthServerCssBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateSiteCss(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerCssClassPath(projectDirectory, "site.css", authServerProjectName);
             var fileText = GetSiteText(classPath.ClassNamespace);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
-        public static void CreateOutputCss(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public void CreateOutputCss(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerCssClassPath(projectDirectory, "output.css", authServerProjectName);
             var fileText = GetOutputText();
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         private static string GetOutputText()

@@ -1,20 +1,27 @@
-﻿namespace Craftsman.Builders.Auth
-{
-    using System.IO.Abstractions;
-    using Helpers;
+﻿namespace Craftsman.Builders.Auth;
 
-    public class PermissionsBuilder
+using Helpers;
+using Services;
+
+public class PermissionsBuilder
+{
+    private readonly ICraftsmanUtilities _utilities;
+
+    public PermissionsBuilder(ICraftsmanUtilities utilities)
     {
-        public static void GetPermissions(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
-        {
-            var classPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "Permissions.cs", projectBaseName);
-            var fileText = GetPermissionsText(classPath.ClassNamespace);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
-        }
-        
-        private static string GetPermissionsText(string classNamespace)
-        {
-            return @$"namespace {classNamespace};
+        _utilities = utilities;
+    }
+    
+    public void GetPermissions(string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "Permissions.cs", projectBaseName);
+        var fileText = GetPermissionsText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
+    
+    private static string GetPermissionsText(string classNamespace)
+    {
+        return @$"namespace {classNamespace};
 
 using System.Reflection;
 
@@ -31,6 +38,5 @@ public static class Permissions
             .ToList();
     }}
 }}";
-        }
     }
 }

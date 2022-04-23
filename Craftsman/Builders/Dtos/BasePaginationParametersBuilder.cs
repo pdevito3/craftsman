@@ -1,28 +1,22 @@
 ﻿namespace Craftsman.Builders.Dtos
 {
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using System.IO.Abstractions;
-    using System.Text;
+    using Helpers;
+    using Services;
 
     public class BasePaginationParametersBuilder
     {
-        public static void CreateBasePaginationParameters(string solutionDirectory, string projectBaseName, IFileSystem fileSystem)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public BasePaginationParametersBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateBasePaginationParameters(string solutionDirectory)
         {
             var classPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, $"BasePaginationParameters.cs");
-
-            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (fileSystem.File.Exists(classPath.FullClassPath))
-                return; // ***change from normal!**** if it exists, don't do anything instead of throwing an error
-
-            using (var fs = fileSystem.File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetBasePaginationParametersText(classPath.ClassNamespace);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+            var fileText = GetBasePaginationParametersText(classPath.ClassNamespace);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetBasePaginationParametersText(string classNamespace)

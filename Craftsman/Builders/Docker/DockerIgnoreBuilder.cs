@@ -1,15 +1,22 @@
 namespace Craftsman.Builders.Docker;
 
-using System.IO.Abstractions;
 using Helpers;
+using Services;
 
-public static class DockerIgnoreBuilder
+public class DockerIgnoreBuilder
 {
-    public static void CreateDockerIgnore(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
+    private readonly ICraftsmanUtilities _utilities;
+
+    public DockerIgnoreBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
+
+    public void CreateDockerIgnore(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $".dockerignore", projectBaseName);
         var fileText = GetDockerIgnoreText();
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
     
     private static string GetDockerIgnoreText()

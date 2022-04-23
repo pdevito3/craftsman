@@ -1,32 +1,39 @@
 ﻿namespace Craftsman.Builders.Bff.Features.Dynamic;
 
-using System.IO.Abstractions;
-using Enums;
+using Domain.Enums;
 using Helpers;
+using Services;
 
 public class DynamicFeatureRoutesBuilder
 {
-	public static void CreateDynamicFeatureRoutes(string spaDirectory, string entityName, string entityPlural, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public DynamicFeatureRoutesBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+	public void CreateDynamicFeatureRoutes(string spaDirectory, string entityName, string entityPlural)
 	{
 		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
 			entityPlural, 
 			BffFeatureCategory.Routes ,
 			"index.ts");
 		var routesIndexFileText = GetAuthFeatureRoutesIndexText(entityName);
-		Utilities.CreateFile(routesIndexClassPath, routesIndexFileText, fileSystem);
+		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
 
 		var routesLoginFileText = GetEntityListRouteText(entityName, entityPlural);
-		var listRouteName = Utilities.BffEntityListRouteComponentName(entityName);
+		var listRouteName = FileNames.BffEntityListRouteComponentName(entityName);
 		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
 			entityPlural, 
 			BffFeatureCategory.Routes , 
 			$"{listRouteName}.tsx");
-		Utilities.CreateFile(routesLoginClassPath, routesLoginFileText, fileSystem);
+		_utilities.CreateFile(routesLoginClassPath, routesLoginFileText);
 	}
 	
 	public static string GetAuthFeatureRoutesIndexText(string entityName)
 	{
-		var listRouteName = Utilities.BffEntityListRouteComponentName(entityName);
+		var listRouteName = FileNames.BffEntityListRouteComponentName(entityName);
 	    return @$"export * from './{listRouteName}';";
 	}
 
@@ -35,7 +42,7 @@ public class DynamicFeatureRoutesBuilder
 		var entityResponseVar = $"{entityName.LowercaseFirstLetter()}Response";
 		var entityDataVar = $"{entityName.LowercaseFirstLetter()}Data";
 		var entityPaginationVar = $"{entityName.LowercaseFirstLetter()}Pagination";
-		var listRouteName = Utilities.BffEntityListRouteComponentName(entityName);
+		var listRouteName = FileNames.BffEntityListRouteComponentName(entityName);
 		
 	    return @$"import React from 'react';
 import {{ use{entityPlural.UppercaseFirstLetter()} }} from '../api';

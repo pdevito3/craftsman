@@ -1,29 +1,23 @@
 ﻿namespace Craftsman.Builders.Features
 {
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System;
-    using System.IO;
-    using System.Text;
+    using Domain;
+    using Helpers;
+    using Services;
 
     public class EmptyFeatureBuilder
     {
-        public static void CreateCommand(string srcDirectory, string contextName, string projectBaseName, Feature newFeature)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public EmptyFeatureBuilder(ICraftsmanUtilities utilities)
+        {
+            _utilities = utilities;
+        }
+
+        public void CreateCommand(string srcDirectory, string contextName, string projectBaseName, Feature newFeature)
         {
             var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{newFeature.Name}.cs", newFeature.EntityPlural, projectBaseName);
-
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using FileStream fs = File.Create(classPath.FullClassPath);
-            var data = "";
-            data = GetCommandFileText(classPath.ClassNamespace, contextName, srcDirectory, projectBaseName, newFeature);
-            fs.Write(Encoding.UTF8.GetBytes(data));
+            var fileText = GetCommandFileText(classPath.ClassNamespace, contextName, srcDirectory, projectBaseName, newFeature);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetCommandFileText(string classNamespace, string contextName, string srcDirectory,

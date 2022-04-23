@@ -1,16 +1,23 @@
 ﻿namespace Craftsman.Builders.Bff.Features.Dynamic;
 
-using System.IO.Abstractions;
-using Enums;
+using Domain.Enums;
 using Helpers;
+using Services;
 
 public class DynamicFeatureBuilder
 {
-    public static void CreateDynamicFeatureIndex(string spaDirectory, string entityPlural, IFileSystem fileSystem)
+    private readonly ICraftsmanUtilities _utilities;
+
+    public DynamicFeatureBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
+
+    public void CreateDynamicFeatureIndex(string spaDirectory, string entityPlural)
     {
       var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityPlural, BffFeatureCategory.Index , "index.ts");
       var fileText = GetDynamicFeatureIndexText();
-      Utilities.CreateFile(classPath, fileText, fileSystem);
+      _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetDynamicFeatureIndexText()

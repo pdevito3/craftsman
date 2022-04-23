@@ -1,15 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff.Src
 {
-  using System.IO.Abstractions;
   using Helpers;
+  using Services;
 
   public class ViteEnvBuilder
   {
-    public static void CreateViteEnv(string spaDirectory, IFileSystem fileSystem)
+    private readonly ICraftsmanUtilities _utilities;
+
+    public ViteEnvBuilder(ICraftsmanUtilities utilities)
+    {
+      _utilities = utilities;
+    }
+
+    public void CreateViteEnv(string spaDirectory)
     {
       var classPath = ClassPathHelper.BffSpaSrcClassPath(spaDirectory, "vite-env.d.ts");
       var fileText = GetViteEnvText();
-      Utilities.CreateFile(classPath, fileText, fileSystem);
+      _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetViteEnvText()

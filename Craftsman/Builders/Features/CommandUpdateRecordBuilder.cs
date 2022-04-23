@@ -1,37 +1,31 @@
 ﻿namespace Craftsman.Builders.Features
 {
-    using Craftsman.Enums;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System.IO;
-    using System.Text;
+    using Domain;
+    using Domain.Enums;
+    using Helpers;
+    using Services;
 
     public class CommandUpdateRecordBuilder
     {
-        public static void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+        private readonly ICraftsmanUtilities _utilities;
+
+        public CommandUpdateRecordBuilder(ICraftsmanUtilities utilities)
         {
-            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{Utilities.UpdateEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            _utilities = utilities;
+        }
 
-            if (!Directory.Exists(classPath.ClassDirectory))
-                Directory.CreateDirectory(classPath.ClassDirectory);
-
-            if (File.Exists(classPath.FullClassPath))
-                throw new FileAlreadyExistsException(classPath.FullClassPath);
-
-            using (FileStream fs = File.Create(classPath.FullClassPath))
-            {
-                var data = "";
-                data = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
-                fs.Write(Encoding.UTF8.GetBytes(data));
-            }
+        public void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+        {
+            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.UpdateEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+            var fileText = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
         }
 
         public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
         {
-            var className = Utilities.UpdateEntityFeatureClassName(entity.Name);
-            var updateCommandName = Utilities.CommandUpdateName(entity.Name);
-            var updateDto = Utilities.GetDtoName(entity.Name, Dto.Update);
+            var className = FileNames.UpdateEntityFeatureClassName(entity.Name);
+            var updateCommandName = FileNames.CommandUpdateName(entity.Name);
+            var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
 
             var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
             var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;

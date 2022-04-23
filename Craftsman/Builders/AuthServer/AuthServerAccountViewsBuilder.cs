@@ -1,43 +1,46 @@
 ﻿namespace Craftsman.Builders.AuthServer
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Linq;
-    using Enums;
-    using Helpers;
-    using Models;
-    using static Helpers.ConstMessages;
+  using Helpers;
+  using Services;
+  using static Helpers.ConstMessages;
 
     public class AuthServerAccountViewsBuilder
     {
-        public static void CreateLoginView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+      private readonly ICraftsmanUtilities _utilities;
+
+      public AuthServerAccountViewsBuilder(ICraftsmanUtilities utilities)
+      {
+        _utilities = utilities;
+      }
+
+        public void CreateLoginView(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
                 "Login.cshtml",
                 authServerProjectName,
                 ClassPathHelper.AuthServerViewSubDir.Account);
             var fileText = GetLoginViewText(projectDirectory, authServerProjectName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
-        public static void CreateLogoutView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public void CreateLogoutView(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
                 "Logout.cshtml",
                 authServerProjectName,
                 ClassPathHelper.AuthServerViewSubDir.Account);
             var fileText = GetLogoutViewText(projectDirectory, authServerProjectName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
-        public static void CreateAccessDeniedView(string projectDirectory, string authServerProjectName, IFileSystem fileSystem)
+        public void CreateAccessDeniedView(string projectDirectory, string authServerProjectName)
         {
             var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
                 "AccessDenied.cshtml",
                 authServerProjectName,
                 ClassPathHelper.AuthServerViewSubDir.Account);
             var fileText = GetAccessDeniedViewText(projectDirectory, authServerProjectName);
-            Utilities.CreateFile(classPath, fileText, fileSystem);
+            _utilities.CreateFile(classPath, fileText);
         }
         
         public static string GetLoginViewText(string projectDirectory, string authServerProjectName)

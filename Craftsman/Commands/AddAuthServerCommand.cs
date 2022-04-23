@@ -1,136 +1,101 @@
-﻿namespace Craftsman.Commands
+namespace Craftsman.Commands;
+
+using System.IO.Abstractions;
+using Builders;
+using Builders.AuthServer;
+using Builders.Docker;
+using Domain;
+using Helpers;
+using Services;
+using Spectre.Console;
+using Spectre.Console.Cli;
+
+public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
 {
-    using Craftsman.Builders;
-    using Craftsman.Exceptions;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.IO.Abstractions;
-    using Builders.AuthServer;
-    using Builders.Docker;
-    using static Helpers.ConsoleWriter;
-    using Spectre.Console;
-    using Craftsman.Validators;
+    private readonly IFileSystem _fileSystem;
+    private readonly IConsoleWriter _consoleWriter;
+    private readonly ICraftsmanUtilities _utilities;
+    private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
-    public static class AddAuthServerCommand
+    public AddAuthServerCommand(IFileSystem fileSystem,
+        IConsoleWriter consoleWriter,
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileParsingHelper fileParsingHelper)
     {
-        public static void Help()
-        {
-            
-            // TODO help text!
-            
-            
-            
-            // WriteHelpHeader(@$"Description:");
-            // WriteHelpText(@$"   This command will add a messageto your messages project using a formatted yaml or json file.{Environment.NewLine}");
-            //
-            // WriteHelpHeader(@$"Usage:");
-            // WriteHelpText(@$"   craftsman add:message [options] <filepath>");
-            //
-            // WriteHelpText(Environment.NewLine);
-            // WriteHelpHeader(@$"Arguments:");
-            // WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that lists the message information that you want to add to your project.");
-            //
-            // WriteHelpText(Environment.NewLine);
-            // WriteHelpHeader(@$"Options:");
-            // WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
-            //
-            // WriteHelpText(Environment.NewLine);
-            // WriteHelpHeader(@$"Example:");
-            // WriteHelpText(@$"   craftsman add:message C:\fullpath\mymessageinfo.yaml");
-            // WriteHelpText(@$"   craftsman add:message C:\fullpath\mymessageinfo.yml");
-            // WriteHelpText(@$"   craftsman add:message C:\fullpath\mymessageinfo.json");
-            // WriteHelpText(Environment.NewLine);
-        }
+        _fileSystem = fileSystem;
+        _consoleWriter = consoleWriter;
+        _utilities = utilities;
+        _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
+        _fileParsingHelper = fileParsingHelper;
+    }
 
-        public static void Run(string filePath, string solutionDirectory, IFileSystem fileSystem)
-        {
-            try
-            {
-                FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                var template = FileParsingHelper.GetTemplateFromFile<AuthServerTemplate>(filePath);
+    public class Settings : CommandSettings
+    {
+        [CommandArgument(0, "<Filepath>")]
+        public string Filepath { get; set; }
+    }
+    
+    public override int Execute(CommandContext context, Settings settings)
+    {
+        var potentialSolutionDir = _utilities.GetRootDir();
+        
+        _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
+        _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
-                // get solution dir
-                Utilities.IsSolutionDirectoryGuard(solutionDirectory);
-                AddAuthServer(solutionDirectory, fileSystem, template);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
+        var template = FileParsingHelper.GetTemplateFromFile<AuthServerTemplate>(settings.Filepath);
+        _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
+        
+        AddAuthServer(_scaffoldingDirectoryStore.SolutionDirectory, template);
 
-                WriteHelpHeader($"{Environment.NewLine}Your messages have been successfully added. Keep up the good work!");
-            }
-            catch (Exception e)
-            {
-                if (e is SolutionNotFoundException
-                    || e is DataValidationErrorException)
-                {
-                    WriteError($"{e.Message}");
-                }
-                else
-                {
-                    AnsiConsole.WriteException(e, new ExceptionSettings
-                    {
-                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
-                        Style = new ExceptionStyle
-                        {
-                            Exception = new Style().Foreground(Color.Grey),
-                            Message = new Style().Foreground(Color.White),
-                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
-                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
-                            Method = new Style().Foreground(Color.Red),
-                            ParameterName = new Style().Foreground(Color.Cornsilk1),
-                            ParameterType = new Style().Foreground(Color.Red),
-                            Path = new Style().Foreground(Color.Red),
-                            LineNumber = new Style().Foreground(Color.Cornsilk1),
-                        }
-                    });
-                }
-            }
-        }
+        _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
+        return 0;
+    }
 
-        public static void AddAuthServer(string solutionDirectory, IFileSystem fileSystem, AuthServerTemplate template)
-        {
-            SolutionBuilder.BuildAuthServerProject(solutionDirectory, template.Name, fileSystem);
-            
-            AuthServerLaunchSettingsBuilder.CreateLaunchSettings(solutionDirectory, template.Name, template.Port, fileSystem);
-            StartupBuilder.CreateAuthServerStartup(solutionDirectory, template.Name, fileSystem);
-            ProgramBuilder.CreateAuthServerProgram(solutionDirectory, template.Name, fileSystem);
-            AuthServerConfigBuilder.CreateConfig(solutionDirectory, template, fileSystem);
-            AppSettingsBuilder.CreateAuthServerAppSettings(solutionDirectory, template.Name, fileSystem);
-            
-            AuthServerPackageJsonBuilder.CreatePackageJson(solutionDirectory, template.Name, fileSystem);
-            AuthServerTailwindConfigBuilder.CreateTailwindConfig(solutionDirectory, template.Name, fileSystem);
-            AuthServerPostCssBuilder.CreatePostCss(solutionDirectory, template.Name, fileSystem);
+    public void AddAuthServer(string solutionDirectory, AuthServerTemplate template)
+    {
+        new SolutionBuilder(_utilities, _fileSystem).BuildAuthServerProject(solutionDirectory, template.Name);
+        
+        new AuthServerLaunchSettingsBuilder(_utilities).CreateLaunchSettings(solutionDirectory, template.Name, template.Port);
+        new StartupBuilder(_utilities).CreateAuthServerStartup(solutionDirectory, template.Name);
+        new ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, template.Name);
+        new AuthServerConfigBuilder(_utilities).CreateConfig(solutionDirectory, template);
+        new AppSettingsBuilder(_utilities).CreateAuthServerAppSettings(solutionDirectory, template.Name);
+        
+        new AuthServerPackageJsonBuilder(_utilities).CreatePackageJson(solutionDirectory, template.Name);
+        new AuthServerTailwindConfigBuilder(_utilities).CreateTailwindConfig(solutionDirectory, template.Name);
+        new AuthServerPostCssBuilder(_utilities).CreatePostCss(solutionDirectory, template.Name);
 
-            // controllers
-            AuthServerAccountControllerBuilder.CreateAccountController(solutionDirectory, template.Name, fileSystem);
-            AuthServerExternalControllerBuilder.CreateExternalController(solutionDirectory, template.Name, fileSystem);
-            // AuthServerHomeControllerBuilder.CreateHomeController(projectDirectory, template.Name, fileSystem);
-            
-            // view models + models
-            AuthServerAccountViewModelsBuilder.CreateViewModels(solutionDirectory, template.Name, fileSystem);
-            AuthServerSharedViewModelsBuilder.CreateViewModels(solutionDirectory, template.Name, fileSystem);
-            AuthServerExternalModelsBuilder.CreateModels(solutionDirectory, template.Name, fileSystem);
-            AuthServerAccountModelsBuilder.CreateModels(solutionDirectory, template.Name, fileSystem);
+        // controllers
+        new AuthServerAccountControllerBuilder(_utilities).CreateAccountController(solutionDirectory, template.Name);
+        new AuthServerExternalControllerBuilder(_utilities).CreateExternalController(solutionDirectory, template.Name);
+        // AuthServerHomeControllerBuilder.CreateHomeController(projectDirectory, template.Name);
+        
+        // view models + models
+        new AuthServerAccountViewModelsBuilder(_utilities).CreateViewModels(solutionDirectory, template.Name);
+        new AuthServerSharedViewModelsBuilder(_utilities).CreateViewModels(solutionDirectory, template.Name);
+        new AuthServerExternalModelsBuilder(_utilities).CreateModels(solutionDirectory, template.Name);
+        new AuthServerAccountModelsBuilder(_utilities).CreateModels(solutionDirectory, template.Name);
 
-            // views
-            AuthServerAccountViewsBuilder.CreateLoginView(solutionDirectory, template.Name, fileSystem);
-            AuthServerAccountViewsBuilder.CreateLogoutView(solutionDirectory, template.Name, fileSystem);
-            AuthServerAccountViewsBuilder.CreateAccessDeniedView(solutionDirectory, template.Name, fileSystem);
-            AuthServerSharedViewsBuilder.CreateLayoutView(solutionDirectory, template.Name, fileSystem);
-            AuthServerSharedViewsBuilder.CreateStartView(solutionDirectory, template.Name, fileSystem);
-            AuthServerSharedViewsBuilder.CreateViewImports(solutionDirectory, template.Name, fileSystem);
-            
-            // css files for TW
-            AuthServerCssBuilder.CreateOutputCss(solutionDirectory, template.Name, fileSystem);
-            AuthServerCssBuilder.CreateSiteCss(solutionDirectory, template.Name, fileSystem);
-            
-            // helpers
-            AuthServerTestUsersBuilder.CreateTestModels(solutionDirectory, template.Name, fileSystem);
-            AuthServerExtensionsBuilder.CreateExtensions(solutionDirectory, template.Name, fileSystem);
-            SecurityHeadersAttributeBuilder.CreateAttribute(solutionDirectory, template.Name, fileSystem);
-            AuthServerDockerfileBuilder.CreateAuthServerDotNetDockerfile(solutionDirectory, template.Name, fileSystem);
-            DockerIgnoreBuilder.CreateDockerIgnore(solutionDirectory, template.Name, fileSystem);
-            // DockerComposeBuilders.AddAuthServerToDockerCompose(projectDirectory, template.Name, template.Port);
-        }
+        // views
+        new AuthServerAccountViewsBuilder(_utilities).CreateLoginView(solutionDirectory, template.Name);
+        new AuthServerAccountViewsBuilder(_utilities).CreateLogoutView(solutionDirectory, template.Name);
+        new AuthServerAccountViewsBuilder(_utilities).CreateAccessDeniedView(solutionDirectory, template.Name);
+        new AuthServerSharedViewsBuilder(_utilities).CreateLayoutView(solutionDirectory, template.Name);
+        new AuthServerSharedViewsBuilder(_utilities).CreateStartView(solutionDirectory, template.Name);
+        new AuthServerSharedViewsBuilder(_utilities).CreateViewImports(solutionDirectory, template.Name);
+        
+        // css files for TW
+        new AuthServerCssBuilder(_utilities).CreateOutputCss(solutionDirectory, template.Name);
+        new AuthServerCssBuilder(_utilities).CreateSiteCss(solutionDirectory, template.Name);
+        
+        // helpers
+        new AuthServerTestUsersBuilder(_utilities).CreateTestModels(solutionDirectory, template.Name);
+        new AuthServerExtensionsBuilder(_utilities).CreateExtensions(solutionDirectory, template.Name);
+        new SecurityHeadersAttributeBuilder(_utilities).CreateAttribute(solutionDirectory, template.Name);
+        new AuthServerDockerfileBuilder(_utilities).CreateAuthServerDotNetDockerfile(solutionDirectory, template.Name);
+        new DockerIgnoreBuilder(_utilities).CreateDockerIgnore(solutionDirectory, template.Name);
+        // DockerComposeBuilders.AddAuthServerToDockerCompose(projectDirectory, template.Name, template.Port);
     }
 }

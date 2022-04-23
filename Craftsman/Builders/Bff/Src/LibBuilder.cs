@@ -1,20 +1,22 @@
 ﻿namespace Craftsman.Builders.Bff.Src;
 
-using System;
-using System.IO.Abstractions;
-using System.Linq;
-using Enums;
 using Helpers;
-using Models;
-using static Helpers.ConstMessages;
+using Services;
 
 public class LibBuilder
 {
-    public static void CreateAxios(string spaDirectory, IFileSystem fileSystem)
+	private readonly ICraftsmanUtilities _utilities;
+
+	public LibBuilder(ICraftsmanUtilities utilities)
+	{
+		_utilities = utilities;
+	}
+
+    public void CreateAxios(string spaDirectory)
     {
         var classPath = ClassPathHelper.BffSpaSrcLibClassPath(spaDirectory, "axios.tsx");
         var fileText = GetAxiosText();
-        Utilities.CreateFile(classPath, fileText, fileSystem);
+        _utilities.CreateFile(classPath, fileText);
     }
     
     public static string GetAxiosText()

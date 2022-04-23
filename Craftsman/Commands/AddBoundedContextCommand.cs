@@ -1,96 +1,57 @@
-﻿namespace Craftsman.Commands
+namespace Craftsman.Commands;
+
+using System.IO.Abstractions;
+using Domain;
+using Helpers;
+using Services;
+using Spectre.Console;
+using Spectre.Console.Cli;
+
+public class AddBoundedContextCommand : Command<AddBoundedContextCommand.Settings>
 {
-    using Craftsman.Enums;
-    using Craftsman.Helpers;
-    using Craftsman.Models;
-    using System;
-    using System.IO.Abstractions;
-    using static Helpers.ConsoleWriter;
-    using Spectre.Console;
-    using Craftsman.Exceptions;
-    using System.IO;
-    using System.Collections.Generic;
+    private readonly IFileSystem _fileSystem;
+    private readonly IConsoleWriter _consoleWriter;
+    private readonly IAnsiConsole _console;
+    private readonly ICraftsmanUtilities _utilities;
+    private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
-    public static class AddBoundedContextCommand
+    public AddBoundedContextCommand(IFileSystem fileSystem,
+        IConsoleWriter consoleWriter,
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore,
+        IAnsiConsole console, IFileParsingHelper fileParsingHelper)
     {
-        public static void Help()
-        {
-            WriteHelpHeader(@$"Description:");
-            WriteHelpText(@$"   Scaffolds out new bounded context for a Wrapt domain project based on a given template file in a json or yaml format.{Environment.NewLine}");
+        _fileSystem = fileSystem;
+        _consoleWriter = consoleWriter;
+        _utilities = utilities;
+        _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
+        _console = console;
+        _fileParsingHelper = fileParsingHelper;
+    }
 
-            WriteHelpHeader(@$"Usage:");
-            WriteHelpText(@$"   craftsman add:bc [options] <filepath>{Environment.NewLine}");
-            WriteHelpText(@$"   or");
-            WriteHelpText(@$"   craftsman add:boundedcontext [options] <filepath>{Environment.NewLine}");
+    public class Settings : CommandSettings
+    {
+        [CommandArgument(0, "<Filepath>")] public string Filepath { get; set; }
+    }
 
-            WriteHelpHeader(@$"Arguments:");
-            WriteHelpText(@$"   filepath         The full filepath for the yaml or json file that describes your web API using a proper Wrapt format.");
+    public override int Execute(CommandContext context, Settings settings)
+    {
+        var potentialSolutionDir = _utilities.GetRootDir();
 
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Options:");
-            WriteHelpText(@$"   -h, --help          Display this help message. No filepath is needed to display the help message.");
+        _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
+        _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
-            WriteHelpText(Environment.NewLine);
-            WriteHelpHeader(@$"Example:");
-            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.yaml");
-            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.yml");
-            WriteHelpText(@$"   craftsman add:bc C:\fullpath\api.json{Environment.NewLine}");
-        }
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
+        var boundedContexts = FileParsingHelper.GetTemplateFromFile<BoundedContextsTemplate>(settings.Filepath);
+        _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
-        public static void Run(string filePath, string domainDirectory, IFileSystem fileSystem, Verbosity verbosity)
-        {
-            try
-            {
-                FileParsingHelper.RunInitialTemplateParsingGuards(filePath);
-                Utilities.SolutionGuard(domainDirectory);
+        foreach (var template in boundedContexts.BoundedContexts)
+            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem)
+                .ScaffoldApi(potentialSolutionDir, template);
 
-                var boundedContexts = FileParsingHelper.GetTemplateFromFile<BoundedContextsTemplate>(filePath);
-                WriteHelpText($"Your template file was parsed successfully.");
-
-                foreach (var template in boundedContexts.BoundedContexts)
-                {
-                    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem);
-                }
-
-                // migrations
-                Utilities.RunDbMigrations(boundedContexts.BoundedContexts, domainDirectory);
-
-                WriteHelpHeader($"{Environment.NewLine}Your bounded contexts have been successfully added. Keep up the good work!");
-                StarGithubRequest();
-            }
-            catch (Exception e)
-            {
-                if (e is FileAlreadyExistsException
-                    || e is DirectoryAlreadyExistsException
-                    || e is InvalidSolutionNameException
-                    || e is FileNotFoundException
-                    || e is InvalidDbProviderException
-                    || e is InvalidFileTypeException
-                    || e is DataValidationErrorException
-                    || e is SolutiuonNameEntityMatchException)
-                {
-                    WriteError($"{e.Message}");
-                }
-                else
-                {
-                    AnsiConsole.WriteException(e, new ExceptionSettings
-                    {
-                        Format = ExceptionFormats.ShortenEverything | ExceptionFormats.ShowLinks,
-                        Style = new ExceptionStyle
-                        {
-                            Exception = new Style().Foreground(Color.Grey),
-                            Message = new Style().Foreground(Color.White),
-                            NonEmphasized = new Style().Foreground(Color.Cornsilk1),
-                            Parenthesis = new Style().Foreground(Color.Cornsilk1),
-                            Method = new Style().Foreground(Color.Red),
-                            ParameterName = new Style().Foreground(Color.Cornsilk1),
-                            ParameterType = new Style().Foreground(Color.Red),
-                            Path = new Style().Foreground(Color.Red),
-                            LineNumber = new Style().Foreground(Color.Cornsilk1),
-                        }
-                    });
-                }
-            }
-        }
+        _consoleWriter.WriteHelpHeader(
+            $"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
+        return 0;
     }
 }

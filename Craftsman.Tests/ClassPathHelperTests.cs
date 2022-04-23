@@ -3,6 +3,7 @@
     using Craftsman.Helpers;
     using FluentAssertions;
     using System.IO;
+    using Services;
     using Xunit;
 
     public class ClassPathHelperTests
