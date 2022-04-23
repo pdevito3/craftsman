@@ -32,7 +32,7 @@
             }
         }
 
-        public NamingConventionEnum NamingConventionEnum { get; set; }
+        public NamingConventionEnum NamingConventionEnum = NamingConventionEnum.SnakeCase;
         /// <summary>
         /// The naming convention for your database
         /// </summary>

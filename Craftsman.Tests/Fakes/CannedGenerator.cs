@@ -28,7 +28,7 @@
             return new ApiTemplate()
             {
                 ProjectName = "BespokedBikes.Api",
-                DbContextConfig = new DbContextConfig()
+                DbContext = new DbContextConfig()
                 {
                     ContextName = "BespokedBikesDbContext",
                     DatabaseName = "BespokedBikes",

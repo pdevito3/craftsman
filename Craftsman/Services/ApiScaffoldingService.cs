@@ -54,8 +54,8 @@ public class ApiScaffoldingService
                     .AddProjects(buildSolutionDirectory,
                         srcDirectory,
                         testDirectory,
-                        template.DbContextConfig.ProviderEnum,
-                        template.DbContextConfig.DatabaseName,
+                        template.DbContext.ProviderEnum,
+                        template.DbContext.DatabaseName,
                         projectName, template.AddJwtAuthentication);
 
                 // add all files based on the given template config
@@ -71,7 +71,7 @@ public class ApiScaffoldingService
         
         // docker config data transform
         template.DockerConfig.ProjectName = template.ProjectName;
-        template.DockerConfig.Provider = template.DbContextConfig.Provider;
+        template.DockerConfig.Provider = template.DbContext.Provider;
 
         // get solution dir from bcDir
         var solutionDirectory = Directory.GetParent(boundedContextDirectory)?.FullName;
@@ -87,11 +87,11 @@ public class ApiScaffoldingService
                 .Replace(":", ""); // this is fragile and i hate it. also not in domain...
         new DbContextBuilder(_utilities, _fileSystem).CreateDbContext(srcDirectory,
             template.Entities,
-            template.DbContextConfig.ContextName,
-            template.DbContextConfig.ProviderEnum,
-            template.DbContextConfig.DatabaseName,
+            template.DbContext.ContextName,
+            template.DbContext.ProviderEnum,
+            template.DbContext.DatabaseName,
             template.DockerConfig.DbConnectionString,
-            template.DbContextConfig.NamingConventionEnum,
+            template.DbContext.NamingConventionEnum,
             template.UseSoftDelete,
             projectBaseName
         );
@@ -101,13 +101,13 @@ public class ApiScaffoldingService
         {
             new PermissionsBuilder(_utilities).GetPermissions(srcDirectory, projectBaseName); // <-- needs to run before entity features
             new RolesBuilder(_utilities).GetRoles(solutionDirectory);
-            new UserPolicyHandlerBuilder(_utilities).CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, template.DbContextConfig.ContextName);
+            new UserPolicyHandlerBuilder(_utilities).CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, template.DbContext.ContextName);
             new InfrastructureServiceRegistrationModifier(_fileSystem).InitializeAuthServices(srcDirectory, projectBaseName);
             new EntityScaffoldingService(_utilities, _fileSystem).ScaffoldRolePermissions(solutionDirectory,
                 srcDirectory,
                 testDirectory,
                 projectBaseName,
-                template.DbContextConfig.ContextName,
+                template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
                 template.UseSoftDelete);
         }
@@ -118,14 +118,14 @@ public class ApiScaffoldingService
             testDirectory,
             projectBaseName,
             template.Entities,
-            template.DbContextConfig.ContextName,
+            template.DbContext.ContextName,
             template.SwaggerConfig.AddSwaggerComments,
             template.UseSoftDelete);
 
         // environments
         AddStartupEnvironmentsWithServices(
             srcDirectory,
-            template.DbContextConfig.DatabaseName,
+            template.DbContext.DatabaseName,
             template.Environment,
             template.SwaggerConfig,
             template.Port,
@@ -137,13 +137,13 @@ public class ApiScaffoldingService
         new PagedListTestBuilder(_utilities).CreateTests(srcDirectory, testDirectory, projectBaseName);
         new IntegrationTestFixtureBuilder(_utilities).CreateFixture(testDirectory, 
             projectBaseName, 
-            template.DbContextConfig.ContextName, 
-            template.DbContextConfig.ProviderEnum);
-        new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContextConfig.ProviderEnum);
-        new DockerUtilitiesBuilder(_utilities).CreateGeneralUtilityClass(testDirectory, projectBaseName, template.DbContextConfig.ProviderEnum);
-        new DockerUtilitiesBuilder(_utilities).CreateDockerDatabaseUtilityClass(testDirectory, projectBaseName, template.DbContextConfig.ProviderEnum);
-        new WebAppFactoryBuilder(_utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.DbContextConfig.ContextName, template.AddJwtAuthentication);
-        new FunctionalTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContextConfig.ContextName);
+            template.DbContext.ContextName, 
+            template.DbContext.ProviderEnum);
+        new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ProviderEnum);
+        new DockerUtilitiesBuilder(_utilities).CreateGeneralUtilityClass(testDirectory, projectBaseName, template.DbContext.ProviderEnum);
+        new DockerUtilitiesBuilder(_utilities).CreateDockerDatabaseUtilityClass(testDirectory, projectBaseName, template.DbContext.ProviderEnum);
+        new WebAppFactoryBuilder(_utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
+        new FunctionalTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName);
         new HealthTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         new HttpClientExtensionsBuilder(_utilities).Create(testDirectory, projectBaseName);
         new EntityBuilder(_utilities).CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete);

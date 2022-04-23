@@ -11,7 +11,7 @@ using Spectre.Console.Cli;
 
 public class NewDomainCommand : Command<NewDomainCommand.Settings>
 {
-    private IAnsiConsole _console;
+    private readonly IAnsiConsole _console;
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
     private readonly ICraftsmanUtilities _utilities;
@@ -80,16 +80,19 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
             new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem).ScaffoldApi(solutionDirectory, bc);
 
         // auth server
-        // if (domainProject.AuthServer != null)
-        //     AddAuthServerCommand.AddAuthServer(solutionDirectory, domainProject.AuthServer);
-        //     
-        // // bff
-        // if (domainProject.AuthServer != null)
-        //     AddBffCommand.AddBff(domainProject.Bff, solutionDirectory);
-        //
-        // // messages
-        // if (domainProject.Messages.Count > 0)
-        //     AddMessageCommand.AddMessages(solutionDirectory, domainProject.Messages);
+        if (domainProject.AuthServer != null)
+            new AddAuthServerCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper)
+                .AddAuthServer(solutionDirectory, domainProject.AuthServer);
+            
+        // bff
+        if (domainProject.Bff != null)
+            new AddBffCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper)
+                .AddBff(domainProject.Bff, solutionDirectory);
+        
+        // messages
+        if (domainProject.Messages.Count > 0)
+            new AddMessageCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper)
+                .AddMessages(solutionDirectory, domainProject.Messages);
         
         // migrations
         _dbMigrator.RunDbMigrations(domainProject.BoundedContexts, solutionDirectory);

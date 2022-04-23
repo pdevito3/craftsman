@@ -18,7 +18,7 @@
         /// <summary>
         /// The name of the solution you want to build
         /// </summary>
-        public DbContextConfig DbContextConfig { get; set; } = new DbContextConfig();
+        public DbContextConfig DbContext { get; set; } = new DbContextConfig();
 
         /// <summary>
         /// Complete list of database entities
