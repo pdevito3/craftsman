@@ -54,7 +54,7 @@
 {{
     using System;
 
-    public class NotFoundException : Exception, ICraftsmanException
+    public class NotFoundException : Exception
     {{
         public NotFoundException()
             : base()
@@ -86,7 +86,7 @@
     using System;
     using System.Globalization;
 
-    public class ForbiddenAccessException : Exception, ICraftsmanException
+    public class ForbiddenAccessException : Exception
     {{
         public ForbiddenAccessException() : base() {{ }}
     }}
@@ -102,7 +102,7 @@
     using System.Linq;
     using System;
 
-    public class ValidationException : Exception, ICraftsmanException
+    public class ValidationException : Exception
     {{
         public ValidationException()
             : base(""One or more validation failures have occurred."")
