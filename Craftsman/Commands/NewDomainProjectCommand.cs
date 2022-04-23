@@ -109,7 +109,7 @@
                 AddAuthServerCommand.AddAuthServer(domainDirectory, fileSystem, domainProject.AuthServer);
             
             // bff
-            if (domainProject.AuthServer != null)
+            if (domainProject.Bff != null)
                 AddBffCommand.AddBff(domainProject.Bff, domainDirectory, fileSystem);
 
             // messages

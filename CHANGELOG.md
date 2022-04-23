@@ -13,6 +13,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Open Telemetry and Jaeger tracing support
 
+## [0.14.2] - 04/22/2022
+
+### Fixed
+
+- Bff conditional check
+
 ## [0.14.1] - 04/19/2022
 
 ### Fixed
