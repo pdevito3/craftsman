@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Dtos
+﻿namespace Craftsman.Builders.Dtos;
+
+using Helpers;
+using Services;
+
+public class BasePaginationParametersBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class BasePaginationParametersBuilder
+    public BasePaginationParametersBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public BasePaginationParametersBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateBasePaginationParameters(string solutionDirectory)
+    {
+        var classPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, $"BasePaginationParameters.cs");
+        var fileText = GetBasePaginationParametersText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateBasePaginationParameters(string solutionDirectory)
-        {
-            var classPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, $"BasePaginationParameters.cs");
-            var fileText = GetBasePaginationParametersText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-
-        public static string GetBasePaginationParametersText(string classNamespace)
-        {
-            return @$"namespace {classNamespace}
+    public static string GetBasePaginationParametersText(string classNamespace)
+    {
+        return @$"namespace {classNamespace}
 {{
     public abstract class BasePaginationParameters
     {{
@@ -43,6 +43,5 @@
         }}
     }}
 }}";
-        }
     }
 }

@@ -1,44 +1,44 @@
-﻿namespace Craftsman.Builders.Tests.FunctionalTests
+﻿namespace Craftsman.Builders.Tests.FunctionalTests;
+
+using System;
+using System.IO;
+using Domain;
+using Domain.Enums;
+using Helpers;
+using Services;
+
+public class DeleteEntityTestBuilder
 {
-    using System;
-    using System.IO;
-    using Domain;
-    using Domain.Enums;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class DeleteEntityTestBuilder
+    public DeleteEntityTestBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public DeleteEntityTestBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"Delete{entity.Name}Tests.cs", entity.Plural, projectBaseName);
+        var fileText = WriteTestFileText(solutionDirectory, testDirectory, classPath, entity, isProtected, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateTests(string solutionDirectory, string testDirectory, Entity entity, bool isProtected, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"Delete{entity.Name}Tests.cs", entity.Plural, projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, testDirectory, classPath, entity, isProtected, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    private static string WriteTestFileText(string solutionDirectory, string testDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)
+    {
+        var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "");
+        var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
+        var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
+        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
 
-        private static string WriteTestFileText(string solutionDirectory, string testDirectory, ClassPath classPath, Entity entity, bool isProtected, string projectBaseName)
-        {
-            var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "");
-            var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
-            var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
-            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
-            
-            var permissionsUsing = isProtected 
-                ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};{Environment.NewLine}using {rolesClassPath.ClassNamespace};"
-                : string.Empty;
-            
-            var authOnlyTests = isProtected ? $@"
+        var permissionsUsing = isProtected
+            ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};{Environment.NewLine}using {rolesClassPath.ClassNamespace};"
+            : string.Empty;
+
+        var authOnlyTests = isProtected ? $@"
             {DeleteEntityTestUnauthorized(entity)}
             {DeleteEntityTestForbidden(entity)}" : "";
 
-            return @$"namespace {classPath.ClassNamespace};
+        return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};{permissionsUsing}
@@ -51,22 +51,22 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 {{
     {DeleteEntityTest(entity, isProtected)}{authOnlyTests}
 }}";
-        }
+    }
 
-        private static string DeleteEntityTest(Entity entity, bool isProtected)
-        {
-            var fakeEntity = FileNames.FakerName(entity.Name);
-            var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = Entity.PrimaryKeyProperty.Name;
-            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+    private static string DeleteEntityTest(Entity entity, bool isProtected)
+    {
+        var fakeEntity = FileNames.FakerName(entity.Name);
+        var fakeEntityVariableName = $"fake{entity.Name}";
+        var pkName = Entity.PrimaryKeyProperty.Name;
+        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
-            var testName = $"delete_{entity.Name.ToLower()}_returns_nocontent_when_entity_exists";
-            testName += isProtected ? "_and_auth_credentials_are_valid" : "";
-            var clientAuth = isProtected ? @$"
+        var testName = $"delete_{entity.Name.ToLower()}_returns_nocontent_when_entity_exists";
+        testName += isProtected ? "_and_auth_credentials_are_valid" : "";
+        var clientAuth = isProtected ? @$"
 
         _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
-            return $@"[Test]
+        return $@"[Test]
     public async Task {testName}()
     {{
         // Arrange
@@ -80,16 +80,16 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }}";
-        }
+    }
 
-        private static string DeleteEntityTestUnauthorized(Entity entity)
-        {
-            var fakeEntity = FileNames.FakerName(entity.Name);
-            var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = Entity.PrimaryKeyProperty.Name;
-            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+    private static string DeleteEntityTestUnauthorized(Entity entity)
+    {
+        var fakeEntity = FileNames.FakerName(entity.Name);
+        var fakeEntityVariableName = $"fake{entity.Name}";
+        var pkName = Entity.PrimaryKeyProperty.Name;
+        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
-            return $@"
+        return $@"
     [Test]
     public async Task delete_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
     {{
@@ -105,16 +105,16 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }}";
-        }
+    }
 
-        private static string DeleteEntityTestForbidden(Entity entity)
-        {
-            var fakeEntity = FileNames.FakerName(entity.Name);
-            var fakeEntityVariableName = $"fake{entity.Name}";
-            var pkName = Entity.PrimaryKeyProperty.Name;
-            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+    private static string DeleteEntityTestForbidden(Entity entity)
+    {
+        var fakeEntity = FileNames.FakerName(entity.Name);
+        var fakeEntityVariableName = $"fake{entity.Name}";
+        var pkName = Entity.PrimaryKeyProperty.Name;
+        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
-            return $@"
+        return $@"
     [Test]
     public async Task delete_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
     {{
@@ -131,6 +131,5 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }}";
-        }
     }
 }

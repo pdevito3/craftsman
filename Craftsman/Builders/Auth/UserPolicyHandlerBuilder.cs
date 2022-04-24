@@ -1,31 +1,31 @@
-﻿namespace Craftsman.Builders.Auth
+﻿namespace Craftsman.Builders.Auth;
+
+using Helpers;
+using Services;
+
+public class UserPolicyHandlerBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class UserPolicyHandlerBuilder
+    public UserPolicyHandlerBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public UserPolicyHandlerBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
-        
-        public void CreatePolicyBuilder(string solutionDirectory, string srcDirectory, string projectBaseName, string dbContextName)
-        {
-            var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
-            var fileText = GetPolicyBuilderText(classPath.ClassNamespace, solutionDirectory, srcDirectory, dbContextName, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        private static string GetPolicyBuilderText(string classNamespace, string solutionDirectory, string srcDirectory, string dbContextName, string projectBaseName)
-        {
-            var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
-            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
-            var dbContextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
-            
-            return @$"namespace {classNamespace};
+    public void CreatePolicyBuilder(string solutionDirectory, string srcDirectory, string projectBaseName, string dbContextName)
+    {
+        var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
+        var fileText = GetPolicyBuilderText(classPath.ClassNamespace, solutionDirectory, srcDirectory, dbContextName, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    private static string GetPolicyBuilderText(string classNamespace, string solutionDirectory, string srcDirectory, string dbContextName, string projectBaseName)
+    {
+        var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+        var dbContextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
+
+        return @$"namespace {classNamespace};
 
 using System.Security.Claims;
 using {dbContextClassPath.ClassNamespace};
@@ -69,6 +69,5 @@ public class UserPolicyHandler : IUserPolicyHandler
         return await Task.FromResult(permissions);
     }}
 }}";
-        }
     }
 }

@@ -1,34 +1,34 @@
-namespace Craftsman.Builders
+namespace Craftsman.Builders;
+
+using Helpers;
+using Services;
+
+public class LoggingConfigurationBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class LoggingConfigurationBuilder
+    public LoggingConfigurationBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public LoggingConfigurationBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
-        
-        public void CreateWebApiConfigFile(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.WebApiHostExtensionsClassPath(projectDirectory, "LoggingConfiguration.cs", authServerProjectName);
-            var fileText = GetConfigText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public void CreateBffConfigFile(string solutionDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", projectBaseName);
-            var fileText = GetConfigTextForHostBuilder(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        private static string GetConfigText(string classNamespace)
-        {
-            return @$"namespace {classNamespace};
+    public void CreateWebApiConfigFile(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.WebApiHostExtensionsClassPath(projectDirectory, "LoggingConfiguration.cs", authServerProjectName);
+        var fileText = GetConfigText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    public void CreateBffConfigFile(string solutionDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", projectBaseName);
+        var fileText = GetConfigTextForHostBuilder(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    private static string GetConfigText(string classNamespace)
+    {
+        return @$"namespace {classNamespace};
 
 using Serilog;
 using Serilog.Core;
@@ -62,11 +62,11 @@ public static class LoggingConfiguration
         Log.Logger = logger.CreateLogger();
     }}
 }}";
-        }
-        
-        private static string GetConfigTextForHostBuilder(string classNamespace)
-        {
-            return @$"namespace {classNamespace};
+    }
+
+    private static string GetConfigTextForHostBuilder(string classNamespace)
+    {
+        return @$"namespace {classNamespace};
 
 using Serilog;
 using Serilog.Core;
@@ -98,6 +98,5 @@ public static class LoggingConfiguration
         host.UseSerilog();
     }}
 }}";
-        }
     }
 }

@@ -1,33 +1,33 @@
-﻿namespace Craftsman.Builders.Tests.IntegrationTests
+﻿namespace Craftsman.Builders.Tests.IntegrationTests;
+
+using Craftsman.Services;
+using Domain;
+using Helpers;
+
+public class ConsumerTestBuilder
 {
-    using Craftsman.Services;
-    using Domain;
-    using Helpers;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class ConsumerTestBuilder
+    public ConsumerTestBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public ConsumerTestBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Consumer consumer, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{consumer.ConsumerName}Tests.cs", "EventHandlers", projectBaseName);
+        var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, consumer, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Consumer consumer, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{consumer.ConsumerName}Tests.cs", "EventHandlers", projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, consumer, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Consumer consumer, string projectBaseName)
+    {
+        var testFixtureName = FileNames.GetIntegrationTestFixtureName();
+        var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
+        var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, "", consumer.DomainDirectory, projectBaseName);
 
-        private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Consumer consumer, string projectBaseName)
-        {
-            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-            var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
-            var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, "", consumer.DomainDirectory, projectBaseName);
-            
-            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
-            return @$"namespace {classPath.ClassNamespace};
+        var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
+        return @$"namespace {classPath.ClassNamespace};
 
 using FluentAssertions;
 using NUnit.Framework;
@@ -45,13 +45,13 @@ public class {consumer.ConsumerName}Tests : TestBase
 {{
     {ConsumerTest(consumer)}
 }}";
-        }
+    }
 
-        private static string ConsumerTest(Consumer consumer)
-        {
-            var messageName = consumer.MessageName;
+    private static string ConsumerTest(Consumer consumer)
+    {
+        var messageName = consumer.MessageName;
 
-            return $@"[Test]
+        return $@"[Test]
     public async Task can_consume_{consumer.MessageName}_message()
     {{
         // Arrange
@@ -64,6 +64,5 @@ public class {consumer.ConsumerName}Tests : TestBase
         (await IsConsumed<{messageName}>()).Should().Be(true);
         (await IsConsumed<{messageName}, {consumer.ConsumerName}>()).Should().Be(true);
     }}";
-        }
     }
 }

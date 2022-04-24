@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Tests.Utilities
+﻿namespace Craftsman.Builders.Tests.Utilities;
+
+using Helpers;
+using Services;
+
+public class ApiRoutesBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class ApiRoutesBuilder
+    public ApiRoutesBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public ApiRoutesBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateClass(string testDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "ApiRoutes.cs");
+        var fileText = GetBaseText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateClass(string testDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "ApiRoutes.cs");
-            var fileText = GetBaseText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-
-        private static string GetBaseText(string classNamespace)
-        {
-            return @$"namespace {classNamespace};
+    private static string GetBaseText(string classNamespace)
+    {
+        return @$"namespace {classNamespace};
 public class ApiRoutes
 {{
     public const string Base = ""api"";
@@ -29,6 +29,5 @@ public class ApiRoutes
 
     // new api route marker - do not delete
 }}";
-        }
     }
 }

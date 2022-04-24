@@ -1,10 +1,9 @@
-﻿namespace Craftsman.Helpers
+﻿namespace Craftsman.Helpers;
+
+public class TestBuildingHelpers
 {
-    public class TestBuildingHelpers
+    public static string GetUsingString(string dbContextName)
     {
-        public static string GetUsingString(string dbContextName)
-        {
-            return $@"using (var context = new {dbContextName}(dbOptions))";
-        }
+        return $@"using (var context = new {dbContextName}(dbOptions))";
     }
 }

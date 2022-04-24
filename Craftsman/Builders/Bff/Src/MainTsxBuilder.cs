@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Bff.Src
+﻿namespace Craftsman.Builders.Bff.Src;
+
+using Helpers;
+using Services;
+
+public class MainTsxBuilder
 {
-	using Helpers;
-	using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public class MainTsxBuilder
-  {
-	  private readonly ICraftsmanUtilities _utilities;
-
-	  public MainTsxBuilder(ICraftsmanUtilities utilities)
-	  {
-		  _utilities = utilities;
-	  }
+    public MainTsxBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
     public void CreateMainTsx(string spaDirectory)
     {
-      var classPath = ClassPathHelper.BffSpaSrcClassPath(spaDirectory, "main.tsx");
-      var fileText = GetMainTsxText();
-      _utilities.CreateFile(classPath, fileText);
+        var classPath = ClassPathHelper.BffSpaSrcClassPath(spaDirectory, "main.tsx");
+        var fileText = GetMainTsxText();
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetMainTsxText()
     {
-      return @$"import '@/custom.css';
+        return @$"import '@/custom.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -41,5 +41,4 @@ ReactDOM.render(
 	document.getElementById('root')
 );";
     }
-  }
 }

@@ -19,7 +19,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
     public AddFeatureCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore,
         IAnsiConsole console)
     {
         _fileSystem = fileSystem;
@@ -32,11 +32,11 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
     public class Settings : CommandSettings
     {
     }
-    
+
     public override int Execute(CommandContext context, Settings settings)
     {
         var potentialBoundaryDirectory = _utilities.GetRootDir();
-        
+
         var solutionDirectory = _fileSystem.Directory.GetParent(potentialBoundaryDirectory)?.FullName;
         _utilities.IsSolutionDirectoryGuard(solutionDirectory);
         _scaffoldingDirectoryStore.SetSolutionDirectory(solutionDirectory);
@@ -47,7 +47,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
         var contextName = _utilities.GetDbContext(_scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.ProjectBaseName);
 
         var feature = RunPrompt();
-                
+
         var useSoftDelete = _utilities.ProjectUsesSoftDelete(_scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.ProjectBaseName);
         new EntityScaffoldingService(_utilities, _fileSystem).AddFeatureToProject(
             solutionDirectory,
@@ -70,7 +70,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
         _console.Write(new Rule("[yellow]Add a New Feature[/]").RuleStyle("grey").Centered());
 
         var featureType = AskFeatureType();
-        
+
         if (featureType != FeatureType.AdHoc.Name && featureType != FeatureType.AddListByFk.Name)
         {
             var entityName = AskEntityName();
@@ -85,7 +85,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
                 .AddRow("[grey]Entity Plural[/]", entityPlural)
                 .AddRow("[grey]Is Protected[/]", isProtected.ToString())
             );
-            
+
             return new Feature()
             {
                 Type = featureType,
@@ -94,7 +94,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
                 IsProtected = isProtected
             };
         }
-        
+
         if (featureType == FeatureType.AddListByFk.Name)
         {
             var entityName = AskEntityName();
@@ -117,7 +117,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
                 .AddRow("[grey]Parent Entity[/]", parentEntity)
                 .AddRow("[grey]Batch DbSet[/]", dbSet)
             );
-            
+
             return new Feature()
             {
                 Type = featureType,
@@ -130,8 +130,8 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
                 ParentEntity = parentEntity,
             };
         }
-        
-        
+
+
         var feature = AskFeature();
         var command = AskCommand(feature);
         var responseType = AskResponseType();
@@ -147,7 +147,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
             .AddRow("[grey]Response Type[/]", responseType)
             .AddRow("[grey]Is Producer[/]", producer.ToString())
         );
-        
+
         return new Feature()
         {
             Type = "AdHoc",
@@ -270,7 +270,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
                 .AllowEmpty()
         );
     }
-    
+
     private bool AskIsProtected()
     {
         var command = _console.Prompt(
@@ -292,7 +292,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
                 .DefaultValue($"Can{featureName}")
                 .HideDefaultValue());
     }
-    
+
     private int AskAge(IAnsiConsole console)
     {
         console.WriteLine();

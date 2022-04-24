@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Tests.Utilities
+﻿namespace Craftsman.Builders.Tests.Utilities;
+
+using Helpers;
+using Services;
+
+public class HttpClientExtensionsBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class HttpClientExtensionsBuilder
+    public HttpClientExtensionsBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public HttpClientExtensionsBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void Create(string solutionDirectory, string projectName)
+    {
+        var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectName, $"HttpClientExtensions.cs");
+        var fileText = CreateHttpClientExtensionsText(classPath);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void Create(string solutionDirectory, string projectName)
-        {
-            var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectName, $"HttpClientExtensions.cs");
-            var fileText = CreateHttpClientExtensionsText(classPath);
-            _utilities.CreateFile(classPath, fileText);
-        }
-
-        private static string CreateHttpClientExtensionsText(ClassPath classPath)
-        {
-            return @$"namespace {classPath.ClassNamespace};
+    private static string CreateHttpClientExtensionsText(ClassPath classPath)
+    {
+        return @$"namespace {classPath.ClassNamespace};
 
 using Microsoft.AspNetCore.JsonPatch;
 using System.Text.Json;
@@ -76,6 +76,5 @@ public static class HttpClientExtensions
         return await client.SendAsync(patchRequest).ConfigureAwait(false);
     }}
 }}";
-        }
     }
 }

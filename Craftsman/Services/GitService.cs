@@ -17,7 +17,7 @@ public class GitService : IGitService
     {
         _fileSystem = fileSystem;
     }
-    
+
     public void GitSetup(string solutionDirectory, bool useSystemGitUser)
     {
         new GitBuilder(_fileSystem).CreateGitIgnore(solutionDirectory);
@@ -28,8 +28,8 @@ public class GitService : IGitService
         string[] allFiles = Directory.GetFiles(solutionDirectory, "*.*", SearchOption.AllDirectories);
         Commands.Stage(repo, allFiles);
 
-        var author = useSystemGitUser 
-            ? repo.Config.BuildSignature(DateTimeOffset.Now) 
+        var author = useSystemGitUser
+            ? repo.Config.BuildSignature(DateTimeOffset.Now)
             : new Signature("Craftsman", "craftsman", DateTimeOffset.Now);
         repo.Commit("Initial Commit", author, author);
     }

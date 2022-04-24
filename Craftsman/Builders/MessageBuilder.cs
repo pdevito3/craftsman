@@ -1,32 +1,32 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders;
+
+using System;
+using System.Collections.Generic;
+using Domain;
+using Helpers;
+using Services;
+
+public class MessageBuilder
 {
-    using System;
-    using System.Collections.Generic;
-    using Domain;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class MessageBuilder
+    public MessageBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public MessageBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateMessage(string solutionDirectory, Message message)
+    {
+        var classPath = ClassPathHelper.MessagesClassPath(solutionDirectory, $"{message.Name}.cs");
+        var fileText = GetMessageFileText(classPath.ClassNamespace, message);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateMessage(string solutionDirectory, Message message)
-        {
-            var classPath = ClassPathHelper.MessagesClassPath(solutionDirectory, $"{message.Name}.cs");
-            var fileText = GetMessageFileText(classPath.ClassNamespace, message);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public static string GetMessageFileText(string classNamespace, Message message)
+    {
+        var propString = MessagePropBuilder(message.Properties);
 
-        public static string GetMessageFileText(string classNamespace, Message message)
-        {
-            var propString = MessagePropBuilder(message.Properties);
-
-            return @$"namespace {classNamespace}
+        return @$"namespace {classNamespace}
 {{
     using System;
     using System.Text;
@@ -38,18 +38,17 @@
 
     // add-on property marker - Do Not Delete This Comment
 }}";
-        }
+    }
 
-        public static string MessagePropBuilder(List<MessageProperty> props)
+    public static string MessagePropBuilder(List<MessageProperty> props)
+    {
+        var propString = "";
+        for (var eachProp = 0; eachProp < props.Count; eachProp++)
         {
-            var propString = "";
-            for (var eachProp = 0; eachProp < props.Count; eachProp++)
-            {
-                string newLine = eachProp == props.Count - 1 ? "" : $"{Environment.NewLine}{Environment.NewLine}";
-                propString += $@"    {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
-            }
-
-            return propString;
+            string newLine = eachProp == props.Count - 1 ? "" : $"{Environment.NewLine}{Environment.NewLine}";
+            propString += $@"    {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
         }
+
+        return propString;
     }
 }

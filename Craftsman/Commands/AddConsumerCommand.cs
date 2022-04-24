@@ -37,15 +37,15 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
         [CommandArgument(0, "<Filepath>")]
         public string Filepath { get; set; }
     }
-    
+
     public override int Execute(CommandContext context, Settings settings)
     {
         var potentialBoundaryDirectory = _utilities.GetRootDir();
-        
+
         var solutionDirectory = _fileSystem.Directory.GetParent(potentialBoundaryDirectory)?.FullName;
         _utilities.IsSolutionDirectoryGuard(solutionDirectory);
         _scaffoldingDirectoryStore.SetSolutionDirectory(solutionDirectory);
-        
+
         var projectName = new DirectoryInfo(potentialBoundaryDirectory).Name;
         _scaffoldingDirectoryStore.SetBoundedContextDirectoryAndProject(projectName);
         _utilities.IsBoundedContextDirectoryGuard();
@@ -53,9 +53,9 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
         _fileParsingHelper.RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
         var template = FileParsingHelper.ReadYamlString<ConsumerTemplate>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
-        
+
         AddConsumers(template.Consumers, _scaffoldingDirectoryStore.ProjectBaseName, solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory);
-        
+
         _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your consumer has been successfully added. Keep up the good work!");
         return 0;
     }

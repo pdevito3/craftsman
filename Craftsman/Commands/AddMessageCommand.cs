@@ -30,7 +30,7 @@ public class AddMessageCommand : Command<AddMessageCommand.Settings>
     public AddMessageCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore,
         IAnsiConsole console, IFileParsingHelper fileParsingHelper)
     {
         _fileSystem = fileSystem;
@@ -46,18 +46,18 @@ public class AddMessageCommand : Command<AddMessageCommand.Settings>
         [CommandArgument(0, "<Filepath>")]
         public string Filepath { get; set; }
     }
-    
+
     public override int Execute(CommandContext context, Settings settings)
     {
         var potentialSolutionDir = _utilities.GetRootDir();
-        
+
         _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
         _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
         var template = FileParsingHelper.GetTemplateFromFile<MessageTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
-        
+
         AddMessages(_scaffoldingDirectoryStore.SolutionDirectory, template.Messages);
 
         _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");

@@ -22,7 +22,7 @@ public class LaunchSettingsBuilder
 
     public static string GetLaunchSettingsText(BffTemplate template)
     {
-            return @$"{{
+        return @$"{{
   ""profiles"": {{
     ""{template.ProjectName}"": {{
       ""commandName"": ""Project"",

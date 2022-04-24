@@ -12,24 +12,24 @@ public class BffDockerfileBuilder
         _utilities = utilities;
     }
 
-    
+
     public void CreateBffDotNetDockerfile(string projectDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Dockerfile");
         var fileText = GetDockerfileText(projectBaseName, true, false);
         _utilities.CreateFile(classPath, fileText);
     }
-    
+
     private static string GetDockerfileText(string projectBaseName, bool addNodeInstall, bool addSharedKernel)
     {
-        var sharedKernelText = addSharedKernel 
+        var sharedKernelText = addSharedKernel
             ? $@"
 COPY [""SharedKernel/SharedKernel.csproj"", ""./SharedKernel/""]"
             : "";
-        
+
         // possibly below for yarn for bff
         // RUN npm install -g -s --no-progress yarn
-        var nodeText = addNodeInstall 
+        var nodeText = addNodeInstall
             ? $@"
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -

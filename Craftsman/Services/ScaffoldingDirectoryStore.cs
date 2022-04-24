@@ -21,30 +21,30 @@ public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
     public string ProjectBaseName { get; private set; }
     public string SrcDirectory => Path.Combine(BoundedContextDirectory, "src");
     public string TestDirectory => Path.Combine(BoundedContextDirectory, "tests");
-    
+
     public string SetSolutionDirectory(string rootDir, string domainName)
     {
-        if(string.IsNullOrEmpty(rootDir))
+        if (string.IsNullOrEmpty(rootDir))
             throw new Exception("Invalid Root Directory");
-        if(string.IsNullOrEmpty(domainName))
+        if (string.IsNullOrEmpty(domainName))
             throw new Exception("Invalid Domain Name");
-        
+
         SetSolutionDirectory($"{rootDir}{Path.DirectorySeparatorChar}{domainName}");
         return SolutionDirectory;
     }
 
     public string SetSolutionDirectory(string solutionDir)
     {
-        if(string.IsNullOrEmpty(solutionDir))
+        if (string.IsNullOrEmpty(solutionDir))
             throw new Exception("Invalid Solution Directory");
-        
+
         SolutionDirectory = solutionDir;
         return SolutionDirectory;
     }
 
     public string SetBoundedContextDirectoryAndProject(string projectName)
     {
-        if(string.IsNullOrEmpty(SolutionDirectory))
+        if (string.IsNullOrEmpty(SolutionDirectory))
             throw new Exception("Invalid Solution Directory");
 
         ProjectBaseName = projectName;

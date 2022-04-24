@@ -1,30 +1,30 @@
-﻿namespace Craftsman.Builders.AuthServer
+﻿namespace Craftsman.Builders.AuthServer;
+
+using Helpers;
+using Services;
+using static Helpers.ConstMessages;
+
+public class AuthServerAccountViewModelsBuilder
 {
-    using Helpers;
-    using Services;
-    using static Helpers.ConstMessages;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerAccountViewModelsBuilder
+    public AuthServerAccountViewModelsBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AuthServerAccountViewModelsBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
-        
-        public void CreateViewModels(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "AccountViewModels.cs", authServerProjectName);
-            var fileText = GetVmText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        private static string GetVmText(string classNamespace, string projectDirectory, string authServerProjectName)
-        {
-            var modelsClassPath = ClassPathHelper.AuthServerModelsClassPath(projectDirectory, "", authServerProjectName);
-            
-            return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+    public void CreateViewModels(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "AccountViewModels.cs", authServerProjectName);
+        var fileText = GetVmText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    private static string GetVmText(string classNamespace, string projectDirectory, string authServerProjectName)
+    {
+        var modelsClassPath = ClassPathHelper.AuthServerModelsClassPath(projectDirectory, "", authServerProjectName);
+
+        return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
 
@@ -66,6 +66,5 @@ public class LogoutViewModel : LogoutInputModel
 {{
     public bool ShowLogoutPrompt {{ get; set; }}
 }}";
-        }
     }
 }

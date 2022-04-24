@@ -57,5 +57,5 @@ public class DbMigrator : IDbMigrator
                 }
             });
     }
-    
+
 }

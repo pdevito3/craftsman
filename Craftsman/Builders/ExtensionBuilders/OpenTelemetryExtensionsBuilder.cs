@@ -12,7 +12,7 @@ public class OpenTelemetryExtensionsBuilder
     {
         _utilities = utilities;
     }
-    
+
     public void CreateOTelServiceExtension(string srcDirectory, string projectBaseName, DbProvider dbProvider)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"OpenTelemetryServiceExtension.cs", projectBaseName);

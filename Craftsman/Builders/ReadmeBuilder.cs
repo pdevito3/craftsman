@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders;
+
+using Helpers;
+using Services;
+
+public class ReadmeBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class ReadmeBuilder
+    public ReadmeBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public ReadmeBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateReadme(string solutionDirectory, string domainName)
+    {
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"README.md");
+        var fileText = GetReadmeFileText(domainName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateReadme(string solutionDirectory, string domainName)
-        {
-            var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"README.md");
-            var fileText = GetReadmeFileText(domainName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-
-        public static string GetReadmeFileText(string domainName)
-        {
-            return @$"# {domainName}
+    public static string GetReadmeFileText(string domainName)
+    {
+        return @$"# {domainName}
 
 This project was created with [Craftsman](https://github.com/pdevito3/craftsman).
 
@@ -90,6 +90,5 @@ cd YourBoundedContextName/src/YourBoundedContextName
 dotnet ef database update
 ```
 ";
-        }
     }
 }

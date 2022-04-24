@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Bff
+﻿namespace Craftsman.Builders.Bff;
+
+using Helpers;
+using Services;
+
+public class PackageJsonBuilder
 {
-	using Helpers;
-	using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public class PackageJsonBuilder
-  {
-	  private readonly ICraftsmanUtilities _utilities;
-
-	  public PackageJsonBuilder(ICraftsmanUtilities utilities)
-	  {
-		  _utilities = utilities;
-	  }
+    public PackageJsonBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
     public void CreatePackageJson(string spaDirectory, string projectName)
     {
-      var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "package.json");
-      var fileText = GetPackageJsonText(projectName);
-      _utilities.CreateFile(classPath, fileText);
+        var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "package.json");
+        var fileText = GetPackageJsonText(projectName);
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetPackageJsonText(string projectName)
     {
-      return @$"{{
+        return @$"{{
 	""name"": ""{projectName}"",
 	""version"": ""0.1.0"",
 	""private"": true,
@@ -85,5 +85,4 @@
 	}}
 }}";
     }
-  }
 }

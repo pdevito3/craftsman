@@ -1,42 +1,42 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders;
+
+using Domain;
+using Domain.Enums;
+using Helpers;
+using Services;
+
+public class ProducerRegistrationBuilder
 {
-    using Domain;
-    using Domain.Enums;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class ProducerRegistrationBuilder
+    public ProducerRegistrationBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public ProducerRegistrationBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateProducerRegistration(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
+    {
+        var className = $@"{producer.EndpointRegistrationMethodName}Registration";
+        var classPath = ClassPathHelper.WebApiProducersServiceExtensionsClassPath(srcDirectory, $"{className}.cs", projectBaseName);
+        var fileText = "";
 
-        public void CreateProducerRegistration(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
-        {
-            var className = $@"{producer.EndpointRegistrationMethodName}Registration";
-            var classPath = ClassPathHelper.WebApiProducersServiceExtensionsClassPath(srcDirectory, $"{className}.cs", projectBaseName);
-            var fileText = "";
+        if (ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct
+            || ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Topic)
+            fileText = GetDirectOrTopicProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
+        else
+            fileText = GetFanoutProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
 
-            if (ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct
-                || ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Topic)
-                fileText = GetDirectOrTopicProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
-            else
-                fileText = GetFanoutProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public static string GetDirectOrTopicProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)
+    {
+        var exchangeType = ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct
+            ? "ExchangeType.Direct"
+            : "ExchangeType.Topic";
+        var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
 
-        public static string GetDirectOrTopicProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)
-        {
-            var exchangeType = ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct 
-                ? "ExchangeType.Direct" 
-                : "ExchangeType.Topic";
-            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
-
-            return @$"namespace {classNamespace};
+        return @$"namespace {classNamespace};
 
 using MassTransit;
 using MassTransit.RabbitMqTransport;
@@ -69,13 +69,13 @@ public static class {className}
         }});
     }}
 }}";
-        }
+    }
 
-        public static string GetFanoutProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)
-        {
-            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
-            
-            return @$"namespace {classNamespace};
+    public static string GetFanoutProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)
+    {
+        var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
+
+        return @$"namespace {classNamespace};
 
 using MassTransit;
 using MassTransit.RabbitMqTransport;
@@ -90,6 +90,5 @@ public static class {className}
         cfg.Publish<{producer.MessageName}>(e => e.ExchangeType = ExchangeType.Fanout); // primary exchange type
     }}
 }}";
-        }
     }
 }

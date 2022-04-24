@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Bff
+﻿namespace Craftsman.Builders.Bff;
+
+using Helpers;
+using Services;
+
+public class IndexHtmlBuilder
 {
-	using Helpers;
-	using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public class IndexHtmlBuilder
-  {
-	  private readonly ICraftsmanUtilities _utilities;
-
-	  public IndexHtmlBuilder(ICraftsmanUtilities utilities)
-	  {
-		  _utilities = utilities;
-	  }
+    public IndexHtmlBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
     public void CreateIndexHtml(string spaDirectory, string headTitle)
     {
-      var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "index.html");
-      var fileText = GetIndexHtmlText(headTitle);
-      _utilities.CreateFile(classPath, fileText);
+        var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "index.html");
+        var fileText = GetIndexHtmlText(headTitle);
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetIndexHtmlText(string headTitle)
     {
-      return @$"<!DOCTYPE html>
+        return @$"<!DOCTYPE html>
 <html lang=""en"">
 	<head>
 		<meta charset=""UTF-8"" />
@@ -36,5 +36,4 @@
 </html>
 ";
     }
-  }
 }

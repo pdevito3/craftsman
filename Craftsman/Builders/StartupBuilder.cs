@@ -1,30 +1,30 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders;
+
+using Helpers;
+using Services;
+using static Helpers.ConstMessages;
+
+public class StartupBuilder
 {
-    using Helpers;
-    using Services;
-    using static Helpers.ConstMessages;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class StartupBuilder
+    public StartupBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
+    public void CreateWebApiStartup(string srcDirectory, bool useJwtAuth, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.StartupClassPath(srcDirectory, projectBaseName);
+        var fileText = GetWebApiStartupText(srcDirectory, classPath.ClassNamespace, useJwtAuth, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public StartupBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
-        public void CreateWebApiStartup(string srcDirectory, bool useJwtAuth, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.StartupClassPath(srcDirectory, projectBaseName);
-            var fileText = GetWebApiStartupText(srcDirectory, classPath.ClassNamespace, useJwtAuth, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public void CreateAuthServerStartup(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.StartupClassPath(projectDirectory, authServerProjectName);
+        var testUsersClassPath = ClassPathHelper.AuthServerSeederClassPath(projectDirectory, "", authServerProjectName);
 
-        public void CreateAuthServerStartup(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.StartupClassPath(projectDirectory, authServerProjectName);
-            var testUsersClassPath = ClassPathHelper.AuthServerSeederClassPath(projectDirectory, "", authServerProjectName);
-
-            var fileText = @$"{DuendeDisclosure}namespace {classPath.ClassNamespace};
+        var fileText = @$"{DuendeDisclosure}namespace {classPath.ClassNamespace};
 using Duende.IdentityServer;
 using Microsoft.AspNetCore.Builder;
 using {testUsersClassPath.ClassNamespace};
@@ -85,28 +85,28 @@ public class Startup
         }});
     }}
 }}";
-            _utilities.CreateFile(classPath, fileText);
-        }
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public static string GetWebApiStartupText(string solutionDirectory, string classNamespace, bool useJwtAuth, string projectBaseName)
+    public static string GetWebApiStartupText(string solutionDirectory, string classNamespace, bool useJwtAuth, string projectBaseName)
+    {
+        var appAuth = "";
+        var apiServiceExtensionsClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, "", projectBaseName);
+        var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(solutionDirectory, "", projectBaseName);
+        var seederClassPath = ClassPathHelper.DummySeederClassPath(solutionDirectory, "", projectBaseName);
+
+        if (useJwtAuth)
         {
-            var appAuth = "";
-            var apiServiceExtensionsClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, "", projectBaseName);
-            var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(solutionDirectory, "", projectBaseName);
-            var seederClassPath = ClassPathHelper.DummySeederClassPath(solutionDirectory, "", projectBaseName);
-
-            if (useJwtAuth)
-            {
-                appAuth = $@"
+            appAuth = $@"
 
         app.UseAuthentication();
         app.UseAuthorization();";
-            }
+        }
 
-            var dbContextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-            var corsName = $"{projectBaseName}CorsPolicy";
+        var dbContextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
+        var corsName = $"{projectBaseName}CorsPolicy";
 
-            return @$"namespace {classNamespace};
+        return @$"namespace {classNamespace};
 
 using {apiServiceExtensionsClassPath.ClassNamespace};
 using {apiAppExtensionsClassPath.ClassNamespace};
@@ -180,6 +180,5 @@ public class Startup
         // Dynamic App
     }}
 }}";
-        }
     }
 }

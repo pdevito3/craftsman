@@ -1,30 +1,30 @@
-﻿namespace Craftsman.Builders.Tests.Utilities
+﻿namespace Craftsman.Builders.Tests.Utilities;
+
+using Helpers;
+using Services;
+
+public class FunctionalTestBaseBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class FunctionalTestBaseBuilder
+    public FunctionalTestBaseBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public FunctionalTestBaseBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateBase(string solutionDirectory, string projectBaseName, string dbContextName)
+    {
+        var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, "TestBase.cs", projectBaseName);
+        var fileText = GetBaseText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateBase(string solutionDirectory, string projectBaseName, string dbContextName)
-        {
-            var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, "TestBase.cs", projectBaseName);
-            var fileText = GetBaseText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public static string GetBaseText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName)
+    {
+        var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
+        var apiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", projectBaseName);
 
-        public static string GetBaseText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName)
-        {
-            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-            var apiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", projectBaseName);
-
-            return @$"namespace {classNamespace};
+        return @$"namespace {classNamespace};
 
 using {contextClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};
@@ -154,6 +154,5 @@ public class TestBase
         }});
     }}
 }}";
-        }
     }
 }

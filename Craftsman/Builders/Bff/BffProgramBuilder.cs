@@ -19,22 +19,22 @@ public class BffProgramBuilder
         var fileText = GetProgramText(template, solutionDirectory, projectName);
         _utilities.CreateFile(classPath, fileText);
     }
-    
+
     public static string GetProgramText(BffTemplate template, string solutionDirectory, string projectName)
     {
         var loggerClassPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", projectName);
         var boundaryScopes = "";
-        foreach(var scope in template.BoundaryScopes)
+        foreach (var scope in template.BoundaryScopes)
             boundaryScopes +=
                 $@"{Environment.NewLine}        options.Scope.Add(""{scope}"");";
-        
+
         var remoteEndpoints = "";
-        foreach(var endpoint in template.RemoteEndpoints)
+        foreach (var endpoint in template.RemoteEndpoints)
             remoteEndpoints +=
                 $@"{Environment.NewLine}    endpoints.MapRemoteBffApiEndpoint(""{endpoint.LocalPath}"", ""{endpoint.ApiAddress}"")
         .RequireAccessToken();";
-        
-        
+
+
         return @$"using {loggerClassPath.ClassNamespace};
 using Duende.Bff;
 using Duende.Bff.Yarp;

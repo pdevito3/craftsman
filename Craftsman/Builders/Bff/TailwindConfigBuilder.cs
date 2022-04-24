@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Bff
+﻿namespace Craftsman.Builders.Bff;
+
+using Helpers;
+using Services;
+
+public class TailwindConfigBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class TailwindConfigBuilder
+    public TailwindConfigBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public TailwindConfigBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTailwindConfig(string spaDirectory)
+    {
+        var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "tailwind.config.js");
+        var fileText = GetPostCssText();
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateTailwindConfig(string spaDirectory)
-        {
-            var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "tailwind.config.js");
-            var fileText = GetPostCssText();
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public static string GetPostCssText()
-        {
-            return @$"const colors = require('tailwindcss/colors')
+    public static string GetPostCssText()
+    {
+        return @$"const colors = require('tailwindcss/colors')
 
 module.exports = {{
 	content: ['./src/**/*.{{js,jsx,ts,tsx}}', './index.html'],
@@ -32,6 +32,5 @@ module.exports = {{
     require('@tailwindcss/forms'),
   ],
 }}";
-        }
     }
 }

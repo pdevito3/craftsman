@@ -1,34 +1,34 @@
-﻿namespace Craftsman.Builders.Tests.UnitTests
+﻿namespace Craftsman.Builders.Tests.UnitTests;
+
+using System.IO;
+using Domain.Enums;
+using Helpers;
+using Services;
+
+public class UpdateEntityUnitTestBuilder
 {
-    using System.IO;
-    using Domain.Enums;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class UpdateEntityUnitTestBuilder
+    public UpdateEntityUnitTestBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public UpdateEntityUnitTestBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"{FileNames.UpdateEntityUnitTestName(entityName)}.cs", entityPlural, projectBaseName);
+        var fileText = WriteTestFileText(solutionDirectory, srcDirectory, classPath, entityName, entityPlural, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"{FileNames.UpdateEntityUnitTestName(entityName)}.cs", entityPlural, projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, srcDirectory, classPath, entityName, entityPlural, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    private static string WriteTestFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string entityName, string entityPlural, string projectBaseName)
+    {
+        var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
+        var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
+        var updateDto = FileNames.GetDtoName(entityName, Dto.Update);
+        var fakeEntityForUpdate = $"Fake{updateDto}";
 
-        private static string WriteTestFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string entityName, string entityPlural, string projectBaseName)
-        {
-            var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
-            var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
-            var updateDto = FileNames.GetDtoName(entityName, Dto.Update);
-            var fakeEntityForUpdate = $"Fake{updateDto}";
-
-            return @$"namespace {classPath.ClassNamespace};
+        return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
@@ -60,6 +60,5 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
             options.ExcludingMissingMembers());
     }}
 }}";
-        }
     }
 }

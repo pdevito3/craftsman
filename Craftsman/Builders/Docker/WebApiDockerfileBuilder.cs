@@ -46,7 +46,7 @@ EXPOSE 8080
 
 ENTRYPOINT [""dotnet"", ""/app/{projectBaseName}.dll""]
 ";
-        
+
         /* if I want to do both 80 and 443, do
 ```            
 ENV ASPNETCORE_URLS=http://+:80;https://+:443

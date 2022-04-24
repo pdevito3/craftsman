@@ -1,38 +1,38 @@
-﻿namespace Craftsman.Builders.Features
+﻿namespace Craftsman.Builders.Features;
+
+using System;
+using Domain;
+using Helpers;
+using Services;
+
+public class ConsumerBuilder
 {
-    using System;
-    using Domain;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class ConsumerBuilder
+    public ConsumerBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public ConsumerBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateConsumerFeature(string solutionDirectory, string srcDirectory, Consumer consumer, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
+        var fileText = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, consumer, solutionDirectory, srcDirectory, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateConsumerFeature(string solutionDirectory, string srcDirectory, Consumer consumer, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
-            var fileText = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, consumer, solutionDirectory, srcDirectory, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-
-        public string GetDirectOrTopicConsumerRegistration(string classNamespace, Consumer consumer, string solutionDirectory, string srcDirectory, string projectBaseName)
-        {
-            var context = _utilities.GetDbContext(srcDirectory, projectBaseName);
-            var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
-            var dbReadOnly = consumer.UsesDb ? @$"{Environment.NewLine}    private readonly {context} _db;" : "";
-            var dbProp = consumer.UsesDb ? @$"{context} db, " : "";
-            var assignDb = consumer.UsesDb ? @$"{Environment.NewLine}        _db = db;" : "";
-            var contextUsing = consumer.UsesDb ? $@"
+    public string GetDirectOrTopicConsumerRegistration(string classNamespace, Consumer consumer, string solutionDirectory, string srcDirectory, string projectBaseName)
+    {
+        var context = _utilities.GetDbContext(srcDirectory, projectBaseName);
+        var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
+        var dbReadOnly = consumer.UsesDb ? @$"{Environment.NewLine}    private readonly {context} _db;" : "";
+        var dbProp = consumer.UsesDb ? @$"{context} db, " : "";
+        var assignDb = consumer.UsesDb ? @$"{Environment.NewLine}        _db = db;" : "";
+        var contextUsing = consumer.UsesDb ? $@"
 using {contextClassPath.ClassNamespace};" : "";
 
-            var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
-            return @$"namespace {classNamespace};
+        var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
+        return @$"namespace {classNamespace};
 
 using AutoMapper;
 using MassTransit;
@@ -55,6 +55,5 @@ public class {consumer.ConsumerName} : IConsumer<{consumer.MessageName}>
         return Task.CompletedTask;
     }}
 }}";
-        }
     }
 }

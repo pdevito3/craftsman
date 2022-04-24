@@ -1,30 +1,30 @@
-﻿namespace Craftsman.Builders.Tests.FunctionalTests
+﻿namespace Craftsman.Builders.Tests.FunctionalTests;
+
+using System.IO;
+using Helpers;
+using Services;
+
+public class HealthTestBuilder
 {
-    using System.IO;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class HealthTestBuilder
+    public HealthTestBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public HealthTestBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTests(string solutionDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"HealthCheckTests.cs", "HealthChecks", projectBaseName);
+        var fileText = WriteTestFileText(solutionDirectory, classPath, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateTests(string solutionDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"HealthCheckTests.cs", "HealthChecks", projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, classPath, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, string projectBaseName)
+    {
+        var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
 
-        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, string projectBaseName)
-        {
-            var testUtilClassPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-
-            return @$"namespace {classPath.ClassNamespace};
+        return @$"namespace {classPath.ClassNamespace};
 
 using {testUtilClassPath.ClassNamespace};
 using FluentAssertions;
@@ -36,11 +36,11 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 {{
     {HealthTest()}
 }}";
-        }
+    }
 
-        private static string HealthTest()
-        {
-            return $@"[Test]
+    private static string HealthTest()
+    {
+        return $@"[Test]
     public async Task health_check_returns_ok()
     {{
         // Arrange
@@ -52,6 +52,5 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
     }}";
-        }
     }
 }

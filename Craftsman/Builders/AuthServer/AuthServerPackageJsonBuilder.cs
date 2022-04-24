@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.AuthServer
+﻿namespace Craftsman.Builders.AuthServer;
+
+using Helpers;
+using Services;
+
+public class AuthServerPackageJsonBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerPackageJsonBuilder
+    public AuthServerPackageJsonBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AuthServerPackageJsonBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreatePackageJson(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerPackageJsonClassPath(projectDirectory, "package.json", authServerProjectName);
+        var fileText = GetPackageJsonText();
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreatePackageJson(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerPackageJsonClassPath(projectDirectory, "package.json", authServerProjectName);
-            var fileText = GetPackageJsonText();
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public static string GetPackageJsonText()
-        {
-            return @$"{{
+    public static string GetPackageJsonText()
+    {
+        return @$"{{
   ""dependencies"": {{ }},
   ""scripts"": {{
     ""css:build"": ""npx tailwind build ./wwwroot/css/site.css -o ./wwwroot/css/output.css""
@@ -34,6 +34,5 @@
   }},
   ""author"": ""Built with Craftsman - https://github.com/pdevito3/craftsman""
 }}";
-        }
     }
 }

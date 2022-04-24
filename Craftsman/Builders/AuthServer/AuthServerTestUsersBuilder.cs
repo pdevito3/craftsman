@@ -1,28 +1,28 @@
-namespace Craftsman.Builders.AuthServer
+namespace Craftsman.Builders.AuthServer;
+
+using Helpers;
+using Services;
+using static Helpers.ConstMessages;
+
+public class AuthServerTestUsersBuilder
 {
-    using Helpers;
-    using Services;
-    using static Helpers.ConstMessages;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerTestUsersBuilder
+    public AuthServerTestUsersBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AuthServerTestUsersBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTestModels(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerSeederClassPath(projectDirectory, "TestUsers.cs", authServerProjectName);
+        var fileText = GetTestUserText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateTestModels(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerSeederClassPath(projectDirectory, "TestUsers.cs", authServerProjectName);
-            var fileText = GetTestUserText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public static string GetTestUserText(string classNamespace)
-        {
-            return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+    public static string GetTestUserText(string classNamespace)
+    {
+        return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
 
@@ -104,6 +104,5 @@ public class TestUsers
         }}
     }}
 }}";
-        }
     }
 }

@@ -14,12 +14,12 @@ using Spectre.Console;
 
 public class ApiScaffoldingService
 {
-    private IAnsiConsole _console;
+    private readonly IAnsiConsole _console;
     private readonly IConsoleWriter _consoleWriter;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IFileSystem _fileSystem;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
-    
+
     public ApiScaffoldingService(IAnsiConsole console, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileSystem fileSystem)
     {
         _console = console;
@@ -28,7 +28,7 @@ public class ApiScaffoldingService
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _fileSystem = fileSystem;
     }
-    
+
     public void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template)
     {
         var projectName = template.ProjectName;
@@ -68,7 +68,7 @@ public class ApiScaffoldingService
     private void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template)
     {
         var projectBaseName = template.ProjectName;
-        
+
         // docker config data transform
         template.DockerConfig.ProjectName = template.ProjectName;
         template.DockerConfig.Provider = template.DbContext.Provider;
@@ -79,7 +79,7 @@ public class ApiScaffoldingService
 
         // base files needed before below is ran
         template.DockerConfig.ApiPort ??= template.Port; // set to the launch settings port if needed... really need to refactor to a domain layer and dto layer 😪
-        if(template.AddJwtAuthentication)
+        if (template.AddJwtAuthentication)
             template.DockerConfig.AuthServerPort ??= template?.Environment?.AuthSettings?.AuthorizationUrl
                 .Replace("localhost", "")
                 .Replace("https://", "")
@@ -96,7 +96,7 @@ public class ApiScaffoldingService
             projectBaseName
         );
         new ApiRoutesBuilder(_utilities).CreateClass(testDirectory, projectBaseName);
-        
+
         if (template.AddJwtAuthentication)
         {
             new PermissionsBuilder(_utilities).GetPermissions(srcDirectory, projectBaseName); // <-- needs to run before entity features
@@ -111,7 +111,7 @@ public class ApiScaffoldingService
                 template.SwaggerConfig.AddSwaggerComments,
                 template.UseSoftDelete);
         }
-        
+
         //entities
         new EntityScaffoldingService(_utilities, _fileSystem).ScaffoldEntities(solutionDirectory,
             srcDirectory,
@@ -135,9 +135,9 @@ public class ApiScaffoldingService
 
         // unit tests, test utils, and one offs∂
         new PagedListTestBuilder(_utilities).CreateTests(srcDirectory, testDirectory, projectBaseName);
-        new IntegrationTestFixtureBuilder(_utilities).CreateFixture(testDirectory, 
-            projectBaseName, 
-            template.DbContext.ContextName, 
+        new IntegrationTestFixtureBuilder(_utilities).CreateFixture(testDirectory,
+            projectBaseName,
+            template.DbContext.ContextName,
             template.DbContext.ProviderEnum);
         new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ProviderEnum);
         new DockerUtilitiesBuilder(_utilities).CreateGeneralUtilityClass(testDirectory, projectBaseName, template.DbContext.ProviderEnum);
@@ -161,7 +161,7 @@ public class ApiScaffoldingService
         //
         // if (template.Producers.Count > 0)
         //     AddProducerCommand.AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
-        
+
         new WebApiDockerfileBuilder(_utilities).CreateStandardDotNetDockerfile(srcDirectory, projectBaseName);
         new DockerIgnoreBuilder(_utilities).CreateDockerIgnore(srcDirectory, projectBaseName);
         // DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory,
@@ -171,7 +171,7 @@ public class ApiScaffoldingService
         //     template.Environment.AuthSettings.Audience);
         new DockerComposeBuilders(_utilities, _fileSystem).AddVolumeToDockerComposeDb(solutionDirectory, template.DockerConfig);
     }
-    
+
     private void AddStartupEnvironmentsWithServices(
         string srcDirectory,
         string dbName,

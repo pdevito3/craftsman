@@ -6,32 +6,32 @@ using Services;
 
 public class AuthFeatureRoutesBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public AuthFeatureRoutesBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public AuthFeatureRoutesBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
-	public void CreateAuthFeatureRoutes(string spaDirectory)
-	{
-		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Routes , "index.ts");
-		var routesIndexFileText = GetAuthFeatureRoutesIndexText();
-		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
+    public void CreateAuthFeatureRoutes(string spaDirectory)
+    {
+        var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Routes, "index.ts");
+        var routesIndexFileText = GetAuthFeatureRoutesIndexText();
+        _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
 
-		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Routes , "Login.tsx");
-		var routesLoginFileText = GetAuthFeatureRoutesLoginText();
-		_utilities.CreateFile(routesLoginClassPath, routesLoginFileText);
-	}
-	
-	public static string GetAuthFeatureRoutesIndexText()
-	{
-	    return @$"export * from './Login';";
-	}
+        var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Routes, "Login.tsx");
+        var routesLoginFileText = GetAuthFeatureRoutesLoginText();
+        _utilities.CreateFile(routesLoginClassPath, routesLoginFileText);
+    }
 
-public static string GetAuthFeatureRoutesLoginText()
-{
-    return @$"import React from 'react';
+    public static string GetAuthFeatureRoutesIndexText()
+    {
+        return @$"export * from './Login';";
+    }
+
+    public static string GetAuthFeatureRoutesLoginText()
+    {
+        return @$"import React from 'react';
 import {{ useAuthUser }} from '@/features/Auth';
 
 function Login() {{
@@ -131,5 +131,5 @@ function Login() {{
 
 export {{ Login }};
 ";
-	}
+    }
 }

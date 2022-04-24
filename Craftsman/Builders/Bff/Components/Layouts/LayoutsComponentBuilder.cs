@@ -5,34 +5,34 @@ using Services;
 
 public class LayoutComponentBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public LayoutComponentBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public LayoutComponentBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
     public void CreateLayoutComponentItems(string spaDirectory)
     {
-      var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "index.ts");
-      var indexFileText = GetLayoutIndexText();
-      _utilities.CreateFile(indexCassPath, indexFileText);
-      
-      var privateLayoutClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "PrivateLayout.tsx");
-      var privateLayoutFileText = GetPrivateLayoutText();
-      _utilities.CreateFile(privateLayoutClassPath, privateLayoutFileText);
-      
-      var publicLayoutClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "PublicLayout.tsx");
-      var publicLayoutFileText = GetPublicLayoutText();
-      _utilities.CreateFile(publicLayoutClassPath, publicLayoutFileText);
+        var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "index.ts");
+        var indexFileText = GetLayoutIndexText();
+        _utilities.CreateFile(indexCassPath, indexFileText);
+
+        var privateLayoutClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "PrivateLayout.tsx");
+        var privateLayoutFileText = GetPrivateLayoutText();
+        _utilities.CreateFile(privateLayoutClassPath, privateLayoutFileText);
+
+        var publicLayoutClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Layouts", "PublicLayout.tsx");
+        var publicLayoutFileText = GetPublicLayoutText();
+        _utilities.CreateFile(publicLayoutClassPath, publicLayoutFileText);
     }
 
     public static string GetLayoutIndexText()
     {
-      return @$"export * from './PublicLayout';
+        return @$"export * from './PublicLayout';
 export * from './PrivateLayout';";
     }
-	
+
     public static string GetPrivateLayoutText()
     {
         return @$"import {{ useAuthUser }} from '@/features/Auth';
@@ -69,10 +69,10 @@ function PrivateLayout() {{
 
 export {{ PrivateLayout }};";
     }
-	
+
     public static string GetPublicLayoutText()
     {
-	    return @$"import React from 'react';
+        return @$"import React from 'react';
 import {{ Outlet }} from 'react-router';
 
 function PublicLayout() {{

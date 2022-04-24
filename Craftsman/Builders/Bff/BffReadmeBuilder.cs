@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Bff
+﻿namespace Craftsman.Builders.Bff;
+
+using Helpers;
+using Services;
+
+public class BffReadmeBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class BffReadmeBuilder
+    public BffReadmeBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public BffReadmeBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateReadme(string projectDirectory, string projectName)
+    {
+        var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"README.md");
+        var fileText = GetReadmeFileText(projectName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateReadme(string projectDirectory, string projectName)
-        {
-            var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"README.md");
-            var fileText = GetReadmeFileText(projectName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-
-        public static string GetReadmeFileText(string projectName)
-        {
-            return @$"# {projectName}
+    public static string GetReadmeFileText(string projectName)
+    {
+        return @$"# {projectName}
 
 This project was created with [Craftsman](https://github.com/pdevito3/craftsman).
 
@@ -84,6 +84,5 @@ app.UseEndpoints(endpoints =>
 ```ts
 
 ";
-        }
     }
 }

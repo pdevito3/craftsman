@@ -6,32 +6,32 @@ using Services;
 
 public class DynamicFeatureUpdateEntityBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public DynamicFeatureUpdateEntityBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public DynamicFeatureUpdateEntityBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
-	public void CreateApiFile(string spaDirectory, string entityName, string entityPlural)
-	{
-		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
-			entityPlural, 
-			BffFeatureCategory.Api , 
-			$"{FeatureType.UpdateRecord.BffApiName(entityName)}.ts");
-		var routesIndexFileText = GetApiText(entityName, entityPlural);
-		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
-	}
-	
-	public static string GetApiText(string entityName, string entityPlural)
-	{
-		var dtoForUpdateName = FileNames.GetDtoName(entityName, Dto.Update);
-		var entityPluralLowercase = entityPlural.ToLower();
-		var entityUpperFirst = entityName.UppercaseFirstLetter();
-		var keysImport = FileNames.BffApiKeysFilename(entityName);
-		var keyExportName = FileNames.BffApiKeysExport(entityName);
-		
-		return @$"import {{ api }} from '@/lib/axios';
+    public void CreateApiFile(string spaDirectory, string entityName, string entityPlural)
+    {
+        var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory,
+            entityPlural,
+            BffFeatureCategory.Api,
+            $"{FeatureType.UpdateRecord.BffApiName(entityName)}.ts");
+        var routesIndexFileText = GetApiText(entityName, entityPlural);
+        _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
+    }
+
+    public static string GetApiText(string entityName, string entityPlural)
+    {
+        var dtoForUpdateName = FileNames.GetDtoName(entityName, Dto.Update);
+        var entityPluralLowercase = entityPlural.ToLower();
+        var entityUpperFirst = entityName.UppercaseFirstLetter();
+        var keysImport = FileNames.BffApiKeysFilename(entityName);
+        var keyExportName = FileNames.BffApiKeysExport(entityName);
+
+        return @$"import {{ api }} from '@/lib/axios';
 import {{ AxiosError }} from 'axios';
 import {{ UseMutationOptions, useQueryClient, useMutation }} from 'react-query';
 import {{ {keyExportName} }} from './{keysImport}';
@@ -57,5 +57,5 @@ export function useUpdate{entityUpperFirst}(id: string, options?: UseMutationOpt
 		}});
 }}
 ";
-	}
+    }
 }

@@ -1,32 +1,32 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders;
+
+using Domain;
+using Domain.Enums;
+using Helpers;
+using Services;
+
+public class ProfileBuilder
 {
-    using Domain;
-    using Domain.Enums;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class ProfileBuilder
+    public ProfileBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public ProfileBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateProfile(string solutionDirectory, Entity entity, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.ProfileClassPath(solutionDirectory, $"{FileNames.GetProfileName(entity.Name)}.cs", entity.Plural, projectBaseName);
+        var fileText = GetProfileFileText(classPath.ClassNamespace, entity, solutionDirectory, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateProfile(string solutionDirectory, Entity entity, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.ProfileClassPath(solutionDirectory, $"{FileNames.GetProfileName(entity.Name)}.cs", entity.Plural, projectBaseName);
-            var fileText = GetProfileFileText(classPath.ClassNamespace, entity, solutionDirectory, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public static string GetProfileFileText(string classNamespace, Entity entity, string solutionDirectory, string projectBaseName)
+    {
+        var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
 
-        public static string GetProfileFileText(string classNamespace, Entity entity, string solutionDirectory, string projectBaseName)
-        {
-            var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-
-            return @$"namespace {classNamespace};
+        return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
 using AutoMapper;
@@ -44,6 +44,5 @@ public class {FileNames.GetProfileName(entity.Name)} : Profile
             .ReverseMap();
     }}
 }}";
-        }
     }
 }

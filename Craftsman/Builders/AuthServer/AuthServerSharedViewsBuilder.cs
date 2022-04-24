@@ -1,57 +1,57 @@
-namespace Craftsman.Builders.AuthServer
+namespace Craftsman.Builders.AuthServer;
+
+using Helpers;
+using Services;
+
+public class AuthServerSharedViewsBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerSharedViewsBuilder
+    public AuthServerSharedViewsBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AuthServerSharedViewsBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateLayoutView(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory, "_Layout.cshtml", authServerProjectName, ClassPathHelper.AuthServerViewSubDir.Shared);
+        var fileText = GetLayoutText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateLayoutView(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory, "_Layout.cshtml", authServerProjectName, ClassPathHelper.AuthServerViewSubDir.Shared);
-            var fileText = GetLayoutText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public void CreateStartView(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "_ViewStart.cshtml", authServerProjectName);
-            var fileText = GetStartViewTest();
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public void CreateViewImports(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "_ViewImports.cshtml", authServerProjectName);
-            var fileText = GetViewImportsTest(projectDirectory, authServerProjectName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        private static string GetStartViewTest()
-        {
-            return @$"@{{
+    public void CreateStartView(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "_ViewStart.cshtml", authServerProjectName);
+        var fileText = GetStartViewTest();
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    public void CreateViewImports(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerViewsClassPath(projectDirectory, "_ViewImports.cshtml", authServerProjectName);
+        var fileText = GetViewImportsTest(projectDirectory, authServerProjectName);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    private static string GetStartViewTest()
+    {
+        return @$"@{{
     Layout = ""_Layout"";
 }}";
-        }
-        
-        private static string GetViewImportsTest(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "", authServerProjectName);
-            
-            return @$"@using {classPath.ClassNamespace}
+    }
+
+    private static string GetViewImportsTest(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "", authServerProjectName);
+
+        return @$"@using {classPath.ClassNamespace}
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 ";
-        }
-        
-        private static string GetLayoutText(string authServerProjectName)
-        {
-            return @$"<!DOCTYPE html>
+    }
+
+    private static string GetLayoutText(string authServerProjectName)
+    {
+        return @$"<!DOCTYPE html>
 <html lang=""en"">
 <head>
     <meta charset=""utf-8"" />
@@ -71,6 +71,5 @@ namespace Craftsman.Builders.AuthServer
 
 </body>
 </html>";
-        }
     }
 }

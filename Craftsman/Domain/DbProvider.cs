@@ -20,7 +20,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
 
     private class PostgresType : DbProvider
     {
-        public PostgresType() : base(nameof(Postgres), 1) {}
+        public PostgresType() : base(nameof(Postgres), 1) { }
         public override string PackageInclusionString(string version)
             => @$"<PackageReference Include=""Npgsql.EntityFrameworkCore.PostgreSQL"" Version=""{version}"" />";
         public override string OTelSource()
@@ -30,13 +30,13 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser,
             string dbPassword)
             => $"Host={dbHostName};Port={5432};Database={dbName};Username={dbUser};Password={dbPassword}";
-       public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)
-            => $"Host=localhost;Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
+        public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)
+             => $"Host=localhost;Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
     }
 
     private class SqlServerType : DbProvider
     {
-        public SqlServerType() : base(nameof(SqlServer), 2) {}
+        public SqlServerType() : base(nameof(SqlServer), 2) { }
         public override string PackageInclusionString(string version)
             => @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""{version}"" />";
         public override string OTelSource()
@@ -51,16 +51,16 @@ public abstract class DbProvider : SmartEnum<DbProvider>
 
     private class MySqlType : DbProvider
     {
-        public MySqlType() : base(nameof(MySql), 3) {}
+        public MySqlType() : base(nameof(MySql), 3) { }
         public override string PackageInclusionString(string version)
             => throw new Exception("MySql is not supported");
         public override string OTelSource()
             => throw new Exception("MySql is not supported");
         public override int Port()
-            =>  throw new Exception("MySql is not supported");
+            => throw new Exception("MySql is not supported");
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword)
             => throw new Exception("MySql is not supported");
-       public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)
-            => throw new Exception("MySql is not supported");
+        public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)
+             => throw new Exception("MySql is not supported");
     }
 }

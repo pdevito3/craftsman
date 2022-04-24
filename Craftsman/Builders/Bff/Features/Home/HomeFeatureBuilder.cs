@@ -15,13 +15,13 @@ public class HomeFeatureBuilder
 
     public void CreateHomeFeatureIndex(string spaDirectory)
     {
-      var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Home", BffFeatureCategory.Index , "index.ts");
-      var fileText = GetHomeFeatureIndexText();
-      _utilities.CreateFile(classPath, fileText);
+        var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Home", BffFeatureCategory.Index, "index.ts");
+        var fileText = GetHomeFeatureIndexText();
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetHomeFeatureIndexText()
     {
-      return @$"export * from './routes';";
+        return @$"export * from './routes';";
     }
 }

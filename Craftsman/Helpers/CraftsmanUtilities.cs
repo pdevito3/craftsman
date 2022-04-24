@@ -64,7 +64,7 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         if (!_fileSystem.Directory.EnumerateFiles(proposedDirectory, "*.sln").Any())
             throw new SolutionNotFoundException();
     }
-    
+
     public void CreateFile(IClassPath classPath, string fileText)
     {
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
@@ -76,7 +76,7 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         using var fs = _fileSystem.File.Create(classPath.FullClassPath);
         fs.Write(Encoding.UTF8.GetBytes(fileText));
     }
-    
+
     public static int GetFreePort()
     {
         // From https://stackoverflow.com/a/150974/4190785
@@ -86,7 +86,7 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         tcpListener.Stop();
         return port;
     }
-    
+
     public static string GetForeignEntityUsings(string testDirectory, Entity entity,
         string projectBaseName)
     {
@@ -106,13 +106,13 @@ using {parentClassPath.ClassNamespace};";
 
         return foreignEntityUsings;
     }
-    
+
     public static string PropTypeCleanupDotNet(string prop)
     {
         var lowercaseProps = new string[] { "string", "int", "decimal", "double", "float", "object", "bool", "char", "byte", "ushort", "uint", "ulong" };
         if (lowercaseProps.Contains(prop.ToLower()))
             return prop.ToLower();
-        
+
         return prop.ToLower() switch
         {
             "datetime" => "DateTime",
@@ -127,7 +127,7 @@ using {parentClassPath.ClassNamespace};";
             _ => prop
         };
     }
-    
+
     public static string PropTypeCleanupTypeScript(string prop)
     {
         return prop.ToLower() switch
@@ -276,7 +276,7 @@ using {parentClassPath.ClassNamespace};";
         if (!_fileSystem.Directory.Exists(_scaffoldingDirectoryStore.SrcDirectory) || !Directory.Exists(_scaffoldingDirectoryStore.TestDirectory))
             throw new IsNotBoundedContextDirectoryException();
     }
-        
+
     public void AddPackages(ClassPath classPath, Dictionary<string, string> packagesToAdd)
     {
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
@@ -308,7 +308,7 @@ using {parentClassPath.ClassNamespace};";
         _fileSystem.File.Delete(classPath.FullClassPath);
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
-    
+
     private static string ProjectReferencePackagesString(Dictionary<string, string> packagesToAdd)
     {
         var packageString = "";

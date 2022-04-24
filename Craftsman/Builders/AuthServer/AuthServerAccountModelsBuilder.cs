@@ -1,28 +1,28 @@
-﻿namespace Craftsman.Builders.AuthServer
+﻿namespace Craftsman.Builders.AuthServer;
+
+using Helpers;
+using Services;
+using static Helpers.ConstMessages;
+
+public class AuthServerAccountModelsBuilder
 {
-    using Helpers;
-    using Services;
-    using static Helpers.ConstMessages;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerAccountModelsBuilder
+    public AuthServerAccountModelsBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AuthServerAccountModelsBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
-        
-        public void CreateModels(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerModelsClassPath(projectDirectory, "AccountModels.cs", authServerProjectName);
-            var fileText = GetControllerText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public static string GetControllerText(string classNamespace)
-        {
-            return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+    public void CreateModels(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerModelsClassPath(projectDirectory, "AccountModels.cs", authServerProjectName);
+        var fileText = GetControllerText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    public static string GetControllerText(string classNamespace)
+    {
+        return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
 
@@ -57,6 +57,5 @@ public class LogoutInputModel
 {{
     public string LogoutId {{ get; set; }}
 }}";
-        }
     }
 }

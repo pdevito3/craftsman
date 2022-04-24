@@ -1,28 +1,28 @@
-namespace Craftsman.Builders.AuthServer
+namespace Craftsman.Builders.AuthServer;
+
+using Helpers;
+using Services;
+using static Helpers.ConstMessages;
+
+public class SecurityHeadersAttributeBuilder
 {
-    using Helpers;
-    using Services;
-    using static Helpers.ConstMessages;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class SecurityHeadersAttributeBuilder
+    public SecurityHeadersAttributeBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public SecurityHeadersAttributeBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateAttribute(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerAttributesClassPath(projectDirectory, "SecurityHeadersAttribute.cs", authServerProjectName);
+        var fileText = GetTestUserText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateAttribute(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerAttributesClassPath(projectDirectory, "SecurityHeadersAttribute.cs", authServerProjectName);
-            var fileText = GetTestUserText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public static string GetTestUserText(string classNamespace)
-        {
-            return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+    public static string GetTestUserText(string classNamespace)
+    {
+        return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
 
@@ -77,6 +77,5 @@ public class SecurityHeadersAttribute : ActionFilterAttribute
         }}
     }}
 }}";
-        }
     }
 }

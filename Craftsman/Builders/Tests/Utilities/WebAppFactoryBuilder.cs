@@ -1,35 +1,35 @@
-﻿namespace Craftsman.Builders.Tests.Utilities
+﻿namespace Craftsman.Builders.Tests.Utilities;
+
+using System.IO;
+using Helpers;
+using Services;
+
+public class WebAppFactoryBuilder
 {
-    using System.IO;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class WebAppFactoryBuilder
+    public WebAppFactoryBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public WebAppFactoryBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateWebAppFactory(string solutionDirectory, string projectName, string dbContextName, bool addJwtAuthentication)
+    {
+        var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, $"{FileNames.GetWebHostFactoryName()}.cs", projectName);
+        var fileText = GetWebAppFactoryFileText(classPath, dbContextName, solutionDirectory, projectName, addJwtAuthentication);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateWebAppFactory(string solutionDirectory, string projectName, string dbContextName, bool addJwtAuthentication)
-        {
-            var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, $"{FileNames.GetWebHostFactoryName()}.cs", projectName);
-            var fileText = GetWebAppFactoryFileText(classPath, dbContextName, solutionDirectory, projectName, addJwtAuthentication);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    private static string GetWebAppFactoryFileText(ClassPath classPath, string dbContextName, string solutionDirectory, string projectBaseName, bool addJwtAuthentication)
+    {
+        var webApiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", projectBaseName);
+        var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
+        var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(solutionDirectory, "", projectBaseName);
 
-        private static string GetWebAppFactoryFileText(ClassPath classPath, string dbContextName, string solutionDirectory, string projectBaseName, bool addJwtAuthentication)
-        {
-            var webApiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", projectBaseName);
-            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-            var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(solutionDirectory, "", projectBaseName);
-
-            var authUsing = addJwtAuthentication ? $@"
+        var authUsing = addJwtAuthentication ? $@"
 using WebMotions.Fake.Authentication.JwtBearer;" : "";
 
-            var authRegistration = addJwtAuthentication ? $@"
+        var authRegistration = addJwtAuthentication ? $@"
                 // add authentication using a fake jwt bearer
                 services.AddAuthentication(options =>
                 {{
@@ -38,7 +38,7 @@ using WebMotions.Fake.Authentication.JwtBearer;" : "";
                 }}).AddFakeJwtBearer();
 " : "";
 
-            return @$"
+        return @$"
 namespace {classPath.ClassNamespace};
 
 using {contextClassPath.ClassNamespace};
@@ -82,6 +82,5 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebAp
         }});
     }}
 }}";
-        }
     }
 }

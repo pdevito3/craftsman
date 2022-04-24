@@ -1,41 +1,40 @@
-namespace Craftsman.Builders.AuthServer
+namespace Craftsman.Builders.AuthServer;
+
+using Helpers;
+using Services;
+
+public class AuthServerCssBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerCssBuilder
+    public AuthServerCssBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AuthServerCssBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateSiteCss(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerCssClassPath(projectDirectory, "site.css", authServerProjectName);
+        var fileText = GetSiteText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateSiteCss(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerCssClassPath(projectDirectory, "site.css", authServerProjectName);
-            var fileText = GetSiteText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public void CreateOutputCss(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerCssClassPath(projectDirectory, "output.css", authServerProjectName);
-            var fileText = GetOutputText();
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        private static string GetOutputText()
-        {
-            return @$"";
-        }
-        
-        private static string GetSiteText(string authServerProjectName)
-        {
-            return @$"@tailwind base;
+    public void CreateOutputCss(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerCssClassPath(projectDirectory, "output.css", authServerProjectName);
+        var fileText = GetOutputText();
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    private static string GetOutputText()
+    {
+        return @$"";
+    }
+
+    private static string GetSiteText(string authServerProjectName)
+    {
+        return @$"@tailwind base;
 @tailwind components;
 @tailwind utilities;";
-        }
     }
 }

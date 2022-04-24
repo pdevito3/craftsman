@@ -21,11 +21,11 @@ public class AuthServerDockerfileBuilder
 
     private static string GetAuthServerDockerfileText(string projectBaseName, bool addNodeInstall, bool addSharedKernel)
     {
-        var sharedKernelText = addSharedKernel 
+        var sharedKernelText = addSharedKernel
             ? $@"
 COPY [""SharedKernel/SharedKernel.csproj"", ""./SharedKernel/""]"
             : "";
-        var nodeText = addNodeInstall 
+        var nodeText = addNodeInstall
             ? $@"
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -

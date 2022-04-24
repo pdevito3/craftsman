@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.AuthServer
+﻿namespace Craftsman.Builders.AuthServer;
+
+using Helpers;
+using Services;
+
+public class AuthServerLaunchSettingsBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerLaunchSettingsBuilder
+    public AuthServerLaunchSettingsBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AuthServerLaunchSettingsBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateLaunchSettings(string projectDirectory, string authServerProjectName, int authServerPort)
+    {
+        var classPath = ClassPathHelper.AuthServerLaunchSettingsClassPath(projectDirectory, $"launchSettings.json", authServerProjectName);
+        var fileText = GetLaunchSettingsText(authServerPort);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateLaunchSettings(string projectDirectory, string authServerProjectName, int authServerPort)
-        {
-            var classPath = ClassPathHelper.AuthServerLaunchSettingsClassPath(projectDirectory, $"launchSettings.json", authServerProjectName);
-            var fileText = GetLaunchSettingsText(authServerPort);
-            _utilities.CreateFile(classPath, fileText);
-        }
-
-        public static string GetLaunchSettingsText(int authServerPort)
-        {
-            return @$"{{
+    public static string GetLaunchSettingsText(int authServerPort)
+    {
+        return @$"{{
   ""profiles"": {{
     ""SelfHost"": {{
       ""commandName"": ""Project"",
@@ -33,6 +33,5 @@
     }}
   }}
 }}";
-        }
     }
 }

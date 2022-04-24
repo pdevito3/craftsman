@@ -6,32 +6,32 @@ using Services;
 
 public class AuthFeatureApiBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public AuthFeatureApiBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public AuthFeatureApiBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
-	public void CreateAuthFeatureApis(string spaDirectory)
-	{
-		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Api , "index.ts");
-		var routesIndexFileText = GetAuthFeatureApisIndexText();
-		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
+    public void CreateAuthFeatureApis(string spaDirectory)
+    {
+        var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Api, "index.ts");
+        var routesIndexFileText = GetAuthFeatureApisIndexText();
+        _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
 
-		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Api , "useAuthUser.tsx");
-		var routesLoginFileText = GetAuthFeatureApisLoginText();
-		_utilities.CreateFile(routesLoginClassPath, routesLoginFileText);
-	}
-	
-	public static string GetAuthFeatureApisIndexText()
-	{
-	    return @$"export * from './useAuthUser';";
-	}
+        var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, "Auth", BffFeatureCategory.Api, "useAuthUser.tsx");
+        var routesLoginFileText = GetAuthFeatureApisLoginText();
+        _utilities.CreateFile(routesLoginClassPath, routesLoginFileText);
+    }
 
-public static string GetAuthFeatureApisLoginText()
-{
-    return @$"import {{ api }} from '@/lib/axios';
+    public static string GetAuthFeatureApisIndexText()
+    {
+        return @$"export * from './useAuthUser';";
+    }
+
+    public static string GetAuthFeatureApisLoginText()
+    {
+        return @$"import {{ api }} from '@/lib/axios';
 import {{ useEffect, useState }} from 'react';
 import {{ useQuery }} from 'react-query';
 
@@ -77,5 +77,5 @@ function useAuthUser() {{
 
 export {{ useAuthUser }};
 ";
-	}
+    }
 }

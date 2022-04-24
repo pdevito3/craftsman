@@ -1,65 +1,65 @@
-﻿namespace Craftsman.Builders.Tests.Utilities
+﻿namespace Craftsman.Builders.Tests.Utilities;
+
+using Domain;
+using Helpers;
+using Services;
+
+public class DockerUtilitiesBuilder
 {
-    using Domain;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class DockerUtilitiesBuilder
+    public DockerUtilitiesBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public DockerUtilitiesBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateGeneralUtilityClass(string solutionDirectory, string projectBaseName, DbProvider provider)
+    {
+        var classPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "DockerUtilities.cs");
+        var data = GetBaseUtilityText(classPath.ClassNamespace, provider);
+        _utilities.CreateFile(classPath, data);
+    }
 
-        public void CreateGeneralUtilityClass(string solutionDirectory, string projectBaseName, DbProvider provider)
-        {
-            var classPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "DockerUtilities.cs");
-            var data = GetBaseUtilityText(classPath.ClassNamespace, provider);
-            _utilities.CreateFile(classPath, data);
-        }
+    public void CreateDockerDatabaseUtilityClass(string solutionDirectory, string projectBaseName, DbProvider provider)
+    {
+        var classPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "DockerDatabaseUtilities.cs");
+        var data = GetDbUtilityText(classPath.ClassNamespace, provider, projectBaseName);
+        _utilities.CreateFile(classPath, data);
+    }
 
-        public void CreateDockerDatabaseUtilityClass(string solutionDirectory, string projectBaseName, DbProvider provider)
-        {
-            var classPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "DockerDatabaseUtilities.cs");
-            var data = GetDbUtilityText(classPath.ClassNamespace, provider, projectBaseName);
-            _utilities.CreateFile(classPath, data);
-        }
-
-        private static string GetDbUtilityText(string classNamespace, DbProvider provider, string projectBaseName)
-        {
-            var providerPort = provider.Port();
-            var envList = DbProvider.Postgres == provider
-                ? $@".WithEnvironment(
+    private static string GetDbUtilityText(string classNamespace, DbProvider provider, string projectBaseName)
+    {
+        var providerPort = provider.Port();
+        var envList = DbProvider.Postgres == provider
+            ? $@".WithEnvironment(
                     $""POSTGRES_DB={{DB_NAME}}"",
                     $""POSTGRES_PASSWORD={{DB_PASSWORD}}"")"
-                : @$".WithEnvironment(
+            : @$".WithEnvironment(
                     ""ACCEPT_EULA=Y"",
                     $""SA_PASSWORD={{DB_PASSWORD}}"")";
 
-            var constants = DbProvider.Postgres == provider
-                ? @$"public const string DB_PASSWORD = ""#testingDockerPassword#"";
+        var constants = DbProvider.Postgres == provider
+            ? @$"public const string DB_PASSWORD = ""#testingDockerPassword#"";
     private const string DB_USER = ""postgres"";
     private const string DB_NAME = ""{projectBaseName}"";
     private static readonly ImageTag ImageTagForOs = new ImageTag(""postgres"", ""latest"");
     private const string DB_CONTAINER_NAME = ""IntegrationTesting_{projectBaseName}"";
     private const string DB_VOLUME_NAME = ""IntegrationTesting_{projectBaseName}"";"
-                : @$"private const string DB_PASSWORD = ""#testingDockerPassword#"";
+            : @$"private const string DB_PASSWORD = ""#testingDockerPassword#"";
     private const string DB_USER = ""SA"";
     private static readonly ImageTag ImageTagForOs = GetImageTagForOs();
     private const string DB_CONTAINER_NAME = ""IntegrationTesting_{projectBaseName}"";
     private const string DB_VOLUME_NAME = ""IntegrationTesting_{projectBaseName}"";";
 
-            var mountedVol = DbProvider.Postgres == provider
-                ? @$"""/var/lib/postgresql/data"""
-                : @$"""/var/lib/sqlserver/data""";
+        var mountedVol = DbProvider.Postgres == provider
+            ? @$"""/var/lib/postgresql/data"""
+            : @$"""/var/lib/sqlserver/data""";
 
-            var dbConnection = DbProvider.Postgres == provider
-                ? $@"DockerUtilities.GetSqlConnectionString(port, DB_PASSWORD, DB_USER, DB_NAME);"
-                : $@"DockerUtilities.GetSqlConnectionString(port, DB_PASSWORD, DB_USER);";
+        var dbConnection = DbProvider.Postgres == provider
+            ? $@"DockerUtilities.GetSqlConnectionString(port, DB_PASSWORD, DB_USER, DB_NAME);"
+            : $@"DockerUtilities.GetSqlConnectionString(port, DB_PASSWORD, DB_USER);";
 
-            return @$"namespace {classNamespace};
+        return @$"namespace {classNamespace};
 
 using System.Runtime.InteropServices;
 using Ductus.FluentDocker.Builders;
@@ -131,16 +131,16 @@ public static class DockerDatabaseUtilities
         return {dbConnection}
     }}
 }}";
-        }
+    }
 
-        private static string GetBaseUtilityText(string classNamespace, DbProvider provider)
-        {
-            var dbConnection = DbProvider.Postgres == provider
-                ? $@"new NpgsqlConnection(dbConnection);"
-                : $@"new SqlConnection(dbConnection);";
+    private static string GetBaseUtilityText(string classNamespace, DbProvider provider)
+    {
+        var dbConnection = DbProvider.Postgres == provider
+            ? $@"new NpgsqlConnection(dbConnection);"
+            : $@"new SqlConnection(dbConnection);";
 
-            var dbConnectionStringMethod = DbProvider.Postgres == provider
-                ? $@"public static string GetSqlConnectionString(string port, string password, string user, string dbName)
+        var dbConnectionStringMethod = DbProvider.Postgres == provider
+            ? $@"public static string GetSqlConnectionString(string port, string password, string user, string dbName)
     {{
         return new NpgsqlConnectionStringBuilder()
         {{
@@ -151,7 +151,7 @@ public static class DockerDatabaseUtilities
             Port = int.Parse(port)
         }}.ToString();
     }}"
-            : $@"public static string GetSqlConnectionString(string port, string password, string user)
+        : $@"public static string GetSqlConnectionString(string port, string password, string user)
     {{
         return $""Data Source=localhost,{{port}};"" +
             ""Integrated Security=False;"" +
@@ -159,13 +159,13 @@ public static class DockerDatabaseUtilities
             $""Password={{password}}"";
     }}";
 
-            var usingStatement = DbProvider.Postgres == provider
-                ? $@"
+        var usingStatement = DbProvider.Postgres == provider
+            ? $@"
 using Npgsql;"
-                : @$"
+            : @$"
 using Microsoft.Data.SqlClient;";
 
-            return @$"// based on https://blog.dangl.me/archive/running-sql-server-integration-tests-in-net-core-projects-via-docker/
+        return @$"// based on https://blog.dangl.me/archive/running-sql-server-integration-tests-in-net-core-projects-via-docker/
 
 namespace {classNamespace};
 
@@ -301,6 +301,5 @@ public static class DockerUtilities
 
     {dbConnectionStringMethod}
 }}";
-        }
     }
 }

@@ -11,14 +11,14 @@ public class PermissionsBuilder
     {
         _utilities = utilities;
     }
-    
+
     public void GetPermissions(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "Permissions.cs", projectBaseName);
         var fileText = GetPermissionsText(classPath.ClassNamespace);
         _utilities.CreateFile(classPath, fileText);
     }
-    
+
     private static string GetPermissionsText(string classNamespace)
     {
         return @$"namespace {classNamespace};

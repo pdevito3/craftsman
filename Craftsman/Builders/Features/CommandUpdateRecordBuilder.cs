@@ -1,46 +1,46 @@
-﻿namespace Craftsman.Builders.Features
+﻿namespace Craftsman.Builders.Features;
+
+using Domain;
+using Domain.Enums;
+using Helpers;
+using Services;
+
+public class CommandUpdateRecordBuilder
 {
-    using Domain;
-    using Domain.Enums;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class CommandUpdateRecordBuilder
+    public CommandUpdateRecordBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public CommandUpdateRecordBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.UpdateEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+        var fileText = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.UpdateEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
-            var fileText = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
+    {
+        var className = FileNames.UpdateEntityFeatureClassName(entity.Name);
+        var updateCommandName = FileNames.CommandUpdateName(entity.Name);
+        var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
 
-        public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
-        {
-            var className = FileNames.UpdateEntityFeatureClassName(entity.Name);
-            var updateCommandName = FileNames.CommandUpdateName(entity.Name);
-            var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
+        var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
+        var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
+        var entityNameLowercase = entity.Name.LowercaseFirstLetter();
+        var commandProp = $"{entity.Name}ToUpdate";
+        var newEntityDataProp = $"new{entity.Name}Data";
+        var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
 
-            var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
-            var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
-            var entityNameLowercase = entity.Name.LowercaseFirstLetter();
-            var commandProp = $"{entity.Name}ToUpdate";
-            var newEntityDataProp = $"new{entity.Name}Data";
-            var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
+        var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
+        var validatorsClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
-            var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
-            var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
-            var validatorsClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-
-            return @$"namespace {classNamespace};
+        return @$"namespace {classNamespace};
 
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
@@ -94,6 +94,5 @@ public static class {className}
         }}
     }}
 }}";
-        }
     }
 }

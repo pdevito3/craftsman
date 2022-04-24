@@ -1,36 +1,35 @@
-﻿namespace Craftsman.Domain.Enums
+﻿namespace Craftsman.Domain.Enums;
+
+using Ardalis.SmartEnum;
+
+public abstract class BffFeatureCategory : SmartEnum<BffFeatureCategory>
 {
-    using Ardalis.SmartEnum;
+    public static readonly BffFeatureCategory Index = new IndexType();
+    public static readonly BffFeatureCategory Api = new ApiType();
+    public static readonly BffFeatureCategory Routes = new RoutesType();
+    public static readonly BffFeatureCategory Types = new TypesType();
 
-    public abstract class BffFeatureCategory : SmartEnum<BffFeatureCategory>
+    protected BffFeatureCategory(string name, int value) : base(name, value)
     {
-        public static readonly BffFeatureCategory Index = new IndexType();
-        public static readonly BffFeatureCategory Api = new ApiType();
-        public static readonly BffFeatureCategory Routes = new RoutesType();
-        public static readonly BffFeatureCategory Types = new TypesType();
+    }
 
-        protected BffFeatureCategory(string name, int value) : base(name, value)
-        {
-        }
-        
-        private class IndexType : BffFeatureCategory
-        {
-            public IndexType() : base(nameof(Index), 1) {}
-        }
+    private class IndexType : BffFeatureCategory
+    {
+        public IndexType() : base(nameof(Index), 1) { }
+    }
 
-        private class ApiType : BffFeatureCategory
-        {
-            public ApiType() : base(nameof(Api), 2) {}
-        }
+    private class ApiType : BffFeatureCategory
+    {
+        public ApiType() : base(nameof(Api), 2) { }
+    }
 
-        private class RoutesType : BffFeatureCategory
-        {
-            public RoutesType() : base(nameof(Routes), 3) {}
-        }
+    private class RoutesType : BffFeatureCategory
+    {
+        public RoutesType() : base(nameof(Routes), 3) { }
+    }
 
-        private class TypesType : BffFeatureCategory
-        {
-            public TypesType() : base(nameof(Types), 4) {}
-        }
+    private class TypesType : BffFeatureCategory
+    {
+        public TypesType() : base(nameof(Types), 4) { }
     }
 }

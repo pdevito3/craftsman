@@ -23,7 +23,7 @@ public class AddBusCommand : Command<AddBusCommand.Settings>
     public AddBusCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore,
         IAnsiConsole console, IFileParsingHelper fileParsingHelper)
     {
         _fileSystem = fileSystem;
@@ -39,11 +39,11 @@ public class AddBusCommand : Command<AddBusCommand.Settings>
         [CommandArgument(0, "[Filepath]")]
         public string Filepath { get; set; }
     }
-    
+
     public override int Execute(CommandContext context, Settings settings)
     {
         var potentialBoundaryDirectory = _utilities.GetRootDir();
-        
+
         var solutionDirectory = _fileSystem.Directory.GetParent(potentialBoundaryDirectory)?.FullName;
         _utilities.IsSolutionDirectoryGuard(solutionDirectory);
         _scaffoldingDirectoryStore.SetSolutionDirectory(solutionDirectory);
@@ -61,7 +61,7 @@ public class AddBusCommand : Command<AddBusCommand.Settings>
             template = FileParsingHelper.GetTemplateFromFile<Bus>(settings.Filepath);
         }
         template.ProjectBaseName = _scaffoldingDirectoryStore.ProjectBaseName;
-                
+
         AddBus(template,
             _scaffoldingDirectoryStore.SrcDirectory,
             _scaffoldingDirectoryStore.TestDirectory,

@@ -5,29 +5,29 @@ using Services;
 
 public class NavigationComponentBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public NavigationComponentBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public NavigationComponentBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
     public void CreateNavigationComponentItems(string spaDirectory)
     {
-      var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Navigation", "index.ts");
-      var indexFileText = GetNavigationIndexText();
-      _utilities.CreateFile(indexCassPath, indexFileText);
-      
-      var privateNavigationClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Navigation", "PrivateSideNav.tsx");
-      var privateNavigationFileText = GetPrivateNavigationText();
-      _utilities.CreateFile(privateNavigationClassPath, privateNavigationFileText);
+        var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Navigation", "index.ts");
+        var indexFileText = GetNavigationIndexText();
+        _utilities.CreateFile(indexCassPath, indexFileText);
+
+        var privateNavigationClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Navigation", "PrivateSideNav.tsx");
+        var privateNavigationFileText = GetPrivateNavigationText();
+        _utilities.CreateFile(privateNavigationClassPath, privateNavigationFileText);
     }
 
     public static string GetNavigationIndexText()
     {
-      return @$"export * from './PrivateSideNav';";
+        return @$"export * from './PrivateSideNav';";
     }
-	
+
     public static string GetPrivateNavigationText()
     {
         return @$"import React from 'react';

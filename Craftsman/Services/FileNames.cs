@@ -60,7 +60,7 @@ public static class FileNames
     {
         return $"{entityName.UppercaseFirstLetter()}List";
     }
-    
+
     public static string BffApiKeysExport(string entityName)
     {
         return $"{entityName.UppercaseFirstLetter()}Keys";
@@ -178,7 +178,7 @@ public static class FileNames
     {
         return $@"api/{entityNamePlural.ToLower()}";
     }
-    
+
     public static string GetBffApiFilenameBase(string entityName, FeatureType type)
     {
         return type.Name switch

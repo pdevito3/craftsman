@@ -1,11 +1,10 @@
-﻿namespace Craftsman.Domain.Enums
+﻿namespace Craftsman.Domain.Enums;
+
+//unknown will be used in error catches
+public enum Verbosity
 {
-    //unknown will be used in error catches
-    public enum Verbosity
-    {
-        //Silent,
-        Minimal,
-        More,
-        //Debug
-    }
+    //Silent,
+    Minimal,
+    More,
+    //Debug
 }

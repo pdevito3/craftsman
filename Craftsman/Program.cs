@@ -36,25 +36,25 @@ app.Configure(config =>
 {
     config.SetApplicationName("craftsman");
     config.SetInterceptor(new OperatingSystemInterceptor());
-    
+
     config.AddBranch("new", @new =>
     {
         @new.AddCommand<NewDomainCommand>("domain")
             .WithDescription("Scaffolds a project based on a given template file in a json or yaml format.")
-            .WithExample(new [] { "new domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "new domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "new domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new[] { "new domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "new domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "new domain", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
         @new.AddCommand<NewExampleCommand>("example")
             .WithDescription("Scaffolds out an example project via CLI prompts into the current directory.")
             .WithExample(new[] { "new example" })
             .WithExample(new[] { "new example", "MyProjectName" });
-        
+
         // hidden commands for aliases, etc.
         @new.AddCommand<AddEntityCommand>("entity")
             .WithAlias("entities")
             .IsHidden();
-        
+
         @new.AddCommand<AddFeatureCommand>("feature")
             .IsHidden();
     });
@@ -64,16 +64,16 @@ app.Configure(config =>
         @new.AddCommand<AddEntityCommand>("entity")
             .WithAlias("entities")
             .WithDescription("Add one or more new entities to your Wrapt project using a formatted yaml or json file.")
-            .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
-        
+            .WithExample(new[] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "add entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+
         @new.AddCommand<AddBoundedContextCommand>("bc")
             .WithAlias("boundedcontext")
             .WithDescription("Scaffolds a new bounded context for a Wrapt domain project based on a given template file in a json or yaml format.")
-            .WithExample(new [] { "add bc", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "add bc", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "add bc", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new[] { "add bc", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "add bc", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "add bc", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
         @new.AddCommand<AddFeatureCommand>("feature")
             .WithDescription("Scaffolds out a new feature using CLI prompts.")
@@ -90,54 +90,54 @@ app.Configure(config =>
         @new.AddCommand<AddAuthServerCommand>("authserver")
             .WithDescription(
                 "Adds a Duende based auth server project to your solution using a formatted yaml or json file.")
-            .WithExample(new [] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new[] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
         @new.AddCommand<AddBffCommand>("bff")
             .WithDescription(
                 "Add a bff to your solution along with a React client using a formatted yaml or json file that describes the bff you want to add.")
-            .WithExample(new [] { "add bff", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "add bff", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "add bff", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new[] { "add bff", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "add bff", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "add bff", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
         @new.AddCommand<AddBffEntityCommand>("bffentity")
             .WithDescription(
                 "Adds one or more new entities to your BFF client using a formatted yaml or json file.")
-            .WithExample(new [] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new[] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
         @new.AddCommand<AddConsumerCommand>("consumer")
             .WithDescription(
                 "Add a receive endpoint and register it with MassTransit using a formatted yaml or json file.")
-            .WithExample(new [] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new[] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "add consumer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
         @new.AddCommand<AddProducerCommand>("producer")
             .WithDescription(
                 "Adds a distinct feature that produces a message and registers it with MassTransit using a formatted yaml or json file.")
-            .WithExample(new [] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
         @new.AddCommand<AddProducerCommand>("message")
             .WithAlias("messages")
             .WithDescription(
                 "Adds one or more messages to your Shared Kernel project using a formatted yaml or json file.")
-            .WithExample(new [] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
     });
-    
+
     config.AddBranch("register", @new =>
     {
         @new.AddCommand<RegisterProducerCommand>("producer")
             .WithDescription("Register a producer with MassTransit using CLI prompts. This is especially useful for adding a new publish action to an existing feature (e.g. EntityCreated).")
-            .WithExample(new [] { "register producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new [] { "register producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new [] { "register producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new[] { "register producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "register producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "register producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
     });
 });
 

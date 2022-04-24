@@ -6,45 +6,45 @@ using Services;
 
 public class DynamicFeatureRoutesBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public DynamicFeatureRoutesBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public DynamicFeatureRoutesBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
-	public void CreateDynamicFeatureRoutes(string spaDirectory, string entityName, string entityPlural)
-	{
-		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
-			entityPlural, 
-			BffFeatureCategory.Routes ,
-			"index.ts");
-		var routesIndexFileText = GetAuthFeatureRoutesIndexText(entityName);
-		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
+    public void CreateDynamicFeatureRoutes(string spaDirectory, string entityName, string entityPlural)
+    {
+        var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory,
+            entityPlural,
+            BffFeatureCategory.Routes,
+            "index.ts");
+        var routesIndexFileText = GetAuthFeatureRoutesIndexText(entityName);
+        _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
 
-		var routesLoginFileText = GetEntityListRouteText(entityName, entityPlural);
-		var listRouteName = FileNames.BffEntityListRouteComponentName(entityName);
-		var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, 
-			entityPlural, 
-			BffFeatureCategory.Routes , 
-			$"{listRouteName}.tsx");
-		_utilities.CreateFile(routesLoginClassPath, routesLoginFileText);
-	}
-	
-	public static string GetAuthFeatureRoutesIndexText(string entityName)
-	{
-		var listRouteName = FileNames.BffEntityListRouteComponentName(entityName);
-	    return @$"export * from './{listRouteName}';";
-	}
+        var routesLoginFileText = GetEntityListRouteText(entityName, entityPlural);
+        var listRouteName = FileNames.BffEntityListRouteComponentName(entityName);
+        var routesLoginClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory,
+            entityPlural,
+            BffFeatureCategory.Routes,
+            $"{listRouteName}.tsx");
+        _utilities.CreateFile(routesLoginClassPath, routesLoginFileText);
+    }
 
-	public static string GetEntityListRouteText(string entityName, string entityPlural)
-	{
-		var entityResponseVar = $"{entityName.LowercaseFirstLetter()}Response";
-		var entityDataVar = $"{entityName.LowercaseFirstLetter()}Data";
-		var entityPaginationVar = $"{entityName.LowercaseFirstLetter()}Pagination";
-		var listRouteName = FileNames.BffEntityListRouteComponentName(entityName);
-		
-	    return @$"import React from 'react';
+    public static string GetAuthFeatureRoutesIndexText(string entityName)
+    {
+        var listRouteName = FileNames.BffEntityListRouteComponentName(entityName);
+        return @$"export * from './{listRouteName}';";
+    }
+
+    public static string GetEntityListRouteText(string entityName, string entityPlural)
+    {
+        var entityResponseVar = $"{entityName.LowercaseFirstLetter()}Response";
+        var entityDataVar = $"{entityName.LowercaseFirstLetter()}Data";
+        var entityPaginationVar = $"{entityName.LowercaseFirstLetter()}Pagination";
+        var listRouteName = FileNames.BffEntityListRouteComponentName(entityName);
+
+        return @$"import React from 'react';
 import {{ use{entityPlural.UppercaseFirstLetter()} }} from '../api';
 
 function {listRouteName}() {{
@@ -71,5 +71,5 @@ function {listRouteName}() {{
 
 export {{ {listRouteName} }};
 ";
-	}
+    }
 }

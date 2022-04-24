@@ -1,12 +1,11 @@
-﻿namespace Craftsman.Domain
+﻿namespace Craftsman.Domain;
+
+public class ApiEnvironment
 {
-    public class ApiEnvironment
-    {
-        public string EnvironmentName => "Development";
+    public string EnvironmentName => "Development";
 
-        public string ProfileName { get; set; }
+    public string ProfileName { get; set; }
 
-        public AuthSettings AuthSettings { get; set; } = new AuthSettings();
-        public BrokerSettings BrokerSettings { get; set; } = new BrokerSettings();
-    }
+    public AuthSettings AuthSettings { get; set; } = new AuthSettings();
+    public BrokerSettings BrokerSettings { get; set; } = new BrokerSettings();
 }

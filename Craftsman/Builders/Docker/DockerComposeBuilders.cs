@@ -16,14 +16,14 @@ public class DockerComposeBuilders
         _utilities = utilities;
         _fileSystem = fileSystem;
     }
-    
+
     public void CreateDockerComposeSkeleton(string solutionDirectory)
     {
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
         var fileText = GetDockerComposeSkeletonText();
         _utilities.CreateFile(classPath, fileText);
     }
-    
+
     public void CreateDockerComposeDbSkeleton(string solutionDirectory)
     {
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
@@ -39,25 +39,25 @@ services:
         
 volumes:";
     }
-    
+
     public void AddVolumeToDockerComposeDb(string solutionDirectory, DockerConfig dockerConfig)
     {
         var services = "";
         var volumes = GetDbVolumeAndServiceTextForCompose(dockerConfig, out var dbService);
-  
+
         services += $@"
   {dockerConfig.DbHostName}:{dbService}";
-        
+
         // TODO change back to `.data` and use a regular compose that can do apis, bffs, auth server as well
         // var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.data.yaml");
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
-  
+
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
         if (!_fileSystem.File.Exists(classPath.FullClassPath))
             return; //don't want to require this
-  
+
         var tempPath = $"{classPath.FullClassPath}temp";
         using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
         {
@@ -75,17 +75,17 @@ volumes:";
                     {
                         newText += @$"{volumes}";
                     }
-  
+
                     output.WriteLine(newText);
                 }
             }
         }
-  
+
         // delete the old file and set the name of the new one to the original name
         _fileSystem.File.Delete(classPath.FullClassPath);
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
-    
+
     public void AddJaegerToDockerCompose(string solutionDirectory)
     {
         var services = $@"
@@ -104,7 +104,7 @@ volumes:";
       - ""14269:14269""
       - ""9411:9411""
 ";
-        
+
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
@@ -117,7 +117,7 @@ volumes:";
         var fileText = File.ReadAllText(classPath.FullClassPath);
         if (fileText.Contains($"jaegertracing"))
             return;
-        
+
         var tempPath = $"{classPath.FullClassPath}temp";
         using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
         {
@@ -141,7 +141,7 @@ volumes:";
         _fileSystem.File.Delete(classPath.FullClassPath);
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
-    
+
     // TODO add props to make this configurable
     public void AddRmqToDockerCompose(string solutionDirectory)
     {
@@ -157,7 +157,7 @@ volumes:";
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 ";
-        
+
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
@@ -170,7 +170,7 @@ volumes:";
         var fileText = File.ReadAllText(classPath.FullClassPath);
         if (fileText.Contains($"masstransit/rabbitmq"))
             return;
-        
+
         var tempPath = $"{classPath.FullClassPath}temp";
         using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
         {
@@ -193,7 +193,7 @@ volumes:";
         // delete the old file and set the name of the new one to the original name
         _fileSystem.File.Delete(classPath.FullClassPath);
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
-        
+
         // now do docker compose data
         // AddRmqToComposeData(solutionDirectory, services);
     }
@@ -237,13 +237,13 @@ volumes:";
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 
-     public void AddBoundaryToDockerCompose(string solutionDirectory, DockerConfig dockerConfig, string clientId, string clientSecret, string audience)
-     {
-         var services = "";
-         var volumes = GetDbVolumeAndServiceTextForCompose(dockerConfig, out var dbService);
+    public void AddBoundaryToDockerCompose(string solutionDirectory, DockerConfig dockerConfig, string clientId, string clientSecret, string audience)
+    {
+        var services = "";
+        var volumes = GetDbVolumeAndServiceTextForCompose(dockerConfig, out var dbService);
 
-         // just add all env vars potentially needed. can be ignored or deleted if not needed. updated if vals change?
-         services += $@"
+        // just add all env vars potentially needed. can be ignored or deleted if not needed. updated if vals change?
+        services += $@"
    {dockerConfig.DbHostName}:{dbService}
 
    {dockerConfig.ApiServiceName}:
@@ -271,42 +271,42 @@ volumes:";
 
      volumes:
        - ~/.aspnet/https:/https:ro";
-         
-         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
-         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
-             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
-         if (!_fileSystem.File.Exists(classPath.FullClassPath))
-             return; //don't want to require this
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-         var tempPath = $"{classPath.FullClassPath}temp";
-         using (var input = File.OpenText(classPath.FullClassPath))
-         {
-             using (var output = new StreamWriter(tempPath))
-             {
-                 string line;
-                 while (null != (line = input.ReadLine()))
-                 {
-                     var newText = $"{line}";
-                     if (line.Contains($"services:"))
-                     {
-                         newText += @$"{services}";
-                     }
-                     if (line.Equals($"volumes:"))
-                     {
-                         newText += @$"{volumes}";
-                     }
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+            return; //don't want to require this
 
-                     output.WriteLine(newText);
-                 }
-             }
-         }
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = File.OpenText(classPath.FullClassPath))
+        {
+            using (var output = new StreamWriter(tempPath))
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"services:"))
+                    {
+                        newText += @$"{services}";
+                    }
+                    if (line.Equals($"volumes:"))
+                    {
+                        newText += @$"{volumes}";
+                    }
 
-         // delete the old file and set the name of the new one to the original name
-         _fileSystem.File.Delete(classPath.FullClassPath);
-         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
-     }
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        _fileSystem.File.Delete(classPath.FullClassPath);
+        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+    }
 
     public void AddAuthServerToDockerCompose(string solutionDirectory, string projectName, int port)
     {
@@ -327,7 +327,7 @@ volumes:";
 
     volumes:
       - ~/.aspnet/https:/https:ro";
-        
+
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
@@ -359,7 +359,7 @@ volumes:";
         _fileSystem.File.Delete(classPath.FullClassPath);
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
-    
+
     private string GetDbVolumeAndServiceTextForCompose(DockerConfig dockerConfig, out string dbService)
     {
         var volumes = "";
@@ -374,7 +374,7 @@ volumes:";
       POSTGRES_DB: {dockerConfig.DbName}
     volumes:
       - {dockerConfig.VolumeName}:/var/lib/postgresql/data";
-    
+
         if (dockerConfig.ProviderEnum == DbProvider.SqlServer)
         {
             dbService = @$"
@@ -390,7 +390,7 @@ volumes:";
     volumes:
       - {dockerConfig.VolumeName}:/var/lib/sqlserver/data";
         }
-    
+
         volumes += $"{Environment.NewLine}  {dockerConfig.VolumeName}:";
         return volumes;
     }

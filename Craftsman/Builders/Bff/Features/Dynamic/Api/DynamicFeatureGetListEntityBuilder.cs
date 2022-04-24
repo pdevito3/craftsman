@@ -6,32 +6,32 @@ using Services;
 
 public class DynamicFeatureGetListEntityBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public DynamicFeatureGetListEntityBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public DynamicFeatureGetListEntityBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
-	public void CreateApiFile(string spaDirectory, string entityName, string entityPlural)
-	{
-		var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory,
-			entityPlural, 
-			BffFeatureCategory.Api , 
-			$"{FeatureType.GetList.BffApiName(entityName)}.ts");
-		var routesIndexFileText = GetApiText(entityName, entityPlural);
-		_utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
-	}
-	
-	public static string GetApiText(string entityName, string entityPlural)
-	{
-		var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
-		var entityPluralUppercaseFirst = entityPlural.UppercaseFirstLetter();
-		var entityPluralLowercase = entityPlural.ToLower();
-		var keysImport = FileNames.BffApiKeysFilename(entityName);
-		var keyExportName = FileNames.BffApiKeysExport(entityName);
-		
-		return @$"import {{ api }} from '@/lib/axios';
+    public void CreateApiFile(string spaDirectory, string entityName, string entityPlural)
+    {
+        var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory,
+            entityPlural,
+            BffFeatureCategory.Api,
+            $"{FeatureType.GetList.BffApiName(entityName)}.ts");
+        var routesIndexFileText = GetApiText(entityName, entityPlural);
+        _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
+    }
+
+    public static string GetApiText(string entityName, string entityPlural)
+    {
+        var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
+        var entityPluralUppercaseFirst = entityPlural.UppercaseFirstLetter();
+        var entityPluralLowercase = entityPlural.ToLower();
+        var keysImport = FileNames.BffApiKeysFilename(entityName);
+        var keyExportName = FileNames.BffApiKeysExport(entityName);
+
+        return @$"import {{ api }} from '@/lib/axios';
 import {{ useQuery }} from 'react-query';
 import {{ {keyExportName} }} from './{keysImport}';
 import queryString from 'query-string'
@@ -62,5 +62,5 @@ export const use{entityPluralUppercaseFirst} = ({{ pageNumber, pageSize, filters
 	);
 }};
 ";
-	}
+    }
 }

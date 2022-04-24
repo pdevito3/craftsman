@@ -1,41 +1,41 @@
-﻿namespace Craftsman.Builders.Features
+﻿namespace Craftsman.Builders.Features;
+
+using Domain;
+using Domain.Enums;
+using Helpers;
+using Services;
+
+public class QueryGetRecordBuilder
 {
-    using Domain;
-    using Domain.Enums;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class QueryGetRecordBuilder
+    public QueryGetRecordBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public QueryGetRecordBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateQuery(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateQuery(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
-            var fileText = GetQueryFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public static string GetQueryFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
+    {
+        var className = FileNames.GetEntityFeatureClassName(entity.Name);
+        var queryRecordName = FileNames.QueryRecordName(entity.Name);
+        var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
 
-        public static string GetQueryFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
-        {
-            var className = FileNames.GetEntityFeatureClassName(entity.Name);
-            var queryRecordName = FileNames.QueryRecordName(entity.Name);
-            var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
+        var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
+        var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
+        var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
 
-            var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
-            var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
-            var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
+        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
 
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
-            var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
-
-            return @$"namespace {classNamespace};
+        return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
@@ -83,6 +83,5 @@ public static class {className}
         }}
     }}
 }}";
-        }
     }
 }

@@ -11,7 +11,7 @@ public class ApiVersioningExtensionsBuilder
     {
         _utilities = utilities;
     }
-    
+
     public void CreateApiVersioningServiceExtension(string solutionDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"ApiVersioningServiceExtension.cs", projectBaseName);

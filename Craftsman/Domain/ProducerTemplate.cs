@@ -1,10 +1,9 @@
-﻿namespace Craftsman.Domain
-{
-    using System.Collections.Generic;
+﻿namespace Craftsman.Domain;
 
-    public class ProducerTemplate
-    {
-        public string SolutionName { get; set; }
-        public List<Producer> Producers { get; set; }
-    }
+using System.Collections.Generic;
+
+public class ProducerTemplate
+{
+    public string SolutionName { get; set; }
+    public List<Producer> Producers { get; set; }
 }

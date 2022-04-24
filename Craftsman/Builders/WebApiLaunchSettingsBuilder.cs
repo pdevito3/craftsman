@@ -1,30 +1,29 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders;
+
+using Helpers;
+using Services;
+
+public class WebApiLaunchSettingsBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class WebApiLaunchSettingsBuilder
+    public WebApiLaunchSettingsBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public WebApiLaunchSettingsBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateLaunchSettings(string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchSettings.json", projectBaseName);
+        var fileText = GetLaunchSettingsText();
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateLaunchSettings(string srcDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchSettings.json", projectBaseName);
-            var fileText = GetLaunchSettingsText();
-            _utilities.CreateFile(classPath, fileText);
-        }
-
-        public static string GetLaunchSettingsText()
-        {
-            return @$"{{
+    public static string GetLaunchSettingsText()
+    {
+        return @$"{{
   ""profiles"": {{
   }}
 }}";
-        }
     }
 }

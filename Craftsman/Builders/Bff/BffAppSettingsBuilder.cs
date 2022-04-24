@@ -1,25 +1,24 @@
-﻿namespace Craftsman.Builders.Bff
+﻿namespace Craftsman.Builders.Bff;
+
+using Helpers;
+using Services;
+
+public class BffAppSettingsBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class BffAppSettingsBuilder
+    public BffAppSettingsBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public BffAppSettingsBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
-
-        public void CreateBffAppSettings(string projectDirectory)
-        {
-            var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"appsettings.json");
-            var fileText = @$"{{
+    public void CreateBffAppSettings(string projectDirectory)
+    {
+        var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"appsettings.json");
+        var fileText = @$"{{
   ""AllowedHosts"": ""*""
 }}
 ";
-            _utilities.CreateFile(classPath, fileText);
-        }
+        _utilities.CreateFile(classPath, fileText);
     }
 }

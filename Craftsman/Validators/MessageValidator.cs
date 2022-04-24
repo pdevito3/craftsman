@@ -1,13 +1,12 @@
-﻿namespace Craftsman.Validators
-{
-    using Domain;
-    using FluentValidation;
+﻿namespace Craftsman.Validators;
 
-    public class MessageValidator : AbstractValidator<Message>
+using Domain;
+using FluentValidation;
+
+public class MessageValidator : AbstractValidator<Message>
+{
+    public MessageValidator()
     {
-        public MessageValidator()
-        {
-            RuleFor(c => c.Name).NotEmpty().WithMessage("Please specify a name for your message.");
-        }
+        RuleFor(c => c.Name).NotEmpty().WithMessage("Please specify a name for your message.");
     }
 }

@@ -1,29 +1,29 @@
-﻿namespace Craftsman.Builders.Projects
+﻿namespace Craftsman.Builders.Projects;
+
+using Helpers;
+using Services;
+
+public class IntegrationTestsCsProjBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class IntegrationTestsCsProjBuilder
+    public IntegrationTestsCsProjBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public IntegrationTestsCsProjBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.IntegrationTestProjectClassPath(solutionDirectory, projectBaseName);
+        _utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName));
+    }
 
-        public void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.IntegrationTestProjectClassPath(solutionDirectory, projectBaseName);
-            _utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName));
-        }
-        
-        public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName)
-        {
-            var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-            var sharedTestClassPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
+    public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName)
+    {
+        var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
+        var sharedTestClassPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
 
-            return @$"<Project Sdk=""Microsoft.NET.Sdk"">
+        return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -54,6 +54,5 @@
   </ItemGroup>
 
 </Project>";
-        }
     }
 }

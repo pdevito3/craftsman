@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Projects
+﻿namespace Craftsman.Builders.Projects;
+
+using Helpers;
+using Services;
+
+public class BffProjBuilder
 {
-  using Helpers;
-  using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-  public class BffProjBuilder
+    public BffProjBuilder(ICraftsmanUtilities utilities)
     {
-      private readonly ICraftsmanUtilities _utilities;
-
-      public BffProjBuilder(ICraftsmanUtilities utilities)
-      {
         _utilities = utilities;
-      }
+    }
 
-        public void CreateProject(string solutionDirectory, string projectBaseName, int? proxyPort)
-        {
-            var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-            var fileText = ProjectFileText(proxyPort, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public void CreateProject(string solutionDirectory, string projectBaseName, int? proxyPort)
+    {
+        var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
+        var fileText = ProjectFileText(proxyPort, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public static string ProjectFileText(int? proxyPort, string projectBaseName)
-        {
-            return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
+    public static string ProjectFileText(int? proxyPort, string projectBaseName)
+    {
+        return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -90,6 +90,5 @@
   </Target>
 </Project>
 ";
-        }
     }
 }

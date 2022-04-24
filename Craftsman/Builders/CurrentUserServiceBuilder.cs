@@ -1,26 +1,26 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders;
+
+using Helpers;
+using Services;
+
+public class CurrentUserServiceBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class CurrentUserServiceBuilder
+    public CurrentUserServiceBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
+    public void GetCurrentUserService(string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "CurrentUserService.cs", projectBaseName);
+        var fileText = GetCurrentUserServiceText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public CurrentUserServiceBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
-        public void GetCurrentUserService(string srcDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "CurrentUserService.cs", projectBaseName);
-            var fileText = GetCurrentUserServiceText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        private static string GetCurrentUserServiceText(string classNamespace)
-        {
-            return @$"namespace {classNamespace};
+    private static string GetCurrentUserServiceText(string classNamespace)
+    {
+        return @$"namespace {classNamespace};
 
 using System.Security.Claims;
 
@@ -42,6 +42,5 @@ public class CurrentUserService : ICurrentUserService
     public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
     public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
 }}";
-        }
     }
 }

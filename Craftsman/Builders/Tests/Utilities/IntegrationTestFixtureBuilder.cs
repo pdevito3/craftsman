@@ -1,57 +1,57 @@
-﻿namespace Craftsman.Builders.Tests.Utilities
+﻿namespace Craftsman.Builders.Tests.Utilities;
+
+using Domain;
+using Helpers;
+using Services;
+
+public class IntegrationTestFixtureBuilder
 {
-    using Domain;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class IntegrationTestFixtureBuilder
+    public IntegrationTestFixtureBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public IntegrationTestFixtureBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, DbProvider provider)
+    {
+        var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestFixture.cs", projectBaseName);
+        var fileText = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, provider);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, DbProvider provider)
-        {
-            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestFixture.cs", projectBaseName);
-            var fileText = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, provider);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName, DbProvider provider)
+    {
+        var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
+        var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
+        var testUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
+        var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(solutionDirectory, "", projectBaseName);
+        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(solutionDirectory, "", projectBaseName);
 
-        public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName, DbProvider provider)
-        {
-            var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-            var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-            var testUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-            var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(solutionDirectory, "", projectBaseName);
-            var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(solutionDirectory, "", projectBaseName);
-
-            var usingStatement = provider == DbProvider.Postgres
-                ? $@"
+        var usingStatement = provider == DbProvider.Postgres
+            ? $@"
 using Npgsql;"
-                : null;
+            : null;
 
-            var checkpoint = provider == DbProvider.Postgres
-                ? $@"_checkpoint = new Checkpoint
+        var checkpoint = provider == DbProvider.Postgres
+            ? $@"_checkpoint = new Checkpoint
         {{
             TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
             SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
             DbAdapter = DbAdapter.Postgres
         }};"
-                : $@"_checkpoint = new Checkpoint
+            : $@"_checkpoint = new Checkpoint
         {{
             TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
         }};";
 
-            var resetString = provider == DbProvider.Postgres
-                ? $@"using var conn = new NpgsqlConnection(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
+        var resetString = provider == DbProvider.Postgres
+            ? $@"using var conn = new NpgsqlConnection(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
         await conn.OpenAsync();
         await _checkpoint.Reset(conn);"
-                : $@"await _checkpoint.Reset(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));";
+            : $@"await _checkpoint.Reset(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));";
 
-            return @$"namespace {classNamespace};
+        return @$"namespace {classNamespace};
 
 using {contextClassPath.ClassNamespace};
 using {testUtilsClassPath.ClassNamespace};
@@ -293,6 +293,5 @@ public class TestFixture
         // MassTransit Teardown -- Do Not Delete Comment
     }}
 }}";
-        }
     }
 }

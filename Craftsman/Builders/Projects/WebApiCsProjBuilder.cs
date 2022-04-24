@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Projects
+﻿namespace Craftsman.Builders.Projects;
+
+using Domain;
+using Helpers;
+using Services;
+
+public class WebApiCsProjBuilder
 {
-    using Domain;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class WebApiCsProjBuilder
+    public WebApiCsProjBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public WebApiCsProjBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
-        
-        public void CreateWebApiCsProj(string solutionDirectory, string projectBaseName, DbProvider dbProvider)
-        {
-            var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-            _utilities.CreateFile(classPath, GetWebApiCsProjFileText(dbProvider));
-        }
+    public void CreateWebApiCsProj(string solutionDirectory, string projectBaseName, DbProvider dbProvider)
+    {
+        var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
+        _utilities.CreateFile(classPath, GetWebApiCsProjFileText(dbProvider));
+    }
 
-        public static string GetWebApiCsProjFileText(DbProvider dbProvider)
-        {
-            return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
+    public static string GetWebApiCsProjFileText(DbProvider dbProvider)
+    {
+        return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -77,6 +77,5 @@
   </ItemGroup>
 
 </Project>";
-        }
     }
 }

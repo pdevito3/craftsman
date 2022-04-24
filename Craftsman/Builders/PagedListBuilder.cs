@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders;
+
+using Helpers;
+using Services;
+
+public class PagedListBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class PagedListBuilder
+    public PagedListBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public PagedListBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreatePagedList(string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.WrappersClassPath(srcDirectory, $"PagedList.cs", projectBaseName);
+        var fileText = GetPagedListText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreatePagedList(string srcDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.WrappersClassPath(srcDirectory, $"PagedList.cs", projectBaseName);
-            var fileText = GetPagedListText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-
-        public static string GetPagedListText(string classNamespace)
-        {
-            return @$"namespace {classNamespace};
+    public static string GetPagedListText(string classNamespace)
+    {
+        return @$"namespace {classNamespace};
 
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -69,6 +69,5 @@ public class PagedList<T> : List<T>
         return new PagedList<T>(items, count, pageNumber, pageSize);
     }}
 }}";
-        }
     }
 }

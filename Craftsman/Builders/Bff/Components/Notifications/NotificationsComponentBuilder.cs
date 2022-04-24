@@ -5,29 +5,29 @@ using Services;
 
 public class NotificationsComponentBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public NotificationsComponentBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public NotificationsComponentBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
     public void CreateNotificationComponentItems(string spaDirectory)
     {
-      var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Notifications", "index.ts");
-      var indexFileText = GetNotificationIndexText();
-      _utilities.CreateFile(indexCassPath, indexFileText);
-      
-      var privateNotificationClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Notifications", "Notifications.tsx");
-      var privateNotificationFileText = GetNotificationText();
-      _utilities.CreateFile(privateNotificationClassPath, privateNotificationFileText);
+        var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Notifications", "index.ts");
+        var indexFileText = GetNotificationIndexText();
+        _utilities.CreateFile(indexCassPath, indexFileText);
+
+        var privateNotificationClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Notifications", "Notifications.tsx");
+        var privateNotificationFileText = GetNotificationText();
+        _utilities.CreateFile(privateNotificationClassPath, privateNotificationFileText);
     }
 
     public static string GetNotificationIndexText()
     {
-      return @$"export * from './Notifications';";
+        return @$"export * from './Notifications';";
     }
-	
+
     public static string GetNotificationText()
     {
         return @$"import React from 'react';

@@ -1,35 +1,35 @@
-﻿namespace Craftsman.Builders.Tests.IntegrationTests
+﻿namespace Craftsman.Builders.Tests.IntegrationTests;
+
+using Craftsman.Services;
+using Helpers;
+
+public class UserPolicyHandlerIntegrationTests
 {
-    using Craftsman.Services;
-    using Helpers;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class UserPolicyHandlerIntegrationTests
+    public UserPolicyHandlerIntegrationTests(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public UserPolicyHandlerIntegrationTests(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.ServicesTestClassPath(testDirectory, $"UserPolicyHandlerTests.cs", projectBaseName);
+        var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.ServicesTestClassPath(testDirectory, $"UserPolicyHandlerTests.cs", projectBaseName);
-            var fileText =  WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
+    {
+        var testFixtureName = FileNames.GetIntegrationTestFixtureName();
 
-        private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
-        {
-            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-            
-            var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
-            var policyDomainClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
-            var entityClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", "RolePermissions", projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", "RolePermission", projectBaseName);
-            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
+        var policyDomainClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+        var entityClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", "RolePermissions", projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", "RolePermission", projectBaseName);
+        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
 
-            return @$"namespace {classPath.ClassNamespace};
+        return @$"namespace {classPath.ClassNamespace};
 
 using {servicesClassPath.ClassNamespace};
 using {policyDomainClassPath.ClassNamespace};
@@ -142,6 +142,5 @@ public class UserPolicyHandlerTests : TestBase
         permissions.Should().Contain(permissionToAssign);
     }}
 }}";
-        }
     }
 }

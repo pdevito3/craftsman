@@ -1,30 +1,29 @@
-﻿namespace Craftsman.Domain.Enums
+﻿namespace Craftsman.Domain.Enums;
+
+using Ardalis.SmartEnum;
+
+public abstract class ExchangeTypeEnum : SmartEnum<ExchangeTypeEnum>
 {
-    using Ardalis.SmartEnum;
+    public static readonly ExchangeTypeEnum Fanout = new FanoutType();
+    public static readonly ExchangeTypeEnum Direct = new DirectType();
+    public static readonly ExchangeTypeEnum Topic = new TopicType();
 
-    public abstract class ExchangeTypeEnum : SmartEnum<ExchangeTypeEnum>
+    protected ExchangeTypeEnum(string name, int value) : base(name, value)
     {
-        public static readonly ExchangeTypeEnum Fanout = new FanoutType();
-        public static readonly ExchangeTypeEnum Direct = new DirectType();
-        public static readonly ExchangeTypeEnum Topic = new TopicType();
+    }
 
-        protected ExchangeTypeEnum(string name, int value) : base(name, value)
-        {
-        }
-        
-        private class FanoutType : ExchangeTypeEnum
-        {
-            public FanoutType() : base(nameof(Fanout), 1) {}
-        }
-        
-        private class DirectType : ExchangeTypeEnum
-        {
-            public DirectType() : base(nameof(Direct), 2) {}
-        }
+    private class FanoutType : ExchangeTypeEnum
+    {
+        public FanoutType() : base(nameof(Fanout), 1) { }
+    }
 
-        private class TopicType : ExchangeTypeEnum
-        {
-            public TopicType() : base(nameof(Topic), 3) {}
-        }
+    private class DirectType : ExchangeTypeEnum
+    {
+        public DirectType() : base(nameof(Direct), 2) { }
+    }
+
+    private class TopicType : ExchangeTypeEnum
+    {
+        public TopicType() : base(nameof(Topic), 3) { }
     }
 }

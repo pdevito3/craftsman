@@ -1,53 +1,53 @@
-﻿namespace Craftsman.Builders.AuthServer
+﻿namespace Craftsman.Builders.AuthServer;
+
+using Helpers;
+using Services;
+using static Helpers.ConstMessages;
+
+public class AuthServerAccountViewsBuilder
 {
-  using Helpers;
-  using Services;
-  using static Helpers.ConstMessages;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerAccountViewsBuilder
+    public AuthServerAccountViewsBuilder(ICraftsmanUtilities utilities)
     {
-      private readonly ICraftsmanUtilities _utilities;
-
-      public AuthServerAccountViewsBuilder(ICraftsmanUtilities utilities)
-      {
         _utilities = utilities;
-      }
+    }
 
-        public void CreateLoginView(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
-                "Login.cshtml",
-                authServerProjectName,
-                ClassPathHelper.AuthServerViewSubDir.Account);
-            var fileText = GetLoginViewText(projectDirectory, authServerProjectName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public void CreateLogoutView(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
-                "Logout.cshtml",
-                authServerProjectName,
-                ClassPathHelper.AuthServerViewSubDir.Account);
-            var fileText = GetLogoutViewText(projectDirectory, authServerProjectName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public void CreateAccessDeniedView(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
-                "AccessDenied.cshtml",
-                authServerProjectName,
-                ClassPathHelper.AuthServerViewSubDir.Account);
-            var fileText = GetAccessDeniedViewText(projectDirectory, authServerProjectName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public static string GetLoginViewText(string projectDirectory, string authServerProjectName)
-        {
-            var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
-            
-            return @$"@* {DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+    public void CreateLoginView(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
+            "Login.cshtml",
+            authServerProjectName,
+            ClassPathHelper.AuthServerViewSubDir.Account);
+        var fileText = GetLoginViewText(projectDirectory, authServerProjectName);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    public void CreateLogoutView(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
+            "Logout.cshtml",
+            authServerProjectName,
+            ClassPathHelper.AuthServerViewSubDir.Account);
+        var fileText = GetLogoutViewText(projectDirectory, authServerProjectName);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    public void CreateAccessDeniedView(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerViewsSubDirClassPath(projectDirectory,
+            "AccessDenied.cshtml",
+            authServerProjectName,
+            ClassPathHelper.AuthServerViewSubDir.Account);
+        var fileText = GetAccessDeniedViewText(projectDirectory, authServerProjectName);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    public static string GetLoginViewText(string projectDirectory, string authServerProjectName)
+    {
+        var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
+
+        return @$"@* {DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information. 
 
 This file also uses a free template from Tailwind UI as a base.*@
@@ -127,12 +127,12 @@ This file also uses a free template from Tailwind UI as a base.*@
         There are no login schemes configured for this request.
     </div>
 }}";
-        }
-        
-        public static string GetLogoutViewText(string projectDirectory, string authServerProjectName)
-        {
-            var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
-            return @$"@* {DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+    }
+
+    public static string GetLogoutViewText(string projectDirectory, string authServerProjectName)
+    {
+        var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
+        return @$"@* {DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information. *@
 
 
@@ -153,12 +153,12 @@ This file also uses a free template from Tailwind UI as a base.*@
     </form>
   </div>
 </div>";
-        }
-        
-        public static string GetAccessDeniedViewText(string projectDirectory, string authServerProjectName)
-        {
-            var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
-            return @$"@* {DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+    }
+
+    public static string GetAccessDeniedViewText(string projectDirectory, string authServerProjectName)
+    {
+        var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
+        return @$"@* {DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information. *@
 
 
@@ -170,6 +170,5 @@ This file also uses a free template from Tailwind UI as a base.*@
     </div>
   </div>
 </div>";
-        }
     }
 }

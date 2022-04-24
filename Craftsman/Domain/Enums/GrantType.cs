@@ -1,27 +1,26 @@
-﻿namespace Craftsman.Domain.Enums
+﻿namespace Craftsman.Domain.Enums;
+
+using Ardalis.SmartEnum;
+
+public abstract class GrantType : SmartEnum<GrantType>
 {
-    using Ardalis.SmartEnum;
+    public static readonly GrantType Code = new CodeType();
+    public static readonly GrantType ClientCredentials = new ClientCredentialsType();
 
-    public abstract class GrantType : SmartEnum<GrantType>
+    protected GrantType(string name, int value) : base(name, value)
     {
-        public static readonly GrantType Code = new CodeType();
-        public static readonly GrantType ClientCredentials = new ClientCredentialsType();
+    }
+    public abstract string GrantTypeClassAssignment();
 
-        protected GrantType(string name, int value) : base(name, value)
-        {
-        }
-        public abstract string GrantTypeClassAssignment();
-        
-        private class CodeType : GrantType
-        {
-            public CodeType() : base(nameof(Code), 1) {}
-            public override string GrantTypeClassAssignment() => "GrantTypes.Code";
-        }
+    private class CodeType : GrantType
+    {
+        public CodeType() : base(nameof(Code), 1) { }
+        public override string GrantTypeClassAssignment() => "GrantTypes.Code";
+    }
 
-        private class ClientCredentialsType : GrantType
-        {
-            public ClientCredentialsType() : base(nameof(ClientCredentials), 2) {}
-            public override string GrantTypeClassAssignment() => "GrantTypes.ClientCredentials";
-        }
+    private class ClientCredentialsType : GrantType
+    {
+        public ClientCredentialsType() : base(nameof(ClientCredentials), 2) { }
+        public override string GrantTypeClassAssignment() => "GrantTypes.ClientCredentials";
     }
 }

@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Bff
+﻿namespace Craftsman.Builders.Bff;
+
+using Helpers;
+using Services;
+
+public class AspnetcoreReactBuilder
 {
-	using Helpers;
-	using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public class AspnetcoreReactBuilder
-{
-	private readonly ICraftsmanUtilities _utilities;
-
-	public AspnetcoreReactBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
-
-	public void CreateAspnetcoreReact(string spaDirectory)
+    public AspnetcoreReactBuilder(ICraftsmanUtilities utilities)
     {
-      var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "aspnetcore-react.js");
-      var fileText = GetAspnetcoreReactText();
-      _utilities.CreateFile(classPath, fileText);
+        _utilities = utilities;
+    }
+
+    public void CreateAspnetcoreReact(string spaDirectory)
+    {
+        var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "aspnetcore-react.js");
+        var fileText = GetAspnetcoreReactText();
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetAspnetcoreReactText()
     {
-      return @$"// This script configures the .env.development.local file with additional environment variables to configure HTTPS using the ASP.NET Core
+        return @$"// This script configures the .env.development.local file with additional environment variables to configure HTTPS using the ASP.NET Core
 // development certificate in the webpack development proxy.
 
 const fs = require('fs');
@@ -74,5 +74,4 @@ SSL_KEY_FILE=${{keyFilePath}}`
 	}}
 }}";
     }
-  }
 }

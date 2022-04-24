@@ -1,9 +1,8 @@
-﻿namespace Craftsman.Domain
+﻿namespace Craftsman.Domain;
+
+public class SwaggerApiContact
 {
-    public class SwaggerApiContact
-    {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Url { get; set; }
-    }
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string Url { get; set; }
 }

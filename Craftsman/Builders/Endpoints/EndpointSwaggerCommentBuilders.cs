@@ -1,17 +1,17 @@
-﻿namespace Craftsman.Builders.Endpoints
+﻿namespace Craftsman.Builders.Endpoints;
+
+using System;
+using Domain;
+
+public class EndpointSwaggerCommentBuilders
 {
-    using System;
-    using Domain;
-
-    public class EndpointSwaggerCommentBuilders
+    public static string GetSwaggerComments_GetList(Entity entity, bool buildComments, string listResponse, bool hasAuthentications)
     {
-        public static string GetSwaggerComments_GetList(Entity entity, bool buildComments, string listResponse, bool hasAuthentications)
-        {
-            var authResponses = GetAuthResponses(hasAuthentications);
-            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+        var authResponses = GetAuthResponses(hasAuthentications);
+        var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
 
-            if (buildComments)
-                return $@"
+        if (buildComments)
+            return $@"
     /// <summary>
     /// Gets a list of all {entity.Plural}.
     /// </summary>
@@ -44,15 +44,15 @@
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]";
 
-            return "";
-        }
+        return "";
+    }
 
-        public static string GetSwaggerComments_GetRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
-        {
-            var authResponses = GetAuthResponses(hasAuthentications);
-            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+    public static string GetSwaggerComments_GetRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
+    {
+        var authResponses = GetAuthResponses(hasAuthentications);
+        var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
 
-            return buildComments ? $@"
+        return buildComments ? $@"
     /// <summary>
     /// Gets a single {entity.Name} by ID.
     /// </summary>
@@ -62,13 +62,13 @@
     [ProducesResponseType(typeof({singleResponse}), 200)]
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
-        }
+    }
 
-        public static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
-        {
-            var authResponses = GetAuthResponses(hasAuthentications);
-            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
-            return buildComments ? $@"
+    public static string GetSwaggerComments_CreateRecord(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
+    {
+        var authResponses = GetAuthResponses(hasAuthentications);
+        var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+        return buildComments ? $@"
     /// <summary>
     /// Creates a new {entity.Name} record.
     /// </summary>
@@ -78,13 +78,13 @@
     [ProducesResponseType(typeof({singleResponse}), 201)]
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
-        }
+    }
 
-        public static string GetSwaggerComments_CreateList(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
-        {
-            var authResponses = GetAuthResponses(hasAuthentications);
-            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
-            return buildComments ? $@"
+    public static string GetSwaggerComments_CreateList(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
+    {
+        var authResponses = GetAuthResponses(hasAuthentications);
+        var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+        return buildComments ? $@"
     /// <summary>
     /// Creates one or more {entity.Name} records.
     /// </summary>
@@ -94,13 +94,13 @@
     [ProducesResponseType(typeof({singleResponse}), 201)]
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
-        }
+    }
 
-        public static string GetSwaggerComments_DeleteRecord(Entity entity, bool buildComments, bool hasAuthentications)
-        {
-            var authResponses = GetAuthResponses(hasAuthentications);
-            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
-            return buildComments ? $@"
+    public static string GetSwaggerComments_DeleteRecord(Entity entity, bool buildComments, bool hasAuthentications)
+    {
+        var authResponses = GetAuthResponses(hasAuthentications);
+        var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+        return buildComments ? $@"
     /// <summary>
     /// Deletes an existing {entity.Name} record.
     /// </summary>
@@ -110,13 +110,13 @@
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
-        }
+    }
 
-        public static string GetSwaggerComments_PatchRecord(Entity entity, bool buildComments, bool hasAuthentications)
-        {
-            var authResponses = GetAuthResponses(hasAuthentications);
-            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
-            return buildComments ? $@"
+    public static string GetSwaggerComments_PatchRecord(Entity entity, bool buildComments, bool hasAuthentications)
+    {
+        var authResponses = GetAuthResponses(hasAuthentications);
+        var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+        return buildComments ? $@"
     /// <summary>
     /// Updates specific properties on an existing {entity.Name}.
     /// </summary>
@@ -126,13 +126,13 @@
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
-        }
+    }
 
-        public static string GetSwaggerComments_PutRecord(Entity entity, bool buildComments, bool hasAuthentications)
-        {
-            var authResponses = GetAuthResponses(hasAuthentications);
-            var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
-            return buildComments ? $@"
+    public static string GetSwaggerComments_PutRecord(Entity entity, bool buildComments, bool hasAuthentications)
+    {
+        var authResponses = GetAuthResponses(hasAuthentications);
+        var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+        return buildComments ? $@"
     /// <summary>
     /// Updates an entire existing {entity.Name}.
     /// </summary>
@@ -142,49 +142,48 @@
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
-        }
+    }
 
-        public static string BuildAuthorizations(string permission)
-        {
-            return $@"{Environment.NewLine}    [Authorize(Policy = Permissions.{permission})]";
-        }
+    public static string BuildAuthorizations(string permission)
+    {
+        return $@"{Environment.NewLine}    [Authorize(Policy = Permissions.{permission})]";
+    }
 
-        public static string GetAuthResponses(bool hasAuthentications)
+    public static string GetAuthResponses(bool hasAuthentications)
+    {
+        var authResponses = "";
+        if (hasAuthentications)
         {
-            var authResponses = "";
-            if (hasAuthentications)
-            {
-                authResponses = $@"
+            authResponses = $@"
     [ProducesResponseType(401)]
     [ProducesResponseType(403)]";
-            }
-
-            return authResponses;
         }
 
-        public static string GetConflictResponses(bool hasConflictResponse)
+        return authResponses;
+    }
+
+    public static string GetConflictResponses(bool hasConflictResponse)
+    {
+        var conflictResponses = "";
+        if (hasConflictResponse)
         {
-            var conflictResponses = "";
-            if (hasConflictResponse)
-            {
-                conflictResponses = $@"
+            conflictResponses = $@"
     [ProducesResponseType(409)]";
-            }
-
-            return conflictResponses;
         }
 
-        public static string GetAuthCommentResponses(bool hasAuthentications)
+        return conflictResponses;
+    }
+
+    public static string GetAuthCommentResponses(bool hasAuthentications)
+    {
+        var authResponseComments = "";
+        if (hasAuthentications)
         {
-            var authResponseComments = "";
-            if (hasAuthentications)
-            {
-                authResponseComments = $@"
+            authResponseComments = $@"
     /// <response code=""401"">This request was not able to be authenticated.</response>
     /// <response code=""403"">The required permissions to access this resource were not present in the given request.</response>";
-            }
-
-            return authResponseComments;
         }
+
+        return authResponseComments;
     }
 }

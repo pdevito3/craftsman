@@ -22,9 +22,9 @@ public class MassTransitExtensionsBuilder
     public static string GetMassTransitServiceExtensionText(string classNamespace, string solutionDirectory, string srcDirectory, string projectBaseName)
     {
         var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
-            
+
         var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
-            
+
         return @$"namespace {classNamespace};
 
 using {utilsClassPath.ClassNamespace};

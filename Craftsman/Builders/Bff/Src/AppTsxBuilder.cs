@@ -1,28 +1,28 @@
-﻿namespace Craftsman.Builders.Bff.Src
+﻿namespace Craftsman.Builders.Bff.Src;
+
+using Helpers;
+using Services;
+
+public class AppTsxBuilder
 {
-	using Helpers;
-	using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public class AppTsxBuilder
-	{
-		private readonly ICraftsmanUtilities _utilities;
-
-		public AppTsxBuilder(ICraftsmanUtilities utilities)
-		{
-			_utilities = utilities;
-		}
+    public AppTsxBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
 
     public void CreateAppTsx(string spaDirectory)
     {
-      var classPath = ClassPathHelper.BffSpaSrcClassPath(spaDirectory, "App.tsx");
-      var fileText = GetAppTsxText();
-      _utilities.CreateFile(classPath, fileText);
+        var classPath = ClassPathHelper.BffSpaSrcClassPath(spaDirectory, "App.tsx");
+        var fileText = GetAppTsxText();
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetAppTsxText()
     {
-      return @$"import React from 'react';
+        return @$"import React from 'react';
 import {{ Login, useAuthUser }} from './features/Auth';
 import './custom.css';
 import 'react-toastify/dist/ReactToastify.min.css';
@@ -60,5 +60,4 @@ function App() {{
 
 export default App;";
     }
-  }
 }

@@ -1,30 +1,30 @@
-﻿namespace Craftsman.Builders.Tests.UnitTests
+﻿namespace Craftsman.Builders.Tests.UnitTests;
+
+using System.IO;
+using Helpers;
+using Services;
+
+public class CurrentUserServiceTestBuilder
 {
-    using System.IO;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class CurrentUserServiceTestBuilder
+    public CurrentUserServiceTestBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public CurrentUserServiceTestBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTests(string solutionDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(solutionDirectory, $"CurrentUserServiceTests.cs", projectBaseName);
+        var fileText = WriteTestFileText(solutionDirectory, classPath, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateTests(string solutionDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(solutionDirectory, $"CurrentUserServiceTests.cs", projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, classPath, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, string projectBaseName)
+    {
+        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(solutionDirectory, "", projectBaseName);
 
-        private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, string projectBaseName)
-        {
-            var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(solutionDirectory, "", projectBaseName);
-
-            return @$"namespace {classPath.ClassNamespace};
+        return @$"namespace {classPath.ClassNamespace};
 
 using {servicesClassPath.ClassNamespace};
 using System.Security.Claims;
@@ -67,6 +67,5 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         currentUserService.UserId.Should().BeNullOrEmpty();
     }}
 }}";
-        }
     }
 }

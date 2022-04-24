@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Bff
+﻿namespace Craftsman.Builders.Bff;
+
+using Helpers;
+using Services;
+
+public class AspnetcoreHttpsBuilder
 {
-	using Helpers;
-	using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public class AspnetcoreHttpsBuilder
-  {
-	  private readonly ICraftsmanUtilities _utilities;
-
-	  public AspnetcoreHttpsBuilder(ICraftsmanUtilities utilities)
-	  {
-		  _utilities = utilities;
-	  }
+    public AspnetcoreHttpsBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
     public void CreateAspnetcoreHttps(string spaDirectory)
     {
-      var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "aspnetcore-https.js");
-      var fileText = GetAspnetcoreHttpsText();
-      _utilities.CreateFile(classPath, fileText);
+        var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "aspnetcore-https.js");
+        var fileText = GetAspnetcoreHttpsText();
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetAspnetcoreHttpsText()
     {
-      return @$"// This script sets up HTTPS for the application using the ASP.NET Core HTTPS certificate
+        return @$"// This script sets up HTTPS for the application using the ASP.NET Core HTTPS certificate
 const fs = require('fs');
 const spawn = require('child_process').spawn;
 const path = require('path');
@@ -55,5 +55,4 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {{
 }}
 ";
     }
-  }
 }

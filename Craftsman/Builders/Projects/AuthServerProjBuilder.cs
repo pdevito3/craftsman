@@ -1,27 +1,27 @@
-﻿namespace Craftsman.Builders.Projects
+﻿namespace Craftsman.Builders.Projects;
+
+using Helpers;
+using Services;
+
+public class AuthServerProjBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerProjBuilder
+    public AuthServerProjBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AuthServerProjBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
-        
-        public void CreateProject(string solutionDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-            var fileText = ProjectFileText();
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public void CreateProject(string solutionDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
+        var fileText = ProjectFileText();
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public static string ProjectFileText()
-        {
-            return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
+    public static string ProjectFileText()
+    {
+        return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -40,6 +40,5 @@
   </Target>
 
 </Project>";
-        }
     }
 }

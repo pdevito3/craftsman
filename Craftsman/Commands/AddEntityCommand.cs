@@ -10,7 +10,7 @@ using Spectre.Console.Cli;
 
 public class AddEntityCommand : Command<AddEntityCommand.Settings>
 {
-    private IAnsiConsole _console;
+    private readonly IAnsiConsole _console;
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
     private readonly ICraftsmanUtilities _utilities;
@@ -37,15 +37,15 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
         [CommandArgument(0, "<Filepath>")]
         public string Filepath { get; set; }
     }
-    
+
     public override int Execute(CommandContext context, Settings settings)
     {
         var potentialBoundaryDirectory = _utilities.GetRootDir();
-        
+
         var solutionDirectory = _fileSystem.Directory.GetParent(potentialBoundaryDirectory)?.FullName;
         _utilities.IsSolutionDirectoryGuard(solutionDirectory);
         _scaffoldingDirectoryStore.SetSolutionDirectory(solutionDirectory);
-        
+
         var projectName = new DirectoryInfo(potentialBoundaryDirectory).Name;
         _scaffoldingDirectoryStore.SetBoundedContextDirectoryAndProject(projectName);
         _utilities.IsBoundedContextDirectoryGuard();
@@ -56,9 +56,9 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 
         FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
-        
+
         RunEntityBuilders(solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory, template);
-        
+
         _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
         return 0;
     }
@@ -68,7 +68,7 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
         template = GetDbContext(_scaffoldingDirectoryStore.SrcDirectory, template, _scaffoldingDirectoryStore.ProjectBaseName);
         template.SolutionName = _scaffoldingDirectoryStore.ProjectBaseName;
         var useSoftDelete = _utilities.ProjectUsesSoftDelete(srcDirectory, _scaffoldingDirectoryStore.ProjectBaseName);
-            
+
         //entities
         new EntityScaffoldingService(_utilities, _fileSystem).ScaffoldEntities(solutionDirectory,
             srcDirectory,

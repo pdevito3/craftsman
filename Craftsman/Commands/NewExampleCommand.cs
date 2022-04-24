@@ -9,7 +9,7 @@ using Spectre.Console.Cli;
 
 public class NewExampleCommand : Command<NewExampleCommand.Settings>
 {
-    private IAnsiConsole _console;
+    private readonly IAnsiConsole _console;
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
     private readonly IDbMigrator _dbMigrator;
@@ -35,24 +35,24 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         [CommandArgument(0, "[ProjectName]")]
         public string ProjectName { get; set; }
     }
-    
+
     public override int Execute(CommandContext context, Settings settings)
     {
         var rootDir = _fileSystem.Directory.GetCurrentDirectory();
         var myEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-          
+
         if (myEnv == "Dev")
-          rootDir = _console.Ask<string>("Enter the root directory of your project:");
-        
+            rootDir = _console.Ask<string>("Enter the root directory of your project:");
+
         var (exampleType, projectName) = RunPrompt(settings.ProjectName);
         var templateString = GetExampleDomain(projectName, exampleType);
-                
+
         var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(templateString);
-        
+
         _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
         var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _dbMigrator, _gitService, _fileParsingHelper);
         domainCommand.CreateNewDomainProject(domainProject);
-        
+
         // TODO add this back
         // ExampleTemplateBuilder.CreateYamlFile(domainDirectory, templateString, fileSystem);
         _console.MarkupLine($"{Environment.NewLine}[bold yellow1]Your example project is project is ready![/]");
@@ -60,7 +60,7 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         _consoleWriter.StarGithubRequest();
         return 0;
     }
-    
+
     private (ExampleType type, string name) RunPrompt(string projectName)
     {
         _console.WriteLine();
@@ -68,8 +68,8 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
 
         var typeString = AskExampleType();
         var exampleType = ExampleType.FromName(typeString, ignoreCase: true);
-        if(string.IsNullOrEmpty(projectName))
-          projectName = AskExampleProjectName();
+        if (string.IsNullOrEmpty(projectName))
+            projectName = AskExampleProjectName();
 
         return (exampleType, projectName);
     }
@@ -77,7 +77,7 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
     private string AskExampleType()
     {
         var exampleTypes = ExampleType.List.Select(e => e.Name);
-        
+
         return _console.Prompt(
             new SelectionPrompt<string>()
                 .Title("What [green]type of example[/] do you want to create?")
@@ -90,28 +90,28 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
     {
         return _console.Ask<string>("What would you like to name this project (e.g. [green]MyExampleProject[/])?");
     }
-        
+
     private static string GetExampleDomain(string name, ExampleType exampleType)
     {
         if (exampleType == ExampleType.Basic)
             return BasicTemplate(name);
         if (exampleType == ExampleType.WithAuth)
             return AuthTemplate(name);
-        if(exampleType == ExampleType.WithBus)
+        if (exampleType == ExampleType.WithBus)
             return BusTemplate(name);
-        if(exampleType == ExampleType.WithAuthServer) 
-          return AuthServerTemplate(name);
-        if(exampleType == ExampleType.WithForeignKey) 
-          return ForeignKeyTemplate(name);
-        if(exampleType == ExampleType.Complex) 
-          return ComplexTemplate(name);
+        if (exampleType == ExampleType.WithAuthServer)
+            return AuthServerTemplate(name);
+        if (exampleType == ExampleType.WithForeignKey)
+            return ForeignKeyTemplate(name);
+        if (exampleType == ExampleType.Complex)
+            return ComplexTemplate(name);
 
         throw new Exception("Example type was not recognized.");
     }
-        
-        private static string ForeignKeyTemplate(string name)
-        {
-          return $@"DomainName: {name}
+
+    private static string ForeignKeyTemplate(string name)
+    {
+        return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement
   Port: 5375
@@ -187,11 +187,11 @@ BoundedContexts:
     - Name: RecipeId
       Type: Guid
       ForeignEntityName: Recipe";
-        }
-        
-        private static string ComplexTemplate(string name)
-        {
-          return $@"DomainName: {name}
+    }
+
+    private static string ComplexTemplate(string name)
+    {
+        return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement
   Port: 5375
@@ -419,11 +419,11 @@ AuthServer:
         - openid
         - profile
         - role";
-        }
+    }
 
-        private static string BasicTemplate(string name)
-        {
-            return $@"DomainName: {name}
+    private static string BasicTemplate(string name)
+    {
+        return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement
   Port: 5375
@@ -461,11 +461,11 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true";
-        }
-        
-        private static string AuthTemplate(string name)
-        {
-            return $@"DomainName: {name}
+    }
+
+    private static string AuthTemplate(string name)
+    {
+        return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement
   Port: 5375
@@ -516,11 +516,11 @@ BoundedContexts:
       AuthorizationUrl: https://localhost:5010/connect/authorize
       TokenUrl: https://localhost:5010/connect/token
       ClientId: service.client";
-        }
+    }
 
-        private static string BusTemplate(string name)
-        {
-            var template = $@"DomainName: {name}
+    private static string BusTemplate(string name)
+    {
+        var template = $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement
   Port: 5375
@@ -587,12 +587,12 @@ Messages:
   - Name: RecipeId
     Type: guid";
 
-            return template;
-        }
+        return template;
+    }
 
-        private static string AuthServerTemplate(string name)
-        {
-          return $@"DomainName: {name}
+    private static string AuthServerTemplate(string name)
+    {
+        return $@"DomainName: {name}
 BoundedContexts:
 - ProjectName: RecipeManagement
   Port: 5375
@@ -739,5 +739,5 @@ AuthServer:
         - profile
         - role
 ";
-        }
     }
+}

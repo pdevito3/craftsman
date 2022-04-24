@@ -1,37 +1,37 @@
-﻿namespace Craftsman.Builders
+﻿namespace Craftsman.Builders;
+
+using Helpers;
+using Services;
+using static Helpers.ConstMessages;
+
+public class ProgramBuilder
 {
-    using Helpers;
-    using Services;
-    using static Helpers.ConstMessages;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class ProgramBuilder
+    public ProgramBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public ProgramBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateWebApiProgram(string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Program.cs", projectBaseName);
+        var fileText = GetWebApiProgramText(classPath.ClassNamespace, srcDirectory, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateWebApiProgram(string srcDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Program.cs", projectBaseName);
-            var fileText = GetWebApiProgramText(classPath.ClassNamespace, srcDirectory, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public void CreateAuthServerProgram(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.WebApiProjectRootClassPath(projectDirectory, $"Program.cs", authServerProjectName);
-            var fileText = GetAuthServerProgramText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public void CreateAuthServerProgram(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.WebApiProjectRootClassPath(projectDirectory, $"Program.cs", authServerProjectName);
+        var fileText = GetAuthServerProgramText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public static string GetWebApiProgramText(string classNamespace, string srcDirectory, string projectBaseName)
-        {
-            var hostExtClassPath = ClassPathHelper.WebApiHostExtensionsClassPath(srcDirectory, $"", projectBaseName);
-            
-            return @$"namespace {classNamespace};
+    public static string GetWebApiProgramText(string classNamespace, string srcDirectory, string projectBaseName)
+    {
+        var hostExtClassPath = ClassPathHelper.WebApiHostExtensionsClassPath(srcDirectory, $"", projectBaseName);
+
+        return @$"namespace {classNamespace};
 
 using Serilog;
 using System.Reflection;
@@ -72,12 +72,12 @@ public class Program
                 .UseKestrel();
             }});
 }}";
-        }
+    }
 
-        
-        public static string GetAuthServerProgramText(string classNamespace)
-        {
-            return @$"{DuendeDisclosure}namespace {classNamespace};
+
+    public static string GetAuthServerProgramText(string classNamespace)
+    {
+        return @$"{DuendeDisclosure}namespace {classNamespace};
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -129,6 +129,5 @@ public class Program
                 webBuilder.UseStartup<Startup>();
             }});
 }}";
-        }
     }
 }

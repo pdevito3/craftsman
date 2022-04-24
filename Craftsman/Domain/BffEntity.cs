@@ -28,7 +28,7 @@ public class BffEntity
     /// List of properties associated to the entity
     /// </summary>
     public List<BffEntityProperty> Properties { get; set; } = new List<BffEntityProperty>();
-    
+
     private List<BffFeature> _features = new List<BffFeature>();
     public List<BffFeature> Features
     {

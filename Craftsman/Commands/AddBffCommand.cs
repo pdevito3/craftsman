@@ -28,7 +28,7 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
     public AddBffCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore,
         IAnsiConsole console, IFileParsingHelper fileParsingHelper)
     {
         _fileSystem = fileSystem;
@@ -44,25 +44,25 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
         [CommandArgument(0, "<Filepath>")]
         public string Filepath { get; set; }
     }
-    
+
     public override int Execute(CommandContext context, Settings settings)
     {
         var potentialSolutionDir = _utilities.GetRootDir();
-        
+
         _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
         _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
         var template = FileParsingHelper.GetTemplateFromFile<BffTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
-        
+
         _console.Status()
             .AutoRefresh(true)
             .Spinner(Spinner.Known.Dots2)
             .Start($"[yellow]Creating {template.ProjectName} [/]", ctx =>
             {
                 AddBff(template, potentialSolutionDir);
-                        
+
                 _consoleWriter.WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
             });
 
@@ -83,7 +83,7 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
         new LaunchSettingsBuilder(_utilities).CreateLaunchSettings(projectDirectory, projectName, template);
         new BffAppSettingsBuilder(_utilities).CreateBffAppSettings(projectDirectory);
         new LoggingConfigurationBuilder(_utilities).CreateBffConfigFile(domainDirectory, projectName);
-        
+
         new BffProgramBuilder(_utilities).CreateProgram(projectDirectory, domainDirectory, projectName, template);
         new BffReadmeBuilder(_utilities).CreateReadme(projectDirectory, projectName);
 
@@ -100,7 +100,7 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
         new EnvBuilder(_utilities).CreateEnv(_scaffoldingDirectoryStore.SpaDirectory);
         new EnvBuilder(_utilities).CreateDevEnv(spaDirectory, template.ProxyPort);
         new PrettierRcBuilder(_utilities).CreatePrettierRc(spaDirectory);
-        
+
         // SPA - src
         new AssetsBuilder(_utilities).CreateFavicon(spaDirectory);
         new AssetsBuilder(_utilities).CreateLogo(spaDirectory);
@@ -110,21 +110,21 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
         new MainTsxBuilder(_utilities).CreateMainTsx(spaDirectory);
         new CustomCssBuilder(_utilities).CreateCustomCss(spaDirectory);
         new AppTsxBuilder(_utilities).CreateAppTsx(spaDirectory);
-        
+
         // SPA - src/components
         new HeadersComponentBuilder(_utilities).CreateHeaderComponentItems(spaDirectory);
         new NotificationsComponentBuilder(_utilities).CreateNotificationComponentItems(spaDirectory);
         new NavigationComponentBuilder(_utilities).CreateNavigationComponentItems(spaDirectory);
         new LayoutComponentBuilder(_utilities).CreateLayoutComponentItems(spaDirectory);
-        
+
         // SPA - src/features
         new AuthFeatureApiBuilder(_utilities).CreateAuthFeatureApis(spaDirectory);
         new AuthFeatureRoutesBuilder(_utilities).CreateAuthFeatureRoutes(spaDirectory);
         new AuthFeatureBuilder(_utilities).CreateAuthFeatureIndex(spaDirectory);
-        
+
         new HomeFeatureRoutesBuilder(_utilities).CreateHomeFeatureRoutes(spaDirectory);
         new HomeFeatureBuilder(_utilities).CreateHomeFeatureIndex(spaDirectory);
-        
+
         new EntityScaffoldingService(_utilities, _fileSystem).ScaffoldBffEntities(template.Entities, spaDirectory);
 
         // Docker

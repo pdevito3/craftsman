@@ -1,41 +1,41 @@
-﻿namespace Craftsman.Builders.Tests.UnitTests
+﻿namespace Craftsman.Builders.Tests.UnitTests;
+
+using System.IO;
+using Helpers;
+using Services;
+
+public class RolePermissionsUnitTestBuilder
 {
-    using System.IO;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class RolePermissionsUnitTestBuilder
+    public RolePermissionsUnitTestBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public RolePermissionsUnitTestBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateRolePermissionTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"CreateRolePermissionTests.cs", "RolePermissions", projectBaseName);
+        var fileText = CreateFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateRolePermissionTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"CreateRolePermissionTests.cs", "RolePermissions", projectBaseName);
-            var fileText = CreateFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public void UpdateRolePermissionTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"UpdateRolePermissionTests.cs", "RolePermissions", projectBaseName);
-            var fileText = UpdateFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public void UpdateRolePermissionTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"UpdateRolePermissionTests.cs", "RolePermissions", projectBaseName);
+        var fileText = UpdateFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        private static string CreateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
-        {
-            var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
-            var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
-            var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", "RolePermission", projectBaseName);
-            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+    private static string CreateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
+    {
+        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+        var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+        var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", "RolePermission", projectBaseName);
+        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
 
-            return @$"namespace {classPath.ClassNamespace};
+        return @$"namespace {classPath.ClassNamespace};
 
 using {domainPolicyClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
@@ -102,17 +102,17 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         rolePermission.Should().Throw<FluentValidation.ValidationException>();
     }}
 }}";
-        }
-        
-        private static string UpdateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
-        {
-            var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
-            var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
-            var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", "RolePermission", projectBaseName);
-            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+    }
 
-            return @$"namespace {classPath.ClassNamespace};
+    private static string UpdateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
+    {
+        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+        var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+        var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", "RolePermission", projectBaseName);
+        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+
+        return @$"namespace {classPath.ClassNamespace};
 
 using {domainPolicyClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
@@ -194,6 +194,5 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         updateRolePermission.Should().Throw<FluentValidation.ValidationException>();
     }}
 }}";
-        }
     }
 }

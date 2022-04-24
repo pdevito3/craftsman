@@ -1,35 +1,35 @@
-﻿namespace Craftsman.Builders.AuthServer
+﻿namespace Craftsman.Builders.AuthServer;
+
+using System;
+using Domain;
+using Domain.Enums;
+using Helpers;
+using Services;
+using static Helpers.ConstMessages;
+
+public class AuthServerConfigBuilder
 {
-    using System;
-    using Domain;
-    using Domain.Enums;
-    using Helpers;
-    using Services;
-    using static Helpers.ConstMessages;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerConfigBuilder
+    public AuthServerConfigBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AuthServerConfigBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateConfig(string projectDirectory, AuthServerTemplate authServer)
+    {
+        var classPath = ClassPathHelper.AuthServerConfigClassPath(projectDirectory, "Config.cs", authServer.Name);
+        var fileText = GetConfigText(classPath.ClassNamespace, authServer);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateConfig(string projectDirectory, AuthServerTemplate authServer)
-        {
-            var classPath = ClassPathHelper.AuthServerConfigClassPath(projectDirectory, "Config.cs", authServer.Name);
-            var fileText = GetConfigText(classPath.ClassNamespace, authServer);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public static string GetConfigText(string classNamespace, AuthServerTemplate authServer)
+    {
+        var apiResources = authServer.Apis.Aggregate("", (current, api) => current + ApiResourceTextBuilder(api));
+        var apiScopes = authServer.Scopes.Aggregate("", (current, scope) => current + ApiScopeTextBuilder(scope));
+        var clients = authServer.Clients.Aggregate("", (current, client) => current + ClientBuilder(client));
 
-        public static string GetConfigText(string classNamespace, AuthServerTemplate authServer)
-        {
-            var apiResources = authServer.Apis.Aggregate("", (current, api) => current + ApiResourceTextBuilder(api));
-            var apiScopes = authServer.Scopes.Aggregate("", (current, scope) => current + ApiScopeTextBuilder(scope));
-            var clients = authServer.Clients.Aggregate("", (current, client) => current + ClientBuilder(client));
-
-            return @$"{DuendeDisclosure}namespace {classNamespace};
+        return @$"{DuendeDisclosure}namespace {classNamespace};
 
 using Duende.IdentityServer.Models;
 using System.Collections.Generic;
@@ -68,12 +68,12 @@ public static class Config
         {{{clients}
         }};
 }}";
-        }
+    }
 
-        private static string ClientBuilder(AuthClient client)
-        {
-            return client.GrantType == GrantType.ClientCredentials.Name 
-                ? @$"{Environment.NewLine}            new Client
+    private static string ClientBuilder(AuthClient client)
+    {
+        return client.GrantType == GrantType.ClientCredentials.Name
+            ? @$"{Environment.NewLine}            new Client
             {{
                 ClientId = ""{client.Id}"",
                 ClientName = ""{client.Name}"",
@@ -81,7 +81,7 @@ public static class Config
                 AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
                 AllowedScopes = {{ {client.GetScopeNameString()} }}
             }},"
-            : @$"{Environment.NewLine}                new Client
+        : @$"{Environment.NewLine}                new Client
             {{
                 ClientId = ""{client.Id}"",
                 ClientName = ""{client.Name}"",
@@ -99,23 +99,22 @@ public static class Config
 
                 AllowedScopes = {{ {client.GetScopeNameString()} }}
             }},";
-        }
-        
-        private static string ApiResourceTextBuilder(AuthApi api)
-        {
-            return $@"{Environment.NewLine}            new ApiResource(""{api.Name}"", ""{api.DisplayName}"")
+    }
+
+    private static string ApiResourceTextBuilder(AuthApi api)
+    {
+        return $@"{Environment.NewLine}            new ApiResource(""{api.Name}"", ""{api.DisplayName}"")
             {{
                 Scopes = {{ { api.GetScopeNameString() } }},
                 ApiSecrets = {{ { api.GetSecretsString() } }},
                 UserClaims = {{ { api.GetClaimsString() } }},
             }},";
-        }
-        
-        private static string ApiScopeTextBuilder(AuthScope scope)
-        {
-            return scope.UserClaims.Count > 0 
-                ? $@"{Environment.NewLine}            new ApiScope(""{scope.Name}"", ""{scope.DisplayName}"", new[] {{ { scope.GetClaimsString() } }}),"
-                : $@"{Environment.NewLine}            new ApiScope(""{scope.Name}"", ""{scope.DisplayName}""),";
-        }
+    }
+
+    private static string ApiScopeTextBuilder(AuthScope scope)
+    {
+        return scope.UserClaims.Count > 0
+            ? $@"{Environment.NewLine}            new ApiScope(""{scope.Name}"", ""{scope.DisplayName}"", new[] {{ { scope.GetClaimsString() } }}),"
+            : $@"{Environment.NewLine}            new ApiScope(""{scope.Name}"", ""{scope.DisplayName}""),";
     }
 }

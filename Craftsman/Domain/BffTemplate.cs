@@ -10,7 +10,7 @@ public class BffTemplate : BffBased
         get => _profileName;
         set => _profileName = value ?? "Development";
     }
-    
+
     private int _port = CraftsmanUtilities.GetFreePort();
     /// <summary>
     /// The port of the .NET app. Will initially boot to this port and then forward to the SPA proxy
@@ -20,28 +20,28 @@ public class BffTemplate : BffBased
         get => _port;
         set => _port = value ?? _port;
     }
-    
+
     private int _proxyPort = CraftsmanUtilities.GetFreePort();
     /// <summary>
     /// The port of your SPA
     /// </summary>
-    
+
     //TODO this being nullable is really mixing a domain
     // concept with what should be a dto. the dto they pass should be a nullable
     // int, but the domain should separately take that in and be a nonnullable int when set
-    public int? ProxyPort 
+    public int? ProxyPort
     {
         get => _proxyPort;
         set => _proxyPort = value ?? _proxyPort;
     }
-    
+
     public string Authority { get; set; }
 
     public string ClientId { get; set; }
 
     public string ClientSecret { get; set; }
 
-    private string _cookieName; 
+    private string _cookieName;
     public string CookieName
     {
         get => _cookieName ?? $"__Host-{ProjectName}-bff";
@@ -52,7 +52,7 @@ public class BffTemplate : BffBased
 
     public List<string> BoundaryScopes { get; set; }
 
-    private string _headTitle; 
+    private string _headTitle;
     public string HeadTitle
     {
         get => _headTitle;

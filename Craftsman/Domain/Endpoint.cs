@@ -1,12 +1,11 @@
-﻿namespace Craftsman.Domain
+﻿namespace Craftsman.Domain;
+
+public enum Endpoint
 {
-    public enum Endpoint
-    {
-        GetList,
-        GetRecord,
-        AddRecord,
-        UpdateRecord,
-        UpdatePartial,
-        DeleteRecord
-    }
+    GetList,
+    GetRecord,
+    AddRecord,
+    UpdateRecord,
+    UpdatePartial,
+    DeleteRecord
 }

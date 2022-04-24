@@ -14,7 +14,7 @@ using Validators;
 
 public class AddProducerCommand : Command<AddProducerCommand.Settings>
 {
-    private IAnsiConsole _console;
+    private readonly IAnsiConsole _console;
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
     private readonly ICraftsmanUtilities _utilities;
@@ -40,15 +40,15 @@ public class AddProducerCommand : Command<AddProducerCommand.Settings>
         [CommandArgument(0, "<Filepath>")]
         public string Filepath { get; set; }
     }
-    
+
     public override int Execute(CommandContext context, Settings settings)
     {
         var potentialBoundaryDirectory = _utilities.GetRootDir();
-        
+
         var solutionDirectory = _fileSystem.Directory.GetParent(potentialBoundaryDirectory)?.FullName;
         _utilities.IsSolutionDirectoryGuard(solutionDirectory);
         _scaffoldingDirectoryStore.SetSolutionDirectory(solutionDirectory);
-        
+
         var projectName = new DirectoryInfo(potentialBoundaryDirectory).Name;
         _scaffoldingDirectoryStore.SetBoundedContextDirectoryAndProject(projectName);
         _utilities.IsBoundedContextDirectoryGuard();
@@ -57,9 +57,9 @@ public class AddProducerCommand : Command<AddProducerCommand.Settings>
         _fileParsingHelper.RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
         var template = FileParsingHelper.ReadYamlString<ProducerTemplate>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
-        
+
         AddProducers(template.Producers, _scaffoldingDirectoryStore.ProjectBaseName, solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory);
-        
+
         _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your consumer has been successfully added. Keep up the good work!");
         return 0;
     }
@@ -79,7 +79,7 @@ public class AddProducerCommand : Command<AddProducerCommand.Settings>
             new ProducerBuilder(_utilities).CreateProducerFeature(solutionDirectory, srcDirectory, producer, projectBaseName);
             new ProducerRegistrationBuilder(_utilities).CreateProducerRegistration(solutionDirectory, srcDirectory, producer, projectBaseName);
             new MassTransitModifier(_fileSystem).AddProducerRegistration(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
-                
+
             new ProducerTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, producer, projectBaseName);
         });
     }

@@ -11,7 +11,7 @@ public class PermissionsModifier
     {
         _fileSystem = fileSystem;
     }
-    
+
     public void AddPermission(string srcDirectory, string permission, string projectBaseName)
     {
         var classPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, $"Permissions.cs", projectBaseName);

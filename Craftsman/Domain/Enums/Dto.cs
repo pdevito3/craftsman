@@ -1,11 +1,10 @@
-﻿namespace Craftsman.Domain.Enums
+﻿namespace Craftsman.Domain.Enums;
+
+public enum Dto
 {
-    public enum Dto
-    {
-        Read,
-        Creation,
-        Manipulation,
-        Update,
-        ReadParamaters
-    }
+    Read,
+    Creation,
+    Manipulation,
+    Update,
+    ReadParamaters
 }

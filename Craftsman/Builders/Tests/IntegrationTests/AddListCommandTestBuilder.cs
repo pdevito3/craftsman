@@ -1,42 +1,42 @@
-﻿namespace Craftsman.Builders.Tests.IntegrationTests
+﻿namespace Craftsman.Builders.Tests.IntegrationTests;
+
+using Craftsman.Services;
+using Domain;
+using Domain.Enums;
+using Helpers;
+
+public class AddListCommandTestBuilder
 {
-    using Craftsman.Services;
-    using Domain;
-    using Domain.Enums;
-    using Helpers;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AddListCommandTestBuilder
+    public AddListCommandTestBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AddListCommandTestBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, Feature feature, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{feature.Command}Tests.cs", entity.Plural, projectBaseName);
+        var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, feature, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, Feature feature, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{feature.Command}Tests.cs", entity.Plural, projectBaseName);
-            var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, feature, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, Feature feature, string projectBaseName)
+    {
+        var featureName = FileNames.AddEntityFeatureClassName(entity.Name);
+        var testFixtureName = FileNames.GetIntegrationTestFixtureName();
+        var commandName = feature.Command;
 
-        private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, Feature feature, string projectBaseName)
-        {
-            var featureName = FileNames.AddEntityFeatureClassName(entity.Name);
-            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-            var commandName = feature.Command;
+        var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
+        var dtoUtilClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
+        var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
+        var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", feature.ParentEntity, projectBaseName);
+        var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
-            var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
-            var dtoUtilClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
-            var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
-            var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", feature.ParentEntity, projectBaseName);
-            var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
-            
-            var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
-            
-            return @$"namespace {classPath.ClassNamespace};
+        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
+
+        return @$"namespace {classPath.ClassNamespace};
 
 using {dtoUtilClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
@@ -54,18 +54,18 @@ public class {commandName}Tests : TestBase
 {{
     {GetAddListCommandTest(entity, feature)}
 }}";
-        }
+    }
 
-        private static string GetAddListCommandTest(Entity entity, Feature feature)
-        {
-            var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
-            var fakeCreationDto = $"Fake{createDto}";
-            var fakeEntityVariableName = $"fake{entity.Name}One";
-            var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
-            var fakeParentEntity = $"fake{feature.ParentEntity}";
-            var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(feature.ParentEntity, Dto.Creation));
+    private static string GetAddListCommandTest(Entity entity, Feature feature)
+    {
+        var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
+        var fakeCreationDto = $"Fake{createDto}";
+        var fakeEntityVariableName = $"fake{entity.Name}One";
+        var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
+        var fakeParentEntity = $"fake{feature.ParentEntity}";
+        var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(feature.ParentEntity, Dto.Creation));
 
-            return $@"[Test]
+        return $@"[Test]
     public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()
     {{
         // Arrange
@@ -84,6 +84,5 @@ public class {commandName}Tests : TestBase
         {lowercaseEntityName}Created.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
             options.ExcludingMissingMembers());
     }}";
-        }
     }
 }

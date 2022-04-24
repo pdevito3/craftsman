@@ -18,7 +18,7 @@ public class DockerIgnoreBuilder
         var fileText = GetDockerIgnoreText();
         _utilities.CreateFile(classPath, fileText);
     }
-    
+
     private static string GetDockerIgnoreText()
     {
         return @$"**/.dockerignore

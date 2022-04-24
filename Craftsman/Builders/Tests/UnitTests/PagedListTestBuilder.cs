@@ -1,30 +1,30 @@
-﻿namespace Craftsman.Builders.Tests.UnitTests
+﻿namespace Craftsman.Builders.Tests.UnitTests;
+
+using System.IO;
+using Helpers;
+using Services;
+
+public class PagedListTestBuilder
 {
-    using System.IO;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class PagedListTestBuilder
+    public PagedListTestBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public PagedListTestBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTests(string srcDirectory, string testDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(testDirectory, $"PagedListTests.cs", projectBaseName);
+        var fileText = WriteTestFileText(srcDirectory, classPath, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateTests(string srcDirectory, string testDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(testDirectory, $"PagedListTests.cs", projectBaseName);
-            var fileText = WriteTestFileText(srcDirectory, classPath, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    private static string WriteTestFileText(string srcDirectory, ClassPath classPath, string projectBaseName)
+    {
+        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
 
-        private static string WriteTestFileText(string srcDirectory, ClassPath classPath, string projectBaseName)
-        {
-            var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
-
-            return @$"namespace {classPath.ClassNamespace};
+        return @$"namespace {classPath.ClassNamespace};
 
 using {wrapperClassPath.ClassNamespace};
 using FluentAssertions;
@@ -66,6 +66,5 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         list.TotalPages.Should().Be(3);
     }}
 }}";
-        }
     }
 }

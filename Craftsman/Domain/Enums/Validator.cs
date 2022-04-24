@@ -1,9 +1,8 @@
-﻿namespace Craftsman.Domain.Enums
+﻿namespace Craftsman.Domain.Enums;
+
+public enum Validator
 {
-    public enum Validator
-    {
-        Creation,
-        Manipulation,
-        Update
-    }
+    Creation,
+    Manipulation,
+    Update
 }

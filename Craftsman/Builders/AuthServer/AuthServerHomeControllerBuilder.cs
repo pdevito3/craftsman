@@ -1,31 +1,31 @@
-﻿namespace Craftsman.Builders.AuthServer
+﻿namespace Craftsman.Builders.AuthServer;
+
+using Helpers;
+using Services;
+using static Helpers.ConstMessages;
+
+public class AuthServerHomeControllerBuilder
 {
-    using Helpers;
-    using Services;
-    using static Helpers.ConstMessages;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class AuthServerHomeControllerBuilder
+    public AuthServerHomeControllerBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public AuthServerHomeControllerBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateHomeController(string projectDirectory, string authServerProjectName)
+    {
+        var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "HomeController.cs", authServerProjectName);
+        var fileText = GetControllerText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateHomeController(string projectDirectory, string authServerProjectName)
-        {
-            var classPath = ClassPathHelper.AuthServerControllersClassPath(projectDirectory, "HomeController.cs", authServerProjectName);
-            var fileText = GetControllerText(classPath.ClassNamespace, projectDirectory, authServerProjectName);
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public static string GetControllerText(string classNamespace, string projectDirectory, string authServerProjectName)
-        {
-            var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
-            var attrClassPath = ClassPathHelper.AuthServerAttributesClassPath(projectDirectory, "", authServerProjectName);
-            
-            return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
+    public static string GetControllerText(string classNamespace, string projectDirectory, string authServerProjectName)
+    {
+        var viewModelsClassPath = ClassPathHelper.AuthServerViewModelsClassPath(projectDirectory, "", authServerProjectName);
+        var attrClassPath = ClassPathHelper.AuthServerAttributesClassPath(projectDirectory, "", authServerProjectName);
+
+        return @$"{DuendeDisclosure}// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
 
@@ -88,6 +88,5 @@ public class HomeController : Controller
         return View(""Error"", vm);
     }}
 }}";
-        }
     }
 }

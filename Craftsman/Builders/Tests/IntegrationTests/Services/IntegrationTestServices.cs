@@ -38,7 +38,7 @@ public class IntegrationTestServices
 
         return idType.Equals("int", StringComparison.InvariantCultureIgnoreCase) ? @$"84709321" : "";
     }
-    
+
 
     public static string FakeParentTestHelpersTwoCount(Entity entity, out string fakeParentIdRuleForOne, out string fakeParentIdRuleForTwo)
     {

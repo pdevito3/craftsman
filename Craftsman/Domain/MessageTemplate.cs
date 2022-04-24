@@ -1,9 +1,8 @@
-﻿namespace Craftsman.Domain
-{
-    using System.Collections.Generic;
+﻿namespace Craftsman.Domain;
 
-    public class MessageTemplate
-    {
-        public List<Message> Messages { get; set; }
-    }
+using System.Collections.Generic;
+
+public class MessageTemplate
+{
+    public List<Message> Messages { get; set; }
 }

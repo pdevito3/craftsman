@@ -5,12 +5,12 @@ using Services;
 
 public class TsConfigBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public TsConfigBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public TsConfigBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
     public void CreateTsConfigPaths(string spaDirectory)
     {
@@ -20,14 +20,14 @@ public class TsConfigBuilder
     }
     public void CreateTsConfig(string spaDirectory)
     {
-	    var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, $"tsconfig.json");
-	    var fileText = GetTsConfigText();
-	    _utilities.CreateFile(classPath, fileText);
+        var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, $"tsconfig.json");
+        var fileText = GetTsConfigText();
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetTsConfigPathText()
     {
-	    return @$"{{
+        return @$"{{
 	""compilerOptions"": {{
 		""baseUrl"": ""."",
 		""paths"": {{
@@ -40,7 +40,7 @@ public class TsConfigBuilder
 
     public static string GetTsConfigText()
     {
-            return @$"{{
+        return @$"{{
 	""compilerOptions"": {{
 		""target"": ""ESNext"",
 		""lib"": [""DOM"", ""DOM.Iterable"", ""ESNext""],

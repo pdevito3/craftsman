@@ -5,12 +5,12 @@ using Services;
 
 public class LibBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public LibBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public LibBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
     public void CreateAxios(string spaDirectory)
     {
@@ -18,10 +18,10 @@ public class LibBuilder
         var fileText = GetAxiosText();
         _utilities.CreateFile(classPath, fileText);
     }
-    
+
     public static string GetAxiosText()
     {
-            return @$"import Axios from 'axios';
+        return @$"import Axios from 'axios';
 
 export const api = Axios.create({{
 	withCredentials: true,

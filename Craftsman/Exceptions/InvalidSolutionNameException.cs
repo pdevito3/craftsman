@@ -1,13 +1,12 @@
-﻿namespace Craftsman.Exceptions
+﻿namespace Craftsman.Exceptions;
+
+using System;
+
+[Serializable]
+class InvalidSolutionNameException : Exception, ICraftsmanException
 {
-    using System;
-
-    [Serializable]
-    class InvalidSolutionNameException : Exception, ICraftsmanException
+    public InvalidSolutionNameException() : base($"Invalid template file. Please enter a valid solution name.")
     {
-        public InvalidSolutionNameException() : base($"Invalid template file. Please enter a valid solution name.")
-        {
 
-        }
     }
 }

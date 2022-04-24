@@ -1,42 +1,42 @@
-﻿namespace Craftsman.Builders.Endpoints
+﻿namespace Craftsman.Builders.Endpoints;
+
+using System;
+using Helpers;
+using Services;
+
+public class ControllerBuilder
 {
-    using System;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class ControllerBuilder
+    public ControllerBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public ControllerBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateController(string solutionDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName, bool isProtected)
+    {
+        var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{FileNames.GetControllerName(entityPlural)}.cs", projectBaseName, "v1");
+        var fileText = GetControllerFileText(classPath.ClassNamespace, entityName, entityPlural, solutionDirectory, srcDirectory, projectBaseName, isProtected);
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreateController(string solutionDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName, bool isProtected)
-        {
-            var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{FileNames.GetControllerName(entityPlural)}.cs", projectBaseName, "v1");
-            var fileText = GetControllerFileText(classPath.ClassNamespace, entityName, entityPlural, solutionDirectory, srcDirectory, projectBaseName, isProtected);
-            _utilities.CreateFile(classPath, fileText);
-        }
+    public static string GetControllerFileText(string classNamespace, string entityName, string entityPlural, string solutionDirectory, string srcDirectory, string projectBaseName, bool usesJwtAuth)
+    {
+        // TODO create an attribute factory that can order them how i want and work more dynamically
 
-        public static string GetControllerFileText(string classNamespace, string entityName, string entityPlural, string solutionDirectory, string srcDirectory, string projectBaseName, bool usesJwtAuth)
-        {
-            // TODO create an attribute factory that can order them how i want and work more dynamically
+        var endpointBase = FileNames.EndpointBaseGenerator(entityPlural);
 
-            var endpointBase = FileNames.EndpointBaseGenerator(entityPlural);
-
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
-            var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
-            var featureClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, "", entityPlural, projectBaseName);
-            var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
-            var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
-            var permissionsUsing = usesJwtAuth 
-                ? @$"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};
+        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entityName, projectBaseName);
+        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+        var featureClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, "", entityPlural, projectBaseName);
+        var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+        var permissionsUsing = usesJwtAuth
+            ? @$"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};"
-                : string.Empty;
+            : string.Empty;
 
-            return @$"namespace {classNamespace};
+        return @$"namespace {classNamespace};
 
 using {featureClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
@@ -64,6 +64,5 @@ public class {entityPlural}Controller: ControllerBase
     
     // endpoint marker - do not delete this comment
 }}";
-        }
     }
 }

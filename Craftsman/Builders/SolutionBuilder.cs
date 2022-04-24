@@ -19,7 +19,7 @@ public class SolutionBuilder
         _fileSystem = fileSystem;
         _utilities = utilities;
     }
-    
+
     public void BuildSolution(string solutionDirectory, string projectName)
     {
         _fileSystem.Directory.CreateDirectory(solutionDirectory);
@@ -68,11 +68,11 @@ public class SolutionBuilder
         new LocalConfigBuilder(_utilities).CreateLocalConfig(srcDirectory, projectBaseName);
         new LoggingConfigurationBuilder(_utilities).CreateWebApiConfigFile(srcDirectory, projectBaseName);
         new InfrastructureServiceRegistrationBuilder(_utilities).CreateInfrastructureServiceExtension(srcDirectory, projectBaseName);
-        
+
         new BasePaginationParametersBuilder(_utilities).CreateBasePaginationParameters(solutionDirectory);
         new PagedListBuilder(_utilities).CreatePagedList(srcDirectory, projectBaseName);
         new CoreExceptionsBuilder(_utilities, _fileSystem).CreateExceptions(solutionDirectory, projectBaseName);
-        
+
         _utilities.AddProjectReference(webApiProjectClassPath, @"..\..\..\SharedKernel\SharedKernel.csproj");
     }
 
@@ -116,7 +116,7 @@ public class SolutionBuilder
     {
         var projectExists = File.Exists(Path.Combine(solutionDirectory, "SharedKernel", "SharedKernel.csproj"));
         if (projectExists) return;
-        
+
         var projectClassPath = ClassPathHelper.SharedKernelProjectRootClassPath(solutionDirectory, "");
         new SharedKernelCsProjBuilder(_utilities).CreateSharedKernelCsProj(solutionDirectory);
         _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
@@ -126,17 +126,17 @@ public class SolutionBuilder
     {
         var projectExists = File.Exists(Path.Combine(solutionDirectory, authServerProjectName, $"{authServerProjectName}.csproj"));
         if (projectExists) return;
-        
+
         var projectClassPath = ClassPathHelper.AuthServerProjectClassPath(solutionDirectory, authServerProjectName);
         new AuthServerProjBuilder(_utilities).CreateProject(solutionDirectory, authServerProjectName);
         _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
     }
-    
+
     public void BuildBffProject(string solutionDirectory, string projectName, int? proxyPort)
     {
         var projectExists = File.Exists(Path.Combine(solutionDirectory, projectName, $"{projectName}.csproj"));
         if (projectExists) return;
-        
+
         var projectClassPath = ClassPathHelper.BffProjectClassPath(solutionDirectory, projectName);
         new BffProjBuilder(_utilities).CreateProject(solutionDirectory, projectName, proxyPort);
         _utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);

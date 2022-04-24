@@ -11,7 +11,7 @@ public class WebApiServiceExtensionsBuilder
     {
         _utilities = utilities;
     }
-    
+
     public void CreateWebApiServiceExtension(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"WebApiServiceExtension.cs", projectBaseName);
@@ -23,7 +23,7 @@ public class WebApiServiceExtensionsBuilder
     {
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var middlewareClassPath = ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, $"", projectBaseName);
-        
+
         return @$"namespace {classNamespace};
 
 using {servicesClassPath.ClassNamespace};

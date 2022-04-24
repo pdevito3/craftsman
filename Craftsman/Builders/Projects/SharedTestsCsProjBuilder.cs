@@ -1,28 +1,28 @@
-﻿namespace Craftsman.Builders.Projects
+﻿namespace Craftsman.Builders.Projects;
+
+using Helpers;
+using Services;
+
+public class SharedTestsCsProjBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class SharedTestsCsProjBuilder
+    public SharedTestsCsProjBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public SharedTestsCsProjBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
+        _utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName));
+    }
 
-        public void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
-            _utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName));
-        }
+    public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName)
+    {
+        var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
 
-        public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName)
-        {
-            var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-
-            return @$"<Project Sdk=""Microsoft.NET.Sdk"">
+        return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -39,6 +39,5 @@
   </ItemGroup>
 
 </Project>";
-        }
     }
 }

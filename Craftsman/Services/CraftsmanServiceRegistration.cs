@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 public interface ICraftsmanService
 {
-    
+
 }
 
 public static class CraftsmanServiceRegistration

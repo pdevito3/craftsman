@@ -21,7 +21,7 @@ public class ViteConfigBuilder
 
     public static string GetViteConfigText(int? proxyPort)
     {
-            return @$"import reactRefresh from '@vitejs/plugin-react-refresh';
+        return @$"import reactRefresh from '@vitejs/plugin-react-refresh';
 import {{ readFileSync }} from 'fs';
 import {{ join }} from 'path';
 import {{ defineConfig }} from 'vite';

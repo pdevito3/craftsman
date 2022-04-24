@@ -5,29 +5,29 @@ using Services;
 
 public class HeadersComponentBuilder
 {
-	private readonly ICraftsmanUtilities _utilities;
+    private readonly ICraftsmanUtilities _utilities;
 
-	public HeadersComponentBuilder(ICraftsmanUtilities utilities)
-	{
-		_utilities = utilities;
-	}
+    public HeadersComponentBuilder(ICraftsmanUtilities utilities)
+    {
+        _utilities = utilities;
+    }
 
     public void CreateHeaderComponentItems(string spaDirectory)
     {
-      var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Headers", "index.ts");
-      var indexFileText = GetHeaderIndexText();
-      _utilities.CreateFile(indexCassPath, indexFileText);
-      
-      var privateHeaderClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Headers", "PrivateHeader.tsx");
-      var privateHeaderFileText = GetPrivateHeaderText();
-      _utilities.CreateFile(privateHeaderClassPath, privateHeaderFileText);
+        var indexCassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Headers", "index.ts");
+        var indexFileText = GetHeaderIndexText();
+        _utilities.CreateFile(indexCassPath, indexFileText);
+
+        var privateHeaderClassPath = ClassPathHelper.BffSpaComponentClassPath(spaDirectory, "Headers", "PrivateHeader.tsx");
+        var privateHeaderFileText = GetPrivateHeaderText();
+        _utilities.CreateFile(privateHeaderClassPath, privateHeaderFileText);
     }
 
     public static string GetHeaderIndexText()
     {
-      return @$"export * from './PrivateHeader';";
+        return @$"export * from './PrivateHeader';";
     }
-	
+
     public static string GetPrivateHeaderText()
     {
         return @$"import {{ Menu, Transition }} from '@headlessui/react';

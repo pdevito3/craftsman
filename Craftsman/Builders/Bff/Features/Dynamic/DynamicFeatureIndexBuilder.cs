@@ -15,13 +15,13 @@ public class DynamicFeatureBuilder
 
     public void CreateDynamicFeatureIndex(string spaDirectory, string entityPlural)
     {
-      var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityPlural, BffFeatureCategory.Index , "index.ts");
-      var fileText = GetDynamicFeatureIndexText();
-      _utilities.CreateFile(classPath, fileText);
+        var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory, entityPlural, BffFeatureCategory.Index, "index.ts");
+        var fileText = GetDynamicFeatureIndexText();
+        _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetDynamicFeatureIndexText()
     {
-      return @$"export * from './routes';";
+        return @$"export * from './routes';";
     }
 }

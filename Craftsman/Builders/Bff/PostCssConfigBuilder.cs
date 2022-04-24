@@ -1,32 +1,31 @@
-﻿namespace Craftsman.Builders.Bff
+﻿namespace Craftsman.Builders.Bff;
+
+using Helpers;
+using Services;
+
+public class PostCssBuilder
 {
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class PostCssBuilder
+    public PostCssBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public PostCssBuilder(ICraftsmanUtilities utilities)
-        {
-            _utilities = utilities;
-        }
+    public void CreatePostCss(string spaDirectory)
+    {
+        var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "postcss.config.js");
+        var fileText = GetPostCssText();
+        _utilities.CreateFile(classPath, fileText);
+    }
 
-        public void CreatePostCss(string spaDirectory)
-        {
-            var classPath = ClassPathHelper.BffSpaRootClassPath(spaDirectory, "postcss.config.js");
-            var fileText = GetPostCssText();
-            _utilities.CreateFile(classPath, fileText);
-        }
-        
-        public static string GetPostCssText()
-        {
-            return @$"module.exports = {{
+    public static string GetPostCssText()
+    {
+        return @$"module.exports = {{
 	plugins: {{
 		tailwindcss: {{}},
 		autoprefixer: {{}},
 	}},
 }};";
-        }
     }
 }

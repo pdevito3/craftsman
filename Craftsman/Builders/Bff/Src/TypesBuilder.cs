@@ -18,10 +18,10 @@ public class TypesBuilder
         var fileText = GetApiTypesText();
         _utilities.CreateFile(classPath, fileText);
     }
-    
+
     public static string GetApiTypesText()
     {
-            return @$"export interface PagedResponse<T> {{
+        return @$"export interface PagedResponse<T> {{
   pagination: Pagination;
   data: T[];
 }}

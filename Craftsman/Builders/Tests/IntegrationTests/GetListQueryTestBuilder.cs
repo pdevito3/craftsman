@@ -1,54 +1,54 @@
-﻿namespace Craftsman.Builders.Tests.IntegrationTests
+﻿namespace Craftsman.Builders.Tests.IntegrationTests;
+
+using System;
+using System.IO;
+using Craftsman.Services;
+using Domain;
+using Domain.Enums;
+using Helpers;
+using Services;
+
+public class GetListQueryTestBuilder
 {
-    using System;
-    using System.IO;
-    using Craftsman.Services;
-    using Domain;
-    using Domain.Enums;
-    using Helpers;
-    using Services;
+    private readonly ICraftsmanUtilities _utilities;
 
-    public class GetListQueryTestBuilder
+    public GetListQueryTestBuilder(ICraftsmanUtilities utilities)
     {
-        private readonly ICraftsmanUtilities _utilities;
+        _utilities = utilities;
+    }
 
-        public GetListQueryTestBuilder(ICraftsmanUtilities utilities)
+    public void CreateTests(string testDirectory, string solutionDirectory, Entity entity, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{entity.Name}ListQueryTests.cs", entity.Plural, projectBaseName);
+        var fileText = WriteTestFileText(testDirectory, solutionDirectory, classPath, entity, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    private static string WriteTestFileText(string testDirectory, string solutionDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+    {
+        var featureName = FileNames.GetEntityListFeatureClassName(entity.Name);
+        var testFixtureName = FileNames.GetIntegrationTestFixtureName();
+
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
+        var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+        var featuresClassPath = ClassPathHelper.FeaturesClassPath(testDirectory, featureName, entity.Plural, projectBaseName);
+
+        var sortTests = "";
+        var filterTests = "";
+
+        foreach (var prop in entity.Properties.Where(e => e.CanSort && e.Type != "Guid").ToList())
         {
-            _utilities = utilities;
+            sortTests += GetEntitiesListSortedInAscOrder(entity, prop);
+            sortTests += GetEntitiesListSortedInDescOrder(entity, prop);
         }
 
-        public void CreateTests(string testDirectory, string solutionDirectory, Entity entity, string projectBaseName)
-        {
-            var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{entity.Name}ListQueryTests.cs", entity.Plural, projectBaseName);
-            var fileText = WriteTestFileText(testDirectory, solutionDirectory, classPath, entity, projectBaseName);
-            _utilities.CreateFile(classPath, fileText);
-        }
+        foreach (var prop in entity.Properties.Where(e => e.CanFilter).ToList())
+            filterTests += GetEntitiesListFiltered(entity, prop);
 
-        private static string WriteTestFileText(string testDirectory, string solutionDirectory, ClassPath classPath, Entity entity, string projectBaseName)
-        {
-            var featureName = FileNames.GetEntityListFeatureClassName(entity.Name);
-            var testFixtureName = FileNames.GetIntegrationTestFixtureName();
+        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
-            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
-            var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
-            var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
-            var featuresClassPath = ClassPathHelper.FeaturesClassPath(testDirectory, featureName, entity.Plural, projectBaseName);
-
-            var sortTests = "";
-            var filterTests = "";
-
-            foreach (var prop in entity.Properties.Where(e => e.CanSort && e.Type != "Guid").ToList())
-            {
-                sortTests += GetEntitiesListSortedInAscOrder(entity, prop);
-                sortTests += GetEntitiesListSortedInDescOrder(entity, prop);
-            }
-
-            foreach (var prop in entity.Properties.Where(e => e.CanFilter).ToList())
-                filterTests += GetEntitiesListFiltered(entity, prop);
-
-            var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
-            
-            return @$"namespace {classPath.ClassNamespace};
+        return @$"namespace {classPath.ClassNamespace};
 
 using {dtoClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
@@ -66,20 +66,20 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     {sortTests}
     {filterTests}
 }}";
-        }
+    }
 
-        private static string GetEntitiesTest(Entity entity)
-        {
-            var queryName = FileNames.QueryListName(entity.Name);
-            var fakeEntity = FileNames.FakerName(entity.Name);
-            var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
-            var fakeEntityVariableNameOne = $"fake{entity.Name}One";
-            var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+    private static string GetEntitiesTest(Entity entity)
+    {
+        var queryName = FileNames.QueryListName(entity.Name);
+        var fakeEntity = FileNames.FakerName(entity.Name);
+        var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
+        var fakeEntityVariableNameOne = $"fake{entity.Name}One";
+        var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
+        var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
-            var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
-            return @$"
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
+        return @$"
     [Test]
     public async Task can_get_{entity.Name.ToLower()}_list()
     {{
@@ -97,21 +97,21 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // Assert
         {lowercaseEntityPluralName}.Should().HaveCount(2);
     }}";
-        }
+    }
 
-        private static string GetEntitiesWithPageSizeAndNumberTest(Entity entity)
-        {
-            var queryName = FileNames.QueryListName(entity.Name);
-            var fakeEntity = FileNames.FakerName(entity.Name);
-            var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
-            var fakeEntityVariableNameOne = $"fake{entity.Name}One";
-            var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
-            var fakeEntityVariableNameThree = $"fake{entity.Name}Three";
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+    private static string GetEntitiesWithPageSizeAndNumberTest(Entity entity)
+    {
+        var queryName = FileNames.QueryListName(entity.Name);
+        var fakeEntity = FileNames.FakerName(entity.Name);
+        var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
+        var fakeEntityVariableNameOne = $"fake{entity.Name}One";
+        var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
+        var fakeEntityVariableNameThree = $"fake{entity.Name}Three";
+        var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
-            var fakeParent = IntegrationTestServices.FakeParentTestHelpersThreeCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo, out var fakeParentIdRuleForThree);
-            return $@"
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersThreeCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo, out var fakeParentIdRuleForThree);
+        return $@"
     [Test]
     public async Task can_get_{entity.Name.ToLower()}_list_with_expected_page_size_and_number()
     {{
@@ -130,48 +130,48 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // Assert
         {lowercaseEntityPluralName}.Should().HaveCount(1);
     }}";
+    }
+
+    private static string GetEntitiesListSortedInAscOrder(Entity entity, EntityProperty prop)
+    {
+        var queryName = FileNames.QueryListName(entity.Name);
+        var fakeEntity = FileNames.FakerName(entity.Name);
+        var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
+        var fakeEntityVariableNameOne = $"fake{entity.Name}One";
+        var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
+        var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+
+        var alpha = @$"""alpha""";
+        var bravo = @$"""bravo""";
+
+        if (prop.Type == "string")
+        {
+            // leave variables as is
+        }
+        else if (prop.Type == "Guid")
+        {
+            alpha = "Guid.NewGuid()";
+            bravo = "Guid.NewGuid()";
+        }
+        else if (prop.Type.Contains("int"))
+        {
+            alpha = "1";
+            bravo = "2";
+        }
+        else if (prop.Type.Contains("DateTime"))
+        {
+            alpha = "DateTime.Now.AddDays(1)";
+            bravo = "DateTime.Now.AddDays(2)";
+        }
+        else
+        {
+            //no tests generated for other types at this time
+            return "";
         }
 
-        private static string GetEntitiesListSortedInAscOrder(Entity entity, EntityProperty prop)
-        {
-            var queryName = FileNames.QueryListName(entity.Name);
-            var fakeEntity = FileNames.FakerName(entity.Name);
-            var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
-            var fakeEntityVariableNameOne = $"fake{entity.Name}One";
-            var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-
-            var alpha = @$"""alpha""";
-            var bravo = @$"""bravo""";
-
-            if (prop.Type == "string")
-            {
-                // leave variables as is
-            }
-            else if (prop.Type == "Guid")
-            {
-                alpha = "Guid.NewGuid()";
-                bravo = "Guid.NewGuid()";
-            }
-            else if (prop.Type.Contains("int"))
-            {
-                alpha = "1";
-                bravo = "2";
-            }
-            else if (prop.Type.Contains("DateTime"))
-            {
-                alpha = "DateTime.Now.AddDays(1)";
-                bravo = "DateTime.Now.AddDays(2)";
-            }
-            else
-            {
-                //no tests generated for other types at this time
-                return "";
-            }
-
-            var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
-            return $@"
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
+        return $@"
     [Test]
     public async Task can_get_sorted_list_of_{entity.Name.ToLower()}_by_{prop.Name}_in_asc_order()
     {{
@@ -201,48 +201,48 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             .Should().BeEquivalentTo(fake{entity.Name}One, options =>
                 options.ExcludingMissingMembers());
     }}{Environment.NewLine}";
+    }
+
+    private static string GetEntitiesListSortedInDescOrder(Entity entity, EntityProperty prop)
+    {
+        var queryName = FileNames.QueryListName(entity.Name);
+        var fakeEntity = FileNames.FakerName(entity.Name);
+        var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
+        var fakeEntityVariableNameOne = $"fake{entity.Name}One";
+        var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
+        var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+
+        var alpha = @$"""alpha""";
+        var bravo = @$"""bravo""";
+
+        if (prop.Type == "string")
+        {
+            // leave variables as is
+        }
+        else if (prop.Type == "Guid")
+        {
+            alpha = "Guid.NewGuid()";
+            bravo = "Guid.NewGuid()";
+        }
+        else if (prop.Type.Contains("int"))
+        {
+            alpha = "1";
+            bravo = "2";
+        }
+        else if (prop.Type.Contains("DateTime"))
+        {
+            alpha = "DateTime.Now.AddDays(1)";
+            bravo = "DateTime.Now.AddDays(2)";
+        }
+        else
+        {
+            //no tests generated for other types at this time
+            return "";
         }
 
-        private static string GetEntitiesListSortedInDescOrder(Entity entity, EntityProperty prop)
-        {
-            var queryName = FileNames.QueryListName(entity.Name);
-            var fakeEntity = FileNames.FakerName(entity.Name);
-            var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
-            var fakeEntityVariableNameOne = $"fake{entity.Name}One";
-            var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-
-            var alpha = @$"""alpha""";
-            var bravo = @$"""bravo""";
-
-            if (prop.Type == "string")
-            {
-                // leave variables as is
-            }
-            else if (prop.Type == "Guid")
-            {
-                alpha = "Guid.NewGuid()";
-                bravo = "Guid.NewGuid()";
-            }
-            else if (prop.Type.Contains("int"))
-            {
-                alpha = "1";
-                bravo = "2";
-            }
-            else if (prop.Type.Contains("DateTime"))
-            {
-                alpha = "DateTime.Now.AddDays(1)";
-                bravo = "DateTime.Now.AddDays(2)";
-            }
-            else
-            {
-                //no tests generated for other types at this time
-                return "";
-            }
-
-            var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
-            return $@"
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
+        return $@"
     [Test]
     public async Task can_get_sorted_list_of_{entity.Name.ToLower()}_by_{prop.Name}_in_desc_order()
     {{
@@ -272,58 +272,58 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             .Should().BeEquivalentTo(fake{entity.Name}One, options =>
                 options.ExcludingMissingMembers());
     }}{Environment.NewLine}";
+    }
+
+    private static string GetEntitiesListFiltered(Entity entity, EntityProperty prop)
+    {
+        var queryName = FileNames.QueryListName(entity.Name);
+        var fakeEntity = FileNames.FakerName(entity.Name);
+        var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
+        var fakeEntityVariableNameOne = $"fake{entity.Name}One";
+        var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
+        var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+        var expectedFilterableProperty = @$"fake{entity.Name}Two.{prop.Name}";
+        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+
+        var alpha = @$"""alpha""";
+        var bravo = @$"""bravo""";
+        var bravoFilterVal = "bravo";
+
+        if (prop.Type == "string")
+        {
+            // leave variables as is
+        }
+        else if (prop.Type == "Guid")
+        {
+            alpha = "Guid.NewGuid()";
+            bravo = "Guid.NewGuid()";
+        }
+        else if (prop.Type.Contains("int"))
+        {
+            alpha = "1";
+            bravo = "2";
+            bravoFilterVal = bravo;
+        }
+        else if (prop.Type.Contains("DateTime"))
+        {
+            alpha = "DateTime.Now.AddDays(1)";
+            bravo = @$"DateTime.Parse(DateTime.Now.AddDays(2).ToString(""MM/dd/yyyy""))"; // filter by date like this because it needs to be an exact match (in this case)
+            bravoFilterVal = @$"{{DateTime.Now.AddDays(2).ToString(""MM/dd/yyyy"")}}";
+        }
+        else if (prop.Type.Contains("bool"))
+        {
+            alpha = "false";
+            bravo = "true";
+            bravoFilterVal = bravo;
+        }
+        else
+        {
+            //no tests generated for other types at this time
+            return "";
         }
 
-        private static string GetEntitiesListFiltered(Entity entity, EntityProperty prop)
-        {
-            var queryName = FileNames.QueryListName(entity.Name);
-            var fakeEntity = FileNames.FakerName(entity.Name);
-            var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
-            var fakeEntityVariableNameOne = $"fake{entity.Name}One";
-            var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
-            var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-            var expectedFilterableProperty = @$"fake{entity.Name}Two.{prop.Name}";
-            var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-
-            var alpha = @$"""alpha""";
-            var bravo = @$"""bravo""";
-            var bravoFilterVal = "bravo";
-
-            if (prop.Type == "string")
-            {
-                // leave variables as is
-            }
-            else if (prop.Type == "Guid")
-            {
-                alpha = "Guid.NewGuid()";
-                bravo = "Guid.NewGuid()";
-            }
-            else if (prop.Type.Contains("int"))
-            {
-                alpha = "1";
-                bravo = "2";
-                bravoFilterVal = bravo;
-            }
-            else if (prop.Type.Contains("DateTime"))
-            {
-                alpha = "DateTime.Now.AddDays(1)";
-                bravo = @$"DateTime.Parse(DateTime.Now.AddDays(2).ToString(""MM/dd/yyyy""))"; // filter by date like this because it needs to be an exact match (in this case)
-                bravoFilterVal = @$"{{DateTime.Now.AddDays(2).ToString(""MM/dd/yyyy"")}}";
-            }
-            else if (prop.Type.Contains("bool"))
-            {
-                alpha = "false";
-                bravo = "true";
-                bravoFilterVal = bravo;
-            }
-            else
-            {
-                //no tests generated for other types at this time
-                return "";
-            }
-
-            var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
-            return $@"
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
+        return $@"
     [Test]
     public async Task can_filter_{entity.Name.ToLower()}_list_using_{prop.Name}()
     {{
@@ -349,6 +349,5 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
             .Should().BeEquivalentTo(fake{entity.Name}Two, options =>
                 options.ExcludingMissingMembers());
     }}{Environment.NewLine}";
-        }
     }
 }
