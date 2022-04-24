@@ -10,6 +10,7 @@ using Builders.Tests.Utilities;
 using Domain;
 using FluentAssertions.Common;
 using Helpers;
+using MediatR;
 using Spectre.Console;
 
 public class ApiScaffoldingService
@@ -19,14 +20,16 @@ public class ApiScaffoldingService
     private readonly ICraftsmanUtilities _utilities;
     private readonly IFileSystem _fileSystem;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IMediator _mediator;
 
-    public ApiScaffoldingService(IAnsiConsole console, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileSystem fileSystem)
+    public ApiScaffoldingService(IAnsiConsole console, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileSystem fileSystem, IMediator mediator)
     {
         _console = console;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _fileSystem = fileSystem;
+        _mediator = mediator;
     }
 
     public void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template)
@@ -50,7 +53,7 @@ public class ApiScaffoldingService
 
                 ctx.Spinner(Spinner.Known.BouncingBar);
                 ctx.Status($"[bold blue]Building {projectName} Projects [/]");
-                new SolutionBuilder(_utilities, _fileSystem)
+                new SolutionBuilder(_utilities, _fileSystem, _mediator)
                     .AddProjects(buildSolutionDirectory,
                         srcDirectory,
                         testDirectory,

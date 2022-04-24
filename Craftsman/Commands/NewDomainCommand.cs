@@ -5,6 +5,7 @@ using Builders;
 using Builders.Docker;
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -19,6 +20,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
     private readonly IDbMigrator _dbMigrator;
     private readonly IGitService _gitService;
     private readonly IFileParsingHelper _fileParsingHelper;
+    private readonly IMediator _mediator;
 
     public NewDomainCommand(IAnsiConsole console,
         IFileSystem fileSystem,
@@ -27,7 +29,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         IScaffoldingDirectoryStore scaffoldingDirectoryStore,
         IDbMigrator dbMigrator,
         IGitService gitService,
-        IFileParsingHelper fileParsingHelper)
+        IFileParsingHelper fileParsingHelper, IMediator mediator)
     {
         _console = console;
         _fileSystem = fileSystem;
@@ -37,6 +39,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         _dbMigrator = dbMigrator;
         _gitService = gitService;
         _fileParsingHelper = fileParsingHelper;
+        _mediator = mediator;
     }
 
     public class Settings : CommandSettings
@@ -67,7 +70,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
     {
         var solutionDirectory = _scaffoldingDirectoryStore.SolutionDirectory;
         _fileSystem.Directory.CreateDirectory(solutionDirectory);
-        new SolutionBuilder(_utilities, _fileSystem).BuildSolution(solutionDirectory, domainProject.DomainName);
+        new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildSolution(solutionDirectory, domainProject.DomainName);
 
         // need this before boundaries to give them something to build against
         new DockerComposeBuilders(_utilities, _fileSystem).CreateDockerComposeSkeleton(solutionDirectory);
@@ -77,16 +80,16 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
         //    ApiScaffolding.ScaffoldApi(solutionDirectory, template, verbosity));
         foreach (var bc in domainProject.BoundedContexts)
-            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem).ScaffoldApi(solutionDirectory, bc);
+            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem, _mediator).ScaffoldApi(solutionDirectory, bc);
 
         // auth server
         if (domainProject.AuthServer != null)
-            new AddAuthServerCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper)
+            new AddAuthServerCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper, _mediator)
                 .AddAuthServer(solutionDirectory, domainProject.AuthServer);
 
         // bff
         if (domainProject.Bff != null)
-            new AddBffCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper)
+            new AddBffCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper, _mediator)
                 .AddBff(domainProject.Bff, solutionDirectory);
 
         // messages

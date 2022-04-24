@@ -8,6 +8,7 @@ using Craftsman.Exceptions;
 using Craftsman.Helpers;
 using Craftsman.Interceptors;
 using Craftsman.Services;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -21,6 +22,7 @@ serviceCollection.AddSingleton<IDbMigrator, DbMigrator>();
 serviceCollection.AddSingleton<IGitService, GitService>();
 serviceCollection.AddCraftsmanServices(typeof(Program));
 serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
+serviceCollection.AddMediatR(typeof(Program));
 
 var registrar = new TypeRegistrar(serviceCollection);
 var app = new CommandApp(registrar);

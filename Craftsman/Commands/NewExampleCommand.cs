@@ -3,6 +3,7 @@ namespace Craftsman.Commands;
 using System.IO.Abstractions;
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -17,8 +18,9 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
     private readonly IFileParsingHelper _fileParsingHelper;
+    private readonly IMediator _mediator;
 
-    public NewExampleCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IDbMigrator dbMigrator, IGitService gitService, IFileParsingHelper fileParsingHelper)
+    public NewExampleCommand(IAnsiConsole console, IFileSystem fileSystem, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IDbMigrator dbMigrator, IGitService gitService, IFileParsingHelper fileParsingHelper, IMediator mediator)
     {
         _console = console;
         _fileSystem = fileSystem;
@@ -28,6 +30,7 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         _dbMigrator = dbMigrator;
         _gitService = gitService;
         _fileParsingHelper = fileParsingHelper;
+        _mediator = mediator;
     }
 
     public class Settings : CommandSettings
@@ -50,7 +53,7 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(templateString);
 
         _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
-        var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _dbMigrator, _gitService, _fileParsingHelper);
+        var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _dbMigrator, _gitService, _fileParsingHelper, _mediator);
         domainCommand.CreateNewDomainProject(domainProject);
 
         // TODO add this back

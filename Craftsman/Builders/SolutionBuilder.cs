@@ -6,6 +6,7 @@ using Domain;
 using Dtos;
 using ExtensionBuilders;
 using Helpers;
+using MediatR;
 using Projects;
 using Services;
 
@@ -13,10 +14,12 @@ public class SolutionBuilder
 {
     private readonly IFileSystem _fileSystem;
     private readonly ICraftsmanUtilities _utilities;
+    private readonly IMediator _mediator;
 
-    public SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+    public SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem, IMediator mediator)
     {
         _fileSystem = fileSystem;
+        _mediator = mediator;
         _utilities = utilities;
     }
 
@@ -71,7 +74,7 @@ public class SolutionBuilder
 
         new BasePaginationParametersBuilder(_utilities).CreateBasePaginationParameters(solutionDirectory);
         new PagedListBuilder(_utilities).CreatePagedList(srcDirectory, projectBaseName);
-        new CoreExceptionsBuilder(_utilities, _fileSystem).CreateExceptions(solutionDirectory, projectBaseName);
+        _mediator.Send(new CoreExceptionBuilder.CoreExceptionBuilderCommand());
 
         _utilities.AddProjectReference(webApiProjectClassPath, @"..\..\..\SharedKernel\SharedKernel.csproj");
     }

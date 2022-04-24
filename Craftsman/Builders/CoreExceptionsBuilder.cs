@@ -2,55 +2,73 @@
 
 using System.IO.Abstractions;
 using Helpers;
+using MediatR;
 using Services;
 
-public class CoreExceptionsBuilder
+public static class CoreExceptionBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
-    private readonly IFileSystem _fileSystem;
-
-    public CoreExceptionsBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+    public class CoreExceptionBuilderCommand : IRequest<bool>
     {
-        _utilities = utilities;
-        _fileSystem = fileSystem;
     }
 
-    public void CreateExceptions(string solutionDirectory, string projectBaseName)
+    public class Handler : IRequestHandler<CoreExceptionBuilderCommand, bool>
     {
-        var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
+        private readonly ICraftsmanUtilities _utilities;
+        private readonly IFileSystem _fileSystem;
+        private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
 
-        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
-            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+        public Handler(ICraftsmanUtilities utilities,
+            IFileSystem fileSystem,
+            IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        {
+            _utilities = utilities;
+            _fileSystem = fileSystem;
+            _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
+        }
 
-        CreateNotFoundException(solutionDirectory, projectBaseName);
-        CreateValidationException(solutionDirectory, projectBaseName);
-        CreateForbiddenException(solutionDirectory, projectBaseName);
-    }
+        public async Task<bool> Handle(CoreExceptionBuilderCommand request, CancellationToken cancellationToken)
+        {
+            CreateExceptions(_scaffoldingDirectoryStore.SolutionDirectory);
 
-    public void CreateValidationException(string solutionDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ValidationException.cs");
-        var fileText = GetValidationExceptionFileText(classPath.ClassNamespace);
-        _utilities.CreateFile(classPath, fileText);
-    }
+            return true;
+        }
 
-    public void CreateNotFoundException(string solutionDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"NotFoundException.cs");
-        var fileText = GetNotFoundExceptionFileText(classPath.ClassNamespace);
-        _utilities.CreateFile(classPath, fileText);
-    }
+        public void CreateExceptions(string solutionDirectory)
+        {
+            var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
 
-    public void CreateForbiddenException(string solutionDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ForbiddenException.cs");
-        var fileText = GetForbiddenExceptionFileText(classPath.ClassNamespace);
-        _utilities.CreateFile(classPath, fileText);
-    }
+            if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+                _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-    public static string GetNotFoundExceptionFileText(string classNamespace)
-    {
-        return @$"namespace {classNamespace}
+            CreateNotFoundException(solutionDirectory);
+            CreateValidationException(solutionDirectory);
+            CreateForbiddenException(solutionDirectory);
+        }
+
+        public void CreateValidationException(string solutionDirectory)
+        {
+            var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ValidationException.cs");
+            var fileText = GetValidationExceptionFileText(classPath.ClassNamespace);
+            _utilities.CreateFile(classPath, fileText);
+        }
+
+        public void CreateNotFoundException(string solutionDirectory)
+        {
+            var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"NotFoundException.cs");
+            var fileText = GetNotFoundExceptionFileText(classPath.ClassNamespace);
+            _utilities.CreateFile(classPath, fileText);
+        }
+
+        public void CreateForbiddenException(string solutionDirectory)
+        {
+            var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"ForbiddenException.cs");
+            var fileText = GetForbiddenExceptionFileText(classPath.ClassNamespace);
+            _utilities.CreateFile(classPath, fileText);
+        }
+
+        public static string GetNotFoundExceptionFileText(string classNamespace)
+        {
+            return @$"namespace {classNamespace}
 {{
     using System;
 
@@ -77,11 +95,11 @@ public class CoreExceptionsBuilder
         }}
     }}
 }}";
-    }
+        }
 
-    public static string GetForbiddenExceptionFileText(string classNamespace)
-    {
-        return @$"namespace {classNamespace}
+        public static string GetForbiddenExceptionFileText(string classNamespace)
+        {
+            return @$"namespace {classNamespace}
 {{
     using System;
     using System.Globalization;
@@ -91,11 +109,11 @@ public class CoreExceptionsBuilder
         public ForbiddenAccessException() : base() {{ }}
     }}
 }}";
-    }
+        }
 
-    public static string GetValidationExceptionFileText(string classNamespace)
-    {
-        return @$"namespace {classNamespace}
+        public static string GetValidationExceptionFileText(string classNamespace)
+        {
+            return @$"namespace {classNamespace}
 {{
     using FluentValidation.Results;
     using System.Collections.Generic;
@@ -121,5 +139,6 @@ public class CoreExceptionsBuilder
         public IDictionary<string, string[]> Errors {{ get; }}
     }}
 }}";
+        }
     }
 }

@@ -3,6 +3,7 @@ namespace Craftsman.Commands;
 using System.IO.Abstractions;
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -15,12 +16,13 @@ public class AddBoundedContextCommand : Command<AddBoundedContextCommand.Setting
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
     private readonly IFileParsingHelper _fileParsingHelper;
+    private readonly IMediator _mediator;
 
     public AddBoundedContextCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore,
-        IAnsiConsole console, IFileParsingHelper fileParsingHelper)
+        IAnsiConsole console, IFileParsingHelper fileParsingHelper, IMediator mediator)
     {
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
@@ -28,6 +30,7 @@ public class AddBoundedContextCommand : Command<AddBoundedContextCommand.Setting
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _console = console;
         _fileParsingHelper = fileParsingHelper;
+        _mediator = mediator;
     }
 
     public class Settings : CommandSettings
@@ -47,7 +50,7 @@ public class AddBoundedContextCommand : Command<AddBoundedContextCommand.Setting
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
         foreach (var template in boundedContexts.BoundedContexts)
-            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem)
+            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem, _mediator)
                 .ScaffoldApi(potentialSolutionDir, template);
 
         _consoleWriter.WriteHelpHeader(

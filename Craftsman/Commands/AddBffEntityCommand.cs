@@ -6,6 +6,7 @@ using Builders.AuthServer;
 using Builders.Docker;
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -18,12 +19,13 @@ public class AddBffEntityCommand : Command<AddBffEntityCommand.Settings>
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
     private readonly IFileParsingHelper _fileParsingHelper;
+    private readonly IMediator _mediator;
 
     public AddBffEntityCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore,
-        IAnsiConsole console, IFileParsingHelper fileParsingHelper)
+        IAnsiConsole console, IFileParsingHelper fileParsingHelper, IMediator mediator)
     {
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
@@ -31,6 +33,7 @@ public class AddBffEntityCommand : Command<AddBffEntityCommand.Settings>
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _console = console;
         _fileParsingHelper = fileParsingHelper;
+        _mediator = mediator;
     }
 
     public class Settings : CommandSettings
@@ -58,7 +61,7 @@ public class AddBffEntityCommand : Command<AddBffEntityCommand.Settings>
 
     public void AddAuthServer(string solutionDirectory, AuthServerTemplate template)
     {
-        new SolutionBuilder(_utilities, _fileSystem).BuildAuthServerProject(solutionDirectory, template.Name);
+        new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildAuthServerProject(solutionDirectory, template.Name);
 
         new AuthServerLaunchSettingsBuilder(_utilities).CreateLaunchSettings(solutionDirectory, template.Name, template.Port);
         new StartupBuilder(_utilities).CreateAuthServerStartup(solutionDirectory, template.Name);

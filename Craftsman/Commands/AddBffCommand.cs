@@ -12,6 +12,7 @@ using Builders.Bff.Features.Home;
 using Builders.Bff.Src;
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -24,12 +25,13 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
     private readonly IAnsiConsole _console;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IMediator _mediator;
 
     public AddBffCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore,
-        IAnsiConsole console, IFileParsingHelper fileParsingHelper)
+        IAnsiConsole console, IFileParsingHelper fileParsingHelper, IMediator mediator)
     {
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
@@ -37,6 +39,7 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _console = console;
         _fileParsingHelper = fileParsingHelper;
+        _mediator = mediator;
     }
 
     public class Settings : CommandSettings
@@ -76,7 +79,7 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
         var projectDirectory = template.GetProjectDirectory(domainDirectory);
         var spaDirectory = template.GetSpaDirectory(domainDirectory);
 
-        new SolutionBuilder(_utilities, _fileSystem).BuildBffProject(domainDirectory, projectName, template.ProxyPort);
+        new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildBffProject(domainDirectory, projectName, template.ProxyPort);
         _fileSystem.Directory.CreateDirectory(spaDirectory);
 
         // .NET Project
