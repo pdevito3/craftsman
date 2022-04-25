@@ -80,7 +80,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
         //    ApiScaffolding.ScaffoldApi(solutionDirectory, template, verbosity));
         foreach (var bc in domainProject.BoundedContexts)
-            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem, _mediator).ScaffoldApi(solutionDirectory, bc);
+            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem, _mediator, _fileParsingHelper).ScaffoldApi(solutionDirectory, bc);
 
         // auth server
         if (domainProject.AuthServer != null)

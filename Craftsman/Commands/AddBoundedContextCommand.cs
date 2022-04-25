@@ -50,7 +50,7 @@ public class AddBoundedContextCommand : Command<AddBoundedContextCommand.Setting
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
         foreach (var template in boundedContexts.BoundedContexts)
-            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem, _mediator)
+            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem, _mediator, _fileParsingHelper)
                 .ScaffoldApi(potentialSolutionDir, template);
 
         _consoleWriter.WriteHelpHeader(

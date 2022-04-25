@@ -21,8 +21,9 @@ public class ApiScaffoldingService
     private readonly IFileSystem _fileSystem;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
     private readonly IMediator _mediator;
+    private readonly IFileParsingHelper _fileParsingHelper;
 
-    public ApiScaffoldingService(IAnsiConsole console, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileSystem fileSystem, IMediator mediator)
+    public ApiScaffoldingService(IAnsiConsole console, IConsoleWriter consoleWriter, ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileSystem fileSystem, IMediator mediator, IFileParsingHelper fileParsingHelper)
     {
         _console = console;
         _consoleWriter = consoleWriter;
@@ -30,6 +31,7 @@ public class ApiScaffoldingService
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _fileSystem = fileSystem;
         _mediator = mediator;
+        _fileParsingHelper = fileParsingHelper;
     }
 
     public void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template)
@@ -136,7 +138,7 @@ public class ApiScaffoldingService
             template.DockerConfig
         );
 
-        // unit tests, test utils, and one offs∂
+        // unit tests, test utils, and one offs
         new PagedListTestBuilder(_utilities).CreateTests(srcDirectory, testDirectory, projectBaseName);
         new IntegrationTestFixtureBuilder(_utilities).CreateFixture(testDirectory,
             projectBaseName,
@@ -156,14 +158,14 @@ public class ApiScaffoldingService
         new CurrentUserServiceBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);
         new SwaggerBuilder(_utilities, _fileSystem).AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName);
 
-        // if (template.Bus.AddBus)
-        //     AddBusCommand.AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory);
-        //
-        // if (template.Consumers.Count > 0)
-        //     AddConsumerCommand.AddConsumers(template.Consumers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
-        //
-        // if (template.Producers.Count > 0)
-        //     AddProducerCommand.AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
+        if (template.Bus.AddBus)
+            new AddBusCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper).AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory);
+        
+        if (template.Consumers.Count > 0)
+            new AddConsumerCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper).AddConsumers(template.Consumers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
+        
+        if (template.Producers.Count > 0)
+            new AddProducerCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper).AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
 
         new WebApiDockerfileBuilder(_utilities).CreateStandardDotNetDockerfile(srcDirectory, projectBaseName);
         new DockerIgnoreBuilder(_utilities).CreateDockerIgnore(srcDirectory, projectBaseName);
