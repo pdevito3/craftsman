@@ -34,7 +34,10 @@ public static class ValueObjectBuilder
         {
             return @$"namespace {classNamespace}
 {{
-    using System.Reflection;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Reflection;
 
     // source: https://github.com/jhewlett/ValueObject
     public abstract class ValueObject : IEquatable<ValueObject>
