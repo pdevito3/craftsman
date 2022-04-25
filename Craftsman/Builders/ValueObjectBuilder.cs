@@ -22,12 +22,12 @@ public static class ValueObjectBuilder
             _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         }
 
-        public async Task<bool> Handle(ValueObjectBuilderCommand request, CancellationToken cancellationToken)
+        public Task<bool> Handle(ValueObjectBuilderCommand request, CancellationToken cancellationToken)
         {
             var classPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "ValueObject.cs");
             var fileText = GetFileText(classPath.ClassNamespace);
             _utilities.CreateFile(classPath, fileText);
-            return true;
+            return Task.FromResult(true);
         }
 
         private static string GetFileText(string classNamespace)
