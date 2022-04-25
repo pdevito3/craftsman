@@ -21,15 +21,18 @@ using Builders.Tests.Utilities;
 using Domain;
 using Domain.Enums;
 using Helpers;
+using MediatR;
 
 public class EntityScaffoldingService
 {
     private readonly IFileSystem _fileSystem;
     private readonly ICraftsmanUtilities _utilities;
+    private readonly IMediator _mediator;
 
-    public EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+    public EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem fileSystem, IMediator mediator)
     {
         _fileSystem = fileSystem;
+        _mediator = mediator;
         _utilities = utilities;
     }
 
@@ -117,6 +120,10 @@ public class EntityScaffoldingService
 
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSet(srcDirectory, new List<Entity>() { entity }, dbContextName, projectBaseName);
+        
+        // domain events
+        _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
+        _mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(entity.Name, entity.Plural));
     }
 
     public void AddFeatureToProject(string solutionDirectory, string srcDirectory, string testDirectory, string projectBaseName,

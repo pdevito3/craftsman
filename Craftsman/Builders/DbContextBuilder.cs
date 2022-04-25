@@ -72,6 +72,7 @@ public class DbContextBuilder
 {entitiesUsings}
 using {baseEntityClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
@@ -82,11 +83,13 @@ using Microsoft.EntityFrameworkCore.Query;
 public class {dbContextName} : DbContext
 {{
     private readonly ICurrentUserService _currentUserService;
+    private readonly IMediator _mediator;
 
     public {dbContextName}(
-        DbContextOptions<{dbContextName}> options, ICurrentUserService currentUserService) : base(options)
+        DbContextOptions<{dbContextName}> options, ICurrentUserService currentUserService, IMediator mediator) : base(options)
     {{
         _currentUserService = currentUserService;
+        _mediator = mediator;
     }}
 
     #region DbSet Region - Do Not Delete
@@ -99,16 +102,37 @@ public class {dbContextName} : DbContext
         base.OnModelCreating(modelBuilder);{modelBuilderFilter}
     }}
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
-    {{
-        UpdateAuditFields();
-        return base.SaveChangesAsync(cancellationToken);
-    }}
-
     public override int SaveChanges()
     {{
+        _preSaveChanges().GetAwaiter().GetResult();
         UpdateAuditFields();
         return base.SaveChanges();
+    }}
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
+    {{
+        await _preSaveChanges();
+        UpdateAuditFields();
+        return await base.SaveChangesAsync(cancellationToken);
+    }}
+    
+    private async Task _preSaveChanges()
+    {{
+        await _dispatchDomainEvents();
+    }}
+    
+    private async Task _dispatchDomainEvents()
+    {{
+        var domainEventEntities = ChangeTracker.Entries<BaseEntity>()
+            .Select(po => po.Entity)
+            .Where(po => po.DomainEvents.Any())
+            .ToArray();
+
+        foreach (var entity in domainEventEntities)
+        {{
+            foreach (var entityDomainEvent in entity.DomainEvents)
+                await _mediator.Publish(entityDomainEvent);
+        }}
     }}
         
     private void UpdateAuditFields()

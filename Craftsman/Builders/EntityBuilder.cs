@@ -40,6 +40,8 @@ public class EntityBuilder
         var propString = EntityPropBuilder(entity.Properties);
         var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
         var tableAnnotation = EntityAnnotationBuilder(entity);
+        var entityCreatedDomainMessage = FileNames.EntityCreatedDomainMessage(entity.Name);
+        var entityUpdatedDomainMessage = FileNames.EntityUpdatedDomainMessage(entity.Name);
 
         var foreignEntityUsings = "";
         var foreignProps = entity.Properties.Where(e => e.IsForeignKey).ToList();
@@ -54,12 +56,14 @@ using {classPath.ClassNamespace};";
         var profileClassPath = ClassPathHelper.ProfileClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, $"", entity.Name, projectBaseName);
         var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
+        var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Name, projectBaseName);
 
         return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
 using {profileClassPath.ClassNamespace};
 using {validatorClassPath.ClassNamespace};
+using {domainEventsClassPath.ClassNamespace};
 using AutoMapper;
 using FluentValidation;
 using System.Text.Json.Serialization;
@@ -80,6 +84,7 @@ public class {entity.Name} : BaseEntity
             cfg.AddProfile<{profileName}>();
         }}));
         var new{entity.Name} = mapper.Map<{entity.Name}>({creationDtoName.LowercaseFirstLetter()});
+        new{entity.Name}.PublishDomainEvent(new {entityCreatedDomainMessage}(){{ {entity.Name} = new{entity.Name} }});
         
         return new{entity.Name};
     }}
@@ -91,6 +96,7 @@ public class {entity.Name} : BaseEntity
             cfg.AddProfile<{profileName}>();
         }}));
         mapper.Map({updateDtoName.LowercaseFirstLetter()}, this);
+        PublishDomainEvent(new {entityUpdatedDomainMessage}(){{ {entity.Name} = this }});
     }}
     
     private {entity.Name}() {{ }} // For EF
@@ -118,6 +124,9 @@ public class {entity.Name} : BaseEntity
 using Sieve.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MediatR;
+
+public interface IDomainEvent : INotification {{ }}
 
 public abstract class BaseEntity
 {{
@@ -128,6 +137,9 @@ public abstract class BaseEntity
     public string CreatedBy {{ get; private set; }}
     public DateTime? LastModifiedOn {{ get; private set; }}
     public string LastModifiedBy {{ get; private set; }}{isDeletedProp}
+    
+    [NotMapped]
+    public List<IDomainEvent> DomainEvents {{ get; }} = new List<IDomainEvent>();
 
     public void UpdateCreationProperties(DateTime createdOn, string createdBy)
     {{
@@ -140,6 +152,11 @@ public abstract class BaseEntity
         LastModifiedOn = lastModifiedOn;
         LastModifiedBy = lastModifiedBy;
     }}{isDeletedMethod}
+    
+    public void PublishDomainEvent(IDomainEvent @event)
+    {{
+        DomainEvents.Add(@event);
+    }}
 }}";
     }
 

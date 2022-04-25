@@ -4,32 +4,32 @@ using System.IO.Abstractions;
 using Builders;
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 public class AddEntityCommand : Command<AddEntityCommand.Settings>
 {
-    private readonly IAnsiConsole _console;
     private readonly IFileSystem _fileSystem;
     private readonly IConsoleWriter _consoleWriter;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
     private readonly IFileParsingHelper _fileParsingHelper;
+    private readonly IMediator _mediator;
 
-    public AddEntityCommand(IAnsiConsole console,
-        IFileSystem fileSystem,
+    public AddEntityCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore,
-        IFileParsingHelper fileParsingHelper)
+        IFileParsingHelper fileParsingHelper, IMediator mediator)
     {
-        _console = console;
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _fileParsingHelper = fileParsingHelper;
+        _mediator = mediator;
     }
 
     public class Settings : CommandSettings
@@ -70,7 +70,7 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
         var useSoftDelete = _utilities.ProjectUsesSoftDelete(srcDirectory, _scaffoldingDirectoryStore.ProjectBaseName);
 
         //entities
-        new EntityScaffoldingService(_utilities, _fileSystem).ScaffoldEntities(solutionDirectory,
+        new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldEntities(solutionDirectory,
             srcDirectory,
             testDirectory,
             _scaffoldingDirectoryStore.ProjectBaseName,

@@ -14,10 +14,10 @@ public class ProfileBuilder
         _utilities = utilities;
     }
 
-    public void CreateProfile(string solutionDirectory, Entity entity, string projectBaseName)
+    public void CreateProfile(string srcDirectory, Entity entity, string projectBaseName)
     {
-        var classPath = ClassPathHelper.ProfileClassPath(solutionDirectory, $"{FileNames.GetProfileName(entity.Name)}.cs", entity.Plural, projectBaseName);
-        var fileText = GetProfileFileText(classPath.ClassNamespace, entity, solutionDirectory, projectBaseName);
+        var classPath = ClassPathHelper.ProfileClassPath(srcDirectory, $"{FileNames.GetProfileName(entity.Name)}.cs", entity.Plural, projectBaseName);
+        var fileText = GetProfileFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
