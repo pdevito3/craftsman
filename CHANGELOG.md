@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Open Telemetry and Jaeger tracing support
 * `ValueObject` class scaffolding to `SharedKernel`
+  * [Example 1](https://github.com/ardalis/pluralsight-ddd-fundamentals/blob/main/ClinicManagement/src/ClinicManagement.Core/ValueObjects/AnimalType.cs) in use [here](https://github.com/ardalis/pluralsight-ddd-fundamentals/blob/main/ClinicManagement/src/ClinicManagement.Core/Aggregates/Patient.cs)
+  * [Example 2](https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/Percent.cs) in use [here](https://github.com/asc-lab/better-code-with-ddd/blob/abbf03586ee9287c302841f0ce85cbfd9485ba72/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/Loan.cs)
+
 
 ### Updated
 
