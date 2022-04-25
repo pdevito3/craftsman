@@ -125,9 +125,9 @@ public abstract class BaseEntity
     [Sieve(CanFilter = true, CanSort = true)]
     public Guid Id {{ get; private set; }} = Guid.NewGuid();
     public DateTime CreatedOn {{ get; private set; }}
-    public string? CreatedBy {{ get; private set; }}
+    public string CreatedBy {{ get; private set; }}
     public DateTime? LastModifiedOn {{ get; private set; }}
-    public string? LastModifiedBy {{ get; private set; }}{isDeletedProp}
+    public string LastModifiedBy {{ get; private set; }}{isDeletedProp}
 
     public void UpdateCreationProperties(DateTime createdOn, string? createdBy)
     {{

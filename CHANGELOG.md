@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Commands no longer use `:` and use the more traditional space delimiter. For exmaple, `craftsman new example`
 * Default db provider set to postgres
+* Removed `?`'s on strings in  `BaseEntity` 
 
 ## [0.14.2] - 04/22/2022
 
