@@ -7,6 +7,7 @@ using Builders.Docker;
 using Builders.Tests.FunctionalTests;
 using Builders.Tests.UnitTests;
 using Builders.Tests.Utilities;
+using Commands;
 using Domain;
 using FluentAssertions.Common;
 using Helpers;
@@ -153,6 +154,7 @@ public class ApiScaffoldingService
         new HttpClientExtensionsBuilder(_utilities).Create(testDirectory, projectBaseName);
         new EntityBuilder(_utilities).CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete);
         new CurrentUserServiceTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
+        _mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
 
         //services
         new CurrentUserServiceBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);

@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 * Open Telemetry and Jaeger tracing support
+* `ValueObject` class scaffolding to `SharedKernel`
 
 ### Updated
 
