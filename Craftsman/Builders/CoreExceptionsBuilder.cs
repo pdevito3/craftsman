@@ -26,11 +26,10 @@ public static class CoreExceptionBuilder
             _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         }
 
-        public async Task<bool> Handle(CoreExceptionBuilderCommand request, CancellationToken cancellationToken)
+        public Task<bool> Handle(CoreExceptionBuilderCommand request, CancellationToken cancellationToken)
         {
             CreateExceptions(_scaffoldingDirectoryStore.SolutionDirectory);
-
-            return true;
+            return Task.FromResult(true);
         }
 
         public void CreateExceptions(string solutionDirectory)
