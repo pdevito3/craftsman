@@ -129,13 +129,13 @@ public abstract class BaseEntity
     public DateTime? LastModifiedOn {{ get; private set; }}
     public string LastModifiedBy {{ get; private set; }}{isDeletedProp}
 
-    public void UpdateCreationProperties(DateTime createdOn, string? createdBy)
+    public void UpdateCreationProperties(DateTime createdOn, string createdBy)
     {{
         CreatedOn = createdOn;
         CreatedBy = createdBy;
     }}
     
-    public void UpdateModifiedProperties(DateTime? lastModifiedOn, string? lastModifiedBy)
+    public void UpdateModifiedProperties(DateTime? lastModifiedOn, string lastModifiedBy)
     {{
         LastModifiedOn = lastModifiedOn;
         LastModifiedBy = lastModifiedBy;
