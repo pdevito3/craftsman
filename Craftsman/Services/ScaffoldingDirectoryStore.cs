@@ -19,8 +19,12 @@ public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
     public string SpaDirectory => SolutionDirectory;
     public string BoundedContextDirectory { get; private set; }
     public string ProjectBaseName { get; private set; }
-    public string SrcDirectory => Path.Combine(BoundedContextDirectory, "src");
-    public string TestDirectory => Path.Combine(BoundedContextDirectory, "tests");
+    public string SrcDirectory => string.IsNullOrEmpty(BoundedContextDirectory) 
+        ? null 
+        : Path.Combine(BoundedContextDirectory, "src");
+    public string TestDirectory => string.IsNullOrEmpty(BoundedContextDirectory) 
+        ? null 
+        : Path.Combine(BoundedContextDirectory, "tests");
 
     public string SetSolutionDirectory(string rootDir, string domainName)
     {
@@ -29,7 +33,7 @@ public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
         if (string.IsNullOrEmpty(domainName))
             throw new Exception("Invalid Domain Name");
 
-        SetSolutionDirectory($"{rootDir}{Path.DirectorySeparatorChar}{domainName}");
+        SetSolutionDirectory(Path.Combine(rootDir, domainName));
         return SolutionDirectory;
     }
 
@@ -48,7 +52,7 @@ public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
             throw new Exception("Invalid Solution Directory");
 
         ProjectBaseName = projectName;
-        BoundedContextDirectory = $"{SolutionDirectory}{Path.DirectorySeparatorChar}{projectName}";
+        BoundedContextDirectory = Path.Combine(SolutionDirectory, projectName);
         return SolutionDirectory;
     }
 }

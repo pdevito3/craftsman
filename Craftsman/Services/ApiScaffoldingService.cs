@@ -48,25 +48,23 @@ public class ApiScaffoldingService
                 FileParsingHelper.SolutionNameDoesNotEqualEntityGuard(projectName, template.Entities);
 
                 // add an accelerate.config.yaml file to the root?
-                var bcDirectory = $"{buildSolutionDirectory}{Path.DirectorySeparatorChar}{projectName}";
-                var srcDirectory = Path.Combine(bcDirectory, "src");
-                var testDirectory = Path.Combine(bcDirectory, "tests");
-                _fileSystem.Directory.CreateDirectory(srcDirectory);
-                _fileSystem.Directory.CreateDirectory(testDirectory);
+                _scaffoldingDirectoryStore.SetBoundedContextDirectoryAndProject(projectName);
+                _fileSystem.Directory.CreateDirectory(_scaffoldingDirectoryStore.SrcDirectory);
+                _fileSystem.Directory.CreateDirectory(_scaffoldingDirectoryStore.TestDirectory);
 
                 ctx.Spinner(Spinner.Known.BouncingBar);
                 ctx.Status($"[bold blue]Building {projectName} Projects [/]");
                 new SolutionBuilder(_utilities, _fileSystem, _mediator)
                     .AddProjects(buildSolutionDirectory,
-                        srcDirectory,
-                        testDirectory,
+                        _scaffoldingDirectoryStore.SrcDirectory,
+                        _scaffoldingDirectoryStore.TestDirectory,
                         template.DbContext.ProviderEnum,
                         template.DbContext.DatabaseName,
                         projectName, template.AddJwtAuthentication);
 
                 // add all files based on the given template config
                 ctx.Status($"[bold blue]Scaffolding Files for {projectName} [/]");
-                RunTemplateBuilders(bcDirectory, srcDirectory, testDirectory, template);
+                RunTemplateBuilders(_scaffoldingDirectoryStore.BoundedContextDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory, template);
                 _consoleWriter.WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
             });
     }
