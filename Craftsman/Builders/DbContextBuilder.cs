@@ -104,21 +104,16 @@ public class {dbContextName} : DbContext
 
     public override int SaveChanges()
     {{
-        _preSaveChanges().GetAwaiter().GetResult();
+        _dispatchDomainEvents().GetAwaiter().GetResult();
         UpdateAuditFields();
         return base.SaveChanges();
     }}
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
     {{
-        await _preSaveChanges();
+        await _dispatchDomainEvents();
         UpdateAuditFields();
         return await base.SaveChangesAsync(cancellationToken);
-    }}
-    
-    private async Task _preSaveChanges()
-    {{
-        await _dispatchDomainEvents();
     }}
     
     private async Task _dispatchDomainEvents()
