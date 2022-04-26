@@ -25,6 +25,8 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ OpenTelemetry & Jaeger Tracing	
 
+✅ Built in Domain Event support
+
 🚧 Auth Server rewrite
 
 🚧 Add Identity to Auth Server
