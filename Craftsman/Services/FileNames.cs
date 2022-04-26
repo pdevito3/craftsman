@@ -11,6 +11,16 @@ public static class FileNames
         return "MassTransitServiceExtension";
     }
 
+    public static string EntityCreatedDomainMessage(string entityName)
+    {
+        return $"{entityName}Created";
+    }
+
+    public static string EntityUpdatedDomainMessage(string entityName)
+    {
+        return $"{entityName}Updated";
+    }
+
     public static string GetRepositoryName(string entityName, bool isInterface)
     {
         return isInterface ? $"I{entityName}Repository" : $"{entityName}Repository";

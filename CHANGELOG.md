@@ -12,9 +12,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 * Open Telemetry and Jaeger tracing support
+
 * `ValueObject` class scaffolding to `SharedKernel`
   * [Example 1](https://github.com/ardalis/pluralsight-ddd-fundamentals/blob/main/ClinicManagement/src/ClinicManagement.Core/ValueObjects/AnimalType.cs) in use [here](https://github.com/ardalis/pluralsight-ddd-fundamentals/blob/main/ClinicManagement/src/ClinicManagement.Core/Aggregates/Patient.cs)
   * [Example 2](https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/Percent.cs) in use [here](https://github.com/asc-lab/better-code-with-ddd/blob/abbf03586ee9287c302841f0ce85cbfd9485ba72/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/Loan.cs)
+
+* Domain Event support for all `BaseEntities`. Automatically scaffolded for the `Create` and `Update` methods that call messages in a new `DomainEvents` directory under that entity. Works by adding messages to a new `DomainEvents` prop on each entity and publishing all messages on an EF save using MediatR. To consume a message, you can use a MediatR `INotificationHandler` like normal. For example:
+
+  ```c#
+  namespace RecipeManagement.Domain.Authors.Features;
+  
+  using System.Reflection.Metadata;
+  using DomainEvents;
+  using MediatR;
+  
+  public class LogAuthor : INotificationHandler<AuthorAdded>
+  {
+      private readonly ILogger<LogAuthor> _logger;
+  
+      public LogAuthor(ILogger<LogAuthor> logger)
+      {
+          _logger = logger;
+      }
+  
+      public async Task Handle(AuthorAdded notification, CancellationToken cancellationToken)
+      {
+          _logger.LogInformation("Author added: {0}", notification.Author.Name);
+      }
+  }
+  ```
+
+  
 
 
 ### Updated

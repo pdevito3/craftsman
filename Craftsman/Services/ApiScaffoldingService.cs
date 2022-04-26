@@ -107,7 +107,7 @@ public class ApiScaffoldingService
             new RolesBuilder(_utilities).GetRoles(solutionDirectory);
             new UserPolicyHandlerBuilder(_utilities).CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, template.DbContext.ContextName);
             new InfrastructureServiceRegistrationModifier(_fileSystem).InitializeAuthServices(srcDirectory, projectBaseName);
-            new EntityScaffoldingService(_utilities, _fileSystem).ScaffoldRolePermissions(solutionDirectory,
+            new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldRolePermissions(solutionDirectory,
                 srcDirectory,
                 testDirectory,
                 projectBaseName,
@@ -117,7 +117,7 @@ public class ApiScaffoldingService
         }
 
         //entities
-        new EntityScaffoldingService(_utilities, _fileSystem).ScaffoldEntities(solutionDirectory,
+        new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldEntities(solutionDirectory,
             srcDirectory,
             testDirectory,
             projectBaseName,
@@ -159,13 +159,16 @@ public class ApiScaffoldingService
         new SwaggerBuilder(_utilities, _fileSystem).AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName);
 
         if (template.Bus.AddBus)
-            new AddBusCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper).AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory);
+            new AddBusCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper)
+                .AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory);
         
         if (template.Consumers.Count > 0)
-            new AddConsumerCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper).AddConsumers(template.Consumers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
+            new AddConsumerCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper)
+                .AddConsumers(template.Consumers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
         
         if (template.Producers.Count > 0)
-            new AddProducerCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper).AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
+            new AddProducerCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper)
+                .AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
 
         new WebApiDockerfileBuilder(_utilities).CreateStandardDotNetDockerfile(srcDirectory, projectBaseName);
         new DockerIgnoreBuilder(_utilities).CreateDockerIgnore(srcDirectory, projectBaseName);

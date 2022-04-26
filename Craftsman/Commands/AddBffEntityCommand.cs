@@ -53,7 +53,7 @@ public class AddBffEntityCommand : Command<AddBffEntityCommand.Settings>
         var template = FileParsingHelper.GetTemplateFromFile<BffEntityTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
-        new EntityScaffoldingService(_utilities, _fileSystem).ScaffoldBffEntities(template.Entities, _scaffoldingDirectoryStore.SpaDirectory);
+        new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldBffEntities(template.Entities, _scaffoldingDirectoryStore.SpaDirectory);
 
         _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
         return 0;

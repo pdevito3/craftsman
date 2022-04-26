@@ -4,6 +4,7 @@ using System.IO.Abstractions;
 using Domain;
 using Domain.Enums;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -15,18 +16,20 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
     private readonly IAnsiConsole _console;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private readonly IMediator _mediator;
 
     public AddFeatureCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore,
-        IAnsiConsole console)
+        IAnsiConsole console, IMediator mediator)
     {
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _console = console;
+        _mediator = mediator;
     }
 
     public class Settings : CommandSettings
@@ -49,7 +52,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
         var feature = RunPrompt();
 
         var useSoftDelete = _utilities.ProjectUsesSoftDelete(_scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.ProjectBaseName);
-        new EntityScaffoldingService(_utilities, _fileSystem).AddFeatureToProject(
+        new EntityScaffoldingService(_utilities, _fileSystem, _mediator).AddFeatureToProject(
             solutionDirectory,
             _scaffoldingDirectoryStore.SrcDirectory,
             _scaffoldingDirectoryStore.TestDirectory,
