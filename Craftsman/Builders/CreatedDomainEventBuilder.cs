@@ -36,16 +36,16 @@ public static class CreatedDomainEventBuilder
                 $"{FileNames.EntityCreatedDomainMessage(request.EntityName)}.cs",
                 request.EntityPlural,
                 _scaffoldingDirectoryStore.ProjectBaseName);
-            var fileText = GetFileText(classPath.ClassNamespace, request.EntityName, request.EntityPlural);
+            var fileText = GetFileText(classPath.ClassNamespace, request.EntityName);
             _utilities.CreateFile(classPath, fileText);
             return Task.FromResult(true);
         }
 
-        private static string GetFileText(string classNamespace, string entityName, string entityPlural)
+        private static string GetFileText(string classNamespace, string entityName)
         {
             return @$"namespace {classNamespace};
 
-public class {FileNames.EntityCreatedDomainMessage(entityPlural)} : IDomainEvent
+public class {FileNames.EntityCreatedDomainMessage(entityName)} : IDomainEvent
 {{
     public {entityName} {entityName} {{ get; set; }} 
 }}
