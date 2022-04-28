@@ -78,7 +78,8 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
         var projectName = template.ProjectName;
         var projectDirectory = template.GetProjectDirectory(domainDirectory);
         var spaDirectory = template.GetSpaDirectory(domainDirectory);
-
+        _scaffoldingDirectoryStore.SetSpaDirectory(spaDirectory);
+        
         new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildBffProject(domainDirectory, projectName, template.ProxyPort);
         _fileSystem.Directory.CreateDirectory(spaDirectory);
 

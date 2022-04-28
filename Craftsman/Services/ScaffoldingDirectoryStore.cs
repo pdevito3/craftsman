@@ -11,12 +11,13 @@ public interface IScaffoldingDirectoryStore
     string SetSolutionDirectory(string rootDir, string domainName);
     string SetSolutionDirectory(string solutionDir);
     string SetBoundedContextDirectoryAndProject(string projectName);
+    void SetSpaDirectory(string spaDirectory);
 }
 
 public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
 {
     public string SolutionDirectory { get; private set; }
-    public string SpaDirectory => SolutionDirectory;
+    public string SpaDirectory { get; private set; }
     public string BoundedContextDirectory { get; private set; }
     public string ProjectBaseName { get; private set; }
     public string SrcDirectory => string.IsNullOrEmpty(BoundedContextDirectory) 
@@ -54,5 +55,10 @@ public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
         ProjectBaseName = projectName;
         BoundedContextDirectory = Path.Combine(SolutionDirectory, projectName);
         return SolutionDirectory;
+    }
+
+    public void SetSpaDirectory(string spaDirectory)
+    {
+        SpaDirectory = spaDirectory;
     }
 }
