@@ -19,7 +19,6 @@ import {{ Login, useAuthUser }} from './features/Auth';
 import './custom.css';
 import 'react-toastify/dist/ReactToastify.min.css';
 import {{ PrivateLayout, PublicLayout }} from './components/Layouts';
-import {{ RecipeList }} from './features/Recipes';
 import {{ BrowserRouter, Routes, Route }} from 'react-router-dom';
 import {{ Home }} from './features/Home';
 
