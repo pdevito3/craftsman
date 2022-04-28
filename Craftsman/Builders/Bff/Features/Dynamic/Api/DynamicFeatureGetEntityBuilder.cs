@@ -27,7 +27,7 @@ public class DynamicFeatureGetEntityBuilder
 		
 		return @$"import {{ api }} from '@/lib/axios';
 import {{ AxiosResponse }} from 'axios';
-import {{ UseMutationOptions, useQueryClient, useMutation }} from 'react-query';
+import {{ useQuery }} from 'react-query';
 import {{ {readDtoName} }} from '../types';
 import {{ {keyExportName} }} from './{keysImport}';
 
