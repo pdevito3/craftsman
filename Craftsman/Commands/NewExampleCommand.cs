@@ -1,6 +1,7 @@
 namespace Craftsman.Commands;
 
 using System.IO.Abstractions;
+using Builders;
 using Domain;
 using Helpers;
 using MediatR;
@@ -56,8 +57,8 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
         var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _dbMigrator, _gitService, _fileParsingHelper, _mediator);
         domainCommand.CreateNewDomainProject(domainProject);
 
-        // TODO add this back
-        // ExampleTemplateBuilder.CreateYamlFile(domainDirectory, templateString, fileSystem);
+        new ExampleTemplateBuilder(_utilities).CreateYamlFile(_scaffoldingDirectoryStore.SolutionDirectory,
+            templateString);
         _console.MarkupLine($"{Environment.NewLine}[bold yellow1]Your example project is project is ready![/]");
 
         _consoleWriter.StarGithubRequest();
