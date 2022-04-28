@@ -147,7 +147,7 @@ export default function PrivateSideNav() {{
 					{{/* Sidebar component, swap this element with another sidebar if you like */}}
 					<div className='flex flex-col flex-1 min-h-0 bg-gray-800'>
 						<div className='flex items-center flex-shrink-0 h-16 px-4 bg-gray-900 shadow-lg'>
-							<NavLink to={'/'}>
+							<NavLink to={{'/'}}>
 								<img
 									className='w-auto h-8'
 									src={{logo}}
