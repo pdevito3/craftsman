@@ -69,9 +69,8 @@ public class DbContextBuilder
 
         return @$"namespace {classNamespace};
 
-{entitiesUsings}
 using {baseEntityClassPath.ClassNamespace};
-using {servicesClassPath.ClassNamespace};
+using {servicesClassPath.ClassNamespace};{entitiesUsings}
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
