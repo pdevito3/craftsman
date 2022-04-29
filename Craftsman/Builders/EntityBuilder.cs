@@ -84,7 +84,7 @@ public class {entity.Name} : BaseEntity
             cfg.AddProfile<{profileName}>();
         }}));
         var new{entity.Name} = mapper.Map<{entity.Name}>({creationDtoName.LowercaseFirstLetter()});
-        new{entity.Name}.PublishDomainEvent(new {entityCreatedDomainMessage}(){{ {entity.Name} = new{entity.Name} }});
+        new{entity.Name}.QueueDomainEvent(new {entityCreatedDomainMessage}(){{ {entity.Name} = new{entity.Name} }});
         
         return new{entity.Name};
     }}
@@ -96,7 +96,7 @@ public class {entity.Name} : BaseEntity
             cfg.AddProfile<{profileName}>();
         }}));
         mapper.Map({updateDtoName.LowercaseFirstLetter()}, this);
-        PublishDomainEvent(new {entityUpdatedDomainMessage}(){{ {entity.Name} = this }});
+        QueueDomainEvent(new {entityUpdatedDomainMessage}(){{ {entity.Name} = this }});
     }}
     
     private {entity.Name}() {{ }} // For EF
@@ -153,7 +153,7 @@ public abstract class BaseEntity
         LastModifiedBy = lastModifiedBy;
     }}{isDeletedMethod}
     
-    public void PublishDomainEvent(IDomainEvent @event)
+    public void QueueDomainEvent(IDomainEvent @event)
     {{
         DomainEvents.Add(@event);
     }}
