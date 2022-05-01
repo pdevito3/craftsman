@@ -15,7 +15,7 @@ public class Consumer
     public string QueueName { get; set; }
 
     /// <summary>
-    /// The directory we want to to put this in in the domain. Generally the plural of an entity.
+    /// The directory we want to put this in in the domain. Generally the plural of an entity.
     /// </summary>
     public string DomainDirectory { get; set; }
 
