@@ -69,11 +69,11 @@ public static class {producer.ProducerName}
 
         public async Task<{propTypeToReturn}> Handle({commandName} request, CancellationToken cancellationToken)
         {{
-            var message = new
+            var message = new {FileNames.MessageClassName(producer.MessageName)}
             {{
                 // map content to message here or with automapper
             }};
-            await _publishEndpoint.Publish<{producer.MessageName}>(message, cancellationToken);
+            await _publishEndpoint.Publish<{FileNames.MessageInterfaceName(producer.MessageName)}>(message, cancellationToken);
 
             return true;
         }}

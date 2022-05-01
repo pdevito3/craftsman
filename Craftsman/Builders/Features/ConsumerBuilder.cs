@@ -39,7 +39,7 @@ using MassTransit;
 using {messagesClassPath.ClassNamespace};
 using System.Threading.Tasks;{contextUsing}
 
-public class {consumer.ConsumerName} : IConsumer<{consumer.MessageName}>
+public class {consumer.ConsumerName} : IConsumer<{FileNames.MessageInterfaceName(consumer.MessageName)}>
 {{
     private readonly IMapper _mapper;{dbReadOnly}
 
@@ -48,7 +48,7 @@ public class {consumer.ConsumerName} : IConsumer<{consumer.MessageName}>
         _mapper = mapper;{assignDb}
     }}
 
-    public Task Consume(ConsumeContext<{consumer.MessageName}> context)
+    public Task Consume(ConsumeContext<{FileNames.MessageInterfaceName(consumer.MessageName)}> context)
     {{
         // do work here
 

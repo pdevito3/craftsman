@@ -17,7 +17,7 @@ public class MessageBuilder
 
     public void CreateMessage(string solutionDirectory, Message message)
     {
-        var classPath = ClassPathHelper.MessagesClassPath(solutionDirectory, $"{message.Name}.cs");
+        var classPath = ClassPathHelper.MessagesClassPath(solutionDirectory, $"{FileNames.MessageClassName(message.Name)}.cs");
         var fileText = GetMessageFileText(classPath.ClassNamespace, message);
         _utilities.CreateFile(classPath, fileText);
     }
@@ -31,12 +31,15 @@ public class MessageBuilder
     using System;
     using System.Text;
 
-    public interface {message.Name}
+    public interface {FileNames.MessageInterfaceName(message.Name)}
     {{
         {propString}
     }}
 
-    // add-on property marker - Do Not Delete This Comment
+    public class {FileNames.MessageClassName(message.Name)} : {FileNames.MessageInterfaceName(message.Name)}
+    {{
+        {propString}
+    }}
 }}";
     }
 
@@ -46,7 +49,7 @@ public class MessageBuilder
         for (var eachProp = 0; eachProp < props.Count; eachProp++)
         {
             string newLine = eachProp == props.Count - 1 ? "" : $"{Environment.NewLine}{Environment.NewLine}";
-            propString += $@"    {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
+            propString += $@"public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
         }
 
         return propString;

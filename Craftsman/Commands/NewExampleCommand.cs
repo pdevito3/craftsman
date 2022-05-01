@@ -303,7 +303,7 @@ BoundedContexts:
   - EndpointRegistrationMethodName: AddRecipeProducerEndpoint
     ProducerName: AddRecipeProducer
     ExchangeName: recipe-added
-    MessageName: IRecipeAdded
+    MessageName: RecipeAdded
     DomainDirectory: Recipes
     ExchangeType: fanout
     UsesDb: true
@@ -312,11 +312,11 @@ BoundedContexts:
     ConsumerName: AddToBook
     ExchangeName: book-additions
     QueueName: add-recipe-to-book
-    MessageName: IRecipeAdded
+    MessageName: RecipeAdded
     DomainDirectory: Recipes
     ExchangeType: fanout
 Messages:
-- Name: IRecipeAdded
+- Name: RecipeAdded
   Properties:
   - Name: RecipeId
     Type: guid
@@ -573,7 +573,7 @@ BoundedContexts:
   - EndpointRegistrationMethodName: AddRecipeProducerEndpoint
     ProducerName: AddRecipeProducer
     ExchangeName: recipe-added
-    MessageName: IRecipeAdded
+    MessageName: RecipeAdded
     DomainDirectory: Recipes
     ExchangeType: fanout
     UsesDb: true
@@ -582,11 +582,11 @@ BoundedContexts:
     ConsumerName: AddToBook
     ExchangeName: book-additions
     QueueName: add-recipe-to-book
-    MessageName: IRecipeAdded
+    MessageName: RecipeAdded
     DomainDirectory: Recipes
     ExchangeType: fanout
 Messages:
-- Name: IRecipeAdded
+- Name: RecipeAdded
   Properties:
   - Name: RecipeId
     Type: guid";

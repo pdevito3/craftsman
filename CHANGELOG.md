@@ -50,6 +50,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Commands no longer use `:` and use the more traditional space delimiter. For exmaple, `craftsman new example`
 * Default db provider set to postgres
 * Removed `?`'s on strings in  `BaseEntity` 
+* Messages get a class for better typing as well as an interface.
+  * **TODO: docs**
+
 
 ## [0.14.3] - 04/27/2022
 
