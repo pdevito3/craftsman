@@ -10,7 +10,7 @@ public static class UpdatedDomainEventBuilder
     {
         public string EntityName { get; set; }
         public string EntityPlural { get; set; }
-        
+
         public UpdatedDomainEventBuilderCommand(string entityName, string entityPlural)
         {
             EntityName = entityName;

@@ -66,7 +66,7 @@ public class EntityScaffoldingService
             new FakesBuilder(_utilities).CreateFakes(solutionDirectory, testDirectory, projectBaseName, entity);
             new CreateEntityUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
             new UpdateEntityUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
-            
+
             // domain events
             _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
             _mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(entity.Name, entity.Plural));
@@ -124,7 +124,7 @@ public class EntityScaffoldingService
 
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSet(srcDirectory, new List<Entity>() { entity }, dbContextName, projectBaseName);
-        
+
         // domain events
         _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
         _mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(entity.Name, entity.Plural));

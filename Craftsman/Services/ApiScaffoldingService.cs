@@ -161,11 +161,11 @@ public class ApiScaffoldingService
         if (template.Bus.AddBus)
             new AddBusCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper)
                 .AddBus(template.Bus, srcDirectory, testDirectory, projectBaseName, solutionDirectory);
-        
+
         if (template.Consumers.Count > 0)
             new AddConsumerCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper)
                 .AddConsumers(template.Consumers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
-        
+
         if (template.Producers.Count > 0)
             new AddProducerCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper)
                 .AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);

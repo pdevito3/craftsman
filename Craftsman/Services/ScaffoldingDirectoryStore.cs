@@ -20,11 +20,11 @@ public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
     public string SpaDirectory { get; private set; }
     public string BoundedContextDirectory { get; private set; }
     public string ProjectBaseName { get; private set; }
-    public string SrcDirectory => string.IsNullOrEmpty(BoundedContextDirectory) 
-        ? null 
+    public string SrcDirectory => string.IsNullOrEmpty(BoundedContextDirectory)
+        ? null
         : Path.Combine(BoundedContextDirectory, "src");
-    public string TestDirectory => string.IsNullOrEmpty(BoundedContextDirectory) 
-        ? null 
+    public string TestDirectory => string.IsNullOrEmpty(BoundedContextDirectory)
+        ? null
         : Path.Combine(BoundedContextDirectory, "tests");
 
     public string SetSolutionDirectory(string rootDir, string domainName)

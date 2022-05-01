@@ -10,12 +10,12 @@ public static class FileNames
     {
         return "MassTransitServiceExtension";
     }
-    
+
     public static string MessageClassName(string messageName)
     {
         return $"{messageName}";
     }
-    
+
     public static string MessageInterfaceName(string messageName)
     {
         return $"I{messageName}";

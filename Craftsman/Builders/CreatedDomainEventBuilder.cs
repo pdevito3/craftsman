@@ -10,7 +10,7 @@ public static class CreatedDomainEventBuilder
     {
         public string EntityName { get; set; }
         public string EntityPlural { get; set; }
-        
+
         public CreatedDomainEventBuilderCommand(string entityName, string entityPlural)
         {
             EntityName = entityName;

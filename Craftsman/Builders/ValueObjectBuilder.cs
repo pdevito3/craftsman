@@ -15,7 +15,7 @@ public static class ValueObjectBuilder
         private readonly ICraftsmanUtilities _utilities;
         private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
 
-        public Handler(ICraftsmanUtilities utilities, 
+        public Handler(ICraftsmanUtilities utilities,
             IScaffoldingDirectoryStore scaffoldingDirectoryStore)
         {
             _utilities = utilities;
