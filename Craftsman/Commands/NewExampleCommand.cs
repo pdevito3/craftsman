@@ -366,6 +366,20 @@ AuthServer:
   Name: AuthServerWithDomain
   Port: 3385
   Clients:
+    - Id: recipe_management.postman
+      Name: RecipeManagement Postman
+      Secrets:
+        - 974d6f71-d41b-4601-9a7a-a33081f84682
+      GrantType: ClientCredentials
+      RedirectUris:
+        - 'https://oauth.pstmn.io/v1/callback'
+      AllowOfflineAccess: true
+      RequireClientSecret: true
+      AllowedScopes:
+        - openid
+        - profile
+        - role
+        - recipe_management #this should match the scope in your boundary's swagger spec
     - Id: recipe_management.swagger
       Name: RecipeManagement Swagger
       Secrets:
@@ -685,6 +699,20 @@ AuthServer:
   Name: AuthServerWithDomain
   Port: 3385
   Clients:
+    - Id: recipe_management.postman
+      Name: RecipeManagement Postman
+      Secrets:
+        - 974d6f71-d41b-4601-9a7a-a33081f84682
+      GrantType: ClientCredentials
+      RedirectUris:
+        - 'https://oauth.pstmn.io/v1/callback'
+      AllowOfflineAccess: true
+      RequireClientSecret: true
+      AllowedScopes:
+        - openid
+        - profile
+        - role
+        - recipe_management #this should match the scope in your boundary's swagger spec
     - Id: recipe_management.swagger
       Name: RecipeManagement Swagger
       Secrets:

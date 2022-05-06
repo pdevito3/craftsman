@@ -56,6 +56,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Messages get a class for better typing as well as an interface.
   * **TODO: docs**
 
+* Add postman client to example scaffolding
+
 * Add support for offline access and client secret requirement settings for client credentials clients
 
 * Automatically add a `SuperAdmin` role claim to machines
