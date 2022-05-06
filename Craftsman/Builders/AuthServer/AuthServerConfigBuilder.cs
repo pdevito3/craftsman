@@ -81,6 +81,7 @@ public static class Config
 
                 AllowOfflineAccess = {client.AllowOfflineAccess.ToString().LowercaseFirstLetter()},
                 RequireClientSecret = {client.RequireClientSecret.ToString().LowercaseFirstLetter()},
+                Claims = new List<ClientClaim>() {{ new(JwtClaimTypes.Role, ""SuperAdmin"") }},
 
                 AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
                 AllowedScopes = {{ {client.GetScopeNameString()} }}

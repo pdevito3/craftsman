@@ -58,6 +58,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Add support for offline access and client secret requirement settings for client credentials clients
 
+* Automatically add a `SuperAdmin` role claim to machines
+
 * Added `client_role` to `UserPolicyHandler` role check to accomodate machines
 
   * **TODO DOCS**. For example with Duende, you can add something like this to get a role. Ideally configed in the DB.
