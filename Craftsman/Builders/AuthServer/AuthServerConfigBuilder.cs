@@ -78,6 +78,10 @@ public static class Config
                 ClientId = ""{client.Id}"",
                 ClientName = ""{client.Name}"",
                 ClientSecrets = {{ {client.GetSecretsString()} }},
+
+                AllowOfflineAccess = {client.AllowOfflineAccess.ToString().LowercaseFirstLetter()},
+                RequireClientSecret = {client.RequireClientSecret.ToString().LowercaseFirstLetter()},
+
                 AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
                 AllowedScopes = {{ {client.GetScopeNameString()} }}
             }},"
