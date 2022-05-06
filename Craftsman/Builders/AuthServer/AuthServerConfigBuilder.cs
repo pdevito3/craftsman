@@ -73,7 +73,7 @@ public static class Config
     private static string ClientBuilder(AuthClient client)
     {
         return client.GrantType == GrantType.ClientCredentials.Name
-            ? @$"{Environment.NewLine}            new Client
+            ? @$"{Environment.NewLine}        new Client
             {{
                 ClientId = ""{client.Id}"",
                 ClientName = ""{client.Name}"",
@@ -81,7 +81,7 @@ public static class Config
                 AllowedGrantTypes = {client.GrantTypeEnum.GrantTypeClassAssignment()},
                 AllowedScopes = {{ {client.GetScopeNameString()} }}
             }},"
-        : @$"{Environment.NewLine}                new Client
+        : @$"{Environment.NewLine}            new Client
             {{
                 ClientId = ""{client.Id}"",
                 ClientName = ""{client.Name}"",
