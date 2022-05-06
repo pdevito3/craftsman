@@ -64,7 +64,11 @@ public class DbContextBuilder
 
         var modelBuilderFilter = useSoftDelete
             ? $@"
-            modelBuilder.FilterSoftDeletedRecords();"
+        modelBuilder.FilterSoftDeletedRecords();
+        /* any query filters added after this will override soft delete 
+                https://docs.microsoft.com/en-us/ef/core/querying/filters
+                https://github.com/dotnet/efcore/issues/10275
+        */"
             : "";
 
         return @$"namespace {classNamespace};
