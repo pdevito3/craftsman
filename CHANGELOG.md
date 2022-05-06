@@ -48,10 +48,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Commands no longer use `:` and use the more traditional space delimiter. For exmaple, `craftsman new example`
+
 * Default db provider set to postgres
+
 * Removed `?`'s on strings in  `BaseEntity` 
+
 * Messages get a class for better typing as well as an interface.
   * **TODO: docs**
+
+* Added `client_role` to `UserPolicyHandler` role check to accomodate machines
+
+  * **TODO DOCS**. For example with Duende, you can add something like this to get a role. Ideally configed in the DB.
+
+    ```c#
+    new Client
+    {
+      ClientId = "recipe_management.postman",
+      ClientName = "RecipeManagement Postman",
+      ClientSecrets = { new Secret("secret".Sha256()) },
+    
+      AllowedGrantTypes = GrantTypes.ClientCredentials,
+      AllowOfflineAccess = true,
+      RequireClientSecret = true,
+      Claims = new List<ClientClaim>() { new(JwtClaimTypes.Role, "SuperAdmin") },
+    
+      RedirectUris = { "https://oauth.pstmn.io/v1/callback" },
+      AllowedScopes = { "openid", "profile", "role", "recipe_management" }
+    },
+    ```
+
+    
+
 
 
 ## [0.14.3] - 04/27/2022

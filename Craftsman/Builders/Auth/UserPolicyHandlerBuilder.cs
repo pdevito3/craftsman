@@ -51,7 +51,7 @@ public class UserPolicyHandler : IUserPolicyHandler
         if (user == null) throw new ArgumentNullException(nameof(user));
 
         var roles = user.Claims
-            .Where(c => c.Type == ClaimTypes.Role)
+            .Where(c => c.Type is ClaimTypes.Role or ""client_role"")
             .Select(r => r.Value)
             .Distinct()
             .ToArray();
