@@ -43,7 +43,7 @@ public static class SwaggerAppExtension
             config.OAuthClientSecret(Environment.GetEnvironmentVariable(""AUTH_CLIENT_SECRET""));
             config.OAuthUsePkce();" : "";
 
-        var swaggerText = $@"public static void UseSwaggerExtension(this IApplicationBuilder app, IConfiguration configuration)
+        var swaggerText = $@"public static void UseSwaggerExtension(this IApplicationBuilder app)
     {{
         app.UseSwagger();
         app.UseSwaggerUI(config =>

@@ -6,6 +6,11 @@ using Helpers;
 
 public static class FileNames
 {
+    public static string WebAppServiceConfiguration()
+    {
+        return $"WebAppServiceConfiguration";
+    }
+    
     public static string GetMassTransitRegistrationName()
     {
         return "MassTransitServiceExtension";

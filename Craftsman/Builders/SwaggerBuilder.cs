@@ -29,44 +29,6 @@ public class SwaggerBuilder
         UpdateWebApiCsProjSwaggerSettings(solutionDirectory, projectBaseName);
     }
 
-    public void RegisterSwaggerInStartup(string srcDirectory, string projectBaseName = "")
-    {
-        var classPath = ClassPathHelper.StartupClassPath(srcDirectory, projectBaseName);
-
-        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
-            throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
-
-        if (!_fileSystem.File.Exists(classPath.FullClassPath))
-            throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
-
-        var tempPath = $"{classPath.FullClassPath}temp";
-        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
-        {
-            using var output = _fileSystem.File.CreateText(tempPath);
-            {
-                string line;
-                while (null != (line = input.ReadLine()))
-                {
-                    var newText = $"{line}";
-                    if (line.Contains("Dynamic Services"))
-                    {
-                        newText += $"{Environment.NewLine}        services.AddSwaggerExtension(_config);";
-                    }
-                    else if (line.Contains("Dynamic App"))
-                    {
-                        newText += $"{Environment.NewLine}        app.UseSwaggerExtension(_config);";
-                    }
-
-                    output.WriteLine(newText);
-                }
-            }
-        }
-
-        // delete the old file and set the name of the new one to the original name
-        _fileSystem.File.Delete(classPath.FullClassPath);
-        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
-    }
-
     public void AddSwaggerServiceExtension(string srcDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetSwaggerServiceExtensionName()}.cs", projectBaseName);
@@ -152,7 +114,7 @@ public static class SwaggerServiceExtension
 
             config.IncludeXmlComments(string.Format(@$""{{AppDomain.CurrentDomain.BaseDirectory}}{{Path.DirectorySeparatorChar}}{projectName}.WebApi.xml""));";
 
-        var swaggerText = $@"public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
+        var swaggerText = $@"public static void AddSwaggerExtension(this IServiceCollection services)
     {{
         services.AddSwaggerGen(config =>
         {{

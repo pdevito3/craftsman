@@ -126,20 +126,14 @@ public class ApiScaffoldingService
             template.SwaggerConfig.AddSwaggerComments,
             template.UseSoftDelete);
 
-        // environments
-        AddStartupEnvironmentsWithServices(
-            srcDirectory,
-            template.DbContext.DatabaseName,
-            template.Environment,
-            template.SwaggerConfig,
-            template.Port,
-            projectBaseName,
-            template.DockerConfig
-        );
-
+        // config
+        new AppSettingsBuilder(_utilities).CreateWebApiAppSettings(srcDirectory, template.DbContext.DatabaseName, projectBaseName);
+        new WebApiLaunchSettingsModifier(_fileSystem).AddProfile(srcDirectory, template.Environment, template.Port, template.DockerConfig, projectBaseName);
+        
         // unit tests, test utils, and one offs
         new PagedListTestBuilder(_utilities).CreateTests(srcDirectory, testDirectory, projectBaseName);
         new IntegrationTestFixtureBuilder(_utilities).CreateFixture(testDirectory,
+            srcDirectory,
             projectBaseName,
             template.DbContext.ContextName,
             template.DbContext.ProviderEnum);
@@ -190,9 +184,6 @@ public class ApiScaffoldingService
         DockerConfig dockerConfig)
     {
         new AppSettingsBuilder(_utilities).CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
-
         new WebApiLaunchSettingsModifier(_fileSystem).AddProfile(srcDirectory, environment, port, dockerConfig, projectBaseName);
-        if (!swaggerConfig.IsSameOrEqualTo(new SwaggerConfig()))
-            new SwaggerBuilder(_utilities, _fileSystem).RegisterSwaggerInStartup(srcDirectory, projectBaseName);
     }
 }

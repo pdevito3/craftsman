@@ -30,7 +30,7 @@ using Microsoft.EntityFrameworkCore;
 
 public static class ServiceRegistration
 {{
-    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+    public static void AddInfrastructure(this IServiceCollection services, IWebHostEnvironment env)
     {{
         // DbContext -- Do Not Delete
 

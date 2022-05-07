@@ -13,20 +13,21 @@ public class IntegrationTestFixtureBuilder
         _utilities = utilities;
     }
 
-    public void CreateFixture(string solutionDirectory, string projectBaseName, string dbContextName, DbProvider provider)
+    public void CreateFixture(string testDirectory, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider)
     {
-        var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestFixture.cs", projectBaseName);
-        var fileText = GetFixtureText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName, provider);
+        var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
+        var fileText = GetFixtureText(classPath.ClassNamespace, testDirectory, srcDirectory, projectBaseName, dbContextName, provider);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetFixtureText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName, DbProvider provider)
+    public static string GetFixtureText(string classNamespace, string testDirectory, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider)
     {
-        var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-        var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-        var testUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(solutionDirectory, projectBaseName, "");
-        var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(solutionDirectory, "", projectBaseName);
-        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(solutionDirectory, "", projectBaseName);
+        var apiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
+        var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
+        var testUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
+        var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
+        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
+        var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
 
         var usingStatement = provider == DbProvider.Postgres
             ? $@"
@@ -53,12 +54,14 @@ using Npgsql;"
 
         return @$"namespace {classNamespace};
 
+using {configClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
 using {testUtilsClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using MediatR;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -76,8 +79,6 @@ using System.Threading.Tasks;
 [SetUpFixture]
 public class TestFixture
 {{
-    private static IConfigurationRoot _configuration;
-    private static IWebHostEnvironment _env;
     private static IServiceScopeFactory _scopeFactory;
     private static Checkpoint _checkpoint;
     private static ServiceProvider _provider;
@@ -88,22 +89,15 @@ public class TestFixture
         var dockerDbPort = await DockerDatabaseUtilities.EnsureDockerStartedAndGetPortPortAsync();
         var dockerConnectionString = DockerDatabaseUtilities.GetSqlConnectionString(dockerDbPort.ToString());
         Environment.SetEnvironmentVariable(""DB_CONNECTION_STRING"", dockerConnectionString);
+        
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions()
+        {{
+            EnvironmentName = LocalConfig.IntegrationTestingEnvName,
+        }});
+        builder.Configuration.AddEnvironmentVariables();
 
-        var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddInMemoryCollection(new Dictionary<string, string> {{ }})
-            .AddEnvironmentVariables();
-
-        _configuration = builder.Build();
-        _env = Mock.Of<IWebHostEnvironment>(e => e.EnvironmentName == LocalConfig.IntegrationTestingEnvName);
-
-        var startup = new Startup(_configuration, _env);
-
-        var services = new ServiceCollection();
-
-        services.AddLogging();
-
-        startup.ConfigureServices(services);
+        builder.ConfigureServices();
+        var services = builder.Services;
 
         // add any mock services here
         var httpContextAccessorService = services.FirstOrDefault(d =>

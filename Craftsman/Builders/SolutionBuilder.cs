@@ -66,8 +66,8 @@ public class SolutionBuilder
         new OpenTelemetryExtensionsBuilder(_utilities).CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider);
         new ErrorHandlerFilterAttributeBuilder(_utilities).CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName);
         new WebApiLaunchSettingsBuilder(_utilities).CreateLaunchSettings(srcDirectory, projectBaseName);
-        new ProgramBuilder(_utilities).CreateWebApiProgram(srcDirectory, projectBaseName);
-        new StartupBuilder(_utilities).CreateWebApiStartup(srcDirectory, useJwtAuth, projectBaseName);
+        new ProgramBuilder(_utilities).CreateWebApiProgram(srcDirectory, useJwtAuth, projectBaseName);
+        new ServiceConfigurationBuilder(_utilities).CreateWebAppServiceConfiguration(srcDirectory, projectBaseName);
         new LocalConfigBuilder(_utilities).CreateLocalConfig(srcDirectory, projectBaseName);
         new LoggingConfigurationBuilder(_utilities).CreateWebApiConfigFile(srcDirectory, projectBaseName);
         new InfrastructureServiceRegistrationBuilder(_utilities).CreateInfrastructureServiceExtension(srcDirectory, projectBaseName);

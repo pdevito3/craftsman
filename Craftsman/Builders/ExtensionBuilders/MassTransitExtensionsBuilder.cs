@@ -38,7 +38,7 @@ using System.Reflection;
 
 public static class MassTransitServiceExtension
 {{
-    public static void AddMassTransitServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+    public static void AddMassTransitServices(this IServiceCollection services, IWebHostEnvironment env)
     {{
         if (!env.IsEnvironment(LocalConfig.IntegrationTestingEnvName) 
             && !env.IsEnvironment(LocalConfig.FunctionalTestingEnvName))

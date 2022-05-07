@@ -37,16 +37,14 @@ using System.Threading.Tasks;
 
 public class TestBase
 {{
-    public static IConfiguration _configuration;
     public static IServiceScopeFactory _scopeFactory;
-    public static WebApplicationFactory<Startup> _factory;
+    public static WebApplicationFactory<Program> _factory;
     public static HttpClient _client;
 
     [SetUp]
     public void TestSetUp()
     {{
         _factory = new {FileNames.GetWebHostFactoryName()}();
-        _configuration = _factory.Services.GetRequiredService<IConfiguration>();
         _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
         _client = _factory.CreateClient(new WebApplicationFactoryClientOptions());
     }}

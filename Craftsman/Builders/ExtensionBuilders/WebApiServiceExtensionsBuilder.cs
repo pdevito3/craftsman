@@ -48,7 +48,7 @@ public static class WebApiServiceExtension
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
         services.AddHttpContextAccessor();
 
-        services.AddMediatR(typeof(Startup));
+        services.AddMediatR(Assembly.GetExecutingAssembly());
         services.AddScoped<SieveProcessor>();
         services.AddMvc(options => options.Filters.Add<ErrorHandlerFilterAttribute>())
             .AddFluentValidation(cfg => {{ cfg.AutomaticValidationEnabled = false; }});

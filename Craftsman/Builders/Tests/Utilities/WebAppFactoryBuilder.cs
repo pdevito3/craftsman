@@ -48,10 +48,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebApplicationFactory<Startup>
+public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebApplicationFactory<Program>
 {{
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    protected override IHost CreateHost(IHostBuilder builder)
     {{
         builder.UseEnvironment(LocalConfig.FunctionalTestingEnvName);
 
@@ -80,6 +81,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebAp
                 db.Database.EnsureCreated();
             }}
         }});
+        
+        return base.CreateHost(builder);
     }}
 }}";
     }

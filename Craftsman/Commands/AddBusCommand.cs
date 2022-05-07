@@ -87,7 +87,7 @@ public class AddBusCommand : Command<AddBusCommand.Settings>
         new WebApiLaunchSettingsModifier(_fileSystem).UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_VIRTUAL_HOST", template.Environment.BrokerSettings.VirtualHost, projectBaseName);
         new WebApiLaunchSettingsModifier(_fileSystem).UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_USERNAME", template.Environment.BrokerSettings.Username, projectBaseName);
         new WebApiLaunchSettingsModifier(_fileSystem).UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_PASSWORD", template.Environment.BrokerSettings.Password, projectBaseName);
-        new StartupModifier(_fileSystem).RegisterMassTransitService(srcDirectory, projectBaseName);
+        new ProgramModifier(_fileSystem).RegisterMassTransitService(srcDirectory, projectBaseName);
 
         new IntegrationTestFixtureModifier(_fileSystem).AddMassTransit(testDirectory, projectBaseName);
         new DockerComposeBuilders(_utilities, _fileSystem).AddRmqToDockerCompose(solutionDirectory);

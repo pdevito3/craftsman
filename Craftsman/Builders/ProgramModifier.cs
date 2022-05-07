@@ -5,18 +5,18 @@ using System.IO;
 using System.IO.Abstractions;
 using Services;
 
-public class StartupModifier
+public class ProgramModifier
 {
     private readonly IFileSystem _fileSystem;
 
-    public StartupModifier(IFileSystem fileSystem)
+    public ProgramModifier(IFileSystem fileSystem)
     {
         _fileSystem = fileSystem;
     }
 
     public void RegisterMassTransitService(string srcDirectory, string projectBaseName)
     {
-        var classPath = ClassPathHelper.StartupClassPath(srcDirectory, projectBaseName);
+        var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.WebAppServiceConfiguration()}.cs", projectBaseName);
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
@@ -33,7 +33,7 @@ public class StartupModifier
             {
                 var newText = $"{line}";
                 if (line.Contains($"services.AddInfrastructure"))
-                    newText += @$"{Environment.NewLine}        services.AddMassTransitServices(_config, _env);";
+                    newText += @$"{Environment.NewLine}        builder.Services.AddMassTransitServices(builder.Environment);";
 
                 //if (line.Contains($@"{infraClassPath.ClassNamespace};"))
                 //    newText += @$"{ Environment.NewLine}    using { serviceRegistrationsClassPath.ClassNamespace}; ";
