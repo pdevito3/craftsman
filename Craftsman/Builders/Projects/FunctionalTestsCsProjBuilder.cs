@@ -33,7 +33,6 @@ public class FunctionalTestsCsProjBuilder
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""6.0.4"" />
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""Docker.DotNet"" Version=""3.125.5"" />
@@ -42,6 +41,8 @@ public class FunctionalTestsCsProjBuilder
     <PackageReference Include=""Moq"" Version=""4.17.2"" />
     <PackageReference Include=""NUnit"" Version=""3.13.3"" />
     <PackageReference Include=""NUnit3TestAdapter"" Version=""4.2.1"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""6.0.4"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Mvc.NewtonsoftJson"" Version=""6.0.4"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.1.0"" />
     <PackageReference Include=""Respawn"" Version=""5.0.1"" />
     <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""6.0.0"" />

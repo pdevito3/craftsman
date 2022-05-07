@@ -15,11 +15,11 @@ public class ServiceConfigurationBuilder
     public void CreateWebAppServiceConfiguration(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.WebAppServiceConfiguration()}.cs", projectBaseName);
-        var fileText = GetWebApiServiceExtensionText(classPath.ClassNamespace, srcDirectory, projectBaseName);
+        var fileText = GetWebApiServiceExtensionText(classPath.ClassNamespace, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetWebApiServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName)
+    public static string GetWebApiServiceExtensionText(string classNamespace, string projectBaseName)
     {
         var corsName = $"{projectBaseName}CorsPolicy";
 
@@ -39,7 +39,11 @@ public static class {FileNames.WebAppServiceConfiguration()}
         builder.Services.OpenTelemetryRegistration(""{projectBaseName}"");
         builder.Services.AddInfrastructure(builder.Environment);
         builder.Services.AddMassTransitServices(builder.Environment);
+
+        // using Newtonsoft.Json to support PATCH docs since System.Text.Json does not support them https://github.com/dotnet/aspnetcore/issues/24333
+        // if you are not using PatchDocs and would prefer to use System.Text.Json, you can remove The `AddNewtonSoftJson()` line
         builder.Services.AddControllers()
+            .AddNewtonsoftJson()
             .AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
         builder.Services.AddApiVersioningExtension();
         builder.Services.AddWebApiServices();
