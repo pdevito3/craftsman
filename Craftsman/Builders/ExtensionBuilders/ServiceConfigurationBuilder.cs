@@ -38,7 +38,6 @@ public static class {FileNames.WebAppServiceConfiguration()}
         builder.Services.AddCorsService(""{corsName}"", builder.Environment);
         builder.Services.OpenTelemetryRegistration(""{projectBaseName}"");
         builder.Services.AddInfrastructure(builder.Environment);
-        builder.Services.AddMassTransitServices(builder.Environment);
 
         // using Newtonsoft.Json to support PATCH docs since System.Text.Json does not support them https://github.com/dotnet/aspnetcore/issues/24333
         // if you are not using PatchDocs and would prefer to use System.Text.Json, you can remove The `AddNewtonSoftJson()` line
