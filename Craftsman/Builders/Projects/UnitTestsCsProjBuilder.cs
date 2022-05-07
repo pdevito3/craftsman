@@ -36,6 +36,11 @@ public class UnitTestsCsProjBuilder
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""6.0.0"" />
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
+    <PackageReference Include=""FakeItEasy"" Version=""7.3.1"" />
+    <PackageReference Include=""FakeItEasy.Analyzer.CSharp"" Version=""6.1.0"">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include=""FluentAssertions"" Version=""6.6.0"" />
     <PackageReference Include=""Moq"" Version=""4.17.2"" />
     <PackageReference Include=""NSubstitute"" Version=""4.3.0"" />
