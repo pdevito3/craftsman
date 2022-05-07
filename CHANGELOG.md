@@ -52,20 +52,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Entity FK props now `virtual` by default with a `protected` constructor for mocking in unit tests (since we don't have EF to populate our foreign entities in unit tests). Normal props are *not* virtual and should be set through the normal domain process. For example:
 
   ```c#
-  // with FakeItEasy
-  private static Recipe GetMockRecipe()
+  private static Author GetMockAuthor()
   {
-    var fakeAuthor = FakeAuthor.Generate();
-    var recipeBase = new FakeRecipeForCreationDto().Generate();
-  
-    var fakeTracking = A.Fake<Recipe>(x => x.Wrapping(Recipe.Create(recipeBase)));
-    A.CallTo(() => fakeTracking.Author)
-      .Returns(fakeAuthor);
-    A.CallTo(() => fakeTracking.AuthorId)
-      .Returns(fakeAuthor.Id);
-    return fakeTracking;
+    	// my fake data base generated with AutoBogus under the hood
+      var fakeRecipe = FakeRecipe.Generate();
+      var forCreation = new FakeAuthorForCreationDto().Generate();
+      forCreation.RecipeId = fakeRecipe.Id;
+      
+    	// FakeItEasy making entity assignment easy in lieu of EF
+      var fakeAuthor = A.Fake<Author>(x => x.Wrapping(Author.Create(forCreation)));
+      A.CallTo(() => fakeAuthor.Recipe)
+          .Returns(fakeRecipe);
+      return fakeAuthor;
   }
   ```
+
+  > **💡 DOCS NOTE: this is default, but depending on your domain ops, you might have a domain method that does the action for you, in which case, you won't want these to be virtual. For example, Recipe might have `SetAuthor` or `AddIngredient` methods and you wouldn't want those FKs to be virtual**
 
 * Add `FakeItEasy` and `FakeItEasyAnalyzer` to unit test project
 

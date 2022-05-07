@@ -176,7 +176,7 @@ public abstract class BaseEntity
         foreach (var property in props)
         {
             var attributes = AttributeBuilder(property);
-            var virtualString = property.IsMany || property.IsPrimativeForeignKey ? "virtual " : "";
+            var virtualString = property.IsMany ? "virtual " : "";
             propString += attributes;
             var defaultValue = GetDefaultValueText(property.DefaultValue, property);
             var newLine = (property.IsForeignKey && !property.IsMany)
