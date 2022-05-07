@@ -49,7 +49,7 @@ public class {consumer.ConsumerName}Tests : TestBase
 
     private static string ConsumerTest(Consumer consumer)
     {
-        var messageName = consumer.MessageName;
+        var messageName = FileNames.MessageInterfaceName(consumer.MessageName);
 
         return $@"[Test]
     public async Task can_consume_{consumer.MessageName}_message()

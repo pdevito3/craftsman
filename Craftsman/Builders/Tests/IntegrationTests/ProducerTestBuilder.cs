@@ -49,7 +49,7 @@ public class {producer.ProducerName}Tests : TestBase
 
     private static string ProducerTest(Producer producer)
     {
-        var messageName = producer.MessageName;
+        var messageName = FileNames.MessageInterfaceName(producer.MessageName);
 
         return $@"[Test]
     public async Task can_produce_{producer.MessageName}_message()
