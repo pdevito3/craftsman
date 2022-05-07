@@ -74,10 +74,24 @@ public class UserPolicyHandlerTests : TestBase
     }}
     
     [Test]
-    public async Task superadmin_gets_all_permissions()
+    public async Task superadmin_user_gets_all_permissions()
     {{
         // Arrange
         SetUserRole(Roles.SuperAdmin);
+
+        // Act
+        var userPolicyHandler = GetService<IUserPolicyHandler>();
+        var permissions = await userPolicyHandler.GetUserPermissions();
+        
+        // Assert
+        permissions.Should().BeEquivalentTo(Permissions.List().ToArray());
+    }}
+    
+    [Test]
+    public async Task superadmin_machine_gets_all_permissions()
+    {{
+        // Arrange
+        SetMachineRole(Roles.SuperAdmin);
 
         // Act
         var userPolicyHandler = GetService<IUserPolicyHandler>();

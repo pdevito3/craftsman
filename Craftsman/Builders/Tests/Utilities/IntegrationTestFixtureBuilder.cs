@@ -176,6 +176,43 @@ public class TestFixture
         var httpContextAccessor = GetService<IHttpContextAccessor>();
         httpContextAccessor.HttpContext = httpContext;
     }}
+    
+    public static void SetMachineRole(string role, string clientId = null)
+    {{
+        clientId ??= Guid.NewGuid().ToString();
+        var claims = new List<Claim>
+        {{
+            new Claim(""client_role"", role),
+            new Claim(""client_id"", clientId)
+        }};
+
+        var identity = new ClaimsIdentity(claims);
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        var httpContext = Mock.Of<HttpContext>(c => c.User == claimsPrincipal);
+
+        var httpContextAccessor = GetService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = httpContext;
+    }}
+
+    public static void SetMachineRoles(string[] roles, string clientId = null)
+    {{
+        clientId ??= Guid.NewGuid().ToString();
+        var claims = new List<Claim>();
+        foreach (var role in roles)
+        {{
+            claims.Add(new Claim(""client_role"", role));
+        }}
+        claims.Add(new Claim(""client_id"", clientId));
+
+        var identity = new ClaimsIdentity(claims);
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        var httpContext = Mock.Of<HttpContext>(c => c.User == claimsPrincipal);
+
+        var httpContextAccessor = GetService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = httpContext;
+    }}
 
     public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
     {{
