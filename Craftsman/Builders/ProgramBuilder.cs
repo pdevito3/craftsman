@@ -39,8 +39,8 @@ public class ProgramBuilder
         {
             appAuth = $@"
 
-        app.UseAuthentication();
-        app.UseAuthorization();";
+app.UseAuthentication();
+app.UseAuthorization();";
         }
 
         return @$"using Serilog;
