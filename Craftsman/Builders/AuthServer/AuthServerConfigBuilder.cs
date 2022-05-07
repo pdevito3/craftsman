@@ -33,6 +33,7 @@ public class AuthServerConfigBuilder
 
 using Duende.IdentityServer.Models;
 using System.Collections.Generic;
+using IdentityModel;
 
 public static class Config
 {{
