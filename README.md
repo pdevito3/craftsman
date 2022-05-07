@@ -27,11 +27,13 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Built in Domain Event support
 
+✅ Moved to `Program.cs` only format
+
+✅ Updated CLI command structure
+
 🚧 Auth Server rewrite
 
 🚧 Add Identity to Auth Server
-
-🚧 DDD Enhancements 
 
 🚧 Message Bus Enhancements
 
