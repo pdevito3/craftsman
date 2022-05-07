@@ -64,6 +64,8 @@ public class EntityProperty
                || IsMany;
     }
 
+    public bool IsPrimativeForeignKey => IsForeignKey && !IsMany && IsPrimativeType;
+
     public bool IsPrimativeType
     {
         get

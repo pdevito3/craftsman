@@ -99,7 +99,7 @@ public class {entity.Name} : BaseEntity
         QueueDomainEvent(new {entityUpdatedDomainMessage}(){{ {entity.Name} = this }});
     }}
     
-    private {entity.Name}() {{ }} // For EF
+    protected {entity.Name}() {{ }} // For EF + Mocking
 }}";
     }
 
@@ -176,6 +176,7 @@ public abstract class BaseEntity
         foreach (var property in props)
         {
             var attributes = AttributeBuilder(property);
+            var virtualString = property.IsMany || property.IsPrimativeForeignKey ? "virtual " : "";
             propString += attributes;
             var defaultValue = GetDefaultValueText(property.DefaultValue, property);
             var newLine = (property.IsForeignKey && !property.IsMany)
@@ -183,7 +184,7 @@ public abstract class BaseEntity
                 : $"{Environment.NewLine}{Environment.NewLine}";
 
             if (property.IsPrimativeType || property.IsMany)
-                propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+                propString += $@"    public {virtualString}{property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
 
             propString += GetForeignProp(property);
         }
@@ -207,13 +208,13 @@ public abstract class BaseEntity
         var attributeString = "";
         if (entityProperty.IsRequired)
             attributeString += @$"    [Required]{Environment.NewLine}";
-        if (entityProperty.IsForeignKey
-            && !entityProperty.IsMany
-            && entityProperty.IsPrimativeType
-        )
+        if (entityProperty.IsPrimativeForeignKey)
+        {
             attributeString += @$"    [JsonIgnore]
     [IgnoreDataMember]
     [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
+        }
+    
         if (entityProperty.IsMany || !entityProperty.IsPrimativeType)
             attributeString += $@"    [JsonIgnore]
     [IgnoreDataMember]{Environment.NewLine}";
@@ -249,6 +250,6 @@ public abstract class BaseEntity
 
     private static string GetForeignProp(EntityProperty prop)
     {
-        return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public {prop.ForeignEntityName} {prop.ForeignEntityName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
+        return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public virtual {prop.ForeignEntityName} {prop.ForeignEntityName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
     }
 }

@@ -49,6 +49,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Commands no longer use `:` and use the more traditional space delimiter. For exmaple, `craftsman new example`
 
+* Entity FK props now `virtual` by default with a `protected` constructor for mocking in unit tests (since we don't have EF to populate our foreign entities in unit tests). Normal props are *not* virtual and should be set through the normal domain process. For example:
+
+  ```c#
+  // with FakeItEasy
+  private static Recipe GetMockRecipe()
+  {
+    var fakeAuthor = FakeAuthor.Generate();
+    var recipeBase = new FakeRecipeForCreationDto().Generate();
+  
+    var fakeTracking = A.Fake<Recipe>(x => x.Wrapping(Recipe.Create(recipeBase)));
+    A.CallTo(() => fakeTracking.Author)
+      .Returns(fakeAuthor);
+    A.CallTo(() => fakeTracking.AuthorId)
+      .Returns(fakeAuthor.Id);
+    return fakeTracking;
+  }
+  ```
+
+  
+
 * Default db provider set to postgres
 
 * Removed `?`'s on strings in  `BaseEntity` 
