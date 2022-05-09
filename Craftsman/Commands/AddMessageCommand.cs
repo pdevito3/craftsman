@@ -55,7 +55,7 @@ public class AddMessageCommand : Command<AddMessageCommand.Settings>
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
         _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
-        var template = FileParsingHelper.GetTemplateFromFile<MessageTemplate>(settings.Filepath);
+        var template = _fileParsingHelper.GetTemplateFromFile<MessageTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
         AddMessages(_scaffoldingDirectoryStore.SolutionDirectory, template.Messages);

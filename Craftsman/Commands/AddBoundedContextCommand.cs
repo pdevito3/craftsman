@@ -46,7 +46,7 @@ public class AddBoundedContextCommand : Command<AddBoundedContextCommand.Setting
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
         _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
-        var boundedContexts = FileParsingHelper.GetTemplateFromFile<BoundedContextsTemplate>(settings.Filepath);
+        var boundedContexts = _fileParsingHelper.GetTemplateFromFile<BoundedContextsTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
         foreach (var template in boundedContexts.BoundedContexts)

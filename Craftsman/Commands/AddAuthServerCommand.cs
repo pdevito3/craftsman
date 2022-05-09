@@ -47,7 +47,7 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
         _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
-        var template = FileParsingHelper.GetTemplateFromFile<AuthServerTemplate>(settings.Filepath);
+        var template = _fileParsingHelper.GetTemplateFromFile<AuthServerTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
         AddAuthServer(_scaffoldingDirectoryStore.SolutionDirectory, template);

@@ -50,7 +50,7 @@ public class AddBffEntityCommand : Command<AddBffEntityCommand.Settings>
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
         _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
-        var template = FileParsingHelper.GetTemplateFromFile<BffEntityTemplate>(settings.Filepath);
+        var template = _fileParsingHelper.GetTemplateFromFile<BffEntityTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
         new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldBffEntities(template.Entities, _scaffoldingDirectoryStore.SpaDirectory);

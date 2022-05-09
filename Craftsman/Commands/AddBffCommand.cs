@@ -56,7 +56,7 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
         _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
 
         _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
-        var template = FileParsingHelper.GetTemplateFromFile<BffTemplate>(settings.Filepath);
+        var template = _fileParsingHelper.GetTemplateFromFile<BffTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
         _console.Status()

@@ -51,8 +51,8 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
         _utilities.IsBoundedContextDirectoryGuard();
 
         // TODO make injectable
-        _fileParsingHelper.RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
-        var template = FileParsingHelper.ReadYamlString<AddEntityTemplate>(settings.Filepath);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
+        var template = _fileParsingHelper.GetTemplateFromFile<AddEntityTemplate>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 
         FileParsingHelper.RunPrimaryKeyGuard(template.Entities);

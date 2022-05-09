@@ -58,7 +58,7 @@ public class AddBusCommand : Command<AddBusCommand.Settings>
         if (!string.IsNullOrEmpty(settings.Filepath))
         {
             _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
-            template = FileParsingHelper.GetTemplateFromFile<Bus>(settings.Filepath);
+            template = _fileParsingHelper.GetTemplateFromFile<Bus>(settings.Filepath);
         }
         template.ProjectBaseName = _scaffoldingDirectoryStore.ProjectBaseName;
 

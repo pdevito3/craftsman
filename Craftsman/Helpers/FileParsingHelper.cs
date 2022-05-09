@@ -14,6 +14,10 @@ using YamlDotNet.Serialization;
 public interface IFileParsingHelper : ICraftsmanService
 {
     bool RunInitialTemplateParsingGuards(string filePath);
+    public T ReadJson<T>(string jsonFile);
+    public bool IsJsonOrYaml(string filePath);
+    public T ReadYaml<T>(string yamlFile);
+    public T GetTemplateFromFile<T>(string filePath);
 }
 
 public class FileParsingHelper : IFileParsingHelper
@@ -25,19 +29,19 @@ public class FileParsingHelper : IFileParsingHelper
         _fileSystem = fileSystem;
     }
 
-    public static T GetTemplateFromFile<T>(string filePath)
+    public T GetTemplateFromFile<T>(string filePath)
     {
-        var ext = Path.GetExtension(filePath);
+        var ext = _fileSystem.Path.GetExtension(filePath);
         if (ext == ".yml" || ext == ".yaml")
             return ReadYaml<T>(filePath);
-        else
-            return ReadJson<T>(filePath);
+        
+        return ReadJson<T>(filePath);
     }
 
-    public static T ReadYaml<T>(string yamlFile)
+    public T ReadYaml<T>(string yamlFile)
     {
         var deserializer = new Deserializer();
-        T templatefromYaml = deserializer.Deserialize<T>(File.ReadAllText(yamlFile));
+        T templatefromYaml = deserializer.Deserialize<T>(_fileSystem.File.ReadAllText(yamlFile));
 
         return templatefromYaml;
     }
@@ -50,15 +54,15 @@ public class FileParsingHelper : IFileParsingHelper
         return templatefromYaml;
     }
 
-    public static T ReadJson<T>(string jsonFile)
+    public T ReadJson<T>(string jsonFile)
     {
-        return JsonConvert.DeserializeObject<T>(File.ReadAllText(jsonFile));
+        return JsonConvert.DeserializeObject<T>(_fileSystem.File.ReadAllText(jsonFile));
     }
 
-    public static bool IsJsonOrYaml(string filePath)
+    public bool IsJsonOrYaml(string filePath)
     {
         var validExtensions = new string[] { ".json", ".yaml", ".yml" };
-        return validExtensions.Contains(Path.GetExtension(filePath));
+        return validExtensions.Contains(_fileSystem.Path.GetExtension(filePath));
     }
 
     public bool RunInitialTemplateParsingGuards(string filePath)
