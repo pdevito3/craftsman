@@ -51,7 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Moved from old Startup model to new Program only for .NET 6. Includes updating test projects and service registrations for compatible setup
 
-* Entity FK props now `virtual` by default with a `protected` constructor for mocking in unit tests (since we don't have EF to populate our foreign entities in unit tests). Normal props are *not* virtual and should be set through the normal domain process. For example:
+* Entity props now `virtual` by default with a `protected` constructor for mocking in unit tests. This is mostly for foreign entities (since we don't have EF to populate our foreign entities in unit tests), but in order to have our mocks accurately reflect all our props, we need to make them virtual. For example:
 
   ```c#
   private static Author GetMockAuthor()

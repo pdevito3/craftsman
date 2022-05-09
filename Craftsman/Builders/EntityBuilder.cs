@@ -132,11 +132,11 @@ public abstract class BaseEntity
 {{
     [Key]
     [Sieve(CanFilter = true, CanSort = true)]
-    public Guid Id {{ get; private set; }} = Guid.NewGuid();
-    public DateTime CreatedOn {{ get; private set; }}
-    public string CreatedBy {{ get; private set; }}
-    public DateTime? LastModifiedOn {{ get; private set; }}
-    public string LastModifiedBy {{ get; private set; }}{isDeletedProp}
+    public virtual Guid Id {{ get; private set; }} = Guid.NewGuid();
+    public virtual DateTime CreatedOn {{ get; private set; }}
+    public virtual string CreatedBy {{ get; private set; }}
+    public virtual DateTime? LastModifiedOn {{ get; private set; }}
+    public virtual string LastModifiedBy {{ get; private set; }}{isDeletedProp}
     
     [NotMapped]
     public List<IDomainEvent> DomainEvents {{ get; }} = new List<IDomainEvent>();
@@ -176,7 +176,6 @@ public abstract class BaseEntity
         foreach (var property in props)
         {
             var attributes = AttributeBuilder(property);
-            var virtualString = property.IsMany ? "virtual " : "";
             propString += attributes;
             var defaultValue = GetDefaultValueText(property.DefaultValue, property);
             var newLine = (property.IsForeignKey && !property.IsMany)
@@ -184,7 +183,7 @@ public abstract class BaseEntity
                 : $"{Environment.NewLine}{Environment.NewLine}";
 
             if (property.IsPrimativeType || property.IsMany)
-                propString += $@"    public {virtualString}{property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+                propString += $@"    public virtual {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
 
             propString += GetForeignProp(property);
         }
