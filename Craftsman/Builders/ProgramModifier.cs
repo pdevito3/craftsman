@@ -32,7 +32,7 @@ public class ProgramModifier
             while (null != (line = input.ReadLine()))
             {
                 var newText = $"{line}";
-                if (line.Contains($"services.AddInfrastructure"))
+                if (line.Contains($"builder.Services.AddInfrastructure"))
                     newText += @$"{Environment.NewLine}        builder.Services.AddMassTransitServices(builder.Environment);";
 
                 //if (line.Contains($@"{infraClassPath.ClassNamespace};"))
