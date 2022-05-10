@@ -25,6 +25,7 @@ public class UpdateEntityUnitTestBuilder
     {
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
+        var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var updateDto = FileNames.GetDtoName(entityName, Dto.Update);
         var fakeEntityForUpdate = $"Fake{updateDto}";
 
@@ -32,6 +33,7 @@ public class UpdateEntityUnitTestBuilder
 
 using {fakerClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
+using {domainEventsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
@@ -58,6 +60,22 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         // Assert
         fake{entityName}.Should().BeEquivalentTo(updated{entityName}, options =>
             options.ExcludingMissingMembers());
+    }}
+    
+    [Test]
+    public void queue_domain_event_on_update()
+    {{
+        // Arrange
+        var fake{entityName} = Fake{entityName}.Generate();
+        var updated{entityName} = new {fakeEntityForUpdate}().Generate();
+        fake{entityName}.DomainEvents.Clear();
+        
+        // Act
+        fake{entityName}.Update(updated{entityName});
+
+        // Assert
+        fake{entityName}.DomainEvents.Count.Should().Be(1);
+        fake{entityName}.DomainEvents.FirstOrDefault().Should().BeOfType(typeof({FileNames.EntityUpdatedDomainMessage(entityName)}));
     }}
 }}";
     }

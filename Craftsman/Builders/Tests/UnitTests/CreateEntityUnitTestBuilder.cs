@@ -25,6 +25,7 @@ public class CreateEntityUnitTestBuilder
     {
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
+        var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var createDto = FileNames.GetDtoName(entityName, Dto.Creation);
         var fakeEntityForCreation = $"Fake{createDto}";
 
@@ -32,6 +33,7 @@ public class CreateEntityUnitTestBuilder
 
 using {fakerClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
+using {domainEventsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
@@ -49,10 +51,21 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_create_valid_{entityName.LowercaseFirstLetter()}()
     {{
         // Arrange + Act
-        var fake{entityName} = {entityName}.Create(new {fakeEntityForCreation}().Generate());
+        var fake{entityName} = Fake{entityName}.Generate();
 
         // Assert
         fake{entityName}.Should().NotBeNull();
+    }}
+
+    [Test]
+    public void queue_domain_event_on_create()
+    {{
+        // Arrange + Act
+        var fake{entityName} = Fake{entityName}.Generate();
+
+        // Assert
+        fake{entityName}.DomainEvents.Count.Should().Be(1);
+        fake{entityName}.DomainEvents.FirstOrDefault().Should().BeOfType(typeof({FileNames.EntityCreatedDomainMessage(entityName)}));
     }}
 }}";
     }
