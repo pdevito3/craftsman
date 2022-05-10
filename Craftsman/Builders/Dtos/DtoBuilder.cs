@@ -17,33 +17,33 @@ public class DtoBuilder
         _fileSystem = fileSystem;
     }
 
-    public void CreateDtos(string solutionDirectory, Entity entity, string projectBaseName)
+    public void CreateDtos(string srcDirectory, Entity entity, string projectBaseName)
     {
         // ****this class path will have an invalid FullClassPath. just need the directory
-        var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+        var classPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-        CreateDtoFile(solutionDirectory, entity, Dto.Read, projectBaseName);
-        CreateDtoFile(solutionDirectory, entity, Dto.Manipulation, projectBaseName);
-        CreateDtoFile(solutionDirectory, entity, Dto.Creation, projectBaseName);
-        CreateDtoFile(solutionDirectory, entity, Dto.Update, projectBaseName);
-        CreateDtoFile(solutionDirectory, entity, Dto.ReadParamaters, projectBaseName);
+        CreateDtoFile(srcDirectory, entity, Dto.Read, projectBaseName);
+        CreateDtoFile(srcDirectory, entity, Dto.Manipulation, projectBaseName);
+        CreateDtoFile(srcDirectory, entity, Dto.Creation, projectBaseName);
+        CreateDtoFile(srcDirectory, entity, Dto.Update, projectBaseName);
+        CreateDtoFile(srcDirectory, entity, Dto.ReadParamaters, projectBaseName);
     }
 
-    public void CreateDtoFile(string solutionDirectory, Entity entity, Dto dto, string projectBaseName)
+    public void CreateDtoFile(string srcDirectory, Entity entity, Dto dto, string projectBaseName)
     {
         var dtoFileName = $"{FileNames.GetDtoName(entity.Name, dto)}.cs";
-        var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, dtoFileName, entity.Name, projectBaseName);
-        var fileText = GetDtoFileText(solutionDirectory, classPath, entity, dto, projectBaseName);
+        var classPath = ClassPathHelper.DtoClassPath(srcDirectory, dtoFileName, entity.Plural, projectBaseName);
+        var fileText = GetDtoFileText(srcDirectory, classPath, entity, dto);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetDtoFileText(string solutionDirectory, ClassPath classPath, Entity entity, Dto dto, string projectBaseName)
+    public static string GetDtoFileText(string srcDirectory, ClassPath classPath, Entity entity, Dto dto)
     {
         if (dto == Dto.ReadParamaters)
-            return DtoFileTextGenerator.GetReadParameterDtoText(solutionDirectory, classPath.ClassNamespace, entity, dto);
+            return DtoFileTextGenerator.GetReadParameterDtoText(srcDirectory, classPath.ClassNamespace, entity, dto);
 
         return DtoFileTextGenerator.GetDtoText(classPath, entity, dto);
     }

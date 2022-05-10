@@ -31,7 +31,7 @@ public class QueryGetRecordBuilder
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
         var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
 
-        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
 

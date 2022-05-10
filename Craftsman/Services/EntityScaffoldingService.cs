@@ -49,7 +49,7 @@ public class EntityScaffoldingService
         {
             // not worrying about DTOs, profiles, validators, fakers - they are all added by default
             new EntityBuilder(_utilities).CreateEntity(solutionDirectory, srcDirectory, entity, projectBaseName);
-            new DtoBuilder(_utilities, _fileSystem).CreateDtos(solutionDirectory, entity, projectBaseName);
+            new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
             new ValidatorBuilder(_utilities).CreateValidators(solutionDirectory, srcDirectory, projectBaseName, entity);
             new ProfileBuilder(_utilities).CreateProfile(srcDirectory, entity, projectBaseName);
             new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
@@ -63,7 +63,7 @@ public class EntityScaffoldingService
                 AddFeatureToProject(solutionDirectory, srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, entity, useSoftDelete);
 
             // Shared Tests
-            new FakesBuilder(_utilities).CreateFakes(solutionDirectory, testDirectory, projectBaseName, entity);
+            new FakesBuilder(_utilities).CreateFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, entity);
             new CreateEntityUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
             new UpdateEntityUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
 
@@ -100,7 +100,7 @@ public class EntityScaffoldingService
         };
 
         new EntityBuilder(_utilities).CreateEntity(solutionDirectory, srcDirectory, entity, projectBaseName);
-        new DtoBuilder(_utilities, _fileSystem).CreateDtos(solutionDirectory, entity, projectBaseName);
+        new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
         new ProfileBuilder(_utilities).CreateProfile(srcDirectory, entity, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName);
 
@@ -117,7 +117,7 @@ public class EntityScaffoldingService
         }
 
         // Shared Tests
-        new FakesBuilder(_utilities).CreateRolePermissionFakes(solutionDirectory, testDirectory, projectBaseName, entity);
+        new FakesBuilder(_utilities).CreateRolePermissionFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, entity);
         new RolePermissionsUnitTestBuilder(_utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new RolePermissionsUnitTestBuilder(_utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new UserPolicyHandlerIntegrationTests(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
@@ -160,8 +160,8 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.GetList.Name)
         {
-            new QueryGetListBuilder(_utilities).CreateQuery(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
-            new GetListQueryTestBuilder(_utilities).CreateTests(testDirectory, solutionDirectory, entity, projectBaseName);
+            new QueryGetListBuilder(_utilities).CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
+            new GetListQueryTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
             new GetEntityListTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments,
                 feature, projectBaseName);
@@ -189,7 +189,7 @@ public class EntityScaffoldingService
         {
             new CommandPatchRecordBuilder(_utilities).CreateCommand(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
             new PatchCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
-            new PatchEntityTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
+            new PatchEntityTestBuilder(_utilities).CreateTests(solutionDirectory, srcDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments,
                 feature, projectBaseName);
         }

@@ -31,7 +31,7 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Updated CLI command structure
 
-🚧 Colocate DTOs by default
+✅ Colocate DTOs by default
 
 🚧 Auth Server rewrite
 

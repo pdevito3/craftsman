@@ -389,9 +389,9 @@ public static class ClassPathHelper
         return new ClassPath(solutionDirectory, $"{projectBaseName}.{SharedTestProjectSuffix}", className);
     }
 
-    public static ClassPath DtoClassPath(string solutionDirectory, string className, string entityName, string projectBaseName)
+    public static ClassPath DtoClassPath(string srcDirectory, string className, string entityPlural, string projectBaseName)
     {
-        return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Dtos", projectBaseName, entityName), className);
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", entityPlural, "Dtos"), className);
     }
 
     public static ClassPath SharedDtoClassPath(string solutionDirectory, string className)

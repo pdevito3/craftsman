@@ -21,10 +21,10 @@ public class ProfileBuilder
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetProfileFileText(string classNamespace, Entity entity, string solutionDirectory, string projectBaseName)
+    public static string GetProfileFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName)
     {
-        var entitiesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
-        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+        var entitiesClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         return @$"namespace {classNamespace};
 

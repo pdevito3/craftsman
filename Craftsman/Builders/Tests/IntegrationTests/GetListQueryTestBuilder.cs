@@ -17,21 +17,21 @@ public class GetListQueryTestBuilder
         _utilities = utilities;
     }
 
-    public void CreateTests(string testDirectory, string solutionDirectory, Entity entity, string projectBaseName)
+    public void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
     {
         var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{entity.Name}ListQueryTests.cs", entity.Plural, projectBaseName);
-        var fileText = WriteTestFileText(testDirectory, solutionDirectory, classPath, entity, projectBaseName);
+        var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string WriteTestFileText(string testDirectory, string solutionDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+    private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
     {
         var featureName = FileNames.GetEntityListFeatureClassName(entity.Name);
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
 
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
-        var dtoClassPath = ClassPathHelper.DtoClassPath(solutionDirectory, "", entity.Name, projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(testDirectory, featureName, entity.Plural, projectBaseName);
 
         var sortTests = "";
