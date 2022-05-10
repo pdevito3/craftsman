@@ -25,11 +25,13 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ OpenTelemetry & Jaeger Tracing	
 
-✅ Built in Domain Event support
+✅ Built in Domain Event support (with unit test scaffolding)
 
 ✅ Moved to `Program.cs` only format
 
 ✅ Updated CLI command structure
+
+🚧 Colocate DTOs by default
 
 🚧 Auth Server rewrite
 
