@@ -397,7 +397,7 @@ public static class ClassPathHelper
     public static ClassPath SharedDtoClassPath(string solutionDirectory, string className)
     {
         var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-        return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Dtos", "Shared"), className);
+        return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Dtos"), className);
     }
 
     public static ClassPath IntegrationTestProjectClassPath(string solutionDirectory, string projectBaseName)
