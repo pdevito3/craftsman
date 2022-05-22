@@ -74,7 +74,7 @@ This file also uses a free template from Tailwind UI as a base.*@
                 <input asp-for=""Username"" id=""Username"" name=""username"" required class=""appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"" placeholder=""Username"" />
               </div>
               <div class=""space-y-1"">
-                <label class=""text-sm text-gray-800"" asp-for=""Username"">Password</label>
+                <label class=""text-sm text-gray-800"" asp-for=""Password"">Password</label>
                 <input asp-for=""Password"" id=""Password"" name=""Password"" type=""password"" autocomplete=""current-password"" required class=""appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"" placeholder=""Password"" />
               </div>
             </div>
