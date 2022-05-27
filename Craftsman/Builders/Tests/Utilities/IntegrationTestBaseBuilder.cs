@@ -45,6 +45,7 @@ public class IntegrationTestBaseBuilder
 using FluentAssertions;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using AutoBogus;
 using FluentAssertions.Extensions;
 using static {testFixtureName};
 
@@ -54,6 +55,14 @@ public class TestBase
     public async Task TestSetUp()
     {{
         await ResetState();{equivalency}
+    
+        AutoFaker.Configure(builder =>
+        {{
+            // configure global autobogus settings here
+            builder.WithRecursiveDepth(1)
+                .WithTreeDepth(1)
+                .WithRepeatCount(1);
+        }});
     }}
 }}";
     }

@@ -93,6 +93,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Updated services to use Newtonsoft to keep support for patchdocs. `System.Text.Json` is still available if patchdocs aren't needed for a project.
 
+* Integration Test `TestBase` has global autobogus settings
+
 * Added `client_role` to `UserPolicyHandler` role check to accomodate machines with a new scaffolded test.
 
   * **TODO DOCS**. For example with Duende, you can add something like this to get a role. Ideally configed in the DB.
