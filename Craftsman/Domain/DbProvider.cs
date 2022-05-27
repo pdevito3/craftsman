@@ -46,21 +46,22 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword)
             => $"Data Source={dbHostName},{1433};Integrated Security=False;Database={dbName};User ID={dbUser};Password={dbPassword}";
         public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)
-            => $"Data Source=localhost,{dbPort};Integrated Security=False;Database={dbName};User ID={dbUser};Password={dbPassword}";
+            => $"Data Source=localhost,{dbPort};TrustServerCertificate=True;Integrated Security=False;Database={dbName};User ID={dbUser};Password={dbPassword}";
     }
 
     private class MySqlType : DbProvider
     {
+        private const string Response = "MySql is not supported";
         public MySqlType() : base(nameof(MySql), 3) { }
         public override string PackageInclusionString(string version)
-            => throw new Exception("MySql is not supported");
+            => throw new Exception(Response);
         public override string OTelSource()
-            => throw new Exception("MySql is not supported");
+            => throw new Exception(Response);
         public override int Port()
-            => throw new Exception("MySql is not supported");
+            => throw new Exception(Response);
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword)
-            => throw new Exception("MySql is not supported");
+            => throw new Exception(Response);
         public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)
-             => throw new Exception("MySql is not supported");
+             => throw new Exception(Response);
     }
 }

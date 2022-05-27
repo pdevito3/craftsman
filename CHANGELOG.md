@@ -116,7 +116,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     },
     ```
 
-    
+
+### Fixed
+
+* sql server connectino strings to docker will trust the cert: `TrustServerCertificate=True;`
 
 
 

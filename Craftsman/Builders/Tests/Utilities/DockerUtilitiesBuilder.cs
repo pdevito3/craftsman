@@ -155,6 +155,7 @@ public static class DockerDatabaseUtilities
     {{
         return $""Data Source=localhost,{{port}};"" +
             ""Integrated Security=False;"" +
+            ""TrustServerCertificate=True;"" +
             $""User ID={{user}};"" +
             $""Password={{password}}"";
     }}";
