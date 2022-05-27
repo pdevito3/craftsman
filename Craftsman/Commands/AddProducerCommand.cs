@@ -55,7 +55,7 @@ public class AddProducerCommand : Command<AddProducerCommand.Settings>
 
         // TODO make injectable
         _fileParsingHelper.RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
-        var template = FileParsingHelper.ReadYamlString<ProducerTemplate>(settings.Filepath);
+        var template = _fileParsingHelper.GetTemplateFromFile<ProducerTemplate>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 
         AddProducers(template.Producers, _scaffoldingDirectoryStore.ProjectBaseName, solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory);

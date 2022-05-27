@@ -51,7 +51,7 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
         _utilities.IsBoundedContextDirectoryGuard();
 
         _fileParsingHelper.RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
-        var template = FileParsingHelper.ReadYamlString<ConsumerTemplate>(settings.Filepath);
+        var template = _fileParsingHelper.GetTemplateFromFile<ConsumerTemplate>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 
         AddConsumers(template.Consumers, _scaffoldingDirectoryStore.ProjectBaseName, solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory);

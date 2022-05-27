@@ -54,7 +54,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
 
         // TODO make injectable
         _fileParsingHelper.RunInitialTemplateParsingGuards(rootDir);
-        var domainProject = FileParsingHelper.ReadYamlString<DomainProject>(settings.Filepath);
+        var domainProject = _fileParsingHelper.GetTemplateFromFile<DomainProject>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 
         _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
