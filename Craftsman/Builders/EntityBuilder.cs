@@ -164,6 +164,9 @@ public abstract class BaseEntity
                 if(property.IsPrimativeType || property.IsMany)
                     propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
 
+               if(property.Type.Contains("JSON"))
+                    propString += $@"    public string {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+
                 propString += GetForeignProp(property);
             }
 
@@ -175,6 +178,7 @@ public abstract class BaseEntity
             var attributeString = "";
             if (entityProperty.IsRequired)
                 attributeString += @$"    [Required]{Environment.NewLine}";
+
             if (entityProperty.IsForeignKey
                 && !entityProperty.IsMany
                 && entityProperty.IsPrimativeType
@@ -182,14 +186,16 @@ public abstract class BaseEntity
                 attributeString += @$"    [JsonIgnore]
     [IgnoreDataMember]
     [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
-            if(entityProperty.IsMany || !entityProperty.IsPrimativeType)
+
+            if((entityProperty.IsMany || !entityProperty.IsPrimativeType) && !entityProperty.Type.Contains("JSON"))
                 attributeString += $@"    [JsonIgnore]
     [IgnoreDataMember]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)
                 attributeString += @$"    [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
             if (!string.IsNullOrEmpty(entityProperty.ColumnName))
                 attributeString += @$"    [Column(""{entityProperty.ColumnName}"")]{Environment.NewLine}";
-
+            if(entityProperty.Type.Contains("JSON"))
+                attributeString += @$"    [Column(TypeName = ""jsonb"")]{Environment.NewLine}";
             return attributeString;
         }
 

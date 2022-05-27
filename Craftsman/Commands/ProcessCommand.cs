@@ -96,15 +96,15 @@
                     NewDomainProjectCommand.Help();
                 else
                 {
-                    CheckForLatestVersion();
+                   // CheckForLatestVersion();
                     var verbosity = GetVerbosityFromArgs<NewDomainOptions>(args);
 
-                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
-                    if (myEnv == "Dev")
-                    {
-                        Console.WriteLine("Enter the root directory.");
-                        rootDir = Console.ReadLine();
-                    }
+                    var rootDir = "C:\\Users\\jordan.crafton\\Documents";//_utilities.GetRootDir();
+                    // if (myEnv == "Dev")
+                    // {
+                    //     Console.WriteLine("Enter the root directory.");
+                    //     rootDir = Console.ReadLine();
+                    // }
                     NewDomainProjectCommand.Run(filePath, rootDir, fileSystem, verbosity);
                 }
             }
