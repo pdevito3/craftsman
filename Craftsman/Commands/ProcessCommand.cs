@@ -26,7 +26,7 @@
                 // they seem to show up fine on osx and actually need this to be off to work there
                 Console.OutputEncoding = Encoding.Unicode;
             }
-            
+
             var myEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
             if (args.Length == 0)
@@ -96,19 +96,19 @@
                     NewDomainProjectCommand.Help();
                 else
                 {
-                    CheckForLatestVersion();
+                    //CheckForLatestVersion();
                     var verbosity = GetVerbosityFromArgs<NewDomainOptions>(args);
 
-                    var rootDir = fileSystem.Directory.GetCurrentDirectory();
-                    if (myEnv == "Dev")
-                    {
-                        Console.WriteLine("Enter the root directory.");
-                        rootDir = Console.ReadLine();
-                    }
+                    var rootDir = "/Users/jchasecrafton/dotNetCode";//fileSystem.Directory.GetCurrentDirectory();
+                    // if (myEnv == "Dev")
+                    // {
+                    //     Console.WriteLine("Enter the root directory.");
+                    //     rootDir = Console.ReadLine();
+                    // }
                     NewDomainProjectCommand.Run(filePath, rootDir, fileSystem, verbosity);
                 }
             }
-            
+
             if ((args[0] == "new:example" || args[0] == "example"))
             {
                 if (args.Length > 1 && (args[1] == "-h" || args[1] == "--help"))
@@ -144,7 +144,7 @@
                     RegisterProducerCommand.Run(rootDir, fileSystem);
                 }
             }
-            
+
             if (args.Length == 2 && (args[0] == "add:entity" || args[0] == "add:entities"))
             {
                 var filePath = args[1];

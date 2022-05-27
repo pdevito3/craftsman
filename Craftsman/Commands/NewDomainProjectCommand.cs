@@ -51,7 +51,7 @@
                 CreateNewDomainProject(domainDirectory, fileSystem, domainProject);
 
                 AnsiConsole.MarkupLine($"{Environment.NewLine}[bold yellow1]Your domain project is ready! Build something amazing. [/]");
-                StarGithubRequest();
+                //StarGithubRequest();
             }
             catch (Exception e)
             {
@@ -96,7 +96,7 @@
 
             // need this before boundaries to give them something to build against
             DockerBuilders.CreateDockerComposeSkeleton(domainDirectory, fileSystem);
-            
+
             //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
             //    ApiScaffolding.ScaffoldApi(domainDirectory, template, fileSystem, verbosity));
             foreach (var bc in domainProject.BoundedContexts)
@@ -105,7 +105,7 @@
             // auth server
             if (domainProject.AuthServer != null)
                 AddAuthServerCommand.AddAuthServer(domainDirectory, fileSystem, domainProject.AuthServer);
-            
+
             // messages
             if (domainProject.Messages.Count > 0)
                 AddMessageCommand.AddMessages(domainDirectory, fileSystem, domainProject.Messages);

@@ -161,8 +161,11 @@ public abstract class BaseEntity
                     ? Environment.NewLine
                     : $"{Environment.NewLine}{Environment.NewLine}";
 
-                if(property.IsPrimativeType || property.IsMany)
+                if (property.IsPrimativeType || property.IsMany)
                     propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+
+                if (property.Type.Equals("JSON"))
+                    propString += $@"    public string {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
 
                 propString += GetForeignProp(property);
             }
@@ -182,14 +185,15 @@ public abstract class BaseEntity
                 attributeString += @$"    [JsonIgnore]
     [IgnoreDataMember]
     [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
-            if(entityProperty.IsMany || !entityProperty.IsPrimativeType)
+            if ((entityProperty.IsMany || !entityProperty.IsPrimativeType) && !entityProperty.Type.Equals("JSON"))
                 attributeString += $@"    [JsonIgnore]
     [IgnoreDataMember]{Environment.NewLine}";
             if (entityProperty.CanFilter || entityProperty.CanSort)
                 attributeString += @$"    [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
             if (!string.IsNullOrEmpty(entityProperty.ColumnName))
                 attributeString += @$"    [Column(""{entityProperty.ColumnName}"")]{Environment.NewLine}";
-
+            if (entityProperty.Type.Equals("JSON"))
+                attributeString += @$"    [Column(TypeName = ""jsonb"")]{Environment.NewLine}";
             return attributeString;
         }
 
