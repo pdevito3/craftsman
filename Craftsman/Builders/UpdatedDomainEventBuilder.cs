@@ -45,9 +45,9 @@ public static class UpdatedDomainEventBuilder
         {
             return @$"namespace {classNamespace};
 
-public class {FileNames.EntityUpdatedDomainMessage(entityName)} : IDomainEvent
+public class {FileNames.EntityUpdatedDomainMessage(entityName)} : DomainEvent
 {{
-    public {entityName} {entityName} {{ get; set; }} 
+    public Guid Id {{ get; set; }} 
 }}
             ";
         }

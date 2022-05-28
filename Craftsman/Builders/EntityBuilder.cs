@@ -88,7 +88,7 @@ public class {entity.Name} : BaseEntity
         
         return new{entity.Name};
     }}
-        
+
     public void Update({updateDtoName} {updateDtoName.LowercaseFirstLetter()})
     {{
         new {updateValidatorName}().ValidateAndThrow({updateDtoName.LowercaseFirstLetter()});
@@ -96,7 +96,7 @@ public class {entity.Name} : BaseEntity
             cfg.AddProfile<{profileName}>();
         }}));
         mapper.Map({updateDtoName.LowercaseFirstLetter()}, this);
-        QueueDomainEvent(new {entityUpdatedDomainMessage}(){{ {entity.Name} = this }});
+        QueueDomainEvent(new {entityUpdatedDomainMessage}(){{ Id = Id }});
     }}
     
     protected {entity.Name}() {{ }} // For EF + Mocking
@@ -124,9 +124,6 @@ public class {entity.Name} : BaseEntity
 using Sieve.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MediatR;
-
-public interface IDomainEvent : INotification {{ }}
 
 public abstract class BaseEntity
 {{
@@ -139,7 +136,7 @@ public abstract class BaseEntity
     public virtual string LastModifiedBy {{ get; private set; }}{isDeletedProp}
     
     [NotMapped]
-    public List<IDomainEvent> DomainEvents {{ get; }} = new List<IDomainEvent>();
+    public List<DomainEvent> DomainEvents {{ get; }} = new List<DomainEvent>();
 
     public void UpdateCreationProperties(DateTime createdOn, string createdBy)
     {{
@@ -153,9 +150,10 @@ public abstract class BaseEntity
         LastModifiedBy = lastModifiedBy;
     }}{isDeletedMethod}
     
-    public void QueueDomainEvent(IDomainEvent @event)
+    public void QueueDomainEvent(DomainEvent @event)
     {{
-        DomainEvents.Add(@event);
+        if(!DomainEvents.Contains(@event))
+            DomainEvents.Add(@event);
     }}
 }}";
     }
