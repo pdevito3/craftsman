@@ -82,6 +82,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Removed `?`'s on strings in  `BaseEntity` 
 
+* Update integration test consumer registration to non-obsolete model
+
 * Messages get a class for better typing as well as an interface.
   * **TODO: docs**
 

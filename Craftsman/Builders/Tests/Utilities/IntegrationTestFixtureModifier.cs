@@ -38,7 +38,10 @@ public class IntegrationTestFixtureModifier
                     newText += $@"
         services.AddMassTransitInMemoryTestHarness(cfg =>
         {{
-            // Consumer Registration -- Do Not Delete Comment
+            cfg.AddMassTransitTestHarness(harness => 
+            {{
+                // Consumer Registration -- Do Not Delete Comment
+            }});
         }});";
                 }
                 else if (line.Contains($"MassTransit Start Setup"))
@@ -134,7 +137,7 @@ using MassTransit;";
         File.Move(tempPath, classPath.FullClassPath);
     }
 
-    public void AddMTConsumer(string testDirectory, string consumerName, string domainDirectory, string projectBaseName, string srcDirectory)
+    public void AddMasstransitConsumer(string testDirectory, string consumerName, string domainDirectory, string projectBaseName, string srcDirectory)
     {
         var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
 
@@ -159,8 +162,7 @@ using MassTransit;";
                 {
                     newText += $@"
 
-            cfg.AddConsumer<{consumerName}>();
-            cfg.AddConsumerTestHarness<{consumerName}>();";
+                harness.AddConsumer<{consumerName}>();";
                 }
                 if (line.Contains(consumerClassPath.ClassNamespace))
                     hasUsingForConsumerNamespace = true;
