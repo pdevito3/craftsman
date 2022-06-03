@@ -88,7 +88,8 @@ public class {commandName}Tests : TestBase
         // Arrange
         {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
         await InsertAsync({fakeEntityVariableName});
-        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}
+            .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
         var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
         var patchDoc = new JsonPatchDocument<{updateDto}>();
@@ -98,10 +99,10 @@ public class {commandName}Tests : TestBase
         // Act
         var command = new {featureName}.{commandName}({lowercaseEntityPk}, patchDoc);
         await SendAsync(command);
-        var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
+        var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
 
         // Assert
-        updated{entity.Name}.{prop.Name}.Should().Be(newValue);
+        updated{entity.Name}?.{prop.Name}.Should().Be(newValue);
     }}";
     }
 

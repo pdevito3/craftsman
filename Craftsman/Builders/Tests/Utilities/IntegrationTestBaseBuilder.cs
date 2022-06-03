@@ -52,9 +52,8 @@ using static {testFixtureName};
 public class TestBase
 {{
     [SetUp]
-    public async Task TestSetUp()
-    {{
-        await ResetState();{equivalency}
+    public Task TestSetUp()
+    {{{equivalency}
     
         AutoFaker.Configure(builder =>
         {{
@@ -63,6 +62,8 @@ public class TestBase
                 .WithTreeDepth(1)
                 .WithRepeatCount(1);
         }});
+        
+        return Task.CompletedTask;
     }}
 }}";
     }

@@ -68,13 +68,14 @@ public class {commandName}Tests : TestBase
         var updated{entity.Name}Dto = new {fakeUpdateDto}(){fakeParentIdRuleFor}.Generate();
         await InsertAsync({fakeEntityVariableName});
 
-        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}
+            .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
         var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
         // Act
         var command = new {featureName}.{commandName}({lowercaseEntityPk}, updated{entity.Name}Dto);
         await SendAsync(command);
-        var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.Where({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}).SingleOrDefaultAsync());
+        var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
 
         // Assert
         updated{entity.Name}.Should().BeEquivalentTo(updated{entity.Name}Dto, options =>

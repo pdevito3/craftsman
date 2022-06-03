@@ -114,16 +114,17 @@ public class TestFixture
 
         {checkpoint}
 
-        EnsureDatabase();
+        await EnsureDatabase();
     }}
 
-    private static void EnsureDatabase()
+    private static async Task EnsureDatabase()
     {{
         using var scope = _scopeFactory.CreateScope();
 
         var context = scope.ServiceProvider.GetService<{dbContextName}>();
 
-        context.Database.Migrate();
+        await context?.Database?.MigrateAsync();
+        await ResetState();
     }}
 
     public static TScopedService GetService<TScopedService>()

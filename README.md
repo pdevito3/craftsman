@@ -33,6 +33,8 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Colocate DTOs by default
 
+✅ Performance improvements for tests and cleanup
+
 🚧 Auth Server rewrite
 
 🚧 Add Identity to Auth Server

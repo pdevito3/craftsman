@@ -128,9 +128,6 @@ public class UserPolicyHandlerTests : TestBase
     [Test]
     public async Task claims_role_duplicate_permissions_removed()
     {{
-        // duplicates shouldn't be possible in the database OOTB with the RolePermission validation
-        // (and unit tests), but leaving this for redundancy and safer modification possibilities
-        
         // Arrange
         var permissionToAssign = _faker.PickRandom(Permissions.List());
         var nonSuperAdminRole = _faker.PickRandom(Roles.List().Where(p => p != Roles.SuperAdmin));
@@ -152,7 +149,7 @@ public class UserPolicyHandlerTests : TestBase
         var permissions = await userPolicyHandler.GetUserPermissions();
         
         // Assert
-        permissions.Should().HaveCount(1);
+        permissions.Count(p => p == permissionToAssign).Should().Be(1);
         permissions.Should().Contain(permissionToAssign);
     }}
 }}";

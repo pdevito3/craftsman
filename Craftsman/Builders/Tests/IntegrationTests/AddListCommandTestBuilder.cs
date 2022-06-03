@@ -76,7 +76,8 @@ public class {commandName}Tests : TestBase
         // Act
         var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableName}}}, {fakeParentEntity}.Id);
         var {lowercaseEntityName}Returned = await SendAsync(command);
-        var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
+        var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}
+            .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}Returned.FirstOrDefault().Id));
 
         // Assert
         {lowercaseEntityName}Returned.FirstOrDefault().Should().BeEquivalentTo({fakeEntityVariableName}, options =>

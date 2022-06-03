@@ -84,6 +84,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Update integration test consumer registration to non-obsolete model
 
+* Testing cleanup
+
+* Performance optimizations for integration and functional tests
+
+  * Integration tests will only wipe the db using checkpoint at the begining of the entire fixture run, not after each test. This affects how assersions can and should be made
+  * Unit tests have parallelization
+
+* Removed sort integration tests
+
 * Messages get a class for better typing as well as an interface.
   * **TODO: docs**
 

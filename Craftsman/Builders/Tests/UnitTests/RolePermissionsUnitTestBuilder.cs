@@ -46,6 +46,7 @@ using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
 
+[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
     private readonly Faker _faker;

@@ -63,7 +63,6 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 {{
     {GetEntitiesTest(entity)}
     {GetEntitiesWithPageSizeAndNumberTest(entity)}
-    {sortTests}
     {filterTests}
 }}";
     }
@@ -95,7 +94,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {lowercaseEntityPluralName} = await SendAsync(query);
 
         // Assert
-        {lowercaseEntityPluralName}.Should().HaveCount(2);
+        {lowercaseEntityPluralName}.Count.Should().BeGreaterThanOrEqualTo(2);
     }}";
     }
 

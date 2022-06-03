@@ -72,16 +72,16 @@ public class {commandName}Tests : TestBase
         // Arrange
         {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
         await InsertAsync({fakeEntityVariableName});
-        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
-        var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
+        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}
+            .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
 
         // Act
-        var command = new {featureName}.{commandName}({lowercaseEntityPk});
+        var command = new {featureName}.{commandName}({lowercaseEntityName}.{pkName});
         await SendAsync(command);
-        var {dbResponseVariableName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
+        var {dbResponseVariableName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.CountAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}.{pkName}));
 
         // Assert
-        {dbResponseVariableName}.Count.Should().Be(0);
+        {dbResponseVariableName}.Should().Be(0);
     }}";
     }
 
@@ -125,16 +125,15 @@ public class {commandName}Tests : TestBase
         // Arrange
         {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
         await InsertAsync({fakeEntityVariableName});
-        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.SingleOrDefaultAsync());
-        var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
+        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}
+            .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
 
         // Act
-        var command = new {featureName}.{commandName}({lowercaseEntityPk});
+        var command = new {featureName}.{commandName}({lowercaseEntityName}.{pkName});
         await SendAsync(command);
-        var deleted{entity.Name} = (await ExecuteDbContextAsync(db => db.{entity.Plural}
+        var deleted{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}
             .IgnoreQueryFilters()
-            .ToListAsync())
-        ).FirstOrDefault();
+            .FirstOrDefaultAsync(x => x.Id == {lowercaseEntityName}.{pkName}));
 
         // Assert
         deleted{entity.Name}?.IsDeleted.Should().BeTrue();

@@ -30,6 +30,7 @@ using {wrapperClassPath.ClassNamespace};
 using FluentAssertions;
 using NUnit.Framework;
 
+[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
     [Test]
