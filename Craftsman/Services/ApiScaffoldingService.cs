@@ -150,6 +150,10 @@ public class ApiScaffoldingService
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());
 
         //services
+        _mediator.Send(new UnitOfWorkBuilder.UnitOfWorkBuilderCommand(template.DbContext.ContextName));
+        _mediator.Send(new IBoundaryServiceInterfaceBuilder.IBoundaryServiceInterfaceBuilderCommand(projectBaseName));
+        _mediator.Send(new GenericRepositoryBuilder.GenericRepositoryBuilderCommand(template.DbContext.ContextName));
+
         new CurrentUserServiceBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);
         new SwaggerBuilder(_utilities, _fileSystem).AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName);
 

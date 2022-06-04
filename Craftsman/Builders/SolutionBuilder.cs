@@ -62,7 +62,6 @@ public class SolutionBuilder
 
         new ApiVersioningExtensionsBuilder(_utilities).CreateApiVersioningServiceExtension(srcDirectory, projectBaseName);
         new CorsExtensionsBuilder(_utilities).CreateCorsServiceExtension(srcDirectory, projectBaseName);
-        new WebApiServiceExtensionsBuilder(_utilities).CreateWebApiServiceExtension(srcDirectory, projectBaseName);
         new OpenTelemetryExtensionsBuilder(_utilities).CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider);
         new ErrorHandlerFilterAttributeBuilder(_utilities).CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName);
         new WebApiLaunchSettingsBuilder(_utilities).CreateLaunchSettings(srcDirectory, projectBaseName);

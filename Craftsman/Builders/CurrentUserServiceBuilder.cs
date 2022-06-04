@@ -14,17 +14,19 @@ public class CurrentUserServiceBuilder
     public void GetCurrentUserService(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "CurrentUserService.cs", projectBaseName);
-        var fileText = GetCurrentUserServiceText(classPath.ClassNamespace);
+        var fileText = GetCurrentUserServiceText(classPath.ClassNamespace, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string GetCurrentUserServiceText(string classNamespace)
+    private static string GetCurrentUserServiceText(string classNamespace, string srcDirectory, string projectBaseName)
     {
+        var boundaryServiceName = FileNames.BoundaryServiceInterface(projectBaseName);
+
         return @$"namespace {classNamespace};
 
 using System.Security.Claims;
 
-public interface ICurrentUserService
+public interface ICurrentUserService : {boundaryServiceName}
 {{
     string? UserId {{ get; }}
     ClaimsPrincipal? User {{ get; }}
