@@ -146,12 +146,12 @@ public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulati
     
     private static bool BeAnExistingPermission(string permission)
     {{
-        return Permissions.List().Contains(permission);
+        return Permissions.List().Contains(permission, StringComparer.InvariantCultureIgnoreCase);
     }}
 
     private static bool BeAnExistingRole(string role)
     {{
-        return Roles.List().Contains(role);
+        return Roles.List().Contains(role, StringComparer.InvariantCultureIgnoreCase);
     }}
 }}";
     }
