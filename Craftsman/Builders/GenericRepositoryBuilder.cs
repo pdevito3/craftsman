@@ -30,7 +30,7 @@ public static class GenericRepositoryBuilder
 
         public Task<bool> Handle(GenericRepositoryBuilderCommand request, CancellationToken cancellationToken)
         {
-            var classPath = ClassPathHelper.WebApiServicesClassPath(_scaffoldingDirectoryStore.SrcDirectory, "GenericRepository.cs", _scaffoldingDirectoryStore.ProjectBaseName);
+            var classPath = ClassPathHelper.WebApiServicesClassPath(_scaffoldingDirectoryStore.SrcDirectory, $"{FileNames.GenericRepository()}.cs", _scaffoldingDirectoryStore.ProjectBaseName);
             var fileText = GetFileText(classPath.ClassNamespace, request.DbContextName);
             _utilities.CreateFile(classPath, fileText);
             return Task.FromResult(true);
@@ -42,6 +42,9 @@ public static class GenericRepositoryBuilder
             var contextClassPath = ClassPathHelper.DbContextClassPath(_scaffoldingDirectoryStore.SrcDirectory, "", _scaffoldingDirectoryStore.ProjectBaseName);
             var domainClassPath = ClassPathHelper.EntityClassPath(_scaffoldingDirectoryStore.SrcDirectory, "", "", _scaffoldingDirectoryStore.ProjectBaseName);
             var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(_scaffoldingDirectoryStore.SolutionDirectory, _scaffoldingDirectoryStore.ProjectBaseName);
+
+            var repoName = FileNames.GenericRepository();
+            var interfaceName = FileNames.GenericRepositoryInterface();
             
             return @$"namespace {classNamespace};
 
@@ -50,7 +53,7 @@ using {contextClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using Microsoft.EntityFrameworkCore;
 
-public interface IGenericRepository<TEntity> : {boundaryServiceName}
+public interface {interfaceName}<TEntity> : {boundaryServiceName}
     where TEntity : BaseEntity
 {{
     IQueryable<TEntity> Query();
@@ -64,12 +67,12 @@ public interface IGenericRepository<TEntity> : {boundaryServiceName}
     void RemoveRange(IEnumerable<TEntity> entity);
 }}
 
-public abstract class GenericRepository<TEntity> : IGenericRepository<TEntity> 
+public abstract class {repoName}<TEntity> : {interfaceName}<TEntity> 
     where TEntity : BaseEntity
 {{
     private readonly {dbContextName} _dbContext;
 
-    protected GenericRepository({dbContextName} dbContext)
+    protected {repoName}({dbContextName} dbContext)
     {{
         this._dbContext = dbContext;
     }}

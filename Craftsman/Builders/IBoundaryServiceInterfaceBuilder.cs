@@ -8,11 +8,8 @@ public static class IBoundaryServiceInterfaceBuilder
 {
     public class IBoundaryServiceInterfaceBuilderCommand : IRequest<bool>
     {
-        public readonly string ProjectBaseName;
-
-        public IBoundaryServiceInterfaceBuilderCommand(string projectBaseName)
+        public IBoundaryServiceInterfaceBuilderCommand()
         {
-            ProjectBaseName = projectBaseName;
         }
     }
 
@@ -30,8 +27,8 @@ public static class IBoundaryServiceInterfaceBuilder
 
         public Task<bool> Handle(IBoundaryServiceInterfaceBuilderCommand request, CancellationToken cancellationToken)
         {
-            var boundaryServiceName = FileNames.BoundaryServiceInterface(request.ProjectBaseName);
-            var classPath = ClassPathHelper.WebApiServicesClassPath(_scaffoldingDirectoryStore.SrcDirectory, $"{boundaryServiceName}.cs", request.ProjectBaseName);
+            var boundaryServiceName = FileNames.BoundaryServiceInterface(_scaffoldingDirectoryStore.ProjectBaseName);
+            var classPath = ClassPathHelper.WebApiServicesClassPath(_scaffoldingDirectoryStore.SrcDirectory, $"{boundaryServiceName}.cs", _scaffoldingDirectoryStore.ProjectBaseName);
             var fileText = GetFileText(classPath.ClassNamespace);
             _utilities.CreateFile(classPath, fileText);
             return Task.FromResult(true);

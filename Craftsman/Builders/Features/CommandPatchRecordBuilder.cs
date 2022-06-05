@@ -33,35 +33,35 @@ public class CommandPatchRecordBuilder
         var entityNameLowercase = entity.Name.LowercaseFirstLetter();
         var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
         var patchedEntityProp = $"{entityNameLowercase}ToPatch";
+        var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
+        var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
 
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
-        var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
         var validatorsClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
 
         return @$"namespace {classNamespace};
 
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
-using {contextClassPath.ClassNamespace};
 using {validatorsClassPath.ClassNamespace};
+using {entityServicesClassPath.ClassNamespace};
+using {servicesClassPath.ClassNamespace};
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using System.Threading.Tasks;
 
 public static class {className}
 {{
     public class {patchCommandName} : IRequest<bool>
     {{
-        public {primaryKeyPropType} {primaryKeyPropName} {{ get; set; }}
-        public JsonPatchDocument<{updateDto}> PatchDoc {{ get; set; }}
+        public readonly {primaryKeyPropType} {primaryKeyPropName};
+        public readonly JsonPatchDocument<{updateDto}> PatchDoc;
 
         public {patchCommandName}({primaryKeyPropType} {entityNameLowercase}, JsonPatchDocument<{updateDto}> patchDoc)
         {{
@@ -72,13 +72,15 @@ public static class {className}
 
     public class Handler : IRequestHandler<{patchCommandName}, bool>
     {{
-        private readonly {contextName} _db;
+        private readonly {repoInterface} _{repoInterfaceProp};
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public Handler({contextName} db, IMapper mapper)
+        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper)
         {{
             _mapper = mapper;
-            _db = db;
+            _{repoInterfaceProp} = {repoInterfaceProp};
+            _unitOfWork = unitOfWork;
         }}
 
         public async Task<bool> Handle({patchCommandName} request, CancellationToken cancellationToken)
@@ -90,17 +92,13 @@ public static class {className}
                         new ValidationFailure(""Patch Document"",""Invalid patch doc."")
                     }});
 
-            var {updatedEntityProp} = await _db.{entity.Plural}
-                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName}, cancellationToken);
+            var {updatedEntityProp} = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
 
-            if ({updatedEntityProp} == null)
-                throw new NotFoundException(""{entity.Name}"", request.{primaryKeyPropName});
-
-            var {patchedEntityProp} = _mapper.Map<{updateDto}>({updatedEntityProp}); // map the {entityNameLowercase} we got from the database to an updatable {entityNameLowercase} dto
-            request.PatchDoc.ApplyTo({patchedEntityProp}); // apply patchdoc updates to the updatable {entityNameLowercase} dto
+            var {patchedEntityProp} = _mapper.Map<{updateDto}>({updatedEntityProp});
+            request.PatchDoc.ApplyTo({patchedEntityProp});
 
             {updatedEntityProp}.Update({patchedEntityProp});
-            await _db.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitChanges(cancellationToken);
 
             return true;
         }}

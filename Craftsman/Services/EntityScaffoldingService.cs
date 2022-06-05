@@ -54,6 +54,10 @@ public class EntityScaffoldingService
             new ProfileBuilder(_utilities).CreateProfile(srcDirectory, entity, projectBaseName);
             new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
+            _mediator.Send(new EntityRepositoryBuilder.EntityRepositoryBuilderCommand(dbContextName, 
+                entity.Name, 
+                entity.Plural));
+            
             var isProtected = entity.Features.Any(f => f.IsProtected); // <-- one more example of why it would be nice to have specific endpoints for each feature 😤
             if (entity.Features.Count > 0)
                 new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, isProtected);
@@ -103,6 +107,10 @@ public class EntityScaffoldingService
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
         new ProfileBuilder(_utilities).CreateProfile(srcDirectory, entity, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName);
+        
+        _mediator.Send(new EntityRepositoryBuilder.EntityRepositoryBuilderCommand(dbContextName, 
+            entity.Name, 
+            entity.Plural));
 
         // custom validator
         new ValidatorBuilder(_utilities).CreateRolePermissionValidators(solutionDirectory, srcDirectory, projectBaseName, entity);

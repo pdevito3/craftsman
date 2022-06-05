@@ -11,6 +11,26 @@ public static class FileNames
         return $"I{projectBaseName}Service";
     }
     
+    public static string EntityRepository(string entityName)
+    {
+        return $"{entityName.UppercaseFirstLetter()}Repository";
+    }
+    
+    public static string EntityRepositoryInterface(string entityName)
+    {
+        return $"I{EntityRepository(entityName)}";
+    }
+    
+    public static string GenericRepository()
+    {
+        return $"GenericRepository";
+    }
+    
+    public static string GenericRepositoryInterface()
+    {
+        return $"I{GenericRepository()}";
+    }
+    
     public static string WebAppServiceConfiguration()
     {
         return $"WebAppServiceConfiguration";
