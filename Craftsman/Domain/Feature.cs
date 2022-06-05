@@ -87,9 +87,9 @@ public class Feature
     }
 
     /// <summary>
-    /// The name of the DbSet for the FK you are doing a batch add on. Generally, the plural of the FK entity. Leave null if you're not batching on a FK.
+    /// The plural of the FK entity. Leave null if you're not batching on a FK.
     /// </summary>
-    public string BatchPropertyDbSetName { get; set; }
+    public string ParentEntityPlural { get; set; }
 
     /// <summary>
     /// Determines whether or not the feature is protected with an authorization policy attribute.
