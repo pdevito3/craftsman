@@ -35,6 +35,8 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Performance improvements for tests and cleanup
 
+✅ Added repository & unit of work abstractions for better testing and validation
+
 🚧 Auth Server rewrite
 
 🚧 Add Identity to Auth Server
