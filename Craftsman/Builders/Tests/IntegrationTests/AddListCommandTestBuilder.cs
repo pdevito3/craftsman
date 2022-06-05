@@ -73,6 +73,7 @@ public class {commandName}Tests : TestBase
         var {fakeParentEntity} = Fake{feature.ParentEntity}.Generate(new {fakeParentCreationDto}().Generate());
         await InsertAsync({fakeParentEntity});
         var {fakeEntityVariableNameOne} = new {fakeCreationDto}().Generate();
+        var {fakeEntityVariableNameTwo} = new {fakeCreationDto}().Generate();
 
         // Act
         var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}}}, {fakeParentEntity}.Id);
