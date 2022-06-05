@@ -6,6 +6,31 @@ using Helpers;
 
 public static class FileNames
 {
+    public static string BoundaryServiceInterface(string projectBaseName)
+    {
+        return $"I{projectBaseName}Service";
+    }
+    
+    public static string EntityRepository(string entityName)
+    {
+        return $"{entityName.UppercaseFirstLetter()}Repository";
+    }
+    
+    public static string EntityRepositoryInterface(string entityName)
+    {
+        return $"I{EntityRepository(entityName)}";
+    }
+    
+    public static string GenericRepository()
+    {
+        return $"GenericRepository";
+    }
+    
+    public static string GenericRepositoryInterface()
+    {
+        return $"I{GenericRepository()}";
+    }
+    
     public static string WebAppServiceConfiguration()
     {
         return $"WebAppServiceConfiguration";
@@ -34,11 +59,6 @@ public static class FileNames
     public static string EntityUpdatedDomainMessage(string entityName)
     {
         return $"{entityName}Updated";
-    }
-
-    public static string GetRepositoryName(string entityName, bool isInterface)
-    {
-        return isInterface ? $"I{entityName}Repository" : $"{entityName}Repository";
     }
 
     public static string GetApiRouteClass(string entityPlural)

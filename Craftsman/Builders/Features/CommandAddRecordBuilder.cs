@@ -27,39 +27,33 @@ public class CommandAddRecordBuilder
         var addCommandName = FileNames.CommandAddName(entity.Name);
         var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
         var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
-        var manipulationValidator = FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation);
 
         var entityName = entity.Name;
         var entityNameLowercase = entity.Name.LowercaseFirstLetter();
-        var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
         var commandProp = $"{entityName}ToAdd";
         var newEntityProp = $"{entityNameLowercase}ToAdd";
+        var repoInterface = FileNames.EntityRepositoryInterface(entityName);
+        var repoInterfaceProp = $"{entityName.LowercaseFirstLetter()}Repository";
 
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
-        var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
-        var validatorsClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
 
         return @$"namespace {classNamespace};
 
+using {entityServicesClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};
-using {contextClassPath.ClassNamespace};
-using {validatorsClassPath.ClassNamespace};
+using {servicesClassPath.ClassNamespace};
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using System.Threading.Tasks;
 
 public static class {className}
 {{
     public class {addCommandName} : IRequest<{readDto}>
     {{
-        public {createDto} {commandProp} {{ get; set; }}
+        public readonly {createDto} {commandProp};
 
         public {addCommandName}({createDto} {newEntityProp})
         {{
@@ -69,26 +63,25 @@ public static class {className}
 
     public class Handler : IRequestHandler<{addCommandName}, {readDto}>
     {{
-        private readonly {contextName} _db;
+        private readonly {repoInterface} _{repoInterfaceProp};
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public Handler({contextName} db, IMapper mapper)
+        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper)
         {{
             _mapper = mapper;
-            _db = db;
+            _{repoInterfaceProp} = {repoInterfaceProp};
+            _unitOfWork = unitOfWork;
         }}
 
         public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
         {{
             var {entityNameLowercase} = {entityName}.Create(request.{commandProp});
-            _db.{entity.Plural}.Add({entityNameLowercase});
+            await _{repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
 
-            await _db.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitChanges(cancellationToken);
 
-            var {entityNameLowercase}Added = await _db.{entity.Plural}
-                .AsNoTracking()
-                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == {entityNameLowercase}.{primaryKeyPropName}, cancellationToken);
-
+            var {entityNameLowercase}Added = await _{repoInterfaceProp}.GetById({entityNameLowercase}.Id, cancellationToken: cancellationToken);
             return _mapper.Map<{readDto}>({entityNameLowercase}Added);
         }}
     }}

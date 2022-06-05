@@ -14,47 +14,43 @@ public class QueryGetListBuilder
         _utilities = utilities;
     }
 
-    public void CreateQuery(string srcDirectory, Entity entity, string contextName, string projectBaseName)
+    public void CreateQuery(string srcDirectory, Entity entity, string projectBaseName)
     {
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityListFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
-        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, contextName, srcDirectory, projectBaseName);
+        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetQueryFileText(string classNamespace, Entity entity, string contextName, string srcDirectory, string projectBaseName)
+    public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName)
     {
         var className = FileNames.GetEntityListFeatureClassName(entity.Name);
         var queryListName = FileNames.QueryListName(entity.Name);
         var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
         var paramsDto = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
-
-        var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
+        var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
+        
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
-        var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
         var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+        var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         return @$"namespace {classNamespace};
 
-using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};
-using {contextClassPath.ClassNamespace};
+using {entityServicesClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Sieve.Models;
 using Sieve.Services;
-using System.Threading;
-using System.Threading.Tasks;
 
 public static class {className}
 {{
     public class {queryListName} : IRequest<PagedList<{readDto }>>
     {{
-        public {paramsDto} QueryParameters {{ get; set; }}
+        public readonly {paramsDto} QueryParameters;
 
         public {queryListName}({paramsDto} queryParameters)
         {{
@@ -64,21 +60,20 @@ public static class {className}
 
     public class Handler : IRequestHandler<{queryListName}, PagedList<{readDto}>>
     {{
-        private readonly {contextName} _db;
+        private readonly {repoInterface} _{repoInterfaceProp};
         private readonly SieveProcessor _sieveProcessor;
         private readonly IMapper _mapper;
 
-        public Handler({contextName} db, IMapper mapper, SieveProcessor sieveProcessor)
+        public Handler({repoInterface} {repoInterfaceProp}, IMapper mapper, SieveProcessor sieveProcessor)
         {{
             _mapper = mapper;
-            _db = db;
+            _{repoInterfaceProp} = {repoInterfaceProp};
             _sieveProcessor = sieveProcessor;
         }}
 
         public async Task<PagedList<{readDto}>> Handle({queryListName} request, CancellationToken cancellationToken)
         {{
-            var collection = _db.{entity.Plural}
-                as IQueryable<{entity.Name}>;
+            var collection = _{repoInterfaceProp}.Query();
 
             var sieveModel = new SieveModel
             {{

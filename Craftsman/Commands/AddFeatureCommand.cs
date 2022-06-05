@@ -106,7 +106,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
             var propName = AskBatchOnPropertyName();
             var propType = AskBatchOnPropertyType();
             var parentEntity = AskParentEntity();
-            var dbSet = AskBatchPropertyDbSetName(parentEntity);
+            var parentEntityPlural = AskParentEntityPlural(parentEntity);
 
             _console.WriteLine();
             _console.Write(new Table().AddColumns("[grey]Property[/]", "[grey]Value[/]")
@@ -118,7 +118,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
                 .AddRow("[grey]Batch Prop Name[/]", propName)
                 .AddRow("[grey]Batch Prop Type[/]", propType)
                 .AddRow("[grey]Parent Entity[/]", parentEntity)
-                .AddRow("[grey]Batch DbSet[/]", dbSet)
+                .AddRow("[grey]Parent Entity Plural[/]", parentEntityPlural)
             );
 
             return new Feature()
@@ -129,7 +129,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
                 IsProtected = isProtected,
                 BatchPropertyName = propName,
                 BatchPropertyType = propType,
-                BatchPropertyDbSetName = dbSet,
+                ParentEntityPlural = parentEntityPlural,
                 ParentEntity = parentEntity,
             };
         }
@@ -257,10 +257,10 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
         );
     }
 
-    private string AskBatchPropertyDbSetName(string entityName)
+    private string AskParentEntityPlural(string entityName)
     {
         return _console.Prompt(
-            new TextPrompt<string>($"What's the [green]name of the DbSet[/] of the the property you are doing the batch add on? Leave [green]null[/] if you're not batching on a FK. (ex: [green]{entityName}s[/])")
+            new TextPrompt<string>($"What's the [green]plural name[/] of the the parent entity you are using for the batch add? Leave [green]null[/] if you're not batching on a FK. (ex: [green]{entityName}s[/])")
                 .AllowEmpty()
                 .HideDefaultValue()
         );

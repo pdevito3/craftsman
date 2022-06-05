@@ -174,7 +174,7 @@ BoundedContexts:
       BatchPropertyName: RecipeId
       BatchPropertyType: Guid
       ParentEntity: Recipe
-      BatchPropertyDbSetName: Recipes
+      ParentEntityPlural: Recipes
     Properties:
     - Name: Name
       Type: string
@@ -267,7 +267,7 @@ BoundedContexts:
       BatchPropertyName: RecipeId
       BatchPropertyType: Guid
       ParentEntity: Recipe
-      BatchPropertyDbSetName: Recipes
+      ParentEntityPlural: Recipes
     Properties:
     - Name: Name
       Type: string

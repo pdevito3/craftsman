@@ -14,14 +14,14 @@ public class QueryGetRecordBuilder
         _utilities = utilities;
     }
 
-    public void CreateQuery(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+    public void CreateQuery(string srcDirectory, Entity entity, string projectBaseName)
     {
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
-        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
+        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetQueryFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
+    public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName)
     {
         var className = FileNames.GetEntityFeatureClassName(entity.Name);
         var queryRecordName = FileNames.QueryRecordName(entity.Name);
@@ -30,28 +30,24 @@ public class QueryGetRecordBuilder
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
         var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
+        var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
+        var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
 
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
-        var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
+        var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};
-using {contextClassPath.ClassNamespace};
+using {entityServicesClassPath.ClassNamespace};
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using System.Threading.Tasks;
 
 public static class {className}
 {{
     public class {queryRecordName} : IRequest<{readDto}>
     {{
-        public {primaryKeyPropType} {primaryKeyPropName} {{ get; set; }}
+        public readonly {primaryKeyPropType} {primaryKeyPropName};
 
         public {queryRecordName}({primaryKeyPropType} {primaryKeyPropNameLowercase})
         {{
@@ -61,24 +57,18 @@ public static class {className}
 
     public class Handler : IRequestHandler<{queryRecordName}, {readDto}>
     {{
-        private readonly {contextName} _db;
+        private readonly {repoInterface} _{repoInterfaceProp};
         private readonly IMapper _mapper;
 
-        public Handler({contextName} db, IMapper mapper)
+        public Handler({repoInterface} {repoInterfaceProp}, IMapper mapper)
         {{
             _mapper = mapper;
-            _db = db;
+            _{repoInterfaceProp} = {repoInterfaceProp};
         }}
 
         public async Task<{readDto}> Handle({queryRecordName} request, CancellationToken cancellationToken)
         {{
-            var result = await _db.{entity.Plural}
-                .AsNoTracking()
-                .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{primaryKeyPropName} == request.{primaryKeyPropName}, cancellationToken);
-
-            if (result == null)
-                throw new NotFoundException(""{entity.Name}"", request.{primaryKeyPropName});
-
+            var result = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
             return _mapper.Map<{readDto}>(result);
         }}
     }}
