@@ -60,7 +60,8 @@ public class {commandName}Tests : TestBase
     {
         var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
         var fakeCreationDto = $"Fake{createDto}";
-        var fakeEntityVariableName = $"fake{entity.Name}One";
+        var fakeEntityVariableNameOne = $"fake{entity.Name}One";
+        var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var fakeParentEntity = $"fake{feature.ParentEntity}";
         var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(feature.ParentEntity, Dto.Creation));
@@ -71,18 +72,22 @@ public class {commandName}Tests : TestBase
         // Arrange
         var {fakeParentEntity} = Fake{feature.ParentEntity}.Generate(new {fakeParentCreationDto}().Generate());
         await InsertAsync({fakeParentEntity});
-        var {fakeEntityVariableName} = new {fakeCreationDto}().Generate();
+        var {fakeEntityVariableNameOne} = new {fakeCreationDto}().Generate();
 
         // Act
-        var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableName}}}, {fakeParentEntity}.Id);
+        var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}}}, {fakeParentEntity}.Id);
         var {lowercaseEntityName}Returned = await SendAsync(command);
-        var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}
-            .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}Returned.FirstOrDefault().Id));
+        var {lowercaseEntityName}Db = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
 
         // Assert
-        {lowercaseEntityName}Returned.FirstOrDefault().Should().BeEquivalentTo({fakeEntityVariableName}, options =>
+        {lowercaseEntityName}Returned.Should().ContainEquivalentOf({fakeEntityVariableNameOne}, options =>
             options.ExcludingMissingMembers());
-        {lowercaseEntityName}Created.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
+        {lowercaseEntityName}Db.Should().ContainEquivalentOf({fakeEntityVariableNameOne}, options =>
+            options.ExcludingMissingMembers());
+
+        {lowercaseEntityName}Returned.Should().ContainEquivalentOf({fakeEntityVariableNameTwo}, options =>
+            options.ExcludingMissingMembers());
+        {lowercaseEntityName}Db.Should().ContainEquivalentOf({fakeEntityVariableNameTwo}, options =>
             options.ExcludingMissingMembers());
     }}";
     }
