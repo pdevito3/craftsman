@@ -14,14 +14,14 @@ public class QueryGetListBuilder
         _utilities = utilities;
     }
 
-    public void CreateQuery(string srcDirectory, Entity entity, string contextName, string projectBaseName)
+    public void CreateQuery(string srcDirectory, Entity entity, string projectBaseName)
     {
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityListFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
-        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, contextName, srcDirectory, projectBaseName);
+        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetQueryFileText(string classNamespace, Entity entity, string contextName, string srcDirectory, string projectBaseName)
+    public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName)
     {
         var className = FileNames.GetEntityListFeatureClassName(entity.Name);
         var queryListName = FileNames.QueryListName(entity.Name);
@@ -30,18 +30,14 @@ public class QueryGetListBuilder
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
         var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
-
-        var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         return @$"namespace {classNamespace};
 
-using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using AutoMapper;

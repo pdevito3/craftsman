@@ -37,7 +37,6 @@ public class CommandAddRecordBuilder
 
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
 
@@ -46,7 +45,6 @@ public class CommandAddRecordBuilder
 using {entityServicesClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using AutoMapper;
 using MediatR;

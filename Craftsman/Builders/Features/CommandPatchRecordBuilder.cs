@@ -14,19 +14,18 @@ public class CommandPatchRecordBuilder
         _utilities = utilities;
     }
 
-    public void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+    public void CreateCommand(string srcDirectory, Entity entity, string projectBaseName)
     {
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.PatchEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
-        var fileText = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
+        var fileText = GetCommandFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
+    public static string GetCommandFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName)
     {
         var className = FileNames.PatchEntityFeatureClassName(entity.Name);
         var patchCommandName = FileNames.CommandPatchName(entity.Name);
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
-        var manipulationValidator = FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation);
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
@@ -35,20 +34,16 @@ public class CommandPatchRecordBuilder
         var patchedEntityProp = $"{entityNameLowercase}ToPatch";
         var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
-
-        var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
-        var validatorsClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
 
         return @$"namespace {classNamespace};
 
-using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
-using {validatorsClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using AutoMapper;

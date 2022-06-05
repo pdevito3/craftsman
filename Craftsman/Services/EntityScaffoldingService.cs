@@ -159,7 +159,7 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.GetRecord.Name)
         {
-            new QueryGetRecordBuilder(_utilities).CreateQuery(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
+            new QueryGetRecordBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName);
             new GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
             new GetEntityRecordTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments,
@@ -168,7 +168,7 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.GetList.Name)
         {
-            new QueryGetListBuilder(_utilities).CreateQuery(srcDirectory, entity, dbContextName, projectBaseName);
+            new QueryGetListBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName);
             new GetListQueryTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
             new GetEntityListTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments,
@@ -177,7 +177,7 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.DeleteRecord.Name)
         {
-            new CommandDeleteRecordBuilder(_utilities).CreateCommand(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
+            new CommandDeleteRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName);
             new DeleteCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName, useSoftDelete);
             new DeleteEntityTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments,
@@ -195,7 +195,7 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.PatchRecord.Name)
         {
-            new CommandPatchRecordBuilder(_utilities).CreateCommand(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
+            new CommandPatchRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName);
             new PatchCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
             new PatchEntityTestBuilder(_utilities).CreateTests(solutionDirectory, srcDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments,

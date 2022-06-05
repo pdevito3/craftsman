@@ -14,14 +14,14 @@ public class QueryGetRecordBuilder
         _utilities = utilities;
     }
 
-    public void CreateQuery(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName)
+    public void CreateQuery(string srcDirectory, Entity entity, string projectBaseName)
     {
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
-        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, projectBaseName);
+        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetQueryFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, string projectBaseName)
+    public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName)
     {
         var className = FileNames.GetEntityFeatureClassName(entity.Name);
         var queryRecordName = FileNames.QueryRecordName(entity.Name);
@@ -41,7 +41,6 @@ public class QueryGetRecordBuilder
 using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
 
 public static class {className}
