@@ -2,7 +2,7 @@
 
 public class DbContextConfig
 {
-    private readonly DbProvider _provider = DbProvider.SqlServer;
+    private readonly DbProvider _provider = DbProvider.Postgres;
 
     /// <summary>
     /// The name of the dbContext
@@ -14,7 +14,7 @@ public class DbContextConfig
     /// </summary>
     public string DatabaseName { get; set; }
 
-    public DbProvider ProviderEnum = DbProvider.SqlServer;
+    public DbProvider ProviderEnum = DbProvider.Postgres;
     /// <summary>
     /// The database provider for this dbcontext. You can choose SqlServer, MySql, or Postgres
     /// </summary>
@@ -24,9 +24,7 @@ public class DbContextConfig
         set
         {
             if (!DbProvider.TryFromName(value, true, out var parsed))
-            {
                 parsed = DbProvider.Postgres;
-            }
 
             ProviderEnum = parsed;
         }
