@@ -49,9 +49,12 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Net;
 using System.Threading.Tasks;
+using Bogus;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
 {{
+    private readonly Faker _faker = new Faker();
+
     {PatchEntityTest(entity, isProtected)}{authOnlyTests}
 }}";
     }
@@ -63,7 +66,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var pkName = Entity.PrimaryKeyProperty.Name;
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
         var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
-        var lookupVal = $@"""Easily Identified Value For Test""";
+        var lookupVal = "_faker.Lorem.Word()";
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
         var testName = $"patch_{entity.Name.ToLower()}_returns_nocontent_when_using_valid_patchdoc_on_existing_entity";
@@ -75,8 +78,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // if no string properties, do one with an int
         if (myProp == null)
         {
-            myProp = entity.Properties.Where(e => e.Type.Contains("int") && e.CanManipulate).FirstOrDefault();
-            lookupVal = "999999";
+            myProp = entity.Properties.FirstOrDefault(e => e.Type.Contains("int") && e.CanManipulate);
+            lookupVal = "_faker.Random.Int()";
         }
 
         if (myProp == null)
@@ -106,8 +109,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeEntityVariableName = $"fake{entity.Name}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
-        var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
-        var lookupVal = $@"""Easily Identified Value For Test""";
+        var myProp = entity.Properties.FirstOrDefault(e => e.Type == "string" && e.CanManipulate);
+        var lookupVal = "_faker.Lorem.Word()";
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
         return $@"
@@ -136,8 +139,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeEntityVariableName = $"fake{entity.Name}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
-        var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
-        var lookupVal = $@"""Easily Identified Value For Test""";
+        var myProp = entity.Properties.FirstOrDefault(e => e.Type == "string" && e.CanManipulate);
+        var lookupVal = "_faker.Lorem.Word()";
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
         return $@"

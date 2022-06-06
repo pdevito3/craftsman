@@ -288,6 +288,9 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var bravo = @$"""bravo""";
         var bravoFilterVal = "bravo";
 
+        if (prop.IsSmartEnum())
+            return "";
+
         if (prop.Type == "string")
         {
             // leave variables as is
