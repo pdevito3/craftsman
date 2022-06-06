@@ -14,9 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Open Telemetry and Jaeger tracing support
 
 * `ValueObject` class scaffolding to `SharedKernel`
+  
   * [Example 1](https://github.com/ardalis/pluralsight-ddd-fundamentals/blob/main/ClinicManagement/src/ClinicManagement.Core/ValueObjects/AnimalType.cs) in use [here](https://github.com/ardalis/pluralsight-ddd-fundamentals/blob/main/ClinicManagement/src/ClinicManagement.Core/Aggregates/Patient.cs)
   * [Example 2](https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/Percent.cs) in use [here](https://github.com/asc-lab/better-code-with-ddd/blob/abbf03586ee9287c302841f0ce85cbfd9485ba72/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/Loan.cs)
-
+  
 * Domain Event support for all `BaseEntities`. Automatically scaffolded for the `Create` and `Update` methods that call messages in a new `DomainEvents` directory under that entity. It works by adding messages to a new `DomainEvents` prop on each entity and publishing all messages on an EF save using MediatR. 
 
   * Unit tests are also scaffolded
@@ -79,19 +80,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * All features will now use a repository instead of using dbcontext directly. 
 
-  * docs: I know this is controvertial, but it is for a couple reason:
-    * Firstly, yes i know and agree that EF is already a repository + UoW pattern, but there are some benefits to this (and no i'm not making the argument that it's nice because i can switch my RDS provider at a whim).
-    * One of the biggest reasons is testing. i've found that, in practice, features can frequently have business logic paths that you want to write tests for, but you don't want to write expensive integration tests to acomplish that. by adding a respoitory, using can easily mock the repository in a unit test and test your logic path there
-    * Another is validation. If i want to check for uniqueness of a record in the database, before I create or update it I either need to 1. know to add it in every feature where the entitiy is added/updated or 2. pass a service into the factory methods and use them there. In order to do this, you need a service to pass through as you don't want to pass dbcontext directly to your domain entity. By using a repository here, we our domain entity just know that it has this service than can perform a particular check for it and all is good.
-      * Another option could be to create a factory method layer over the domain entity itself that manages these service level things, but the current wrapt set up isn't built this way.
-
-  * Note that the repositories are very simple abstractions on top of EF. This is by design and it is highly recommended to not create complex abstractions on top of an already well though out repository + uow pattern that EF provides.
-    * Of note, none of the repository methods have an option to save inside of them. Saving should generally be done using the `IUnitOfWork` interface, but some situations might call for an immeidate save. If that's the case, you could consider adding an ad hoc method to the entity repository like `UpdateImmediately` if necessary.
-    * For includes, either write a custom repository method on the entity repository for that use case, or pull in the other entitiy reposiotry and get the info separately. 
-
 * Batch does not require a dbset name anymore, but does require a plural entity name for the FK if using one. Functionally, this is the same as before just with a new name for the prop: `ParentEntityPlural`
-
-  * TODO: docs
 
 * Entity props now `virtual` by default with a `protected` constructor for mocking in unit tests. This is mostly for foreign entities (since we don't have EF to populate our foreign entities in unit tests), but in order to have our mocks accurately reflect all our props, we need to make them virtual. For example:
 
@@ -133,8 +122,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Removed sort integration tests
 
 * Messages get a class for better typing as well as an interface.
-  * **TODO: docs**
-
+  
 * Add postman client to example scaffolding
 
 * Add support for offline access and client secret requirement settings for client credentials clients
@@ -149,7 +137,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Added `client_role` to `UserPolicyHandler` role check to accomodate machines with a new scaffolded test.
 
-  * **TODO DOCS**. For example with Duende, you can add something like this to get a role. Ideally configed in the DB.
+  * Machine example:
 
     ```c#
     new Client
@@ -171,7 +159,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-* sql server connectino strings to docker will trust the cert: `TrustServerCertificate=True;`
+* Sql server connection strings to docker will trust the cert: `TrustServerCertificate=True;`
 
 
 
