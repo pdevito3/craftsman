@@ -54,7 +54,7 @@ public class AddProducerCommand : Command<AddProducerCommand.Settings>
         _utilities.IsBoundedContextDirectoryGuard();
 
         // TODO make injectable
-        _fileParsingHelper.RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
         var template = _fileParsingHelper.GetTemplateFromFile<ProducerTemplate>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 

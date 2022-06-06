@@ -50,7 +50,7 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
         _scaffoldingDirectoryStore.SetBoundedContextDirectoryAndProject(projectName);
         _utilities.IsBoundedContextDirectoryGuard();
 
-        _fileParsingHelper.RunInitialTemplateParsingGuards(potentialBoundaryDirectory);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
         var template = _fileParsingHelper.GetTemplateFromFile<ConsumerTemplate>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 

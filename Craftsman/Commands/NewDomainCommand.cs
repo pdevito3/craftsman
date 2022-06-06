@@ -53,7 +53,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         var rootDir = _utilities.GetRootDir();
 
         // TODO make injectable
-        _fileParsingHelper.RunInitialTemplateParsingGuards(rootDir);
+        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
         var domainProject = _fileParsingHelper.GetTemplateFromFile<DomainProject>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 
