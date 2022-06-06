@@ -180,6 +180,13 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
+    - Name: Visibility
+      SmartNames:
+      - Public
+      - Friends Only
+      - Private
+      CanFilter: true
+      CanSort: true
     - Name: Quantity
       Type: string
       CanFilter: true
@@ -485,6 +492,13 @@ BoundedContexts:
     - Name: ImageLink
       Type: string
       CanFilter: true
+      CanSort: true
+    - Name: Visibility
+      SmartNames:
+      - Public
+      - Friends Only
+      - Private
+      CanFilter: true
       CanSort: true";
     }
 
@@ -534,6 +548,13 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
+    - Name: Visibility
+      SmartNames:
+      - Public
+      - Friends Only
+      - Private
+      CanFilter: true
+      CanSort: true
   Environment:
     AuthSettings:
       Authority: https://localhost:5010
@@ -580,6 +601,13 @@ BoundedContexts:
       CanSort: true
     - Name: ImageLink
       Type: string
+      CanFilter: true
+      CanSort: true
+    - Name: Visibility
+      SmartNames:
+      - Public
+      - Friends Only
+      - Private
       CanFilter: true
       CanSort: true
   Environment:
@@ -665,6 +693,13 @@ BoundedContexts:
       Type: int?
       CanFilter: true
       CanSort: true
+    - Name: Visibility
+      SmartNames:
+      - Public
+      - Friends Only
+      - Private
+      CanFilter: true
+      CanSort: true
   Environment:
     AuthSettings:
       Authority: https://localhost:3385
@@ -700,6 +735,7 @@ Bff:
     - Name: RecipeSourceLink
     - Name: Description
     - Name: ImageLink
+    - Name: Visibility
     - Name: Rating
       Type: number?
 AuthServer:
