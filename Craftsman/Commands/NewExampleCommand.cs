@@ -225,6 +225,13 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
+    - Name: Visibility
+      SmartNames:
+      - Public
+      - Friends Only
+      - Private
+      CanFilter: true
+      CanSort: true
     - Name: Directions
       Type: string
       CanFilter: true

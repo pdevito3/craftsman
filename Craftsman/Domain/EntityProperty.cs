@@ -137,6 +137,19 @@ public class EntityProperty
     /// </summary>
     public string ColumnType { get; set; }
 
+    public bool IsSmartEnum() => SmartNames.Count > 0;
+
+    private string _smartEnumPropName;
+    public string SmartEnumPropName
+    {
+        get => _smartEnumPropName ?? $"{Name}Enum"; 
+        set => _smartEnumPropName = value;
+    }
+
+    public List<string> SmartNames { get; set; } = new List<string>();
+
+    public List<SmartOption> GetSmartOptions() => SmartNames.Select((name, index) => new SmartOption { Name = name, Value = index}).ToList();
+
     public static EntityProperty GetPrimaryKey()
     {
         return new()
@@ -148,4 +161,10 @@ public class EntityProperty
             Type = "Guid"
         };
     }
+}
+
+public class SmartOption
+{
+    public string Name { get; set; }
+    public int Value { get; set; }
 }

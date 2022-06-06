@@ -57,7 +57,11 @@ public class EntityScaffoldingService
             _mediator.Send(new EntityRepositoryBuilder.EntityRepositoryBuilderCommand(dbContextName, 
                 entity.Name, 
                 entity.Plural));
-            
+
+            var smartProps = entity.Properties.Where(x => x.IsSmartEnum()).ToList();
+            foreach (var smartProp in smartProps)
+                _mediator.Send(new SmartEnumBuilder.SmartEnumBuilderCommand(smartProp, entity.Plural));
+
             var isProtected = entity.Features.Any(f => f.IsProtected); // <-- one more example of why it would be nice to have specific endpoints for each feature 😤
             if (entity.Features.Count > 0)
                 new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, isProtected);
@@ -67,7 +71,7 @@ public class EntityScaffoldingService
                 AddFeatureToProject(solutionDirectory, srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, entity, useSoftDelete);
 
             // Shared Tests
-            new FakesBuilder(_utilities).CreateFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, entity);
+            new FakesBuilder(_utilities).CreateFakes(srcDirectory, testDirectory, projectBaseName, entity);
             new CreateEntityUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
             new UpdateEntityUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
 

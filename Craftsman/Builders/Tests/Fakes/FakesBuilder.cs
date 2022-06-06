@@ -16,7 +16,7 @@ public class FakesBuilder
         _utilities = utilities;
     }
 
-    public void CreateFakes(string srcDirectory, string solutionDirectory, string testDirectory, string projectBaseName, Entity entity)
+    public void CreateFakes(string srcDirectory, string testDirectory, string projectBaseName, Entity entity)
     {
         // ****this class path will have an invalid FullClassPath. just need the directory
         var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"", entity.Name, projectBaseName);
@@ -25,9 +25,9 @@ public class FakesBuilder
             Directory.CreateDirectory(classPath.ClassDirectory);
 
         CreateFakerEntityFile(srcDirectory, testDirectory, entity.Name, entity, projectBaseName);
-        CreateFakerFile(srcDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName);
-        CreateFakerFile(srcDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Read), entity, projectBaseName);
-        CreateFakerFile(srcDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName);
+        CreateFakerFile(srcDirectory, testDirectory, Dto.Creation, entity, projectBaseName);
+        CreateFakerFile(srcDirectory, testDirectory, Dto.Read, entity, projectBaseName);
+        CreateFakerFile(srcDirectory, testDirectory, Dto.Update, entity, projectBaseName);
     }
 
     public void CreateRolePermissionFakes(string srcDirectory, string solutionDirectory, string testDirectory, string projectBaseName, Entity entity)
@@ -38,30 +38,41 @@ public class FakesBuilder
             Directory.CreateDirectory(classPath.ClassDirectory);
 
         CreateFakerEntityFile(srcDirectory, testDirectory, entity.Name, entity, projectBaseName);
-        CreateFakerFile(srcDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Read), entity, projectBaseName);
+        CreateFakerFile(srcDirectory, testDirectory, Dto.Read, entity, projectBaseName);
 
         CreateRolePermissionFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName);
         CreateRolePermissionFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName);
     }
 
-    private void CreateFakerFile(string srcDirectory, string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName)
+    private void CreateFakerFile(string srcDirectory, string testDirectory, Dto dtoType, Entity entity, string projectBaseName)
     {
+        var objectToFakeClassName = FileNames.GetDtoName(entity.Name, dtoType);
         var fakeFilename = $"Fake{objectToFakeClassName}.cs";
         var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, entity.Name, projectBaseName);
-        var fileText = GetFakeFileText(classPath.ClassNamespace, objectToFakeClassName, entity, srcDirectory, testDirectory, projectBaseName);
+        var fileText = GetFakeFileText(classPath.ClassNamespace, dtoType, entity, srcDirectory, testDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string GetFakeFileText(string classNamespace, string objectToFakeClassName, Entity entity, string srcDirectory, string testDirectory, string projectBaseName)
+    private static string GetFakeFileText(string classNamespace, Dto dtoType, Entity entity, string srcDirectory, string testDirectory, string projectBaseName)
     {
+        var objectToFakeClassName = FileNames.GetDtoName(entity.Name, dtoType);
         var entitiesClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
+        var rulesFor = "";
+        foreach (var entityProperty in entity.Properties)
+        {
+            if(entityProperty.IsSmartEnum() && (dtoType is Dto.Creation or Dto.Update))
+                rulesFor += @$"
+        RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.PickRandom<{entityProperty.SmartEnumPropName}>({entityProperty.SmartEnumPropName}.List).Name);";
+        }
+
         // this... is super fragile. Should really refactor this
-        var usingStatement = objectToFakeClassName.Contains("DTO", StringComparison.InvariantCultureIgnoreCase) ? @$"using {dtoClassPath.ClassNamespace};" : $"using {entitiesClassPath.ClassNamespace};";
+        var usingStatement = objectToFakeClassName.Contains("DTO", StringComparison.InvariantCultureIgnoreCase) ? @$"using {dtoClassPath.ClassNamespace};" : $"";
         return @$"namespace {classNamespace};
 
 using AutoBogus;
+using {entitiesClassPath.ClassNamespace};
 {usingStatement}
 
 // or replace 'AutoFaker' with 'Faker' along with your own rules if you don't want all fields to be auto faked
@@ -71,7 +82,7 @@ public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
     {{
         // if you want default values on any of your properties (e.g. an int between a certain range or a date always in the past), you can add `RuleFor` lines describing those defaults
         //RuleFor({entity.Lambda} => {entity.Lambda}.ExampleIntProperty, {entity.Lambda} => {entity.Lambda}.Random.Number(50, 100000));
-        //RuleFor({entity.Lambda} => {entity.Lambda}.ExampleDateProperty, {entity.Lambda} => {entity.Lambda}.Date.Past());
+        //RuleFor({entity.Lambda} => {entity.Lambda}.ExampleDateProperty, {entity.Lambda} => {entity.Lambda}.Date.Past());{rulesFor}
     }}
 }}";
     }

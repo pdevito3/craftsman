@@ -57,9 +57,11 @@ using {classPath.ClassNamespace};";
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
 
         return @$"namespace {classNamespace};
 
+using {exceptionsClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {profileClassPath.ClassNamespace};
 using {validatorClassPath.ClassNamespace};
@@ -174,16 +176,37 @@ public abstract class BaseEntity
         foreach (var property in props)
         {
             var attributes = AttributeBuilder(property);
-            propString += attributes;
-            var defaultValue = GetDefaultValueText(property.DefaultValue, property);
-            var newLine = (property.IsForeignKey && !property.IsMany)
-                ? Environment.NewLine
-                : $"{Environment.NewLine}{Environment.NewLine}";
+            
+            if (property.IsSmartEnum())
+            {
+                propString += $@"    private {property.SmartEnumPropName} _{property.Name.LowercaseFirstLetter()};
+{attributes}    public virtual string {property.Name}
+    {{
+        get => _{property.Name.LowercaseFirstLetter()}.Name;
+        private set
+        {{
+            if (!{property.SmartEnumPropName}.TryFromName(value, true, out var parsed))
+                throw new InvalidSmartEnumPropertyName(nameof({property.Name}), value);
 
-            if (property.IsPrimativeType || property.IsMany)
-                propString += $@"    public virtual {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+            _{property.Name.LowercaseFirstLetter()} = parsed;
+        }}
+    }}
 
-            propString += GetForeignProp(property);
+";
+            }
+            else
+            {
+                propString += attributes;
+                var defaultValue = GetDefaultValueText(property.DefaultValue, property);
+                var newLine = (property.IsForeignKey && !property.IsMany)
+                    ? Environment.NewLine
+                    : $"{Environment.NewLine}{Environment.NewLine}";
+
+                if (property.IsPrimativeType || property.IsMany)
+                    propString += $@"    public virtual {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+
+                propString += GetForeignProp(property);
+            }
         }
 
         return propString.RemoveLastNewLine().RemoveLastNewLine();

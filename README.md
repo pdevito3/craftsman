@@ -37,6 +37,8 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Added repository & unit of work abstractions for better testing and validation
 
+✅ SmartEnum property scaffolding support
+
 🚧 Auth Server rewrite
 
 🚧 Add Identity to Auth Server

@@ -38,6 +38,7 @@ public class WebApiCsProjBuilder
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include=""Ardalis.SmartEnum"" Version=""2.1.0"" />
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""AutoMapper.Extensions.Microsoft.DependencyInjection"" Version=""11.0.0"" />
