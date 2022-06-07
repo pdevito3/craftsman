@@ -104,6 +104,9 @@ public class TestFixture
             d.ServiceType == typeof(IHttpContextAccessor));
         services.Remove(httpContextAccessorService);
         services.AddSingleton(_ => Mock.Of<IHttpContextAccessor>());
+        
+        // Example mock replacement:
+        // services.ReplaceServiceWithSingletonMock<IMySpecialService>();
 
         // MassTransit Harness Setup -- Do Not Delete Comment
 
@@ -324,6 +327,21 @@ public class TestFixture
     {{
         // MassTransit Teardown -- Do Not Delete Comment
     }}
-}}";
+}}
+
+
+
+public static class ServiceCollectionServiceExtensions
+{{
+    public static IServiceCollection ReplaceServiceWithSingletonMock<TService>(this IServiceCollection services)
+        where TService : class
+    {{
+        var service = services.FirstOrDefault(d => d.ServiceType == typeof(TService));
+        services.Remove(service);
+        services.AddSingleton(_ => Mock.Of<TService>());
+        return services;
+    }}
+}}
+";
     }
 }
