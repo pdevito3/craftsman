@@ -17,31 +17,17 @@ Craftsman is the workhorse behind the [Wrapt](https://wrapt.dev) framework and p
 
 For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wrapt.dev).
 
-## Upcoming Features in v0.15
+## Upcoming Features in v0.16
 
 The last few releases have brought a ton of new features, but there are still several items I want to address before I slap the v1.0 sticker on things. I have some of the larger lifts below. Not everything here will be in the next release and this is certainly not an exhaustive list of everything, but I want to be open about what's on the horizon. 🌅
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-✅ OpenTelemetry & Jaeger Tracing	
+🚧 Testing Optimizations
 
-✅ Built in Domain Event support (with unit test scaffolding)
+🚧 Auth Server rewrite with Identity
 
-✅ Moved to `Program.cs` only format
-
-✅ Updated CLI command structure
-
-✅ Colocate DTOs by default
-
-✅ Performance improvements for tests and cleanup
-
-✅ Added repository & unit of work abstractions for better testing and validation
-
-✅ SmartEnum property scaffolding support
-
-🚧 Auth Server rewrite
-
-🚧 Add Identity to Auth Server
+🚧 Endpoint Colocation
 
 🚧 Message Bus Enhancements
 
@@ -51,7 +37,21 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 🚧 Json Schema for easier file scaffolding
 
-🚧 Performance Upgrades
+
+
+### Some v0.15 highlights
+
+✅ Updated CLI command structure
+
+✅ OpenTelemetry & Jaeger Tracing
+
+✅ Built in Domain Event support (with unit test scaffolding)
+
+✅ Moved to `Program.cs` only format
+
+✅ Added repository & unit of work abstractions for better testing and validation
+
+✅ SmartEnum property scaffolding support
 
 
 
