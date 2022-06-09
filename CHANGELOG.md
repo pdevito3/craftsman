@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Removed `faulty` producer assertion in integration tests for better performance
+* Remove `.AddFluentValidation(cfg => {{ cfg.AutomaticValidationEnabled = false; }});` from registration as validation should be happening directly at domain level
 
 ## [0.15.0] - 06/05/2022
 
@@ -53,7 +54,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   }
   ```
   
-
 * Smart enum property support. Just add a property and give it a list of options using the `SmartNames` property and you're good to go. They will all be strings with smart enum backing. Attributes like filtering and sorting are supported
 
   ```yaml
