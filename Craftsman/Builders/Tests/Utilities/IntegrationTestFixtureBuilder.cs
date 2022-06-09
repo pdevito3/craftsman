@@ -100,13 +100,7 @@ public class TestFixture
         var services = builder.Services;
 
         // add any mock services here
-        var httpContextAccessorService = services.FirstOrDefault(d =>
-            d.ServiceType == typeof(IHttpContextAccessor));
-        services.Remove(httpContextAccessorService);
-        services.AddSingleton(_ => Mock.Of<IHttpContextAccessor>());
-        
-        // Example mock replacement:
-        // services.ReplaceServiceWithSingletonMock<IMySpecialService>();
+        // services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();
 
         // MassTransit Harness Setup -- Do Not Delete Comment
 
@@ -336,8 +330,7 @@ public static class ServiceCollectionServiceExtensions
     public static IServiceCollection ReplaceServiceWithSingletonMock<TService>(this IServiceCollection services)
         where TService : class
     {{
-        var service = services.FirstOrDefault(d => d.ServiceType == typeof(TService));
-        services.Remove(service);
+        services.RemoveAll(typeof(TService));
         services.AddSingleton(_ => Mock.Of<TService>());
         return services;
     }}
