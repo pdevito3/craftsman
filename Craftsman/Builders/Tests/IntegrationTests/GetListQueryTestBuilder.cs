@@ -55,10 +55,11 @@ using {fakerClassPath.ClassNamespace};
 using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
+[Collection(nameof(TestFixture))]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
 {{
     {GetEntitiesTest(entity)}
@@ -79,7 +80,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
         return @$"
-    [Test]
+    [Fact]
     public async Task can_get_{entity.Name.ToLower()}_list()
     {{
         // Arrange
@@ -111,7 +112,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpersThreeCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo, out var fakeParentIdRuleForThree);
         return $@"
-    [Test]
+    [Fact]
     public async Task can_get_{entity.Name.ToLower()}_list_with_expected_page_size_and_number()
     {{
         //Arrange
@@ -171,7 +172,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
         return $@"
-    [Test]
+    [Fact]
     public async Task can_get_sorted_list_of_{entity.Name.ToLower()}_by_{prop.Name}_in_asc_order()
     {{
         //Arrange
@@ -242,7 +243,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
         return $@"
-    [Test]
+    [Fact]
     public async Task can_get_sorted_list_of_{entity.Name.ToLower()}_by_{prop.Name}_in_desc_order()
     {{
         //Arrange
@@ -326,7 +327,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
         return $@"
-    [Test]
+    [Fact]
     public async Task can_filter_{entity.Name.ToLower()}_list_using_{prop.Name}()
     {{
         //Arrange

@@ -43,16 +43,12 @@ public class IntegrationTestBaseBuilder
         return @$"namespace {classNamespace};
 
 using FluentAssertions;
-using NUnit.Framework;
-using System.Threading.Tasks;
 using AutoBogus;
 using FluentAssertions.Extensions;
-using static {testFixtureName};
 
-public class TestBase
+public class TestBase : IDisposable
 {{
-    [SetUp]
-    public Task TestSetUp()
+    public TestBase()
     {{{equivalency}
     
         AutoFaker.Configure(builder =>
@@ -62,8 +58,10 @@ public class TestBase
                 .WithTreeDepth(1)
                 .WithRepeatCount(1);
         }});
-        
-        return Task.CompletedTask;
+    }}
+    
+    public void Dispose()
+    {{
     }}
 }}";
     }

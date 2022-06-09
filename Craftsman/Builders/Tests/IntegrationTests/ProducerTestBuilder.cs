@@ -30,7 +30,7 @@ public class ProducerTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;
 using MassTransit;
 using MassTransit.Testing;
@@ -41,6 +41,7 @@ using {producerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};
 using static {testFixtureName};
 
+[Collection(nameof(TestFixture))]
 public class {producer.ProducerName}Tests : TestBase
 {{
     {ProducerTest(producer)}
@@ -51,7 +52,7 @@ public class {producer.ProducerName}Tests : TestBase
     {
         var messageName = FileNames.MessageInterfaceName(producer.MessageName);
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task can_produce_{producer.MessageName}_message()
     {{
         // Arrange

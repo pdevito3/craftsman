@@ -41,12 +41,13 @@ using {fakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;
 using {featuresClassPath.ClassNamespace};
 using static {testFixtureName};
 using {exceptionsClassPath.ClassNamespace};{foreignEntityUsings}
 
+[Collection(nameof(TestFixture))]
 public class {commandName}Tests : TestBase
 {{
     {GetAddCommandTest(commandName, entity, featureName)}
@@ -74,7 +75,7 @@ public class {commandName}Tests : TestBase
             }
         }
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task can_add_new_{entity.Name.ToLower()}_to_db()
     {{
         // Arrange

@@ -65,27 +65,26 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;{usingStatement}
-using NUnit.Framework;
+using Xunit;
 using Respawn;
 using Respawn.Graph;
-using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-[SetUpFixture]
-public class TestFixture
+[CollectionDefinition(nameof(TestFixture))]
+public class TestFixtureCollection : ICollectionFixture<TestFixture> {{ }}
+
+public class TestFixture : IAsyncLifetime
 {{
     private static IServiceScopeFactory _scopeFactory;
     private static Checkpoint _checkpoint;
     private static ServiceProvider _provider;
 
-    [OneTimeSetUp]
-    public async Task RunBeforeAnyTests()
+    public async Task InitializeAsync()
     {{
         var dockerDbPort = await DockerDatabaseUtilities.EnsureDockerStartedAndGetPortPortAsync();
         var dockerConnectionString = DockerDatabaseUtilities.GetSqlConnectionString(dockerDbPort.ToString());
@@ -317,14 +316,11 @@ public class TestFixture
 
     // MassTransit Methods -- Do Not Delete Comment
 
-    [OneTimeTearDown]
-    public async Task RunAfterAnyTests()
+    public async Task DisposeAsync()
     {{
         // MassTransit Teardown -- Do Not Delete Comment
     }}
 }}
-
-
 
 public static class ServiceCollectionServiceExtensions
 {{

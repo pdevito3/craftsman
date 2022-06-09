@@ -41,11 +41,12 @@ using FluentAssertions;
 using HeimGuard;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using static {testFixtureName};
 
+[Collection(nameof(TestFixture))]
 public class UserPolicyHandlerTests : TestBase
 {{
     private readonly Faker _faker;
@@ -55,7 +56,7 @@ public class UserPolicyHandlerTests : TestBase
         _faker = new Faker();
     }}
     
-    [Test]
+    [Fact]
     public void GetUserPermissions_should_require_user()
     {{
         // Arrange
@@ -73,7 +74,7 @@ public class UserPolicyHandlerTests : TestBase
         permissions.Should().ThrowAsync<ArgumentNullException>();
     }}
     
-    [Test]
+    [Fact]
     public async Task superadmin_user_gets_all_permissions()
     {{
         // Arrange
@@ -87,7 +88,7 @@ public class UserPolicyHandlerTests : TestBase
         permissions.Should().BeEquivalentTo(Permissions.List().ToArray());
     }}
     
-    [Test]
+    [Fact]
     public async Task superadmin_machine_gets_all_permissions()
     {{
         // Arrange
@@ -101,7 +102,7 @@ public class UserPolicyHandlerTests : TestBase
         permissions.Should().BeEquivalentTo(Permissions.List().ToArray());
     }}
     
-    [Test]
+    [Fact]
     public async Task non_super_admin_gets_assigned_permissions_only()
     {{
         // Arrange
@@ -125,7 +126,7 @@ public class UserPolicyHandlerTests : TestBase
         permissions.Should().NotContain(randomOtherPermission);
     }}
     
-    [Test]
+    [Fact]
     public async Task claims_role_duplicate_permissions_removed()
     {{
         // Arrange

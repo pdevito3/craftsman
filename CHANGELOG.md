@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Removed `faulty` producer assertion in integration tests for better performance
+* Integration tests use XUnit for parallelization. Updates `TestFixture`, `TestBase`, and test attributes
+  * Note, there is still no db cleanup after each test, so you should write your assertions accordingly
 
 ## [0.15.0] - 06/05/2022
 
