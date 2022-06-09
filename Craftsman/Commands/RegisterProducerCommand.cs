@@ -52,8 +52,7 @@ public class RegisterProducerCommand : Command<RegisterProducerCommand.Settings>
 
         _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your producer has been successfully registered. Keep up the good work!");
 
-        var panel = new Panel(@$"[bold yellow4](await IsFaultyPublished<{producer.MessageName}>()).Should().BeFalse();
-(await IsPublished<{producer.MessageName}>()).Should().BeTrue();[/]");
+        var panel = new Panel(@$"[bold yellow4](await IsPublished<{producer.MessageName}>()).Should().BeTrue();[/]");
         panel.Border = BoxBorder.Rounded;
         panel.Padding = new Padding(1);
         _console.MarkupLine(@$"{Environment.NewLine}[bold yellow4]Don't forget to add assertions for your producer tests! Adding something like this to your test should do the trick:{Environment.NewLine}[/]");

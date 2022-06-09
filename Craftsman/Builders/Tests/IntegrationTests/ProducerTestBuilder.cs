@@ -61,7 +61,6 @@ public class {producer.ProducerName}Tests : TestBase
         await SendAsync(command);
 
         // Assert
-        (await IsFaultyPublished<{messageName}>()).Should().BeFalse();
         (await IsPublished<{messageName}>()).Should().BeTrue();
     }}";
     }

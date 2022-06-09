@@ -76,17 +76,6 @@ using MassTransit;";
     }}
     
     /// <summary>
-    /// Confirm if there was a fault when publishing for this harness.
-    /// </summary>
-    /// <typeparam name=""TMessage"">The message that should be published.</typeparam>
-    /// <returns>A boolean of true if there was a fault for a message of the given type when published.</returns>
-    public static async Task<bool> IsFaultyPublished<TMessage>()
-        where TMessage : class
-    {{
-        return await _harness.Published.Any<Fault<TMessage>>();
-    }}
-    
-    /// <summary>
     /// Confirm that a message has been published for this harness.
     /// </summary>
     /// <typeparam name=""TMessage"">The message that should be published.</typeparam>
