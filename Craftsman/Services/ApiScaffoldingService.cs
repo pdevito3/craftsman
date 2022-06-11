@@ -138,8 +138,6 @@ public class ApiScaffoldingService
             template.DbContext.ContextName,
             template.DbContext.ProviderEnum);
         new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ProviderEnum);
-        new DockerUtilitiesBuilder(_utilities).CreateGeneralUtilityClass(testDirectory, projectBaseName, template.DbContext.ProviderEnum);
-        new DockerUtilitiesBuilder(_utilities).CreateDockerDatabaseUtilityClass(testDirectory, projectBaseName, template.DbContext.ProviderEnum);
         new WebAppFactoryBuilder(_utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
         new FunctionalTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName);
         new HealthTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);

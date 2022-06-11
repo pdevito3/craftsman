@@ -28,7 +28,6 @@ public class PatchCommandTestBuilder
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
         var commandName = FileNames.CommandPatchName(entity.Name);
 
-        var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
@@ -52,7 +51,6 @@ public class PatchCommandTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
