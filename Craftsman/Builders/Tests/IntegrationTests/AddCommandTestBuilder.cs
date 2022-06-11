@@ -28,7 +28,6 @@ public class AddCommandTestBuilder
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
         var commandName = FileNames.CommandAddName(entity.Name);
 
-        var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
@@ -38,7 +37,6 @@ public class AddCommandTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;

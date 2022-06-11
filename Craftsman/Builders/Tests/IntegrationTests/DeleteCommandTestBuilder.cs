@@ -29,7 +29,6 @@ public class DeleteCommandTestBuilder
         var commandName = FileNames.CommandDeleteName(entity.Name);
         var softDeleteTest = useSoftDelete ? SoftDeleteTest(commandName, entity, featureName) : "";
 
-        var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
@@ -39,7 +38,6 @@ public class DeleteCommandTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

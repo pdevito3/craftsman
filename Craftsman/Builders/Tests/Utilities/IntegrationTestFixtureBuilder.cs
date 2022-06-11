@@ -24,7 +24,6 @@ public class IntegrationTestFixtureBuilder
     {
         var apiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
         var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
-        var testUtilsClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
         var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
@@ -56,13 +55,11 @@ using Npgsql;"
 
 using {configClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
-using {testUtilsClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using MediatR;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
@@ -76,6 +73,10 @@ using Respawn.Graph;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using DotNet.Testcontainers.Containers.Builders;
+using DotNet.Testcontainers.Containers.Configurations.Databases;
+using DotNet.Testcontainers.Containers.Modules.Abstractions;
+using DotNet.Testcontainers.Containers.Modules.Databases;
 
 [SetUpFixture]
 public class TestFixture
@@ -83,13 +84,13 @@ public class TestFixture
     private static IServiceScopeFactory _scopeFactory;
     private static Checkpoint _checkpoint;
     private static ServiceProvider _provider;
+    private readonly TestcontainerDatabase _dbContainer = dbSetup();
 
     [OneTimeSetUp]
     public async Task RunBeforeAnyTests()
     {{
-        var dockerDbPort = await DockerDatabaseUtilities.EnsureDockerStartedAndGetPortPortAsync();
-        var dockerConnectionString = DockerDatabaseUtilities.GetSqlConnectionString(dockerDbPort.ToString());
-        Environment.SetEnvironmentVariable(""DB_CONNECTION_STRING"", dockerConnectionString);
+        await _dbContainer.StartAsync();
+        {provider.IntegrationTestConnectionStringSetup()}
         
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions()
         {{
@@ -316,6 +317,8 @@ public class TestFixture
     }}
 
     // MassTransit Methods -- Do Not Delete Comment
+
+    {provider.IntegrationTestDbSetupMethod(projectBaseName)}
 
     [OneTimeTearDown]
     public async Task RunAfterAnyTests()

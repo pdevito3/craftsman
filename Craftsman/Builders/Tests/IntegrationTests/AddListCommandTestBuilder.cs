@@ -27,7 +27,6 @@ public class AddListCommandTestBuilder
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
         var commandName = feature.Command;
 
-        var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
         var dtoUtilClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
@@ -41,7 +40,6 @@ public class AddListCommandTestBuilder
 using {dtoUtilClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using {parentFakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using FluentAssertions;

@@ -23,7 +23,6 @@ public class ConsumerTestBuilder
     private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Consumer consumer, string projectBaseName)
     {
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-        var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
         var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, "", consumer.DomainDirectory, projectBaseName);
 
         var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
@@ -38,7 +37,6 @@ using {messagesClassPath.ClassNamespace};
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using {consumerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};
 using static {testFixtureName};
 
 public class {consumer.ConsumerName}Tests : TestBase
