@@ -48,7 +48,6 @@ using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {commandName}Tests : TestBase
 {{
     {GetDeleteTest(commandName, entity, featureName)}{GetDeleteWithoutKeyTest(commandName, entity, featureName)}{softDeleteTest}

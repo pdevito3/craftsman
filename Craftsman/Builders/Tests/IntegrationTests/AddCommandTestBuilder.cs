@@ -47,7 +47,6 @@ using {featuresClassPath.ClassNamespace};
 using static {testFixtureName};
 using {exceptionsClassPath.ClassNamespace};{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {commandName}Tests : TestBase
 {{
     {GetAddCommandTest(commandName, entity, featureName)}

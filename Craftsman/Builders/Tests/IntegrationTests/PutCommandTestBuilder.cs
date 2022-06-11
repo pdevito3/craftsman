@@ -58,7 +58,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using static {testFixtureName};{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {commandName}Tests : TestBase
 {{
     [Fact]

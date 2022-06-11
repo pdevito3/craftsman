@@ -41,7 +41,6 @@ using {consumerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};
 using static {testFixtureName};
 
-[Collection(nameof(TestFixture))]
 public class {consumer.ConsumerName}Tests : TestBase
 {{
     {ConsumerTest(consumer)}

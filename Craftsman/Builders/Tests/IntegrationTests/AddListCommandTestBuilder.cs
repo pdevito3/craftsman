@@ -50,7 +50,6 @@ using Xunit;
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {commandName}Tests : TestBase
 {{
     {GetAddListCommandTest(entity, feature)}

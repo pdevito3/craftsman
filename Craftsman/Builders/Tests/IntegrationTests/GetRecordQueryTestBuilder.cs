@@ -46,7 +46,6 @@ using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {queryName}Tests : TestBase
 {{
     {GetTest(queryName, entity, featureName)}{GetWithoutKeyTest(queryName, entity, featureName)}

@@ -59,7 +59,6 @@ using Xunit;
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
 {{
     {GetEntitiesTest(entity)}

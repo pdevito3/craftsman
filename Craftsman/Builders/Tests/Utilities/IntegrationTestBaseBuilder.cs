@@ -45,7 +45,9 @@ public class IntegrationTestBaseBuilder
 using FluentAssertions;
 using AutoBogus;
 using FluentAssertions.Extensions;
+using Xunit;
 
+[Collection(nameof(TestFixture))]
 public class TestBase : IDisposable
 {{
     public TestBase()

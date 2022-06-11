@@ -41,7 +41,6 @@ using {producerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};
 using static {testFixtureName};
 
-[Collection(nameof(TestFixture))]
 public class {producer.ProducerName}Tests : TestBase
 {{
     {ProducerTest(producer)}

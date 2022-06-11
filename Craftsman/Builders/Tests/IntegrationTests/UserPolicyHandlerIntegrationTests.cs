@@ -46,7 +46,6 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using static {testFixtureName};
 
-[Collection(nameof(TestFixture))]
 public class UserPolicyHandlerTests : TestBase
 {{
     private readonly Faker _faker;
