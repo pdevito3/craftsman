@@ -44,19 +44,13 @@ using {dtoClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 
-[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
-    private readonly Faker _faker;
-
-    public {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}()
-    {{
-        _faker = new Faker();
-    }}
+    private readonly Faker _faker = new Faker();
     
-    [Test]
+    [Fact]
     public void can_create_valid_rolepermission()
     {{
         // Arrange
@@ -75,7 +69,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         newRolePermission.Role.Should().Be(role);
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_create_rolepermission_with_invalid_role()
     {{
         // Arrange
@@ -89,7 +83,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         rolePermission.Should().Throw<FluentValidation.ValidationException>();
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_create_rolepermission_with_invalid_permission()
     {{
         // Arrange
@@ -122,7 +116,7 @@ using {dtoClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
@@ -133,7 +127,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         _faker = new Faker();
     }}
     
-    [Test]
+    [Fact]
     public void can_update_rolepermission()
     {{
         // Arrange
@@ -157,7 +151,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         rolePermission.Role.Should().Be(role);
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_update_rolepermission_with_invalid_role()
     {{
         // Arrange
@@ -176,7 +170,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         updateRolePermission.Should().Throw<FluentValidation.ValidationException>();
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_update_rolepermission_with_invalid_permission()
     {{
         // Arrange

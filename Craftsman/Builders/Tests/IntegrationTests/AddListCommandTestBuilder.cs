@@ -27,7 +27,6 @@ public class AddListCommandTestBuilder
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
         var commandName = feature.Command;
 
-        var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
         var dtoUtilClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
@@ -41,12 +40,11 @@ public class AddListCommandTestBuilder
 using {dtoUtilClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using {parentFakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
@@ -66,7 +64,7 @@ public class {commandName}Tests : TestBase
         var fakeParentEntity = $"fake{feature.ParentEntity}";
         var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(feature.ParentEntity, Dto.Creation));
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()
     {{
         // Arrange
