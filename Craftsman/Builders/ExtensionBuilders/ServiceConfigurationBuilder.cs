@@ -63,8 +63,7 @@ public static class {FileNames.WebAppServiceConfiguration()}
         // registers all services that inherit from your base service interface - {boundaryServiceName}
         builder.Services.AddBoundaryServices(Assembly.GetExecutingAssembly());
 
-        builder.Services.AddMvc(options => options.Filters.Add<ErrorHandlerFilterAttribute>())
-            .AddFluentValidation(cfg => {{ cfg.AutomaticValidationEnabled = false; }});
+        builder.Services.AddMvc(options => options.Filters.Add<ErrorHandlerFilterAttribute>());
         builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         builder.Services.AddHealthChecks();
