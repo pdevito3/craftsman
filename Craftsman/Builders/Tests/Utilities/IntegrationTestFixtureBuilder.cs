@@ -102,7 +102,7 @@ public class TestFixture : IAsyncLifetime
         var services = builder.Services;
 
         // add any mock services here
-        // services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();
+        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();
 
         // MassTransit Harness Setup -- Do Not Delete Comment
 
