@@ -47,7 +47,7 @@ using {fakerClassPath.ClassNamespace};
 using {parentFakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};{permissionsUsing}
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -73,7 +73,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task {testName}()
     {{
         // Arrange
@@ -102,7 +102,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task {testName}()
     {{
         // Arrange
@@ -129,7 +129,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task {testName}()
     {{
         // Arrange
@@ -149,7 +149,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeEntityVariableName = $"fake{entity.Name}";
 
         return $@"
-    [Test]
+    [Fact]
     public async Task create_{entity.Name.ToLower()}_list_returns_unauthorized_without_valid_token()
     {{
         // Arrange
@@ -172,7 +172,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeEntityVariableName = $"fake{entity.Name}";
 
         return $@"
-    [Test]
+    [Fact]
     public async Task create_{entity.Name.ToLower()}_list_returns_forbidden_without_proper_scope()
     {{
         // Arrange

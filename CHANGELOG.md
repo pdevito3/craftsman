@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Integration tests use XUnit for parallelization. Updates `TestFixture`, `TestBase`, and test attributes
   * Note, there is still no db cleanup after each test, so you should write your assertions accordingly
 * Unit tests use XUnit for parallelization
+* Functional tests use XUnit for parallelization
 * Integration tests updated to use `DotNet.Testcontainers` for simpler docker db setup
 
 ## [0.15.0] - 06/05/2022

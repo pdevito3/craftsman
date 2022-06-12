@@ -32,21 +32,23 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;
 
-public class TestBase
+[CollectionDefinition(nameof(TestBase))]
+public class TestingWebApplicationFactoryCollection : ICollectionFixture<TestingWebApplicationFactory> {{ }}
+
+[Collection(nameof(TestBase))]
+public class TestBase : IDisposable
 {{
-    public static IServiceScopeFactory _scopeFactory;
-    public static WebApplicationFactory<Program> _factory;
+    private static IServiceScopeFactory _scopeFactory;
     public static HttpClient _client;
 
-    [SetUp]
-    public void TestSetUp()
+    public TestBase()
     {{
-        _factory = new {FileNames.GetWebHostFactoryName()}();
-        _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
-        _client = _factory.CreateClient(new WebApplicationFactoryClientOptions());
+        var factory = new {FileNames.GetWebHostFactoryName()}();
+        _scopeFactory = factory.Services.GetRequiredService<IServiceScopeFactory>();
+        _client = factory.CreateClient(new WebApplicationFactoryClientOptions());
     }}
 
     public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
@@ -150,6 +152,10 @@ public class TestBase
             }}
             return db.SaveChangesAsync();
         }});
+    }}
+
+    public void Dispose()
+    {{
     }}
 }}";
     }
