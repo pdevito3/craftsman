@@ -40,6 +40,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
                 Password = ""postgres""
             }})
             .WithName($""IntegrationTesting_{projectBaseName}_{{Guid.NewGuid()}}"")
+            .WithImage(""postgres:latest"")
             .Build();
     }}";
         }
@@ -71,18 +72,19 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         var isMacOs = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
         var cpuArch = RuntimeInformation.ProcessArchitecture;
         var isRunningOnMacOsArm64 = isMacOs && cpuArch == Architecture.Arm64;
+
+        var sqlServerImageTag = ""mcr.microsoft.com/mssql/server:2019-latest""
+        var sqlEdgeImageTag = ""mcr.microsoft.com/azure-sql-edge:latest""
+        var image = IsRunningOnMacOsArm64() ? sqlEdgeImageTag : sqlServerImageTag;
         
-        var baseDb = new TestcontainersBuilder<MsSqlTestcontainer>()
+        return new TestcontainersBuilder<MsSqlTestcontainer>()
             .WithDatabase(new MsSqlTestcontainerConfiguration()
             {{
                 Password = ""#testingDockerPassword#"",
             }})
-            .WithName($""IntegrationTesting_RecipeManagement_{Guid.NewGuid()}"");
-            
-        if(isRunningOnMacOsArm64)
-            baseDb.WithImage(""mcr.microsoft.com/azure-sql-edge:latest"");
-
-        return baseDb.Build();
+            .WithName($""IntegrationTesting_RecipeManagement_{Guid.NewGuid()}"")
+            .WithImage(image)
+            .Build();
     }}";
         }
 
