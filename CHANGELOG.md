@@ -23,6 +23,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Functional tests use XUnit for parallelization
 * Integration tests updated to use `DotNet.Testcontainers` for simpler docker db setup
 
+### Fixed
+
+* Domain events captured and cleared in db context before running to prevent dups
+
 ## [0.15.0] - 06/05/2022
 
 ### Added

@@ -130,7 +130,9 @@ public class {dbContextName} : DbContext
 
         foreach (var entity in domainEventEntities)
         {{
-            foreach (var entityDomainEvent in entity.DomainEvents)
+            var events = entity.DomainEvents.ToArray();
+            entity.DomainEvents.Clear();
+            foreach (var entityDomainEvent in events)
                 await _mediator.Publish(entityDomainEvent);
         }}
     }}
