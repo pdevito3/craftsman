@@ -62,7 +62,6 @@ using static {testFixtureName};{foreignEntityUsings}
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
 {{
     {GetEntitiesTest(entity)}
-    {GetEntitiesWithPageSizeAndNumberTest(entity)}
     {filterTests}
 }}";
     }
@@ -95,39 +94,6 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         // Assert
         {lowercaseEntityPluralName}.Count.Should().BeGreaterThanOrEqualTo(2);
-    }}";
-    }
-
-    private static string GetEntitiesWithPageSizeAndNumberTest(Entity entity)
-    {
-        var queryName = FileNames.QueryListName(entity.Name);
-        var fakeEntity = FileNames.FakerName(entity.Name);
-        var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
-        var fakeEntityVariableNameOne = $"fake{entity.Name}One";
-        var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
-        var fakeEntityVariableNameThree = $"fake{entity.Name}Three";
-        var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpersThreeCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo, out var fakeParentIdRuleForThree);
-        return $@"
-    [Fact]
-    public async Task can_get_{entity.Name.ToLower()}_list_with_expected_page_size_and_number()
-    {{
-        //Arrange
-        {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForOne}.Generate());
-        var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForTwo}.Generate());
-        var {fakeEntityVariableNameThree} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForThree}.Generate());
-        var queryParameters = new {entityParams}() {{ PageSize = 1, PageNumber = 2 }};
-
-        await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}, {fakeEntityVariableNameThree});
-
-        //Act
-        var query = new {FileNames.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
-        var {lowercaseEntityPluralName} = await SendAsync(query);
-
-        // Assert
-        {lowercaseEntityPluralName}.Should().HaveCount(1);
     }}";
     }
 

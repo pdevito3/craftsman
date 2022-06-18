@@ -26,8 +26,6 @@ public class CreateEntityUnitTestBuilder
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entityPlural, projectBaseName);
-        var createDto = FileNames.GetDtoName(entityName, Dto.Creation);
-        var fakeEntityForCreation = $"Fake{createDto}";
 
         return @$"namespace {classPath.ClassNamespace};
 

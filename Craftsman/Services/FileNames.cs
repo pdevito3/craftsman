@@ -126,6 +126,11 @@ public static class FileNames
         return $"Create{entityName}Tests";
     }
 
+    public static string GetEntityListUnitTestName(string entityName)
+    {
+        return $"Get{entityName}ListTests";
+    }
+
     public static string UpdateEntityUnitTestName(string entityName)
     {
         return $"Update{entityName}Tests";

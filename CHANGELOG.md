@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Unit tests use XUnit for parallelization
 * Functional tests use XUnit for parallelization
 * Integration tests updated to use `DotNet.Testcontainers` for simpler docker db setup
+* Moved pagination testing to a unit test
 
 ### Fixed
 

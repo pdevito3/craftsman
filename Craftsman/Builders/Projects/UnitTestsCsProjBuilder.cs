@@ -42,6 +42,7 @@ public class UnitTestsCsProjBuilder
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include=""FluentAssertions"" Version=""6.6.0"" />
+    <PackageReference Include=""MockQueryable.Moq"" Version=""6.0.1"" />
     <PackageReference Include=""Moq"" Version=""4.17.2"" />
     <PackageReference Include=""NSubstitute"" Version=""4.3.0"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.1.0"" />

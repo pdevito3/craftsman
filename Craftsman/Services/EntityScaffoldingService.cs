@@ -72,9 +72,13 @@ public class EntityScaffoldingService
 
             // Shared Tests
             new FakesBuilder(_utilities).CreateFakes(srcDirectory, testDirectory, projectBaseName, entity);
-            new CreateEntityUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
-            new UpdateEntityUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
-
+            new CreateEntityUnitTestBuilder(_utilities)
+                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
+            new UpdateEntityUnitTestBuilder(_utilities)
+                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
+            new GetEntityListUnitTestBuilder(_utilities)
+                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
+            
             // domain events
             _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
             _mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(entity.Name, entity.Plural));
