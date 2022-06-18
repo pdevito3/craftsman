@@ -72,11 +72,9 @@ public static class {className}
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper)
+        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork)
         {{
-            _mapper = mapper;
             _{repoInterfaceProp} = {repoInterfaceProp};
             _unitOfWork = unitOfWork;
         }}
