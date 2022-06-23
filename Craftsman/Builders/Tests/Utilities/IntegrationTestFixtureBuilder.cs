@@ -62,14 +62,15 @@ using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;{usingStatement}
-using Xunit;
+using NUnit.Framework;
 using Respawn;
 using Respawn.Graph;
-using System.Runtime.InteropServices;
+using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using DotNet.Testcontainers.Containers.Builders;
@@ -77,17 +78,16 @@ using DotNet.Testcontainers.Containers.Configurations.Databases;
 using DotNet.Testcontainers.Containers.Modules.Abstractions;
 using DotNet.Testcontainers.Containers.Modules.Databases;
 
-[CollectionDefinition(nameof(TestFixture))]
-public class TestFixtureCollection : ICollectionFixture<TestFixture> {{ }}
-
-public class TestFixture : IAsyncLifetime
+[SetUpFixture]
+public class TestFixture
 {{
     private static IServiceScopeFactory _scopeFactory;
     private static Checkpoint _checkpoint;
     private static ServiceProvider _provider;
     private readonly TestcontainerDatabase _dbContainer = dbSetup();
 
-    public async Task InitializeAsync()
+    [OneTimeSetUp]
+    public async Task RunBeforeAnyTests()
     {{
         await _dbContainer.StartAsync();
         {provider.IntegrationTestConnectionStringSetup()}
@@ -320,12 +320,14 @@ public class TestFixture : IAsyncLifetime
 
     {provider.IntegrationTestDbSetupMethod(projectBaseName)}
 
-    public async Task DisposeAsync()
+    [OneTimeTearDown]
+    public async Task RunAfterAnyTests()
     {{
-        await _dbContainer.DisposeAsync();
         // MassTransit Teardown -- Do Not Delete Comment
     }}
 }}
+
+
 
 public static class ServiceCollectionServiceExtensions
 {{

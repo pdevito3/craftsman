@@ -46,7 +46,7 @@ using {dtoClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};{permissionsUsing}
 using Microsoft.AspNetCore.JsonPatch;
 using FluentAssertions;
-using Xunit;
+using NUnit.Framework;
 using System.Net;
 using System.Threading.Tasks;
 using Bogus;
@@ -85,7 +85,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         if (myProp == null)
             return "// no patch tests were created";
 
-        return $@"[Fact]
+        return $@"[Test]
     public async Task {testName}()
     {{
         // Arrange
@@ -114,7 +114,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
         return $@"
-    [Fact]
+    [Test]
     public async Task patch_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
     {{
         // Arrange
@@ -144,7 +144,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
         return $@"
-    [Fact]
+    [Test]
     public async Task patch_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
     {{
         // Arrange

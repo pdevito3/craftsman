@@ -51,14 +51,14 @@ using {exceptionsClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
+using NUnit.Framework;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using static {testFixtureName};{foreignEntityUsings}
 
 public class {commandName}Tests : TestBase
 {{
-    [Fact]
+    [Test]
     public async Task can_update_existing_{entity.Name.ToLower()}_in_db()
     {{
         // Arrange

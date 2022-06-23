@@ -55,7 +55,7 @@ using MockQueryable.Moq;
 using Moq;
 using Sieve.Models;
 using Sieve.Services;
-using Xunit;
+using NUnit.Framework;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
@@ -71,7 +71,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         _sieveProcessor = new SieveProcessor(sieveOptions);
     }}
     
-    [Fact]
+    [Test]
     public async Task cam_get_paged_list_of_{entityName.LowercaseFirstLetter()}()
     {{
         //Arrange

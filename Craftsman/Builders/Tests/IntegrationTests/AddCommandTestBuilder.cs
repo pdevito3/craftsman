@@ -39,7 +39,7 @@ public class AddCommandTestBuilder
 using {fakerClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
+using NUnit.Framework;
 using System.Threading.Tasks;
 using {featuresClassPath.ClassNamespace};
 using static {testFixtureName};
@@ -72,7 +72,7 @@ public class {commandName}Tests : TestBase
             }
         }
 
-        return $@"[Fact]
+        return $@"[Test]
     public async Task can_add_new_{entity.Name.ToLower()}_to_db()
     {{
         // Arrange

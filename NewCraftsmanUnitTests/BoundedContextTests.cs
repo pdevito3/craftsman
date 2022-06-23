@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 public class BoundedContextTests
 {
-    [Fact]
+    [Test]
     public void project_name_required()
     {
         var dto = new FakeBoundedContextDto().Generate();

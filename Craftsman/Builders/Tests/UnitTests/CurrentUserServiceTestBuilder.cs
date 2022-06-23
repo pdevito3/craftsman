@@ -32,11 +32,12 @@ using Bogus;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
-using Xunit;
+using NUnit.Framework;
 
+[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
-    [Fact]
+    [Test]
     public void returns_user_in_context_if_present()
     {{
         var name = new Faker().Person.UserName;
@@ -55,7 +56,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         currentUserService.UserId.Should().Be(name);
     }}
     
-    [Fact]
+    [Test]
     public void returns_null_if_user_is_not_present()
     {{
         var context = new DefaultHttpContext().HttpContext;

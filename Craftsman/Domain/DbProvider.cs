@@ -72,19 +72,18 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         var isMacOs = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
         var cpuArch = RuntimeInformation.ProcessArchitecture;
         var isRunningOnMacOsArm64 = isMacOs && cpuArch == Architecture.Arm64;
-
-        var sqlServerImageTag = ""mcr.microsoft.com/mssql/server:2019-latest""
-        var sqlEdgeImageTag = ""mcr.microsoft.com/azure-sql-edge:latest""
-        var image = IsRunningOnMacOsArm64() ? sqlEdgeImageTag : sqlServerImageTag;
         
-        return new TestcontainersBuilder<MsSqlTestcontainer>()
+        var baseDb = new TestcontainersBuilder<MsSqlTestcontainer>()
             .WithDatabase(new MsSqlTestcontainerConfiguration()
             {{
                 Password = ""#testingDockerPassword#"",
             }})
-            .WithName($""IntegrationTesting_RecipeManagement_{Guid.NewGuid()}"")
-            .WithImage(image)
-            .Build();
+            .WithName($""IntegrationTesting_RecipeManagement_{Guid.NewGuid()}"");
+            
+        if(isRunningOnMacOsArm64)
+            baseDb.WithImage(""mcr.microsoft.com/azure-sql-edge:latest"");
+
+        return baseDb.Build();
     }}";
         }
 

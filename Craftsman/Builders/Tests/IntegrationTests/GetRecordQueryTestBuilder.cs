@@ -39,7 +39,7 @@ using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
+using NUnit.Framework;
 using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
@@ -60,7 +60,7 @@ public class {queryName}Tests : TestBase
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
 
-        return $@"[Fact]
+        return $@"[Test]
     public async Task can_get_existing_{entity.Name.ToLower()}_with_accurate_props()
     {{
         // Arrange
@@ -83,7 +83,7 @@ public class {queryName}Tests : TestBase
 
         return badId == "" ? "" : $@"
 
-    [Fact]
+    [Test]
     public async Task get_{entity.Name.ToLower()}_throws_notfound_exception_when_record_does_not_exist()
     {{
         // Arrange

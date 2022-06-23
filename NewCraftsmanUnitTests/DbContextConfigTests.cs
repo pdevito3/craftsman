@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 public class DbContextConfigTests
 {
-    [Fact]
+    [Test]
     public void provider_defaults_to_postgres()
     {
         var dto = new FakeDbContextConfigDto().Generate();
@@ -18,7 +18,7 @@ public class DbContextConfigTests
         project.ProviderEnum.Should().Be(DbProvider.Postgres);
     }
     
-    [Fact]
+    [Test]
     public void naming_convention_defaults_to_snakecase()
     {
         var dto = new FakeDbContextConfigDto().Generate();
@@ -29,7 +29,7 @@ public class DbContextConfigTests
         project.NamingConventionEnum.Should().Be(NamingConventionEnum.SnakeCase);
     }
     
-    [Fact]
+    [Test]
     public void database_name_required()
     {
         var dto = new FakeDbContextConfigDto().Generate();
@@ -44,7 +44,7 @@ public class DbContextConfigTests
             .Throw<FluentValidation.ValidationException>();
     }
     
-    [Fact]
+    [Test]
     public void context_name_required()
     {
         var dto = new FakeDbContextConfigDto().Generate();

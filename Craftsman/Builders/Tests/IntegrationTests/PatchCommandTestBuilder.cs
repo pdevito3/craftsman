@@ -56,7 +56,7 @@ using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
+using NUnit.Framework;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using static {testFixtureName};{foreignEntityUsings}
@@ -80,7 +80,7 @@ public class {commandName}Tests : TestBase
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
 
-        return $@"[Fact]
+        return $@"[Test]
     public async Task can_patch_existing_{entity.Name.ToLower()}_in_db()
     {{
         // Arrange
@@ -110,7 +110,7 @@ public class {commandName}Tests : TestBase
 
         return randomId == "" ? "" : $@"
 
-    [Fact]
+    [Test]
     public async Task passing_null_patchdoc_throws_validationexception()
     {{
         // Arrange
@@ -131,7 +131,7 @@ public class {commandName}Tests : TestBase
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
 
         return badId == "" ? "" : $@"
-    [Fact]
+    [Test]
     public async Task patch_{entity.Name.ToLower()}_throws_notfound_exception_when_record_does_not_exist()
     {{
         // Arrange

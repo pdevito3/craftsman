@@ -44,7 +44,7 @@ using {featuresClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
+using NUnit.Framework;
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
@@ -64,7 +64,7 @@ public class {commandName}Tests : TestBase
         var fakeParentEntity = $"fake{feature.ParentEntity}";
         var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(feature.ParentEntity, Dto.Creation));
 
-        return $@"[Fact]
+        return $@"[Test]
     public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()
     {{
         // Arrange

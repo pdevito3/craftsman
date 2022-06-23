@@ -29,7 +29,7 @@ public class ConsumerTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using FluentAssertions;
-using Xunit;
+using NUnit.Framework;
 using System.Threading.Tasks;
 using MassTransit;
 using MassTransit.Testing;
@@ -49,7 +49,7 @@ public class {consumer.ConsumerName}Tests : TestBase
     {
         var messageName = FileNames.MessageInterfaceName(consumer.MessageName);
 
-        return $@"[Fact]
+        return $@"[Test]
     public async Task can_consume_{consumer.MessageName}_message()
     {{
         // Arrange
