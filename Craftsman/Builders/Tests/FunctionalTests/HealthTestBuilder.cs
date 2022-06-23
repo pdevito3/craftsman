@@ -28,7 +28,7 @@ public class HealthTestBuilder
 
 using {testUtilClassPath.ClassNamespace};
 using FluentAssertions;
-using Xunit;
+using NUnit.Framework;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -40,7 +40,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
     private static string HealthTest()
     {
-        return $@"[Fact]
+        return $@"[Test]
     public async Task health_check_returns_ok()
     {{
         // Arrange

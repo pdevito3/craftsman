@@ -23,7 +23,7 @@ The last few releases have brought a ton of new features, but there are still se
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-✅ Testing Optimizations
+🚧 Testing Optimizations
 
 🚧 Auth Server rewrite with Identity
 

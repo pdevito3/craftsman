@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 public class DomainProjectTests
 {
-    [Fact]
+    [Test]
     public void addgit_defaults_to_true()
     {
         var dto = new FakeDomainProjectDto().Generate();
@@ -18,7 +18,7 @@ public class DomainProjectTests
         project.AddGit.Should().BeTrue();
     }
     
-    [Fact]
+    [Test]
     public void UseSystemGitUser_defaults_to_true()
     {
         var dto = new FakeDomainProjectDto().Generate();
@@ -29,7 +29,7 @@ public class DomainProjectTests
         project.UseSystemGitUser.Should().BeTrue();
     }
     
-    [Fact]
+    [Test]
     public void domain_name_required()
     {
         var dto = new FakeDomainProjectDto().Generate();

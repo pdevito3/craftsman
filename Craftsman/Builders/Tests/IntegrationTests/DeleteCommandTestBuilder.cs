@@ -29,6 +29,7 @@ public class DeleteCommandTestBuilder
         var commandName = FileNames.CommandDeleteName(entity.Name);
         var softDeleteTest = useSoftDelete ? SoftDeleteTest(commandName, entity, featureName) : "";
 
+        var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
@@ -38,10 +39,11 @@ public class DeleteCommandTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
+using NUnit.Framework;
 using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
@@ -64,7 +66,7 @@ public class {commandName}Tests : TestBase
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
 
-        return $@"[Fact]
+        return $@"[Test]
     public async Task can_delete_{entity.Name.ToLower()}_from_db()
     {{
         // Arrange
@@ -89,7 +91,7 @@ public class {commandName}Tests : TestBase
 
         return badId == "" ? "" : $@"
 
-    [Fact]
+    [Test]
     public async Task delete_{entity.Name.ToLower()}_throws_notfoundexception_when_record_does_not_exist()
     {{
         // Arrange
@@ -117,7 +119,7 @@ public class {commandName}Tests : TestBase
 
         return $@"
 
-    [Fact]
+    [Test]
     public async Task can_softdelete_{entity.Name.ToLower()}_from_db()
     {{
         // Arrange

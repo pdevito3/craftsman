@@ -23,13 +23,14 @@ public class ProducerTestBuilder
     private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Producer producer, string projectBaseName)
     {
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
+        var testUtilClassPath = ClassPathHelper.IntegrationTestUtilitiesClassPath(testDirectory, projectBaseName, "");
         var producerClassPath = ClassPathHelper.ProducerFeaturesClassPath(srcDirectory, "", producer.DomainDirectory, projectBaseName);
 
         var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
         return @$"namespace {classPath.ClassNamespace};
 
 using FluentAssertions;
-using Xunit;
+using NUnit.Framework;
 using System.Threading.Tasks;
 using MassTransit;
 using MassTransit.Testing;
@@ -37,6 +38,7 @@ using {messagesClassPath.ClassNamespace};
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using {producerClassPath.ClassNamespace};
+using {testUtilClassPath.ClassNamespace};
 using static {testFixtureName};
 
 public class {producer.ProducerName}Tests : TestBase
@@ -49,7 +51,7 @@ public class {producer.ProducerName}Tests : TestBase
     {
         var messageName = FileNames.MessageInterfaceName(producer.MessageName);
 
-        return $@"[Fact]
+        return $@"[Test]
     public async Task can_produce_{producer.MessageName}_message()
     {{
         // Arrange

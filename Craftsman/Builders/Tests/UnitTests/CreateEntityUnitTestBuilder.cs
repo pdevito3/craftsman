@@ -34,13 +34,19 @@ using {entityClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
-using Xunit;
+using NUnit.Framework;
 
+[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
-    private readonly Faker _faker = new Faker();
+    private readonly Faker _faker;
+
+    public {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}()
+    {{
+        _faker = new Faker();
+    }}
     
-    [Fact]
+    [Test]
     public void can_create_valid_{entityName.LowercaseFirstLetter()}()
     {{
         // Arrange + Act
@@ -50,7 +56,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         fake{entityName}.Should().NotBeNull();
     }}
 
-    [Fact]
+    [Test]
     public void queue_domain_event_on_create()
     {{
         // Arrange + Act

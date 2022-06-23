@@ -43,7 +43,7 @@ public class CreateEntityTestBuilder
 using {fakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};{permissionsUsing}
 using FluentAssertions;
-using Xunit;
+using NUnit.Framework;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -65,7 +65,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
-        return $@"[Fact]
+        return $@"[Test]
     public async Task {testName}()
     {{
         // Arrange
@@ -87,7 +87,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
         return $@"
-    [Fact]
+    [Test]
     public async Task create_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
     {{
         // Arrange
@@ -111,7 +111,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
         return $@"
-    [Fact]
+    [Test]
     public async Task create_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
     {{
         // Arrange
