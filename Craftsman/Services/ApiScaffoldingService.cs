@@ -105,7 +105,7 @@ public class ApiScaffoldingService
         {
             new PermissionsBuilder(_utilities).GetPermissions(srcDirectory, projectBaseName); // <-- needs to run before entity features
             new RolesBuilder(_utilities).GetRoles(solutionDirectory);
-            new UserPolicyHandlerBuilder(_utilities).CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName, template.DbContext.ContextName);
+            new UserPolicyHandlerBuilder(_utilities).CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName);
             new InfrastructureServiceRegistrationModifier(_fileSystem).InitializeAuthServices(srcDirectory, projectBaseName);
             new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldRolePermissions(solutionDirectory,
                 srcDirectory,

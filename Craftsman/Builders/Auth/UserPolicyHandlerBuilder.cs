@@ -12,23 +12,23 @@ public class UserPolicyHandlerBuilder
         _utilities = utilities;
     }
 
-    public void CreatePolicyBuilder(string solutionDirectory, string srcDirectory, string projectBaseName, string dbContextName)
+    public void CreatePolicyBuilder(string solutionDirectory, string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
-        var fileText = GetPolicyBuilderText(classPath.ClassNamespace, solutionDirectory, srcDirectory, dbContextName, projectBaseName);
+        var fileText = GetPolicyBuilderText(classPath.ClassNamespace, solutionDirectory, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string GetPolicyBuilderText(string classNamespace, string solutionDirectory, string srcDirectory, string dbContextName, string projectBaseName)
+    private static string GetPolicyBuilderText(string classNamespace, string solutionDirectory, string srcDirectory, string projectBaseName)
     {
         var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
         var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
-        var dbContextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
+        var entityServices = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
 
         return @$"namespace {classNamespace};
 
 using System.Security.Claims;
-using {dbContextClassPath.ClassNamespace};
+using {entityServices.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using {domainPolicyClassPath.ClassNamespace};
 using HeimGuard;
@@ -36,12 +36,12 @@ using Microsoft.EntityFrameworkCore;
 
 public class UserPolicyHandler : IUserPolicyHandler
 {{
-    private readonly {dbContextName} _dbContext;
+    private readonly IRolePermissionRepository _rolePermissionRepository;
     private readonly ICurrentUserService _currentUserService;
 
-    public UserPolicyHandler({dbContextName} dbContext, ICurrentUserService currentUserService)
+    public UserPolicyHandler(IRolePermissionRepository rolePermissionRepository, ICurrentUserService currentUserService)
     {{
-        _dbContext = dbContext;
+        _rolePermissionRepository = rolePermissionRepository;
         _currentUserService = currentUserService;
     }}
     
@@ -60,7 +60,7 @@ public class UserPolicyHandler : IUserPolicyHandler
         if(roles.Contains(Roles.SuperAdmin))
             return Permissions.List();
 
-        var permissions = await _dbContext.RolePermissions
+        var permissions = await _rolePermissionRepository.Query()
             .Where(rp => roles.Contains(rp.Role))
             .Select(rp => rp.Permission)
             .Distinct()
