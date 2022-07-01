@@ -70,8 +70,22 @@ using Npgsql;"
         var resetString = provider == DbProvider.Postgres
             ? $@"await using var conn = new NpgsqlConnection(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
         await conn.OpenAsync();
-        await _checkpoint.Reset(conn);"
-            : $@"await _checkpoint.Reset(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));";
+        try
+        {{
+            await _checkpoint.Reset(conn);
+        }}
+        catch (InvalidOperationException e)
+        {{
+            throw new Exception($""There was an issue resetting your database state. You might need to add a migration to your project. You can add a migration with `dotnet ef migration add YourMigrationDescription`. More details on this error: {{e.Message}}"");
+        }}"
+            : $@"try
+        {{
+            await _checkpoint.Reset(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
+        }}
+        catch (InvalidOperationException e)
+        {{
+            throw new Exception($""There was an issue resetting your database state. You might need to add a migration to your project. You can add a migration with `dotnet ef migration add YourMigrationDescription`. More details on this error: {{e.Message}}"");
+        }}";
 
         return @$"namespace {classNamespace};
 

@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Moved pagination testing to a unit test
 * `UserPolicyHandler` uses RolePermission repo
 * Value Object cleanup
+* Better migration warning on integration tests
 
 ### Fixed
 
