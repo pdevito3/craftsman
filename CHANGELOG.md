@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * Note, there is still no db cleanup after each test, so you should write your assertions accordingly
 * Moved pagination testing to a unit test
 * `UserPolicyHandler` uses RolePermission repo
+* Value Object cleanup
 
 ### Fixed
 
