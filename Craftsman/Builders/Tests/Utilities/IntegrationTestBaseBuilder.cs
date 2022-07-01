@@ -23,22 +23,6 @@ public class IntegrationTestBaseBuilder
     public static string GetBaseText(string classNamespace, DbProvider provider)
     {
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-        var equivalency = provider == DbProvider.Postgres
-            ? $@"
-
-        // close to equivalency required to reconcile precision differences between EF and Postgres
-        AssertionOptions.AssertEquivalencyUsing(options => 
-        {{
-            options.Using<DateTime>(ctx => ctx.Subject
-                .Should()
-                .BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTime>();
-            options.Using<DateTimeOffset>(ctx => ctx.Subject
-                .Should()
-                .BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTimeOffset>();
-
-            return options;
-        }});"
-            : null;
 
         return @$"namespace {classNamespace};
 
@@ -46,15 +30,14 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using AutoBogus;
-using FluentAssertions.Extensions;
 using static {testFixtureName};
 
+[Parallelizable]
 public class TestBase
 {{
     [SetUp]
     public Task TestSetUp()
-    {{{equivalency}
-    
+    {{    
         AutoFaker.Configure(builder =>
         {{
             // configure global autobogus settings here

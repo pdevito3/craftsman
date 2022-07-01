@@ -46,6 +46,7 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using static {testFixtureName};
 
+[NonParallelizable]
 public class UserPolicyHandlerTests : TestBase
 {{
     private readonly Faker _faker;

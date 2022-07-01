@@ -16,11 +16,11 @@ public class IntegrationTestFixtureBuilder
     public void CreateFixture(string testDirectory, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider)
     {
         var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
-        var fileText = GetFixtureText(classPath.ClassNamespace, testDirectory, srcDirectory, projectBaseName, dbContextName, provider);
+        var fileText = GetFixtureText(classPath.ClassNamespace, srcDirectory, projectBaseName, dbContextName, provider);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetFixtureText(string classNamespace, string testDirectory, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider)
+    public static string GetFixtureText(string classNamespace, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider)
     {
         var apiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
         var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
@@ -28,6 +28,28 @@ public class IntegrationTestFixtureBuilder
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
 
+        var equivalencyCall = $@"
+        SetupDateAssertions();";
+        var equivalencyMethod = provider == DbProvider.Postgres
+            ? $@"
+
+    private static void SetupDateAssertions()
+    {{
+        // close to equivalency required to reconcile precision differences between EF and Postgres
+        AssertionOptions.AssertEquivalencyUsing(options =>
+        {{
+            options.Using<DateTime>(ctx => ctx.Subject
+                .Should()
+                .BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTime>();
+            options.Using<DateTimeOffset>(ctx => ctx.Subject
+                .Should()
+                .BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTimeOffset>();
+
+            return options;
+        }});
+    }}"
+            : null;
+        
         var usingStatement = provider == DbProvider.Postgres
             ? $@"
 using Npgsql;"
@@ -46,7 +68,7 @@ using Npgsql;"
         }};";
 
         var resetString = provider == DbProvider.Postgres
-            ? $@"using var conn = new NpgsqlConnection(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
+            ? $@"await using var conn = new NpgsqlConnection(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
         await conn.OpenAsync();
         await _checkpoint.Reset(conn);"
             : $@"await _checkpoint.Reset(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));";
@@ -77,6 +99,8 @@ using DotNet.Testcontainers.Containers.Builders;
 using DotNet.Testcontainers.Containers.Configurations.Databases;
 using DotNet.Testcontainers.Containers.Modules.Abstractions;
 using DotNet.Testcontainers.Containers.Modules.Databases;
+using FluentAssertions;
+using FluentAssertions.Extensions;
 
 [SetUpFixture]
 public class TestFixture
@@ -112,8 +136,9 @@ public class TestFixture
         // MassTransit Start Setup -- Do Not Delete Comment
 
         {checkpoint}
-
+{equivalencyCall}
         await EnsureDatabase();
+        await ResetState();
     }}
 
     private static async Task EnsureDatabase()
@@ -123,7 +148,6 @@ public class TestFixture
         var context = scope.ServiceProvider.GetService<{dbContextName}>();
 
         await context?.Database?.MigrateAsync();
-        await ResetState();
     }}
 
     public static TScopedService GetService<TScopedService>()
@@ -318,7 +342,7 @@ public class TestFixture
 
     // MassTransit Methods -- Do Not Delete Comment
 
-    {provider.IntegrationTestDbSetupMethod(projectBaseName)}
+    {provider.IntegrationTestDbSetupMethod(projectBaseName)}{equivalencyMethod}
 
     [OneTimeTearDown]
     public async Task RunAfterAnyTests()
