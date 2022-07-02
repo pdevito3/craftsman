@@ -56,6 +56,9 @@ public class UserPolicyHandler : IUserPolicyHandler
             .Distinct()
             .ToArray();
         
+        if(roles.Length == 0)
+            return Array.Empty<string>();
+
         // super admins can do everything
         if(roles.Contains(Roles.SuperAdmin))
             return Permissions.List();
