@@ -244,7 +244,7 @@ public class {dbContextName} : DbContext
                     if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                     {
                         newText += @$"
-        if (env.IsEnvironment(LocalConfig.FunctionalTestingEnvName))
+        if (env.IsEnvironment(Consts.Testing.FunctionalTestingEnvName))
         {{
             services.AddDbContext<{dbContextName}>(options =>
                 options.UseInMemoryDatabase($""{dbName ?? dbContextName}""));
