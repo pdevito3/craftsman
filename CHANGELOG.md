@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Value Object cleanup
 * Better migration warning on integration tests
 * Moved most `UserPolicyHandler` tests to unit tests
+* Move `CurrentUserServiceTests` test dir
 
 ### Fixed
 

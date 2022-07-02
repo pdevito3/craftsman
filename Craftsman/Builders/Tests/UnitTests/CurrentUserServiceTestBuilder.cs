@@ -15,7 +15,7 @@ public class CurrentUserServiceTestBuilder
 
     public void CreateTests(string solutionDirectory, string projectBaseName)
     {
-        var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(solutionDirectory, $"CurrentUserServiceTests.cs", projectBaseName);
+        var classPath = ClassPathHelper.UnitTestServiceTestsClassPath(solutionDirectory, $"CurrentUserServiceTests.cs", projectBaseName);
         var fileText = WriteTestFileText(solutionDirectory, classPath, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
