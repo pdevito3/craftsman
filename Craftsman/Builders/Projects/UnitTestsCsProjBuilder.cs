@@ -34,7 +34,7 @@ public class UnitTestsCsProjBuilder
 
   <ItemGroup>
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""6.0.0"" />
-    <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
+    <PackageReference Include=""AutoBogusLifesupport"" Version=""2.14.0"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""FakeItEasy"" Version=""7.3.1"" />
     <PackageReference Include=""FakeItEasy.Analyzer.CSharp"" Version=""6.1.0"">

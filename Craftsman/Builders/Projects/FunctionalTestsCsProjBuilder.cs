@@ -33,7 +33,7 @@ public class FunctionalTestsCsProjBuilder
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
+    <PackageReference Include=""AutoBogusLifesupport"" Version=""2.14.0"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""Docker.DotNet"" Version=""3.125.5"" />
     <PackageReference Include=""FluentAssertions"" Version=""6.6.0"" />

@@ -41,7 +41,8 @@ public class TestBase
         AutoFaker.Configure(builder =>
         {{
             // configure global autobogus settings here
-            builder.WithRecursiveDepth(1)
+            builder.WithDateTimeKind(DateTimeKind.Utc)
+                .WithRecursiveDepth(1)
                 .WithTreeDepth(1)
                 .WithRepeatCount(1);
         }});
