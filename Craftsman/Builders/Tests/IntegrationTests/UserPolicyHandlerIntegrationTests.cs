@@ -46,7 +46,6 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using static {testFixtureName};
 
-[NonParallelizable]
 public class UserPolicyHandlerTests : TestBase
 {{
     private readonly Faker _faker;
@@ -57,53 +56,7 @@ public class UserPolicyHandlerTests : TestBase
     }}
     
     [Test]
-    public void GetUserPermissions_should_require_user()
-    {{
-        // Arrange
-        var identity = new ClaimsIdentity();
-        var claimsPrincipal = new ClaimsPrincipal(identity);
-        var httpContext = Mock.Of<HttpContext>(c => c.User == claimsPrincipal);
-        var httpContextAccessor = GetService<IHttpContextAccessor>();
-        httpContextAccessor.HttpContext = httpContext;
-        
-        // Act
-        var userPolicyHandler = GetService<UserPolicyHandler>();
-        Func<Task> permissions = () => userPolicyHandler.GetUserPermissions();
-        
-        // Assert
-        permissions.Should().ThrowAsync<ArgumentNullException>();
-    }}
-    
-    [Test]
-    public async Task superadmin_user_gets_all_permissions()
-    {{
-        // Arrange
-        SetUserRole(Roles.SuperAdmin);
-
-        // Act
-        var userPolicyHandler = GetService<IUserPolicyHandler>();
-        var permissions = await userPolicyHandler.GetUserPermissions();
-        
-        // Assert
-        permissions.Should().BeEquivalentTo(Permissions.List().ToArray());
-    }}
-    
-    [Test]
-    public async Task superadmin_machine_gets_all_permissions()
-    {{
-        // Arrange
-        SetMachineRole(Roles.SuperAdmin);
-
-        // Act
-        var userPolicyHandler = GetService<IUserPolicyHandler>();
-        var permissions = await userPolicyHandler.GetUserPermissions();
-        
-        // Assert
-        permissions.Should().BeEquivalentTo(Permissions.List().ToArray());
-    }}
-    
-    [Test]
-    public async Task non_super_admin_gets_assigned_permissions_only()
+    public async Task user_can_get_assigned_permissions()
     {{
         // Arrange
         var permissionToAssign = _faker.PickRandom(Permissions.List());
@@ -124,34 +77,6 @@ public class UserPolicyHandlerTests : TestBase
         // Assert
         permissions.Should().Contain(permissionToAssign);
         permissions.Should().NotContain(randomOtherPermission);
-    }}
-    
-    [Test]
-    public async Task claims_role_duplicate_permissions_removed()
-    {{
-        // Arrange
-        var permissionToAssign = _faker.PickRandom(Permissions.List());
-        var nonSuperAdminRole = _faker.PickRandom(Roles.List().Where(p => p != Roles.SuperAdmin));
-        SetUserRole(nonSuperAdminRole);
-
-        await InsertAsync(RolePermission.Create(new RolePermissionForCreationDto()
-        {{
-            Role = nonSuperAdminRole,
-            Permission = permissionToAssign
-        }}));
-        await InsertAsync(RolePermission.Create(new RolePermissionForCreationDto()
-        {{
-            Role = nonSuperAdminRole,
-            Permission = permissionToAssign
-        }}));
-        
-        // Act
-        var userPolicyHandler = GetService<IUserPolicyHandler>();
-        var permissions = await userPolicyHandler.GetUserPermissions();
-        
-        // Assert
-        permissions.Count(p => p == permissionToAssign).Should().Be(1);
-        permissions.Should().Contain(permissionToAssign);
     }}
 }}";
     }
