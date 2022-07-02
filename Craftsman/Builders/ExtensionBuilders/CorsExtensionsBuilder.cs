@@ -43,8 +43,8 @@ public static class CorsServiceExtension
 {{
     public static void AddCorsService(this IServiceCollection services, string policyName, IWebHostEnvironment env)
     {{
-        if (env.IsDevelopment() || env.IsEnvironment(LocalConfig.IntegrationTestingEnvName) ||
-            env.IsEnvironment(LocalConfig.FunctionalTestingEnvName))
+        if (env.IsDevelopment() || env.IsEnvironment(Consts.Testing.IntegrationTestingEnvName) ||
+            env.IsEnvironment(Consts.Testing.FunctionalTestingEnvName))
         {{
             services.AddCors(options =>
             {{

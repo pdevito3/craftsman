@@ -28,7 +28,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using HeimGuard;
 using {servicesClassPath.ClassNamespace};";
         var authServices = $@"
-        if (!env.IsEnvironment(LocalConfig.FunctionalTestingEnvName))
+        if (!env.IsEnvironment(Consts.Testing.FunctionalTestingEnvName))
         {{
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

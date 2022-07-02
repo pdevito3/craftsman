@@ -132,7 +132,7 @@ public class TestFixture
         
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions()
         {{
-            EnvironmentName = LocalConfig.IntegrationTestingEnvName,
+            EnvironmentName = Consts.Testing.IntegrationTestingEnvName,
         }});
         builder.Configuration.AddEnvironmentVariables();
 

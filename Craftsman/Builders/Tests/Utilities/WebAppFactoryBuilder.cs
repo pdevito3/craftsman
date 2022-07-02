@@ -54,7 +54,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : WebAp
 {{
     protected override IHost CreateHost(IHostBuilder builder)
     {{
-        builder.UseEnvironment(LocalConfig.FunctionalTestingEnvName);
+        builder.UseEnvironment(Consts.Testing.FunctionalTestingEnvName);
 
         builder.ConfigureServices(services =>
         {{{authRegistration}

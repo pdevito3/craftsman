@@ -66,7 +66,7 @@ public class SolutionBuilder
         new WebApiLaunchSettingsBuilder(_utilities).CreateLaunchSettings(srcDirectory, projectBaseName);
         new ProgramBuilder(_utilities).CreateWebApiProgram(srcDirectory, useJwtAuth, projectBaseName);
         new ServiceConfigurationBuilder(_utilities).CreateWebAppServiceConfiguration(srcDirectory, projectBaseName);
-        new LocalConfigBuilder(_utilities).CreateLocalConfig(srcDirectory, projectBaseName);
+        new ConstsResourceBuilder(_utilities).CreateLocalConfig(srcDirectory, projectBaseName);
         new LoggingConfigurationBuilder(_utilities).CreateWebApiConfigFile(srcDirectory, projectBaseName);
         new InfrastructureServiceRegistrationBuilder(_utilities).CreateInfrastructureServiceExtension(srcDirectory, projectBaseName);
 

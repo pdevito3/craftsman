@@ -25,8 +25,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * `UserPolicyHandler` uses RolePermission repo and handles finding no roles
 * Value Object cleanup
 * Better migration warning on integration tests
-* Moved most `UserPolicyHandler` tests to unit tests
+* Move most `UserPolicyHandler` tests to unit tests
 * Move `CurrentUserServiceTests` test dir
+* Update `LocalConfig` to `Consts` for all constants in app (other than permissions and roles)
 
 ### Fixed
 

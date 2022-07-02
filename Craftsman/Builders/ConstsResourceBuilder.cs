@@ -3,18 +3,18 @@ namespace Craftsman.Builders;
 using Helpers;
 using Services;
 
-public class LocalConfigBuilder
+public class ConstsResourceBuilder
 {
     private readonly ICraftsmanUtilities _utilities;
 
-    public LocalConfigBuilder(ICraftsmanUtilities utilities)
+    public ConstsResourceBuilder(ICraftsmanUtilities utilities)
     {
         _utilities = utilities;
     }
 
     public void CreateLocalConfig(string srcDirectory, string projectBaseName)
     {
-        var classPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "LocalConfig.cs", projectBaseName);
+        var classPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "Consts.cs", projectBaseName);
         var fileText = GetConfigText(classPath.ClassNamespace);
         _utilities.CreateFile(classPath, fileText);
     }
@@ -23,10 +23,13 @@ public class LocalConfigBuilder
     {
         return @$"namespace {classNamespace};
 
-public static class LocalConfig
+public static class Consts
 {{
-    public const string IntegrationTestingEnvName = ""LocalIntegrationTesting"";
-    public const string FunctionalTestingEnvName = ""LocalFunctionalTesting"";
+    public static class Testing
+    {{
+        public const string IntegrationTestingEnvName = ""LocalIntegrationTesting"";
+        public const string FunctionalTestingEnvName = ""LocalFunctionalTesting"";
+    }}
 }}";
     }
 }
