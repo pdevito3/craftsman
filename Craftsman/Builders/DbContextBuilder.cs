@@ -49,6 +49,7 @@ public class DbContextBuilder
         }
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var baseEntityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", "", projectBaseName);
+        var entityConfigClassPath = ClassPathHelper.DatabaseConfigClassPath(srcDirectory, $"", projectBaseName);
 
         var softDelete = useSoftDelete
             ? $@"
@@ -74,6 +75,7 @@ public class DbContextBuilder
         return @$"namespace {classNamespace};
 
 using {baseEntityClassPath.ClassNamespace};
+using {entityConfigClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};{entitiesUsings}
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -103,6 +105,10 @@ public class {dbContextName} : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {{
         base.OnModelCreating(modelBuilder);{modelBuilderFilter}
+
+        #region Entity Database Config Region - Only delete if you don't want to automatically add configurations
+        {GetDbEntityConfigs(entities)}
+        #endregion Entity Database Config Region - Only delete if you don't want to automatically add configurations
     }}
 
     public override int SaveChanges()
@@ -195,6 +201,16 @@ public class {dbContextName} : DbContext
         }
 
         return dbSetText;
+    }
+    
+    public static string GetDbEntityConfigs(List<Entity> entities)
+    {
+        var configList = entities
+            .Select(x => $"modelBuilder.ApplyConfiguration(new {FileNames.GetDatabaseEntityConfigName(x.Name)}());")
+            .ToList();
+        
+        var newLinedString = configList.Aggregate((current, next) => @$"{current}{Environment.NewLine}        {next}");
+        return newLinedString;
     }
 
     private void RegisterContext(string srcDirectory, DbProvider dbProvider, string dbContextName, string dbName, string localDbConnection, NamingConventionEnum namingConventionEnum, string projectBaseName)

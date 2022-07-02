@@ -54,6 +54,7 @@ public class EntityScaffoldingService
             new ProfileBuilder(_utilities).CreateProfile(srcDirectory, entity, projectBaseName);
             new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
+            _mediator.Send(new DatabaseEntityConfigBuilder.DatabaseEntityConfigBuilderCommand(entity.Name, entity.Plural));
             _mediator.Send(new EntityRepositoryBuilder.EntityRepositoryBuilderCommand(dbContextName, 
                 entity.Name, 
                 entity.Plural));

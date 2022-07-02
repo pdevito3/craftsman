@@ -290,6 +290,11 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Databases"), className);
     }
 
+    public static ClassPath DatabaseConfigClassPath(string srcDirectory, string className, string projectBaseName)
+    {
+        return new ClassPath(srcDirectory, Path.Combine(projectBaseName, "Databases", "EntityConfigurations"), className);
+    }
+
     public static ClassPath ValidationClassPath(string srcDirectory, string className, string entityPlural, string projectBaseName)
     {
         var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";

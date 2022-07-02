@@ -76,6 +76,11 @@ public static class FileNames
         return $"{entityName}Controller";
     }
 
+    public static string GetDatabaseEntityConfigName(string entityName)
+    {
+        return $"{entityName}Configuration";
+    }
+
     public static string GetSeederName(Entity entity)
     {
         return $"{entity.Name}Seeder";
