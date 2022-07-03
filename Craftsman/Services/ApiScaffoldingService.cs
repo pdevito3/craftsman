@@ -145,6 +145,7 @@ public class ApiScaffoldingService
         new EntityBuilder(_utilities).CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete);
         new CurrentUserServiceTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         _mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
+        _mediator.Send(new CommonValueObjectBuilder.CommonValueObjectBuilderCommand());
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());
 
         //services
