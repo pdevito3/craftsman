@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * `ServiceCollectionServiceExtensions` in Integration `TextFixture` for easier service mocking with `ReplaceServiceWithSingletonMock`
 * Add default database configuration abstraction for each entity along with db context usage. Includes value object examples
+* Json serialization extension to better handle DateOnly and TimeOnly in swagger
 
 ### Updated
 

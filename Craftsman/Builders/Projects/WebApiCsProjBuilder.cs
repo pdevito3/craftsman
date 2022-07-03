@@ -42,6 +42,8 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""AutoMapper.Extensions.Microsoft.DependencyInjection"" Version=""11.0.0"" />
+    <PackageReference Include=""DateOnlyTimeOnly.AspNet"" Version=""1.0.3"" />
+    <PackageReference Include=""DateOnlyTimeOnly.AspNet.Swashbuckle"" Version=""1.0.3"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""6.0.0"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""10.4.0"" />
     <PackageReference Include=""HeimGuard"" Version=""0.1.1"" />

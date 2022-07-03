@@ -51,9 +51,10 @@ public static class {FileNames.WebAppServiceConfiguration()}
 
         // using Newtonsoft.Json to support PATCH docs since System.Text.Json does not support them https://github.com/dotnet/aspnetcore/issues/24333
         // if you are not using PatchDocs and would prefer to use System.Text.Json, you can remove The `AddNewtonSoftJson()` line
-        builder.Services.AddControllers()
-            .AddNewtonsoftJson()
-            .AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+        builder.Services.AddControllers(options => options.UseDateOnlyTimeOnlyStringConverters())
+            .AddJsonOptions(options => options.UseDateOnlyTimeOnlyStringConverters())
+            .AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
+            .AddNewtonsoftJson();
         builder.Services.AddApiVersioningExtension();
 
         builder.Services.AddHttpContextAccessor();
