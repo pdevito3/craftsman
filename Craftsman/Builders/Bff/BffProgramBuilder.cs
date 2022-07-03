@@ -69,6 +69,8 @@ builder.Services.AddAuthentication(options =>
         options.GetClaimsFromUserInfoEndpoint = true;
         options.MapInboundClaims = false;
         options.SaveTokens = true;
+        
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
 
         options.Scope.Clear();
         options.Scope.Add(""openid"");

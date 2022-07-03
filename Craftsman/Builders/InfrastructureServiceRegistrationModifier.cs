@@ -35,6 +35,7 @@ using {servicesClassPath.ClassNamespace};";
                 {{
                     options.Authority = Environment.GetEnvironmentVariable(""AUTH_AUTHORITY"");
                     options.Audience = Environment.GetEnvironmentVariable(""AUTH_AUDIENCE"");
+                    options.RequireHttpsMetadata = !env.IsDevelopment();
                 }});
         }}
 
