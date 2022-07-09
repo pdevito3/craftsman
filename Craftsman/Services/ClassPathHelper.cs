@@ -112,11 +112,6 @@ public static class ClassPathHelper
         return new ClassPath(solutionDirectory, $"{projectBaseName}{withSuffix}", className);
     }
 
-    public static ClassPath AuthServerAppSettingsClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, authServerProjectName, className);
-    }
-
     public static ClassPath BffProjectRootClassPath(string projectDirectory, string className)
     {
         return new ClassPath(projectDirectory, "", className);
@@ -126,11 +121,6 @@ public static class ClassPathHelper
     {
         var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
         return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Properties"), className);
-    }
-
-    public static ClassPath AuthServerLaunchSettingsClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Properties"), className);
     }
 
     public static ClassPath BffLaunchSettingsClassPath(string projectDirectory, string className, string projectName)
@@ -179,77 +169,19 @@ public static class ClassPathHelper
         return new ClassPath(spaDirectory, "", className);
     }
 
-    public static ClassPath AuthServerConfigClassPath(string projectDirectory, string className, string authServerProjectName)
+    public static ClassPath AuthServerFactoriesClassPath(string solutionDirectory, string className, string authServerProjectName)
     {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
+        return new ClassPath(solutionDirectory, Path.Combine($"{authServerProjectName}"), className);
     }
 
-    public static ClassPath AuthServerPackageJsonClassPath(string projectDirectory, string className, string authServerProjectName)
+    public static ClassPath AuthServerExtensionsClassPath(string solutionDirectory, string className, string authServerProjectName)
     {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
+        return new ClassPath(solutionDirectory, Path.Combine($"{authServerProjectName}"), className);
     }
 
-    public static ClassPath AuthServerPostCssClassPath(string projectDirectory, string className, string authServerProjectName)
+    public static ClassPath AuthServerProjectRootClassPath(string solutionDirectory, string className, string authServerProjectName)
     {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
-    }
-
-    public static ClassPath AuthServerControllersClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Controllers"), className);
-    }
-
-    public static ClassPath AuthServerViewModelsClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "ViewModels"), className);
-    }
-
-    public static ClassPath AuthServerExtensionsClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Extensions"), className);
-    }
-
-    public static ClassPath AuthServerModelsClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Models"), className);
-    }
-
-    public static ClassPath AuthServerSeederClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Seeders"), className);
-    }
-
-    public static ClassPath AuthServerAttributesClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Attributes"), className);
-    }
-
-    public static ClassPath AuthServerCssClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "wwwroot", "css"), className);
-    }
-
-    public static ClassPath AuthServerViewsClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Views"), className);
-    }
-
-    public enum AuthServerViewSubDir
-    {
-        Account,
-        Shared
-    }
-
-    public static ClassPath AuthServerViewsSubDirClassPath(string projectDirectory, string className, string authServerProjectName, AuthServerViewSubDir subir)
-    {
-        var dirName = subir == AuthServerViewSubDir.Account ? "Account" : "Shared";
-
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}", "Views", dirName), className);
-    }
-
-    public static ClassPath AuthServerTailwindConfigClassPath(string projectDirectory, string className, string authServerProjectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine($"{authServerProjectName}"), className);
+        return new ClassPath(solutionDirectory, Path.Combine($"{authServerProjectName}"), className);
     }
 
     public static ClassPath ServicesTestClassPath(string testDirectory, string className, string projectBaseName)

@@ -2,6 +2,7 @@ namespace Craftsman.Commands;
 
 using System.IO.Abstractions;
 using Builders;
+using Builders.AuthServer;
 using Builders.Docker;
 using Domain;
 using Helpers;
@@ -57,9 +58,19 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
 
     public void AddAuthServer(string solutionDirectory, AuthServerTemplate template)
     {
-        new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildAuthServerProject(solutionDirectory, template.Name);
-
+        var projectBaseName = template.Name;
         
+        new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildAuthServerProject(solutionDirectory, projectBaseName);
+
+        var pulumiYamlBuilder = new PulumiYamlBuilders(_utilities);
+        pulumiYamlBuilder.CreateBaseFile(solutionDirectory, projectBaseName);
+        pulumiYamlBuilder.CreateDevConfig(solutionDirectory, projectBaseName, template.Port, template.Username, template.Password);
+
+        new ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, projectBaseName);
+        
+        new ClientExtensionsBuilder(_utilities).CreateClientExtensions(solutionDirectory, projectBaseName);
+        new ClientFactoryBuilder(_utilities).CreateClientFactory(solutionDirectory, projectBaseName);
+
         // DockerComposeBuilders.AddAuthServerToDockerCompose(projectDirectory, template.Name, template.Port);
     }
 }
