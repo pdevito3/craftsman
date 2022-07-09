@@ -23,16 +23,6 @@ public class AppSettingsBuilder
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public void CreateAuthServerAppSettings(string projectDirectory, string authServerProjectName)
-    {
-        var classPath = ClassPathHelper.AuthServerAppSettingsClassPath(projectDirectory, $"appsettings.json", authServerProjectName);
-        var fileText = @$"{{
-  ""AllowedHosts"": ""*""
-}}
-";
-        _utilities.CreateFile(classPath, fileText);
-    }
-
     private static string GetAppSettingsText(string dbName)
     {
         // won't build properly if it has an empty string
