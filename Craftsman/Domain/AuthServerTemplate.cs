@@ -15,10 +15,7 @@ public class AuthServerTemplate
 
     public string Password { get; set; } = "admin";
 
-    public List<AuthClient> Clients { get; set; }
-
-    public List<string> Scopes { get; set; }
-
+    public List<AuthClient> Clients { get; set; } = new List<AuthClient>();
 
     /// <summary>
     /// swagger info:<br/>
@@ -80,6 +77,8 @@ public class AuthServerTemplate
         public List<string> AllowedCorsOrigins { get; set; } = new List<string>();
 
         public string FrontChannelLogoutUri { get; set; }
+
+        public List<string> Scopes { get; set; } = new List<string>();
 
         public string GetRedirectUrisString()
         {

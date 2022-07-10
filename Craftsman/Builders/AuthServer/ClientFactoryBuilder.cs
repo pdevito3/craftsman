@@ -12,7 +12,7 @@ public class ClientFactoryBuilder
         _utilities = utilities;
     }
 
-    public void CreateClientFactory(string solutionDirectory, string projectBaseName)
+    public void Create(string solutionDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.AuthServerExtensionsClassPath(solutionDirectory, "ClientExtensions.cs", projectBaseName);
         var fileText = GetFileText(classPath.ClassNamespace);

@@ -15,7 +15,7 @@ public class PulumiYamlBuilders
     public void CreateBaseFile(string solutionDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.AuthServerProjectRootClassPath(solutionDirectory, "Pulumi.yaml", projectBaseName);
-        var fileText = GetBaseFileText();
+        var fileText = GetBaseFileText(projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
@@ -26,11 +26,11 @@ public class PulumiYamlBuilders
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string GetBaseFileText()
+    private static string GetBaseFileText(string projectBaseName)
     {
-        return @$"name: KeyAuth
+        return @$"name: {projectBaseName}
 runtime: dotnet
-description: Hello Keycloak
+description: Local setup for {projectBaseName}
 ";
     }
 

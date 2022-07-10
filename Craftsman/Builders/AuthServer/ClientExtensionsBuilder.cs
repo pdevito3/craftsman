@@ -2,6 +2,7 @@ namespace Craftsman.Builders.AuthServer;
 
 using Craftsman.Helpers;
 using Craftsman.Services;
+using Domain;
 
 public class ClientExtensionsBuilder
 {
@@ -12,15 +13,32 @@ public class ClientExtensionsBuilder
         _utilities = utilities;
     }
 
-    public void CreateClientExtensions(string solutionDirectory, string projectBaseName)
+    public void Create(string solutionDirectory, string projectBaseName, List<AuthServerTemplate.AuthClient> clients)
     {
         var classPath = ClassPathHelper.AuthServerExtensionsClassPath(solutionDirectory, "ClientExtensions.cs", projectBaseName);
-        var fileText = GetFileText(classPath.ClassNamespace);
+        var fileText = GetFileText(classPath.ClassNamespace, clients);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string GetFileText(string classNamespace)
+    private static string GetFileText(string classNamespace, List<AuthServerTemplate.AuthClient> clients)
     {
+        var scopesString = "";
+        var defaultScopes = new List<string>() { "profile", "email", "roles", "openid", "web-origins" };
+        var clientScopes = clients
+            .SelectMany(x => x.Scopes)
+            .Distinct()
+            .ToList();
+
+        var scopesToAdd = new List<string>();
+        scopesToAdd.AddRange(defaultScopes);
+        scopesToAdd.AddRange(clientScopes);
+        scopesToAdd = scopesToAdd.Distinct().ToList();
+        scopesToAdd.ForEach(scope =>
+        {
+            scopesString += $@"
+                ""{scope}"",";
+        });
+        
         return @$"namespace {classNamespace};
 
 using Pulumi;
@@ -36,11 +54,7 @@ public static class ClientExtensions
             ClientId = client.Id,
             DefaultScopes =
             {{
-                ""profile"",
-                ""email"",
-                ""roles"",
-                ""web-origins"",
-                scopeName,
+                {scopesString}
             }},
         }});
     }}
