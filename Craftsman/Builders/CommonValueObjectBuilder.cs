@@ -178,7 +178,7 @@ using {voClassPath.ClassNamespace};
 
 using FluentValidation;
 
-source: https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/MonetaryAmount.cs
+// source: https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/MonetaryAmount.cs
 public class MonetaryAmount : ValueObject
 {{
     public decimal Amount {{ get; }}
