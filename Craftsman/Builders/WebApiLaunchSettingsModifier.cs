@@ -68,10 +68,10 @@ public class WebApiLaunchSettingsModifier
         ""RMQ_VIRTUAL_HOST"": ""{env.BrokerSettings.VirtualHost}"",
         ""RMQ_USERNAME"": ""{env.BrokerSettings.Username}"",
         ""RMQ_PASSWORD"": ""{env.BrokerSettings.Password}"",
-        ""JAEGER_HOST"": ""localhost"",
+        ""JAEGER_HOST"": ""localhost""
       }},
       ""applicationUrl"": ""https://localhost:{port}""
-    }},";
+    }}";
     }
 
     public void UpdateLaunchSettingEnvVar(string srcDirectory, string envVarName, string envVarVal, string projectBaseName)
