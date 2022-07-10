@@ -68,9 +68,10 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
 
         new ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, projectBaseName);
         
-        new ClientExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName, template.Clients);
+        new ClientExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName);
         new ClientFactoryBuilder(_utilities).Create(solutionDirectory, projectBaseName);
-        new RealmBuildBuilder(_utilities).Create(solutionDirectory, projectBaseName, template.Name, template.Clients);
+        new ScopeFactoryBuilder(_utilities).Create(solutionDirectory, projectBaseName);
+        new RealmBuildBuilder(_utilities).Create(solutionDirectory, projectBaseName, template.RealmName, template.Clients);
 
         new DockerComposeBuilders(_utilities, _fileSystem).AddAuthServerToDockerCompose(solutionDirectory, template);
     }

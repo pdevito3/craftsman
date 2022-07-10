@@ -171,12 +171,12 @@ public static class ClassPathHelper
 
     public static ClassPath AuthServerFactoriesClassPath(string solutionDirectory, string className, string authServerProjectName)
     {
-        return new ClassPath(solutionDirectory, Path.Combine($"{authServerProjectName}"), className);
+        return new ClassPath(solutionDirectory, Path.Combine($"{authServerProjectName}", "Factories"), className);
     }
 
     public static ClassPath AuthServerExtensionsClassPath(string solutionDirectory, string className, string authServerProjectName)
     {
-        return new ClassPath(solutionDirectory, Path.Combine($"{authServerProjectName}"), className);
+        return new ClassPath(solutionDirectory, Path.Combine($"{authServerProjectName}", "Extensions"), className);
     }
 
     public static ClassPath AuthServerProjectRootClassPath(string solutionDirectory, string className, string authServerProjectName)

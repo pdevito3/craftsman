@@ -16,16 +16,16 @@ public class RealmBuildBuilder
 
     public void Create(string solutionDirectory, string projectBaseName, string templateName, List<AuthServerTemplate.AuthClient> clients)
     {
-        var classPath = ClassPathHelper.AuthServerExtensionsClassPath(solutionDirectory, "ClientExtensions.cs", projectBaseName);
-        var fileText = GetFileText(classPath.ClassNamespace, templateName, clients);
+        var classPath = ClassPathHelper.AuthServerProjectRootClassPath(solutionDirectory, "RealmBuild.cs", projectBaseName);
+        var fileText = GetFileText(classPath.ClassNamespace, templateName, clients, solutionDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string GetFileText(string classNamespace, string templateName, List<AuthServerTemplate.AuthClient> clients)
+    private static string GetFileText(string classNamespace, string realmName, List<AuthServerTemplate.AuthClient> clients, string solutionDirectory, string projectBaseName)
     {
-        var realm = @$"var realm = new Realm(""{templateName}-realm"", new RealmArgs
+        var realm = @$"var realm = new Realm(""{realmName}-realm"", new RealmArgs
         {{
-            RealmName = ""{templateName} Realm"",
+            RealmName = ""{realmName}"",
             RegistrationAllowed = true,
             ResetPasswordAllowed = true,
             RememberMe = true,
@@ -33,16 +33,34 @@ public class RealmBuildBuilder
         }});";
         var clientsString = "";
         
+        var scopesString = "";
+        var clientScopes = clients
+            .SelectMany(x => x.Scopes)
+            .Distinct()
+            .ToList();
+
+        var scopesToAdd = new List<string>();
+        scopesToAdd.AddRange(clientScopes);
+        scopesToAdd = scopesToAdd.Distinct().ToList();
+        scopesToAdd.ForEach(scope =>
+        {
+            var scopeVar = GetScopeVarName(scope);
+            scopesString += $@"
+        var {scopeVar} = ScopeFactory.CreateScope(realm.Id, ""{scope}"");";
+        });
+        
         foreach (AuthServerTemplate.AuthClient client in clients)
         {
             clientsString += GetNewClientString(client);
         }
-        
+
+        var extensionsClassPath = ClassPathHelper.AuthServerExtensionsClassPath(solutionDirectory, "", projectBaseName);
+        var factoryClassPath = ClassPathHelper.AuthServerFactoriesClassPath(solutionDirectory, "", projectBaseName);
         
         return @$"namespace {classNamespace};
 
-using Extensions;
-using Factories;
+using {extensionsClassPath.ClassNamespace};
+using {factoryClassPath.ClassNamespace};
 using Pulumi;
 using Pulumi.Keycloak;
 
@@ -50,23 +68,33 @@ class RealmBuild : Stack
 {{
     public RealmBuild()
     {{
-        {realm}        
-        {clientsString}
+        {realm}{scopesString}{clientsString}
     }}
 }}";
     }
 
+    private static string GetScopeVarName(string scope)
+    {
+        return $"{scope}Scope".LowercaseFirstLetter()
+            .Replace("-", "")
+            .Replace("_", "")
+            .Replace(".", "")
+            .Replace(":", "");
+    }
+
     private static string GetNewClientString(AuthServerTemplate.AuthClient client)
     {
-        var scopeVar = $"{client.Name.Replace(" ", "")}Scope";
-        var clientVar = $"{client.Name.Replace(" ", "")}Client";
+        var clientVar = $"{client.Name.Replace(" ", "")}Client".LowercaseFirstLetter();
         
         string redirectUris = GetRedirectUris(client);
-        string webOrigins = GetCors(client);
+        string webOrigins = GetCors(client.AllowedCorsOrigins);
 
-        var clientsString = client.GrantType == GrantType.Code.Name ? $@"
+        var scopeStringList = client.Scopes.Select(scope => $@"{GetScopeVarName(scope)}.Name");
+        var scopesToAdd = string.Join(",", scopeStringList);
+
+        var clientsString = client.GrantType == GrantType.Code.Name
+            ? $@"
         
-        var {scopeVar} = ScopeFactory.CreateScope(realm.Id, ""{client.Name}-scopes"");
         var {clientVar} = ClientFactory.CreateCodeFlowClient(realm.Id,
             ""{client.Id}"", 
             ""{client.Secret}"", 
@@ -75,16 +103,15 @@ class RealmBuild : Stack
             {redirectUris},
             {webOrigins}
             );
-        {clientVar}.AddScope({scopeVar}.Name);"
-                :  $@"
+        {clientVar}.ExtendDefaultScopes({scopesToAdd});"
+            : $@"
         
-        var {scopeVar} = ScopeFactory.CreateScope(realm.Id, ""{client.Name}-scopes"");
         var {clientVar} = ClientFactory.CreateClientCredentialsFlowClient(realm.Id,
             ""{client.Id}"", 
             ""{client.Secret}"", 
             ""{client.Name}"",
             ""{client.BaseUrl}"");
-        {clientVar}.AddScope({scopeVar}.Name);";
+        {clientVar}.ExtendDefaultScopes({scopesToAdd});";
         return clientsString;
     }
 
@@ -93,30 +120,35 @@ class RealmBuild : Stack
         var redirectUrisString = "";
         client.RedirectUris.ForEach(uri =>
         {
+            if (uri.EndsWith("/"))
+                uri = uri.Substring(0, uri.Length - 1);
+            
             redirectUrisString += $@"
                 ""{uri}"",";
         });
-        var redirectUris = client.RedirectUris == new List<string>()
-            ? "new InputList<string>()"
-            : @$"new InputList<string>() 
-            {{{redirectUrisString}
-            }}";
+        var redirectUris = client.RedirectUris.Count <= 0
+            ? "redirectUris: null"
+            : @$"redirectUris: new InputList<string>() 
+                {{{redirectUrisString}
+                }}";
         return redirectUris;
     }
 
-    private static string GetCors(AuthServerTemplate.AuthClient client)
+    private static string GetCors(List<string> allowedCors)
     {
         var corsString = "";
-        client.AllowedCorsOrigins.ForEach(uri =>
+        allowedCors.ForEach(uri =>
         {
+            if (uri.EndsWith("/"))
+                uri = uri.Substring(0, uri.Length - 1);
             corsString += $@"
                 ""{uri}"",";
         });
-        var cors = client.RedirectUris == new List<string>()
-            ? "new InputList<string>()"
-            : @$"new InputList<string>() 
-            {{{corsString}
-            }}";
-        return corsString;
+        var cors = allowedCors.Count <= 0
+            ? "webOrigins: null"
+            : @$"webOrigins: new InputList<string>() 
+                {{{corsString}
+                }}";
+        return cors;
     }
 }

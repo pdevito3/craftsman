@@ -9,6 +9,8 @@ public class AuthServerTemplate
 {
     public string Name { get; set; }
 
+    public string RealmName { get; set; }
+
     public int Port { get; set; }
 
     public string Username { get; set; } = "admin";
@@ -33,7 +35,6 @@ public class AuthServerTemplate
     /// </summary>
     public class AuthClient
     {
-
         public string Id { get; set; }
 
         public string Name { get; set; }
@@ -67,16 +68,15 @@ public class AuthServerTemplate
                     throw new ArgumentNullException($"Base url is required");
 
                 _baseUrl = value;
+                
+                if (_baseUrl.EndsWith("/"))
+                    _baseUrl = _baseUrl.Substring(0, _baseUrl.Length - 1);
             }
         }
 
         public List<string> RedirectUris { get; set; } = new List<string>();
 
-        public List<string> PostLogoutRedirectUris { get; set; } = new List<string>();
-
         public List<string> AllowedCorsOrigins { get; set; } = new List<string>();
-
-        public string FrontChannelLogoutUri { get; set; }
 
         public List<string> Scopes { get; set; } = new List<string>();
 
@@ -85,13 +85,6 @@ public class AuthServerTemplate
             return RedirectUris is not { Count: > 0 }
                 ? null
                 : string.Join(", ", RedirectUris.Select(claim => $@"""{claim}"""));
-        }
-
-        public string GetPostLogoutRedirectUrisString()
-        {
-            return PostLogoutRedirectUris is not { Count: > 0 }
-                ? null
-                : string.Join(", ", PostLogoutRedirectUris.Select(claim => $@"""{claim}"""));
         }
 
         public string GetAllowedCorsOriginsString()

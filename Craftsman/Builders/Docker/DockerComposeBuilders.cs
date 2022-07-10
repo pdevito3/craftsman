@@ -38,7 +38,8 @@ public class DockerComposeBuilders
 
 services:
         
-volumes:";
+volumes:
+  # compose volumes marker - do not delete";
     }
 
     public void AddVolumeToDockerComposeDb(string solutionDirectory, DockerConfig dockerConfig)
@@ -72,7 +73,7 @@ volumes:";
                     {
                         newText += @$"{services}";
                     }
-                    else if (line.Trim() == $"volumes:")
+                    else if (line.Contains($"# compose volumes marker - do not delete"))
                     {
                         newText += @$"{volumes}";
                     }
@@ -343,7 +344,8 @@ volumes:";
     ports:
       - {template.Port}:8080
     depends_on:
-      - keycloakdb";
+      - keycloakdb
+";
 
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
@@ -366,7 +368,7 @@ volumes:";
                     {
                         newText += @$"{services}";
                     }
-                    if (line.Trim().Equals($"volumes:"))
+                    else if (line.Contains($"# compose volumes marker - do not delete"))
                     {
                         newText += @$"{Environment.NewLine}  keycloak-data:";
                     }

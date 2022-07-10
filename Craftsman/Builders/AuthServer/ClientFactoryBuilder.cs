@@ -14,7 +14,7 @@ public class ClientFactoryBuilder
 
     public void Create(string solutionDirectory, string projectBaseName)
     {
-        var classPath = ClassPathHelper.AuthServerExtensionsClassPath(solutionDirectory, "ClientExtensions.cs", projectBaseName);
+        var classPath = ClassPathHelper.AuthServerFactoriesClassPath(solutionDirectory, "ClientFactory.cs", projectBaseName);
         var fileText = GetFileText(classPath.ClassNamespace);
         _utilities.CreateFile(classPath, fileText);
     }
@@ -56,7 +56,8 @@ public class ClientFactory
             }},
             PkceCodeChallengeMethod = ""S256"",
             ClientSecret = clientSecret,
-            BackchannelLogoutSessionRequired = true
+            BackchannelLogoutSessionRequired = true,
+            BackchannelLogoutUrl = baseUrl
         }});
     }}
     
@@ -78,7 +79,8 @@ public class ClientFactory
             BaseUrl = baseUrl,
             AdminUrl = baseUrl,
             ClientSecret = clientSecret,
-            BackchannelLogoutSessionRequired = true
+            BackchannelLogoutSessionRequired = true,
+            BackchannelLogoutUrl = baseUrl
         }});
     }}
 }}";

@@ -2,7 +2,6 @@ namespace Craftsman.Builders.AuthServer;
 
 using Craftsman.Helpers;
 using Craftsman.Services;
-using Domain;
 
 public class ClientExtensionsBuilder
 {
@@ -13,32 +12,15 @@ public class ClientExtensionsBuilder
         _utilities = utilities;
     }
 
-    public void Create(string solutionDirectory, string projectBaseName, List<AuthServerTemplate.AuthClient> clients)
+    public void Create(string solutionDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.AuthServerExtensionsClassPath(solutionDirectory, "ClientExtensions.cs", projectBaseName);
-        var fileText = GetFileText(classPath.ClassNamespace, clients);
+        var fileText = GetFileText(classPath.ClassNamespace);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string GetFileText(string classNamespace, List<AuthServerTemplate.AuthClient> clients)
+    private static string GetFileText(string classNamespace)
     {
-        var scopesString = "";
-        var defaultScopes = new List<string>() { "profile", "email", "roles", "openid", "web-origins" };
-        var clientScopes = clients
-            .SelectMany(x => x.Scopes)
-            .Distinct()
-            .ToList();
-
-        var scopesToAdd = new List<string>();
-        scopesToAdd.AddRange(defaultScopes);
-        scopesToAdd.AddRange(clientScopes);
-        scopesToAdd = scopesToAdd.Distinct().ToList();
-        scopesToAdd.ForEach(scope =>
-        {
-            scopesString += $@"
-                ""{scope}"",";
-        });
-        
         return @$"namespace {classNamespace};
 
 using Pulumi;
@@ -46,15 +28,21 @@ using Pulumi.Keycloak.OpenId;
 
 public static class ClientExtensions
 {{
-    public static void AddScope(this Client client, params Output<string>[] scopeName)
+    public static void ExtendDefaultScopes(this Client client, params Output<string>[] scopeNames)
     {{
-        var defaultScopes = new ClientDefaultScopes($""default-scopes-for-{{client.Name}}"", new ClientDefaultScopesArgs()
+        // TODO new guid causes rebuild of this every time with a new name, but it breaks and says their is a name collision 
+        // without it though, even only calling client name once
+        var defaultScopes = new ClientDefaultScopes($""default-scopes-for-{{client.Name}}-{{Guid.NewGuid()}}"", new ClientDefaultScopesArgs()
         {{
             RealmId = client.RealmId,
             ClientId = client.Id,
             DefaultScopes =
             {{
-                {scopesString}
+                ""profile"",
+                ""email"",
+                ""roles"",
+                ""web-origins"",
+                scopeNames,
             }},
         }});
     }}
