@@ -3,6 +3,7 @@ namespace Craftsman.Builders.AuthServer;
 using Craftsman.Helpers;
 using Craftsman.Services;
 using Domain;
+using Domain.Enums;
 
 public class RealmBuildBuilder
 {
@@ -63,7 +64,7 @@ class RealmBuild : Stack
         string redirectUris = GetRedirectUris(client);
         string webOrigins = GetCors(client);
 
-        var clientsString = $@"
+        var clientsString = client.GrantType == GrantType.Code.Name ? $@"
         
         var {scopeVar} = ScopeFactory.CreateScope(realm.Id, ""{client.Name}-scopes"");
         var {clientVar} = ClientFactory.CreateCodeFlowClient(realm.Id,
@@ -74,6 +75,15 @@ class RealmBuild : Stack
             {redirectUris},
             {webOrigins}
             );
+        {clientVar}.AddScope({scopeVar}.Name);"
+                :  $@"
+        
+        var {scopeVar} = ScopeFactory.CreateScope(realm.Id, ""{client.Name}-scopes"");
+        var {clientVar} = ClientFactory.CreateClientCredentialsFlowClient(realm.Id,
+            ""{client.Id}"", 
+            ""{client.Secret}"", 
+            ""{client.Name}"",
+            ""{client.BaseUrl}"");
         {clientVar}.AddScope({scopeVar}.Name);";
         return clientsString;
     }
