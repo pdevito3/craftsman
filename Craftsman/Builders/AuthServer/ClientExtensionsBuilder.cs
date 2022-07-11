@@ -38,6 +38,7 @@ public static class ClientExtensions
             ClientId = client.Id,
             DefaultScopes =
             {{
+                ""openid"",
                 ""profile"",
                 ""email"",
                 ""roles"",

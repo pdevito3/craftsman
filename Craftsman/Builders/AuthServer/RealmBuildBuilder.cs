@@ -63,12 +63,48 @@ using {extensionsClassPath.ClassNamespace};
 using {factoryClassPath.ClassNamespace};
 using Pulumi;
 using Pulumi.Keycloak;
+using Pulumi.Keycloak.Inputs;
 
 class RealmBuild : Stack
 {{
     public RealmBuild()
     {{
         {realm}{scopesString}{clientsString}
+        
+        var realmSuperUser = new Role(""Super Admin"", new RoleArgs
+        {{
+            RealmId = realm.Id,
+            Name = ""Super Admin"",
+            Description = ""Super Admin Role"",
+        }});
+        var bob = new User(""user"", new UserArgs
+        {{
+            RealmId = realm.Id,
+            Username = ""bob"",
+            Enabled = true,
+            Email = ""bob@domain.com"",
+            FirstName = ""Bob"",
+            LastName = ""Bobson"",
+            InitialPassword = new UserInitialPasswordArgs
+            {{
+                Value = ""bob"",
+                Temporary = true,
+            }},
+        }});
+        bob.SetRoles(realmSuperUser.Id);
+    }}
+}}
+
+public static class UserExtensions
+{{
+    public static UserRoles SetRoles(this User user, params Input<string>[] userRoles)
+    {{
+        return new UserRoles($""user-roles-{{user.Id}}"", new UserRolesArgs()
+        {{
+            UserId = user.Id,
+            RealmId = user.RealmId,
+            RoleIds = userRoles
+        }});
     }}
 }}";
     }
