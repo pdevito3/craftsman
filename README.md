@@ -25,9 +25,9 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Testing Optimizations
 
-🚧 Auth Server rewrite with Identity
+✅ Common Value Object Scaffolding
 
-🚧 Endpoint Colocation
+🚧 Auth Server rewrite with Keycloak
 
 🚧 Message Bus Enhancements
 
