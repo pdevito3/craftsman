@@ -68,7 +68,7 @@ public class {commandName}Tests : TestBase
     public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()
     {{
         // Arrange
-        var {fakeParentEntity} = Fake{feature.ParentEntity}.Generate(new {fakeParentCreationDto}().Generate());
+        var {fakeParentEntity} = Fake{feature.ParentEntity}.Generate();
         await InsertAsync({fakeParentEntity});
         var {fakeEntityVariableNameOne} = new {fakeCreationDto}().Generate();
         var {fakeEntityVariableNameTwo} = new {fakeCreationDto}().Generate();

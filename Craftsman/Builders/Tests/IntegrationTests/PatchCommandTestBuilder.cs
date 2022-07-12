@@ -84,7 +84,7 @@ public class {commandName}Tests : TestBase
     public async Task can_patch_existing_{entity.Name.ToLower()}_in_db()
     {{
         // Arrange
-        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
+        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate();
         await InsertAsync({fakeEntityVariableName});
         var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
