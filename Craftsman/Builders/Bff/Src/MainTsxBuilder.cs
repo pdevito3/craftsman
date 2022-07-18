@@ -31,14 +31,14 @@ import {{ Notifications }} from '@/components/Notifications';
 import 'react-toastify/dist/ReactToastify.min.css';
 
 ReactDOM.render(
-	<React.StrictMode>
-		<QueryClientProvider client={{new QueryClient()}}>
-			<App />
-			<ReactQueryDevtools initialIsOpen={{false}} />
-		</QueryClientProvider>
-		<Notifications />
-	</React.StrictMode>,
-	document.getElementById('root')
+    <React.StrictMode>
+        <QueryClientProvider client={{new QueryClient()}}>
+            <App />
+            <ReactQueryDevtools initialIsOpen={{false}} />
+        </QueryClientProvider>
+        <Notifications />
+    </React.StrictMode>,
+    document.getElementById('root')
 );";
     }
 }

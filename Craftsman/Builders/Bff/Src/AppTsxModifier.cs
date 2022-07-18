@@ -42,7 +42,7 @@ public class DynamicFeatureRoutesModifier
                     }
                     if (line.Contains("/* route marker"))
                     {
-                        newText += @$"{Environment.NewLine}							<Route path=""/{entityPlural.LowercaseFirstLetter()}"" element={{<{listRouteName} />}} />";
+                        newText += @$"{Environment.NewLine}                            <Route path=""/{entityPlural.LowercaseFirstLetter()}"" element={{<{listRouteName} />}} />";
                     }
 
                     output.WriteLine(newText);

@@ -40,7 +40,7 @@ public class HomeFeatureRoutesBuilder
         return @$"import React from 'react';
 
 function Home() {{
-	return <div>Home!</div>;
+    return <div>Home!</div>;
 }}
 
 export {{ Home }};

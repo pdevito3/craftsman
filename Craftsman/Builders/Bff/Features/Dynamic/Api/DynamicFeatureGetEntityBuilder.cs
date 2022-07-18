@@ -38,13 +38,13 @@ import {{ {readDtoName} }} from '../types';
 import {{ {keyExportName} }} from './{keysImport}';
 
 export const get{entityUpperFirst} = (id: string) => {{
-	return api
-		.get(`/api/{entityPluralLowercase}/${{id}}`)
-		.then((response: AxiosResponse<{readDtoName}>) => response.data);
+    return api
+        .get(`/api/{entityPluralLowercase}/${{id}}`)
+        .then((response: AxiosResponse<{readDtoName}>) => response.data);
 }};
 
 export const useGet{entityUpperFirst} = (id: string) => {{
-	return useQuery({keyExportName}.detail(id), () => get{entityUpperFirst}(id));
+    return useQuery({keyExportName}.detail(id), () => get{entityUpperFirst}(id));
 }};
 ";
     }

@@ -39,22 +39,22 @@ import {{ {keyExportName} }} from './{keysImport}';
 import {{ {readDtoName}, {dtoForCreationName} }} from '../types';
 
 const add{entityUpperFirst} = (data: {dtoForCreationName}) => {{
-	return api
-		.post('/api/{entityPluralLowercase}', data)
-		.then((response) => response.data as {readDtoName});
+    return api
+        .post('/api/{entityPluralLowercase}', data)
+        .then((response) => response.data as {readDtoName});
 }};
 
 export function useAdd{entityUpperFirst}(options?: UseMutationOptions<{readDtoName}, AxiosError, {dtoForCreationName}>) {{
-	const queryClient = useQueryClient()
+    const queryClient = useQueryClient()
 
-	return useMutation(
-		(new{entityUpperFirst}: {dtoForCreationName}) => add{entityUpperFirst}(new{entityUpperFirst}),
-		{{
-			onSuccess: () => {{
-				queryClient.invalidateQueries({keyExportName}.lists())
-			}},
-			...options
-		}});
+    return useMutation(
+        (new{entityUpperFirst}: {dtoForCreationName}) => add{entityUpperFirst}(new{entityUpperFirst}),
+        {{
+            onSuccess: () => {{
+                queryClient.invalidateQueries({keyExportName}.lists())
+            }},
+            ...options
+        }});
 }}
 ";
     }

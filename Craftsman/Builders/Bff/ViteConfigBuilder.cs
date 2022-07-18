@@ -27,9 +27,9 @@ import {{ join }} from 'path';
 import {{ defineConfig }} from 'vite';
 
 const baseFolder =
-	process.env.APPDATA !== undefined && process.env.APPDATA !== ''
-		? `${{process.env.APPDATA}}/ASP.NET/https`
-		: `${{process.env.HOME}}/.aspnet/https`;
+    process.env.APPDATA !== undefined && process.env.APPDATA !== ''
+        ? `${{process.env.APPDATA}}/ASP.NET/https`
+        : `${{process.env.HOME}}/.aspnet/https`;
 
 const certificateName = process.env.npm_package_name;
 
@@ -40,10 +40,10 @@ const path = require('path');
 const {{ env }} = require('process');
 
 const target = env.ASPNETCORE_HTTPS_PORT
-	? `https://localhost:${{env.ASPNETCORE_HTTPS_PORT}}`
-	: env.ASPNETCORE_URLS
-		? env.ASPNETCORE_URLS.split(';')[0]
-		: 'http://localhost:18082';
+    ? `https://localhost:${{env.ASPNETCORE_HTTPS_PORT}}`
+    : env.ASPNETCORE_URLS
+        ? env.ASPNETCORE_URLS.split(';')[0]
+        : 'http://localhost:18082';
 
 const baseProxy = {{
     target,
@@ -53,7 +53,7 @@ const baseProxy = {{
 // https://vitejs.dev/config/
 export default defineConfig({{
     plugins: [reactRefresh()],
-	resolve: {{
+    resolve: {{
         alias: {{
             '@': path.resolve(__dirname, '/src'),
         }},

@@ -36,23 +36,23 @@ import {{ UseMutationOptions, useQueryClient, useMutation }} from 'react-query';
 import {{ {keyExportName} }} from './{keysImport}';
 
 async function delete{entityUpperFirst}(id: string) {{
-	return api
-		.delete(`/api/{entityPluralLowercase}/${{id}}`)
-		.then(() => {{ }});
+    return api
+        .delete(`/api/{entityPluralLowercase}/${{id}}`)
+        .then(() => {{ }});
 }}
 
 export function useDelete{entityUpperFirst}(options?: UseMutationOptions<void, AxiosError, string>) {{
-	const queryClient = useQueryClient()
+    const queryClient = useQueryClient()
 
-	return useMutation(
-		(id: string) => delete{entityUpperFirst}(id),
-		{{
-			onSuccess: () => {{
-				queryClient.invalidateQueries({keyExportName}.lists())
-				queryClient.invalidateQueries({keyExportName}.details())
-			}},
-			...options
-		}});
+    return useMutation(
+        (id: string) => delete{entityUpperFirst}(id),
+        {{
+            onSuccess: () => {{
+                queryClient.invalidateQueries({keyExportName}.lists())
+                queryClient.invalidateQueries({keyExportName}.details())
+            }},
+            ...options
+        }});
 }}
 ";
     }

@@ -40,26 +40,26 @@ import {{PagedResponse, Pagination}} from '@/types/api';
 import {{AxiosResponse}} from 'axios';
 
 const get{entityPluralUppercaseFirst} = (queryString: string) => {{
-	queryString = queryString == '' 
-		? queryString 
-		: `?${{queryString}}`;
+    queryString = queryString == '' 
+        ? queryString 
+        : `?${{queryString}}`;
 
-	return api.get(`/api/{entityPluralLowercase}?${{queryString}}`)
-		.then((response: AxiosResponse<{readDtoName}[]>) => {{
-			return {{
-				data: response.data as {readDtoName}[],
-				pagination: JSON.parse(response.headers['x-pagination']) as Pagination
-			}} as PagedResponse<{readDtoName}>;
-	}});
+    return api.get(`/api/{entityPluralLowercase}?${{queryString}}`)
+        .then((response: AxiosResponse<{readDtoName}[]>) => {{
+            return {{
+                data: response.data as {readDtoName}[],
+                pagination: JSON.parse(response.headers['x-pagination']) as Pagination
+            }} as PagedResponse<{readDtoName}>;
+    }});
 }};
 
 export const use{entityPluralUppercaseFirst} = ({{ pageNumber, pageSize, filters, sortOrder }}: QueryParams) => {{
-	let queryParams = queryString.stringify({{ pageNumber, pageSize, filters, sortOrder }});
+    let queryParams = queryString.stringify({{ pageNumber, pageSize, filters, sortOrder }});
 
-	return useQuery(
-		{keyExportName}.list(queryParams ?? ''),
-		() => get{entityPluralUppercaseFirst}(queryParams)
-	);
+    return useQuery(
+        {keyExportName}.list(queryParams ?? ''),
+        () => get{entityPluralUppercaseFirst}(queryParams)
+    );
 }};
 ";
     }

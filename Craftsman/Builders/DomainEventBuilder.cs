@@ -68,7 +68,7 @@ public abstract class DomainEvent : INotification, IEquatable<DomainEvent>
     }}
 
     private IEnumerable<PropertyInfo> GetProperties()
-    {{		
+    {{        
         return this._properties ??= GetType()
             .GetProperties(BindingFlags.Instance | BindingFlags.Public)
             .Where(p => p.GetCustomAttribute(typeof(IgnoreMemberAttribute)) == null)

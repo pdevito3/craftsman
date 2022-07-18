@@ -48,25 +48,25 @@ public class DynamicFeatureRoutesBuilder
 import {{ use{entityPlural.UppercaseFirstLetter()} }} from '../api';
 
 function {listRouteName}() {{
-	const {{ data: {entityResponseVar}, isLoading }} = use{entityPlural.UppercaseFirstLetter()}({{}});
-	const {entityDataVar} = {entityResponseVar}?.data;
-	// const {entityPaginationVar} = {entityResponseVar}?.pagination;
+    const {{ data: {entityResponseVar}, isLoading }} = use{entityPlural.UppercaseFirstLetter()}({{}});
+    const {entityDataVar} = {entityResponseVar}?.data;
+    // const {entityPaginationVar} = {entityResponseVar}?.pagination;
 
-	if(isLoading) 
-		return <div>Loading...</div>
+    if(isLoading) 
+        return <div>Loading...</div>
 
-	return (
-		<>
-			{{
-				{entityDataVar} && {entityDataVar}.length > 0 ? (
-					{entityDataVar}?.map(({entityName.LowercaseFirstLetter()}) => {{
-						return <div key={{{entityName.LowercaseFirstLetter()}.id}}>{{{entityName.LowercaseFirstLetter()}.id}}</div>;
-					}})
-				) : (
-					<div>No {entityPlural} Found</div>
-				)}}
-		</>
-	)
+    return (
+        <>
+            {{
+                {entityDataVar} && {entityDataVar}.length > 0 ? (
+                    {entityDataVar}?.map(({entityName.LowercaseFirstLetter()}) => {{
+                        return <div key={{{entityName.LowercaseFirstLetter()}.id}}>{{{entityName.LowercaseFirstLetter()}.id}}</div>;
+                    }})
+                ) : (
+                    <div>No {entityPlural} Found</div>
+                )}}
+        </>
+    )
 }}
 
 export {{ {listRouteName} }};

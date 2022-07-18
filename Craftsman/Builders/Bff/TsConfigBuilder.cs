@@ -28,12 +28,12 @@ public class TsConfigBuilder
     public static string GetTsConfigPathText()
     {
         return @$"{{
-	""compilerOptions"": {{
-		""baseUrl"": ""."",
-		""paths"": {{
-			""@/*"": [""./src/*""]
-		}}
-	}}
+    ""compilerOptions"": {{
+        ""baseUrl"": ""."",
+        ""paths"": {{
+            ""@/*"": [""./src/*""]
+        }}
+    }}
 }}
 ";
     }
@@ -41,26 +41,26 @@ public class TsConfigBuilder
     public static string GetTsConfigText()
     {
         return @$"{{
-	""compilerOptions"": {{
-		""target"": ""ESNext"",
-		""lib"": [""DOM"", ""DOM.Iterable"", ""ESNext""],
-		""allowJs"": false,
-		""skipLibCheck"": false,
-		""esModuleInterop"": false,
-		""allowSyntheticDefaultImports"": true,
-		""strict"": true,
-		""forceConsistentCasingInFileNames"": true,
-		""module"": ""ESNext"",
-		""moduleResolution"": ""Node"",
-		""resolveJsonModule"": true,
-		""isolatedModules"": true,
-		""noEmit"": true,
-		""jsx"": ""react-jsx"",
-		""noFallthroughCasesInSwitch"": true
-	}},
-	""include"": [""./src""],
-	""exclude"": [""node_modules""],
-	""extends"": ""./tsconfig.paths.json""
+    ""compilerOptions"": {{
+        ""target"": ""ESNext"",
+        ""lib"": [""DOM"", ""DOM.Iterable"", ""ESNext""],
+        ""allowJs"": false,
+        ""skipLibCheck"": false,
+        ""esModuleInterop"": false,
+        ""allowSyntheticDefaultImports"": true,
+        ""strict"": true,
+        ""forceConsistentCasingInFileNames"": true,
+        ""module"": ""ESNext"",
+        ""moduleResolution"": ""Node"",
+        ""resolveJsonModule"": true,
+        ""isolatedModules"": true,
+        ""noEmit"": true,
+        ""jsx"": ""react-jsx"",
+        ""noFallthroughCasesInSwitch"": true
+    }},
+    ""include"": [""./src""],
+    ""exclude"": [""node_modules""],
+    ""extends"": ""./tsconfig.paths.json""
 }}
 ";
     }

@@ -38,23 +38,23 @@ import {{ {keyExportName} }} from './{keysImport}';
 import {{ {dtoForUpdateName} }} from '../types';
 
 export const update{entityUpperFirst} = (id: string, data: {dtoForUpdateName}) => {{
-	return api
-		.put(`/api/{entityPluralLowercase}/${{id}}`, data)
-		.then(() => {{ }});
+    return api
+        .put(`/api/{entityPluralLowercase}/${{id}}`, data)
+        .then(() => {{ }});
 }};
 
 export function useUpdate{entityUpperFirst}(id: string, options?: UseMutationOptions<void, AxiosError, {dtoForUpdateName}>) {{
-	const queryClient = useQueryClient()
+    const queryClient = useQueryClient()
 
-	return useMutation(
-		(updated{entityUpperFirst}: {dtoForUpdateName}) => update{entityUpperFirst}(id, updated{entityUpperFirst}),
-		{{
-			onSuccess: () => {{
-				queryClient.invalidateQueries({keyExportName}.lists())
-				queryClient.invalidateQueries({keyExportName}.details())
-			}},
-			...options
-		}});
+    return useMutation(
+        (updated{entityUpperFirst}: {dtoForUpdateName}) => update{entityUpperFirst}(id, updated{entityUpperFirst}),
+        {{
+            onSuccess: () => {{
+                queryClient.invalidateQueries({keyExportName}.lists())
+                queryClient.invalidateQueries({keyExportName}.details())
+            }},
+            ...options
+        }});
 }}
 ";
     }

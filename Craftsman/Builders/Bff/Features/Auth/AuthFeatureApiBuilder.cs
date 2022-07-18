@@ -36,43 +36,43 @@ import {{ useEffect, useState }} from 'react';
 import {{ useQuery }} from 'react-query';
 
 const claimsKeys = {{
-	claim: ['claims'],
+    claim: ['claims'],
 }};
 
 const fetchClaims = async () => api.get('/bff/user').then((res) => res.data);
 
 function useClaims() {{
-	return useQuery(
-		claimsKeys.claim,
-		async () => {{
-			return fetchClaims();
-		}},
-		{{
-			retry: false,
-		}}
-	);
+    return useQuery(
+        claimsKeys.claim,
+        async () => {{
+            return fetchClaims();
+        }},
+        {{
+            retry: false,
+        }}
+    );
 }}
 
 function useAuthUser() {{
-	const {{ data: claims, isLoading }} = useClaims();
+    const {{ data: claims, isLoading }} = useClaims();
 
-	let logoutUrl = claims?.find((claim: any) => claim.type === 'bff:logout_url');
-	let nameDict =
-		claims?.find((claim: any) => claim.type === 'name') ||
-		claims?.find((claim: any) => claim.type === 'sub');
-	let username = nameDict?.value;
+    let logoutUrl = claims?.find((claim: any) => claim.type === 'bff:logout_url');
+    let nameDict =
+        claims?.find((claim: any) => claim.type === 'name') ||
+        claims?.find((claim: any) => claim.type === 'sub');
+    let username = nameDict?.value;
 
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	useEffect(() => {{
-		setIsLoggedIn(!!username);
-	}}, [username]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    useEffect(() => {{
+        setIsLoggedIn(!!username);
+    }}, [username]);
 
-	return {{
-		username,
-		logoutUrl,
-		isLoading,
-		isLoggedIn,
-	}};
+    return {{
+        username,
+        logoutUrl,
+        isLoading,
+        isLoggedIn,
+    }};
 }}
 
 export {{ useAuthUser }};

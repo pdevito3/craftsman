@@ -22,10 +22,10 @@ public class PostCssBuilder
     public static string GetPostCssText()
     {
         return @$"module.exports = {{
-	plugins: {{
-		tailwindcss: {{}},
-		autoprefixer: {{}},
-	}},
+    plugins: {{
+        tailwindcss: {{}},
+        autoprefixer: {{}},
+    }},
 }};";
     }
 }
