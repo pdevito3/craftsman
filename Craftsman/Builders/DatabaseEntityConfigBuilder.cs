@@ -62,7 +62,8 @@ public class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntityTypeCo
     {{
         // example for a simple 1:1 value object
         // builder.Property(x => x.Percent)
-        //     .HasConversion(x => x.Value, x => new Percent(x));
+        //     .HasConversion(x => x.Value, x => new Percent(x))
+        //     .HasColumnName(""percent"");
         
         // example for a more complex value object
         // builder.OwnsOne(x => x.PhysicalAddress, opts =>
