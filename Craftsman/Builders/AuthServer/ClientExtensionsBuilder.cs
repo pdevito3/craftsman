@@ -30,22 +30,22 @@ public static class ClientExtensions
 {{
     public static void ExtendDefaultScopes(this Client client, params Output<string>[] scopeNames)
     {{
-        // TODO new guid causes rebuild of this every time with a new name, but it breaks and says their is a name collision 
-        // without it though, even only calling client name once
-        var defaultScopes = new ClientDefaultScopes($""default-scopes-for-{{client.Name}}-{{Guid.NewGuid()}}"", new ClientDefaultScopesArgs()
-        {{
-            RealmId = client.RealmId,
-            ClientId = client.Id,
-            DefaultScopes =
+        var defaultScopes = client.Name.Apply(clientName =>
+            new ClientDefaultScopes($""default-scopes-for-{{clientName}}"", new ClientDefaultScopesArgs()
             {{
-                ""openid"",
-                ""profile"",
-                ""email"",
-                ""roles"",
-                ""web-origins"",
-                scopeNames,
-            }},
-        }});
+                RealmId = client.RealmId,
+                ClientId = client.Id,
+                DefaultScopes =
+                {{
+                    ""openid"",
+                    ""profile"",
+                    ""email"",
+                    ""roles"",
+                    ""web-origins"",
+                    scopeNames,
+                }},
+            }})
+        );
     }}
 }}";
     }
