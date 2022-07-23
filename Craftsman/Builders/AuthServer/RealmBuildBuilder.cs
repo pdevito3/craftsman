@@ -121,12 +121,15 @@ public static class UserExtensions
     private static string GetNewClientString(AuthServerTemplate.AuthClient client)
     {
         var clientVar = $"{client.Name.Replace(" ", "")}Client".LowercaseFirstLetter();
-        
+
         string redirectUris = GetRedirectUris(client);
         string webOrigins = GetCors(client.AllowedCorsOrigins);
 
         var scopeStringList = client.Scopes.Select(scope => $@"{GetScopeVarName(scope)}.Name");
-        var scopesToAdd = string.Join(",", scopeStringList);
+        var clientScopesToAdd = string.Join(",", scopeStringList);
+        
+        var mapperString = string.Join("", client.Scopes.Select(scope => $@"
+        {clientVar}.AddAudienceMapper(""{scope}"");"));
 
         var clientsString = client.GrantType == GrantType.Code.Name
             ? $@"
@@ -139,7 +142,7 @@ public static class UserExtensions
             {redirectUris},
             {webOrigins}
             );
-        {clientVar}.ExtendDefaultScopes({scopesToAdd});"
+        {clientVar}.ExtendDefaultScopes({clientScopesToAdd});{mapperString}"
             : $@"
         
         var {clientVar} = ClientFactory.CreateClientCredentialsFlowClient(realm.Id,
@@ -147,7 +150,7 @@ public static class UserExtensions
             ""{client.Secret}"", 
             ""{client.Name}"",
             ""{client.BaseUrl}"");
-        {clientVar}.ExtendDefaultScopes({scopesToAdd});";
+        {clientVar}.ExtendDefaultScopes({clientScopesToAdd});{mapperString}";
         return clientsString;
     }
 
