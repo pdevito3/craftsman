@@ -39,8 +39,9 @@ public class {FileNames.GetProfileName(entity.Name)} : Profile
         //createmap<to this, from this>
         CreateMap<{entity.Name}, {FileNames.GetDtoName(entity.Name, Dto.Read)}>()
             .ReverseMap();
-        CreateMap<{FileNames.GetDtoName(entity.Name, Dto.Creation)}, {entity.Name}>();
-        CreateMap<{FileNames.GetDtoName(entity.Name, Dto.Update)}, {entity.Name}>()
+        CreateMap<{entity.Name}, {FileNames.GetDtoName(entity.Name, Dto.Creation)}>()
+            .ReverseMap();
+        CreateMap<{entity.Name}, {FileNames.GetDtoName(entity.Name, Dto.Update)}>()
             .ReverseMap();
     }}
 }}";
