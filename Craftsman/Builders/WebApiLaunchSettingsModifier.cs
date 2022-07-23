@@ -68,6 +68,7 @@ public class WebApiLaunchSettingsModifier
         ""RMQ_VIRTUAL_HOST"": ""{env.BrokerSettings.VirtualHost}"",
         ""RMQ_USERNAME"": ""{env.BrokerSettings.Username}"",
         ""RMQ_PASSWORD"": ""{env.BrokerSettings.Password}"",
+        ""RMQ_PORT"": ""{env.BrokerSettings.BrokerPort}"",
         ""JAEGER_HOST"": ""localhost""
       }},
       ""applicationUrl"": ""https://localhost:{port}""

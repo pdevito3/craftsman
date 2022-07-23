@@ -90,6 +90,6 @@ public class AddBusCommand : Command<AddBusCommand.Settings>
         new ProgramModifier(_fileSystem).RegisterMassTransitService(srcDirectory, projectBaseName);
 
         new IntegrationTestFixtureModifier(_fileSystem).AddMassTransit(testDirectory, projectBaseName);
-        new DockerComposeBuilders(_utilities, _fileSystem).AddRmqToDockerCompose(solutionDirectory);
+        new DockerComposeBuilders(_utilities, _fileSystem).AddRmqToDockerCompose(solutionDirectory, template.Environment.BrokerSettings);
     }
 }

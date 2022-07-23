@@ -143,7 +143,7 @@ volumes:";
     }
 
     // TODO add props to make this configurable
-    public void AddRmqToDockerCompose(string solutionDirectory)
+    public void AddRmqToDockerCompose(string solutionDirectory, BrokerSettings brokerSettings)
     {
         var services = $@"
 
@@ -151,8 +151,8 @@ volumes:";
     image: masstransit/rabbitmq
     restart: always
     ports:
-      - '15672:15672'
-      - '5672:5672'
+      - '{brokerSettings.UiPort}:15672' # RabbitMQ Management UI
+      - '{brokerSettings.BrokerPort}:5672' # RabbitMQ Broker
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -239,6 +239,7 @@ volumes:";
 
     public void AddBoundaryToDockerCompose(string solutionDirectory, DockerConfig dockerConfig, string clientId, string clientSecret, string audience)
     {
+        //TODO RMQ_PORT: {dockerConfig.RmqPort}
         var services = "";
         var volumes = GetDbVolumeAndServiceTextForCompose(dockerConfig, out var dbService);
 

@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Add default database configuration abstraction for each entity along with db context usage. Includes value object examples
 * Json serialization extension to better handle DateOnly and TimeOnly in swagger
 * Common value object scaffolding (`Address`, `Percent`, `MonetaryAmount`)
+* Port customization for RMQ broker and ui
 
 ### Updated
 

@@ -48,11 +48,14 @@ public static class MassTransitServiceExtension
                 mt.AddConsumers(Assembly.GetExecutingAssembly());
                 mt.UsingRabbitMq((context, cfg) =>
                 {{
-                    cfg.Host(Environment.GetEnvironmentVariable(""RMQ_HOST""), Environment.GetEnvironmentVariable(""RMQ_VIRTUAL_HOST""), h =>
-                    {{
-                        h.Username(Environment.GetEnvironmentVariable(""RMQ_USERNAME""));
-                        h.Password(Environment.GetEnvironmentVariable(""AUTH_PASSWORD""));
-                    }});
+                    cfg.Host(Environment.GetEnvironmentVariable(""RMQ_HOST""), 
+                        ushort.Parse(Environment.GetEnvironmentVariable(""RMQ_PORT"")), 
+                        Environment.GetEnvironmentVariable(""RMQ_VIRTUAL_HOST""), 
+                        h =>
+                        {{
+                            h.Username(Environment.GetEnvironmentVariable(""RMQ_USERNAME""));
+                            h.Password(Environment.GetEnvironmentVariable(""AUTH_PASSWORD""));
+                        }});
 
                     // Producers -- Do Not Delete This Comment
 
