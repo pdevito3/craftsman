@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Update `AutoBogus` to `AutobogusLifesupport` to support .NET 6 and UTC
 * `RequireHttpsMetadata`  off in dev for BFF and boundaries
 * `SuperAdmin` text to `Super Admin`
+* `UserPolicyHandler` can accommodate realm roles for keycloak
 
 ### Fixed
 
