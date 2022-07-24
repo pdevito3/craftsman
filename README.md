@@ -27,7 +27,7 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Common Value Object Scaffolding
 
-🚧 Auth Server rewrite with Keycloak
+✅ Auth Server rewrite with Keycloak
 
 🚧 Message Bus Enhancements
 
