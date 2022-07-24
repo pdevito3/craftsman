@@ -77,6 +77,23 @@ class RealmBuild : Stack
             Name = ""Super Admin"",
             Description = ""Super Admin Role"",
         }});
+        var realmUser = new Role(""User"", new RoleArgs
+        {{
+            RealmId = realm.Id,
+            Name = ""User"",
+            Description = ""User Role"",
+        }});
+        var defaultRoles = new DefaultRoles(""default-roles"", new DefaultRolesArgs()
+        {{
+            RealmId = realm.Id,
+            RoleNames = 
+            {{
+                ""uma_authorization"",
+                ""offline_access"",
+                ""User""
+            }},
+        }});
+
         var bob = new User(""user"", new UserArgs
         {{
             RealmId = realm.Id,
@@ -92,19 +109,6 @@ class RealmBuild : Stack
             }},
         }});
         bob.SetRoles(realmSuperUser.Id);
-    }}
-}}
-
-public static class UserExtensions
-{{
-    public static UserRoles SetRoles(this User user, params Input<string>[] userRoles)
-    {{
-        return new UserRoles($""user-roles-{{user.Id}}"", new UserRolesArgs()
-        {{
-            UserId = user.Id,
-            RealmId = user.RealmId,
-            RoleIds = userRoles
-        }});
     }}
 }}";
     }
