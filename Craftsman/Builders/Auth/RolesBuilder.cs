@@ -29,7 +29,7 @@ public class RolesBuilder
 
     public static class Roles
     {{
-        public const string SuperAdmin = ""SuperAdmin"";
+        public const string SuperAdmin = ""Super Admin"";
         public const string User = ""User"";
         
         public static List<string> List()
