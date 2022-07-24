@@ -300,10 +300,10 @@ BoundedContexts:
       ForeignEntityName: Recipe
   Environment:
       AuthSettings:
-        Authority: https://localhost:3385
+        Authority: http://localhost:3255/auth/realms/SpecialRealm
         Audience: recipe_management
-        AuthorizationUrl: https://localhost:3385/connect/authorize
-        TokenUrl: https://localhost:3385/connect/token
+        AuthorizationUrl: http://localhost:3255/auth/realms/SpecialRealm/protocol/openid-connect/auth
+        TokenUrl: http://localhost:3255/auth/realms/SpecialRealm/protocol/openid-connect/token
         ClientId: recipe_management.swagger
         ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
       BrokerSettings:
@@ -338,9 +338,9 @@ Bff:
   ProjectName: RecipeManagementApp
   ProxyPort: 4378
   HeadTitle: Recipe Management App
-  Authority: https://localhost:3385
+  Authority: http://localhost:3255/auth/realms/SpecialRealm
   ClientId: recipe_management.bff
-  ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
+  ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80688
   RemoteEndpoints:
     - LocalPath: /api/recipes
       ApiAddress: https://localhost:5375/api/recipes
@@ -377,80 +377,43 @@ Bff:
     - Name: Measure
     - Name: RecipeId
 AuthServer:
-  Name: AuthServerWithDomain
-  Port: 3385
+  Name: KeycloakPulumi
+  RealmName: SpecialRealm
+  Port: 3255
   Clients:
-    - Id: recipe_management.postman
-      Name: RecipeManagement Postman
-      Secrets:
-        - 974d6f71-d41b-4601-9a7a-a33081f84682
+    - Id: recipe_management.postman.machine
+      Name: RecipeManagement Postman Machine
+      Secret: 974d6f71-d41b-4601-9a7a-a33081f84682
       GrantType: ClientCredentials
-      RedirectUris:
-        - 'https://oauth.pstmn.io/v1/callback'
-      AllowOfflineAccess: true
-      RequireClientSecret: true
-      AllowedScopes:
-        - openid
-        - profile
-        - role
-        - recipe_management #this should match the scope in your boundary's swagger spec
+      BaseUrl: 'https://oauth.pstmn.io/'
+      Scopes:
+        - recipe_management #this should match the scope in your boundary auth and swagger specs
+    - Id: recipe_management.postman.code
+      Name: RecipeManagement Postman Code
+      Secret: 974d6f71-d41b-4601-9a7a-a33081f84680 #optional
+      GrantType: Code
+      BaseUrl: 'https://oauth.pstmn.io/'
+      Scopes:
+        - recipe_management #this should match the scope in your boundary auth and swagger specs
     - Id: recipe_management.swagger
       Name: RecipeManagement Swagger
-      Secrets:
-        - 974d6f71-d41b-4601-9a7a-a33081f80687
+      Secret: 974d6f71-d41b-4601-9a7a-a33081f80687
       GrantType: Code
-      RedirectUris:
-        - 'https://localhost:5375/swagger/oauth2-redirect.html'
-      PostLogoutRedirectUris:
-        - 'http://localhost:5375/'
-      AllowedCorsOrigins:
-        - 'https://localhost:5375'
-      FrontChannelLogoutUri: 'http://localhost:5375/signout-oidc'
-      AllowOfflineAccess: true
-      RequirePkce: true
-      RequireClientSecret: true
-      AllowPlainTextPkce: false
-      AllowedScopes:
-        - openid
-        - profile
-        - role
-        - recipe_management #this should match the scope in your boundary's swagger spec 
+      BaseUrl: 'https://localhost:5375/'
+      Scopes:
+        - recipe_management #this should match the scope in your boundary auth and swagger specs
     - Id: recipe_management.bff
       Name: RecipeManagement BFF
-      Secrets:
-        - 974d6f71-d41b-4601-9a7a-a33081f80687
+      Secret: 974d6f71-d41b-4601-9a7a-a33081f80688
+      BaseUrl: 'https://localhost:4378/'
       GrantType: Code
       RedirectUris:
-        - https://localhost:4378/signin-oidc
-      PostLogoutRedirectUris:
-        - https://localhost:4378/signout-callback-oidc
+        - 'https://localhost:4378/signin-oidc'
       AllowedCorsOrigins:
-        - https://localhost:5375
-        - https://localhost:4378
-      FrontChannelLogoutUri: https://localhost:4378/signout-oidc
-      AllowOfflineAccess: true
-      RequirePkce: true
-      RequireClientSecret: true
-      AllowPlainTextPkce: false
-      AllowedScopes:
-        - openid
-        - profile
-        - role
-        - recipe_management #this should match the scope in your boundary's swagger spec 
-  Scopes:
-    - Name: recipe_management
-      DisplayName: Recipes Management - API Access
-  Apis:
-    - Name: recipe_management
-      DisplayName: Recipe Management
-      ScopeNames:
-        - recipe_management
-      Secrets:
-        - 4653f605-2b36-43eb-bbef-a93480079f20
-      UserClaims:
-        - openid
-        - profile
-        - role";
+        - 'https://localhost:5375' # api 1 - recipe_management
+        - 'https://localhost:4378'
+      Scopes:
+        - recipe_management #this should match the scope in your boundary auth and swagger specs";
     }
 
     private static string BasicTemplate(string name)

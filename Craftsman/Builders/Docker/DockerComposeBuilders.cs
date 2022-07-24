@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Abstractions;
 using Domain;
 using Helpers;
+using Microsoft.VisualBasic.CompilerServices;
 using Services;
 
 public class DockerComposeBuilders
@@ -37,7 +38,8 @@ public class DockerComposeBuilders
 
 services:
         
-volumes:";
+volumes:
+  # compose volumes marker - do not delete";
     }
 
     public void AddVolumeToDockerComposeDb(string solutionDirectory, DockerConfig dockerConfig)
@@ -67,11 +69,11 @@ volumes:";
                 while (null != (line = input.ReadLine()))
                 {
                     var newText = $"{line}";
-                    if (line.Contains($"services:"))
+                    if (line.Trim() == $"services:")
                     {
                         newText += @$"{services}";
                     }
-                    if (line.Contains($"volumes:"))
+                    else if (line.Contains($"# compose volumes marker - do not delete"))
                     {
                         newText += @$"{volumes}";
                     }
@@ -309,25 +311,42 @@ volumes:";
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 
-    public void AddAuthServerToDockerCompose(string solutionDirectory, string projectName, int port)
+    public void AddAuthServerToDockerCompose(string solutionDirectory, AuthServerTemplate template)
     {
-        var services = "";
-
-        services += $@"
-  auth-server:
-    build:
-      context: .
-      dockerfile: {projectName}/Dockerfile
+        var dbPort = CraftsmanUtilities.GetFreePort();
+        var services = @$"
+  keycloakdb:
+    image: postgres
     ports:
-      - ""{port}:8080""
+      - '{dbPort}:5432'
     environment:
-      ASPNETCORE_ENVIRONMENT: ""Development""
-      ASPNETCORE_URLS: ""https://+:8080;""
-      ASPNETCORE_Kestrel__Certificates__Default__Path: ""/https/aspnetappcert.pfx""
-      ASPNETCORE_Kestrel__Certificates__Default__Password: ""password""
-
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
     volumes:
-      - ~/.aspnet/https:/https:ro";
+      - keycloak-data:/var/lib/postgresql/data
+  
+  keycloak:
+    image: jboss/keycloak:latest
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloakdb
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      DB_SCHEMA: public
+      KEYCLOAK_USER: {template.Username}
+      KEYCLOAK_PASSWORD: {template.Password}
+      KEYCLOAK_HTTP_PORT: 8080
+      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, 
+      # and it shouldn't be used in production without knowledge. It is highly recommended that you read the 
+      # PostgreSQL JDBC driver documentation in order to use it.
+      #JDBC_PARAMS: ""ssl=true""
+    ports:
+      - {template.Port}:8080
+    depends_on:
+      - keycloakdb
+";
 
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
@@ -346,9 +365,13 @@ volumes:";
                 while (null != (line = input.ReadLine()))
                 {
                     var newText = $"{line}";
-                    if (line.Contains($"services:"))
+                    if (line.Trim().Equals($"services:"))
                     {
                         newText += @$"{services}";
+                    }
+                    else if (line.Contains($"# compose volumes marker - do not delete"))
+                    {
+                        newText += @$"{Environment.NewLine}  keycloak-data:";
                     }
 
                     output.WriteLine(newText);

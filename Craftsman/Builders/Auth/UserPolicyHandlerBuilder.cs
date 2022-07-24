@@ -28,6 +28,7 @@ public class UserPolicyHandlerBuilder
         return @$"namespace {classNamespace};
 
 using System.Security.Claims;
+using System.Text.Json;
 using {entityServices.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using {domainPolicyClassPath.ClassNamespace};
@@ -50,11 +51,19 @@ public class UserPolicyHandler : IUserPolicyHandler
         var user = _currentUserService.User;
         if (user == null) throw new ArgumentNullException(nameof(user));
 
+        // traditional roles
         var roles = user.Claims
             .Where(c => c.Type is ClaimTypes.Role or ""client_role"")
             .Select(r => r.Value)
             .Distinct()
             .ToArray();
+
+        var realmRoles = user.Claims
+            .Where(c => c.Type is ""realm_access"")
+            .Select(r => JsonSerializer.Deserialize<RealmAccess>(r.Value))
+            .SelectMany(x => x?.Roles);
+            
+        roles = roles.Concat(realmRoles).ToArray();
         
         if(roles.Length == 0)
             return Array.Empty<string>();
@@ -70,6 +79,11 @@ public class UserPolicyHandler : IUserPolicyHandler
             .ToArrayAsync();
 
         return await Task.FromResult(permissions);
+    }}
+
+    private class RealmAccess
+    {{
+        public string[] Roles {{ get; set; }}
     }}
 }}";
     }

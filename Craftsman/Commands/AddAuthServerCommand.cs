@@ -52,53 +52,27 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
 
         AddAuthServer(_scaffoldingDirectoryStore.SolutionDirectory, template);
 
-        _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
+        _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your auth server has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
         return 0;
     }
 
     public void AddAuthServer(string solutionDirectory, AuthServerTemplate template)
     {
-        new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildAuthServerProject(solutionDirectory, template.Name);
+        var projectBaseName = template.Name;
+        
+        new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildAuthServerProject(solutionDirectory, projectBaseName);
 
-        new AuthServerLaunchSettingsBuilder(_utilities).CreateLaunchSettings(solutionDirectory, template.Name, template.Port);
-        new StartupBuilder(_utilities).CreateAuthServerStartup(solutionDirectory, template.Name);
-        new ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, template.Name);
-        new AuthServerConfigBuilder(_utilities).CreateConfig(solutionDirectory, template);
-        new AppSettingsBuilder(_utilities).CreateAuthServerAppSettings(solutionDirectory, template.Name);
+        var pulumiYamlBuilder = new PulumiYamlBuilders(_utilities);
+        pulumiYamlBuilder.CreateBaseFile(solutionDirectory, projectBaseName);
+        pulumiYamlBuilder.CreateDevConfig(solutionDirectory, projectBaseName, template.Port, template.Username, template.Password);
 
-        new AuthServerPackageJsonBuilder(_utilities).CreatePackageJson(solutionDirectory, template.Name);
-        new AuthServerTailwindConfigBuilder(_utilities).CreateTailwindConfig(solutionDirectory, template.Name);
-        new AuthServerPostCssBuilder(_utilities).CreatePostCss(solutionDirectory, template.Name);
+        new ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, projectBaseName);
+        
+        new ClientExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName);
+        new ClientFactoryBuilder(_utilities).Create(solutionDirectory, projectBaseName);
+        new ScopeFactoryBuilder(_utilities).Create(solutionDirectory, projectBaseName);
+        new RealmBuildBuilder(_utilities).Create(solutionDirectory, projectBaseName, template.RealmName, template.Clients);
 
-        // controllers
-        new AuthServerAccountControllerBuilder(_utilities).CreateAccountController(solutionDirectory, template.Name);
-        new AuthServerExternalControllerBuilder(_utilities).CreateExternalController(solutionDirectory, template.Name);
-        // AuthServerHomeControllerBuilder.CreateHomeController(projectDirectory, template.Name);
-
-        // view models + models
-        new AuthServerAccountViewModelsBuilder(_utilities).CreateViewModels(solutionDirectory, template.Name);
-        new AuthServerSharedViewModelsBuilder(_utilities).CreateViewModels(solutionDirectory, template.Name);
-        new AuthServerExternalModelsBuilder(_utilities).CreateModels(solutionDirectory, template.Name);
-        new AuthServerAccountModelsBuilder(_utilities).CreateModels(solutionDirectory, template.Name);
-
-        // views
-        new AuthServerAccountViewsBuilder(_utilities).CreateLoginView(solutionDirectory, template.Name);
-        new AuthServerAccountViewsBuilder(_utilities).CreateLogoutView(solutionDirectory, template.Name);
-        new AuthServerAccountViewsBuilder(_utilities).CreateAccessDeniedView(solutionDirectory, template.Name);
-        new AuthServerSharedViewsBuilder(_utilities).CreateLayoutView(solutionDirectory, template.Name);
-        new AuthServerSharedViewsBuilder(_utilities).CreateStartView(solutionDirectory, template.Name);
-        new AuthServerSharedViewsBuilder(_utilities).CreateViewImports(solutionDirectory, template.Name);
-
-        // css files for TW
-        new AuthServerCssBuilder(_utilities).CreateOutputCss(solutionDirectory, template.Name);
-        new AuthServerCssBuilder(_utilities).CreateSiteCss(solutionDirectory, template.Name);
-
-        // helpers
-        new AuthServerTestUsersBuilder(_utilities).CreateTestModels(solutionDirectory, template.Name);
-        new AuthServerExtensionsBuilder(_utilities).CreateExtensions(solutionDirectory, template.Name);
-        new SecurityHeadersAttributeBuilder(_utilities).CreateAttribute(solutionDirectory, template.Name);
-        new AuthServerDockerfileBuilder(_utilities).CreateAuthServerDotNetDockerfile(solutionDirectory, template.Name);
-        new DockerIgnoreBuilder(_utilities).CreateDockerIgnore(solutionDirectory, template.Name);
-        // DockerComposeBuilders.AddAuthServerToDockerCompose(projectDirectory, template.Name, template.Port);
+        new DockerComposeBuilders(_utilities, _fileSystem).AddAuthServerToDockerCompose(solutionDirectory, template);
     }
 }

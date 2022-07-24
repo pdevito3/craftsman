@@ -21,23 +21,18 @@ public class AuthServerProjBuilder
 
     public static string ProjectFileText()
     {
-        return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
+        return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include=""Duende.IdentityServer"" Version=""5.2.1"" />    
-    <PackageReference Include=""Microsoft.AspNetCore.Authentication.Google"" Version=""6.0.0"" />
-    <PackageReference Include=""Serilog.AspNetCore"" Version=""5.0.0"" />
+    <PackageReference Include=""Pulumi"" Version=""3.*"" />
+    <PackageReference Include=""Pulumi.Keycloak"" Version=""4.10.0"" />
   </ItemGroup>
-
-  <Target Name=""Tailwind"" BeforeTargets=""Build"">
-    <Exec Command=""npm install"" />
-    <Exec Command=""npm run css:build"" />
-  </Target>
 
 </Project>";
     }
