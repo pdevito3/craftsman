@@ -28,11 +28,11 @@ public class UserPolicyHandlerBuilder
         return @$"namespace {classNamespace};
 
 using System.Security.Claims;
-using System.Text.Json;
 using {entityServices.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using {domainPolicyClassPath.ClassNamespace};
 using HeimGuard;
+using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 
 public class UserPolicyHandler : IUserPolicyHandler
@@ -60,7 +60,7 @@ public class UserPolicyHandler : IUserPolicyHandler
 
         var realmRoles = user.Claims
             .Where(c => c.Type is ""realm_access"")
-            .Select(r => JsonSerializer.Deserialize<RealmAccess>(r.Value))
+            .Select(r => JsonConvert.DeserializeObject<RealmAccess>(r.Value))
             .SelectMany(x => x?.Roles);
             
         roles = roles.Concat(realmRoles).ToArray();
