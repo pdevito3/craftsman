@@ -51,8 +51,7 @@ public class UserPolicyHandler : IUserPolicyHandler
         var user = _currentUserService.User;
         if (user == null) throw new ArgumentNullException(nameof(user));
 
-        // traditional roles
-        var roles = user.Claims
+        var traditionalRoles = user.Claims
             .Where(c => c.Type is ClaimTypes.Role or ""client_role"")
             .Select(r => r.Value)
             .Distinct()
@@ -63,7 +62,7 @@ public class UserPolicyHandler : IUserPolicyHandler
             .Select(r => JsonConvert.DeserializeObject<RealmAccess>(r.Value))
             .SelectMany(x => x?.Roles);
             
-        roles = roles.Concat(realmRoles).ToArray();
+        var roles = traditionalRoles.Concat(realmRoles).ToArray();
         
         if(roles.Length == 0)
             return Array.Empty<string>();
