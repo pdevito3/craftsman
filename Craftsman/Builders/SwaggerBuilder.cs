@@ -71,6 +71,7 @@ public static class SwaggerServiceExtension
 
         var licenseText = GetLicenseText(swaggerConfig.LicenseName, licenseUrlLine);
 
+        // {{""{policyName}"", ""{projectName.Humanize()} access""}}
         var swaggerAuth = addJwtAuthentication ? $@"
 
             config.AddSecurityDefinition(""oauth2"", new OpenApiSecurityScheme
@@ -84,7 +85,6 @@ public static class SwaggerServiceExtension
                         TokenUrl = new Uri(Environment.GetEnvironmentVariable(""AUTH_TOKEN_URL"")),
                         Scopes = new Dictionary<string, string>
                         {{
-                            {{""{policyName}"", ""{projectName.Humanize()} access""}}
                         }}
                     }}
                 }}
