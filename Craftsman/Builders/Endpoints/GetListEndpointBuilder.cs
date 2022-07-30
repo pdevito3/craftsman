@@ -17,7 +17,7 @@ public class GetListEndpointBuilder
         var queryListMethodName = FileNames.QueryListName(entityName);
         var listResponse = $@"IEnumerable<{readDto}>";
         var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
-        var getListAuthorization = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
+        var getListAuthorization = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetList(entity, addSwaggerComments, listResponse, getListAuthorization.Length > 0)}{getListAuthorization}
     [Produces(""application/json"")]

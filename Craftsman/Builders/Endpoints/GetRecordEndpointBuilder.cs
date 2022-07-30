@@ -18,7 +18,7 @@ public class GetRecordEndpointBuilder
         var pkPropertyType = primaryKeyProp.Type;
         var singleResponse = $@"{readDto}";
         var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";
-        var getRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
+        var getRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetRecord(entity, addSwaggerComments, singleResponse, getRecordAuthorizations.Length > 0)}{getRecordAuthorizations}

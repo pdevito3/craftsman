@@ -13,7 +13,7 @@ public class DeleteRecordEndpointBuilder
         var primaryKeyProp = Entity.PrimaryKeyProperty;
         var deleteRecordCommandMethodName = FileNames.CommandDeleteName(entityName);
         var pkPropertyType = primaryKeyProp.Type;
-        var deleteRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
+        var deleteRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_DeleteRecord(entity, addSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
     [Produces(""application/json"")]
