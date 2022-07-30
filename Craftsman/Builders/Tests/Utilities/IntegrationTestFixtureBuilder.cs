@@ -29,8 +29,7 @@ public class IntegrationTestFixtureBuilder
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
         
         var heimGuardMock = isProtected 
-            ? $@"
-        services.ReplaceServiceWithSingletonMock<IHeimGuardClient>();" 
+            ? $@"{Environment.NewLine}        services.ReplaceServiceWithSingletonMock<IHeimGuardClient>();" 
             : null;
 
         var equivalencyCall = $@"
@@ -145,7 +144,7 @@ public class TestFixture
         var services = builder.Services;
 
         // add any mock services here
-        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();
+        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();{heimGuardMock}
 
         // MassTransit Harness Setup -- Do Not Delete Comment
 

@@ -23,6 +23,9 @@ public class IntegrationTestBaseBuilder
     {
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
         
+        var protectedUsings = isProtected ? @$"{Environment.NewLine}
+    using HeimGuard;
+    using Moq;" : "";
         var heimGuardMock = isProtected 
             ? $@"{Environment.NewLine}        var userPolicyHandler = GetService<IHeimGuardClient>();
         Mock.Get(userPolicyHandler)
@@ -32,10 +35,9 @@ public class IntegrationTestBaseBuilder
 
         return @$"namespace {classNamespace};
 
-using FluentAssertions;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using AutoBogus;
+using AutoBogus;{protectedUsings}
 using static {testFixtureName};
 
 [Parallelizable]

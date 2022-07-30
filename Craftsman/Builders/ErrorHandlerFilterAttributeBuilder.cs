@@ -15,11 +15,11 @@ public class ErrorHandlerFilterAttributeBuilder
     public void CreateErrorHandlerFilterAttribute(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, $"ErrorHandlerFilterAttribute.cs", projectBaseName);
-        var fileText = GetErrorHandlerFilterAttributeText(srcDirectory, projectBaseName, classPath.ClassNamespace);
+        var fileText = GetErrorHandlerFilterAttributeText(srcDirectory, classPath.ClassNamespace);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetErrorHandlerFilterAttributeText(string srcDirectory, string projectBaseName, string classNamespace)
+    public static string GetErrorHandlerFilterAttributeText(string srcDirectory, string classNamespace)
     {
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
 
@@ -50,7 +50,6 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
     public override void OnException(ExceptionContext context)
     {{
         HandleException(context);
-
         base.OnException(context);
     }}
 

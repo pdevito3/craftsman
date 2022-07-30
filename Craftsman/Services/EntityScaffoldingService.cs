@@ -77,8 +77,6 @@ public class EntityScaffoldingService
                 .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
             new UpdateEntityUnitTestBuilder(_utilities)
                 .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
-            new GetEntityListUnitTestBuilder(_utilities)
-                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
             
             // domain events
             _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
@@ -182,6 +180,8 @@ public class EntityScaffoldingService
             new GetEntityListTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments,
                 feature, projectBaseName);
+            new GetEntityListUnitTestBuilder(_utilities)
+                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, feature.IsProtected);
         }
 
         if (feature.Type == FeatureType.DeleteRecord.Name)

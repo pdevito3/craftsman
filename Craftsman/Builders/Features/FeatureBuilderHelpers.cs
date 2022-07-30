@@ -13,7 +13,7 @@ public class FeatureBuilderHelpers
         heimGuardSetter = isProtected ? $"{Environment.NewLine}            _heimGuard = heimGuard;" : null;
         heimGuardCtor = isProtected ? $", IHeimGuardClient heimGuard" : null;
         permissionCheck = isProtected
-            ? $"{Environment.NewLine}            await _heimGuard.MustHavePermission(Permissions.{permissionName});{Environment.NewLine}"
+            ? $"{Environment.NewLine}            await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.{permissionName});{Environment.NewLine}"
             : null;
         permissionsUsing = isProtected
             ? $@"

@@ -70,13 +70,13 @@ public static class {className}
         private readonly IUnitOfWork _unitOfWork;{heimGuardField}
 
         public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
-        {{{permissionCheck}
+        {{
             _{repoInterfaceProp} = {repoInterfaceProp};
             _unitOfWork = unitOfWork;{heimGuardSetter}
         }}
 
         public async Task<bool> Handle({deleteCommandName} request, CancellationToken cancellationToken)
-        {{
+        {{{permissionCheck}
             var recordToDelete = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
 
             _{repoInterfaceProp}.Remove(recordToDelete);
