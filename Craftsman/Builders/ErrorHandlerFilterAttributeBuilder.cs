@@ -43,6 +43,7 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
                 {{ typeof(FluentValidation.ValidationException), HandleFluentValidationException }},
                 {{ typeof(ValidationException), HandleValidationException }},
                 {{ typeof(NotFoundException), HandleNotFoundException }},
+                {{ typeof(ForbiddenAccessException), HandleForbiddenAccessException }}
             }};
     }}
 
@@ -139,6 +140,23 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
         context.Result = new ObjectResult(details)
         {{
             StatusCode = StatusCodes.Status500InternalServerError
+        }};
+
+        context.ExceptionHandled = true;
+    }}
+    
+    private void HandleForbiddenAccessException(ExceptionContext context)
+    {{
+        var details = new ProblemDetails
+        {{
+            Status = StatusCodes.Status403Forbidden,
+            Title = ""Forbidden"",
+            Type = ""https://tools.ietf.org/html/rfc7231#section-6.5.3""
+        }};
+
+        context.Result = new ObjectResult(details)
+        {{
+            StatusCode = StatusCodes.Status403Forbidden
         }};
 
         context.ExceptionHandled = true;
