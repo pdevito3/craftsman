@@ -368,6 +368,8 @@ public class TestFixture
     [OneTimeTearDown]
     public async Task RunAfterAnyTests()
     {{
+        await _dbContainer.DisposeAsync();
+        
         // MassTransit Teardown -- Do Not Delete Comment
     }}
 }}
