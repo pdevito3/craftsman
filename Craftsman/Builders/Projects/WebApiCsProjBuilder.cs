@@ -46,7 +46,7 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""DateOnlyTimeOnly.AspNet.Swashbuckle"" Version=""1.0.3"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""6.0.0"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""10.4.0"" />
-    <PackageReference Include=""HeimGuard"" Version=""0.1.1"" />
+    <PackageReference Include=""HeimGuard"" Version=""0.2.1"" />
     <PackageReference Include=""MediatR"" Version=""10.0.1"" />
     <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""10.0.1"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""6.0.4"" />
