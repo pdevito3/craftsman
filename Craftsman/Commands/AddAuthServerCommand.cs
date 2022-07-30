@@ -68,6 +68,7 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
 
         new ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, projectBaseName);
         
+        new UserExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName);
         new ClientExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName);
         new ClientFactoryBuilder(_utilities).Create(solutionDirectory, projectBaseName);
         new ScopeFactoryBuilder(_utilities).Create(solutionDirectory, projectBaseName);
