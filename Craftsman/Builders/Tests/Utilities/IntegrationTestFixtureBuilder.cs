@@ -31,6 +31,9 @@ public class IntegrationTestFixtureBuilder
         var heimGuardMock = isProtected 
             ? $@"{Environment.NewLine}        services.ReplaceServiceWithSingletonMock<IHeimGuardClient>();" 
             : null;
+        var heimGuardUsing = isProtected 
+            ? $@"{Environment.NewLine}using HeimGuard;" 
+            : null;
 
         var equivalencyCall = $@"
         SetupDateAssertions();";
@@ -54,7 +57,7 @@ public class IntegrationTestFixtureBuilder
     }}"
             : null;
         
-        var usingStatement = provider == DbProvider.Postgres
+        var dbUsingStatement = provider == DbProvider.Postgres
             ? $@"
 using Npgsql;"
             : null;
@@ -97,7 +100,7 @@ using {configClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
-using {servicesClassPath.ClassNamespace};
+using {servicesClassPath.ClassNamespace};{heimGuardUsing}
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -106,7 +109,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Moq;{usingStatement}
+using Moq;{dbUsingStatement}
 using NUnit.Framework;
 using Respawn;
 using Respawn.Graph;
