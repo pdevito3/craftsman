@@ -50,7 +50,7 @@ public class BffTemplate : BffBased
 
     public List<RemoteEndpoint> RemoteEndpoints { get; set; }
 
-    public List<string> BoundaryScopes { get; set; }
+    public List<string> BoundaryScopes { get; set; } = new List<string>();
 
     private string _headTitle;
     public string HeadTitle
