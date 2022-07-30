@@ -64,7 +64,7 @@ public class {queryName}Tests : TestBase
     public async Task can_get_existing_{entity.Name.ToLower()}_with_accurate_props()
     {{
         // Arrange
-        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate();
+        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
         await InsertAsync({fakeEntityVariableName});
 
         // Act

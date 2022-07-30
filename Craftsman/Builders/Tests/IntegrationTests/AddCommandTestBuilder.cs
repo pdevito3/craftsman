@@ -65,7 +65,7 @@ public class {commandName}Tests : TestBase
             {
                 var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
                 var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
-                fakeParent += @$"var fake{entityProperty.ForeignEntityName}One = {fakeParentClass}.Generate();
+                fakeParent += @$"var fake{entityProperty.ForeignEntityName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
         await InsertAsync(fake{entityProperty.ForeignEntityName}One);{Environment.NewLine}{Environment.NewLine}        ";
                 fakeParentIdRuleFor +=
                     $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}One.Id){Environment.NewLine}            ";

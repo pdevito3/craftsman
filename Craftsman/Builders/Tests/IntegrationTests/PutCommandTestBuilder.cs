@@ -62,7 +62,7 @@ public class {commandName}Tests : TestBase
     public async Task can_update_existing_{entity.Name.ToLower()}_in_db()
     {{
         // Arrange
-        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate();
+        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
         var updated{entity.Name}Dto = new {fakeUpdateDto}(){fakeParentIdRuleFor}.Generate();
         await InsertAsync({fakeEntityVariableName});
 

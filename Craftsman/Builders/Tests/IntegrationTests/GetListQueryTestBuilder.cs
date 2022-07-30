@@ -82,7 +82,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     public async Task can_get_{entity.Name.ToLower()}_list()
     {{
         // Arrange
-        {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate();
+        {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForOne}.Generate());
         var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForTwo}.Generate());
         var queryParameters = new {entityParams}();
 
