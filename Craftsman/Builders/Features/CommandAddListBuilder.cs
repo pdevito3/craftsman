@@ -15,14 +15,14 @@ public class CommandAddListBuilder
         _utilities = utilities;
     }
 
-    public void CreateCommand(string solutionDirectory, string srcDirectory, Entity entity, string contextName, string projectBaseName, Feature feature)
+    public void CreateCommand(string srcDirectory, Entity entity, string projectBaseName, Feature feature, bool isProtected, string permissionName)
     {
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{feature.Name}.cs", entity.Plural, projectBaseName);
-        var fileText = GetCommandFileText(classPath.ClassNamespace, entity, contextName, solutionDirectory, srcDirectory, feature, projectBaseName);
+        var fileText = GetCommandFileText(classPath.ClassNamespace, entity, srcDirectory, feature, projectBaseName, isProtected, permissionName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetCommandFileText(string classNamespace, Entity entity, string contextName, string solutionDirectory, string srcDirectory, Feature feature, string projectBaseName)
+    public static string GetCommandFileText(string classNamespace, Entity entity, string srcDirectory, Feature feature, string projectBaseName, bool isProtected, string permissionName)
     {
         var className = feature.Name;
         var addCommandName = feature.Command;
@@ -48,6 +48,17 @@ public class CommandAddListBuilder
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var entityServicesClassPathBatchFk = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", feature.ParentEntityPlural, projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        
+        FeatureBuilderHelpers.GetPermissionValuesForHandlers(srcDirectory, 
+            projectBaseName, 
+            isProtected, 
+            permissionName, 
+            out string heimGuardSetter, 
+            out string heimGuardCtor, 
+            out string permissionCheck, 
+            out string permissionsUsing,
+            out string heimGuardField);
 
         var batchFkCheck = !string.IsNullOrEmpty(feature.BatchPropertyName)
             ? @$"// throws error if parent doesn't exist 
@@ -72,6 +83,7 @@ using {entityServicesClassPath.ClassNamespace};{batchFkUsingRepo}
 using {servicesClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
+using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
 using AutoMapper;
 using MediatR;
 
@@ -93,17 +105,17 @@ public static class {className}
     {{
         private readonly {repoInterface} _{repoInterfaceProp};{batchFkDiReadonly}
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper;{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper{batchFkDiProp})
+        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper{batchFkDiProp}{heimGuardCtor})
         {{
             _mapper = mapper;
-            _{repoInterfaceProp} = {repoInterfaceProp};{batchFkDiPropSetter}
-            _unitOfWork = unitOfWork;
+            _{repoInterfaceProp} = {repoInterfaceProp};
+            _unitOfWork = unitOfWork;{batchFkDiPropSetter}{heimGuardSetter}
         }}
 
         public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
-        {{
+        {{{permissionCheck}
             {batchFkCheck}var {entityNameLowercaseListVar}ToAdd = request.{commandProp}
                 .Select({entity.Lambda} => {{ {entity.Lambda}.{feature.BatchPropertyName} = request.{feature.BatchPropertyName}; return {entity.Lambda}; }})
                 .ToList();

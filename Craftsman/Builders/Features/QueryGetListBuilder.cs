@@ -14,14 +14,14 @@ public class QueryGetListBuilder
         _utilities = utilities;
     }
 
-    public void CreateQuery(string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateQuery(string srcDirectory, Entity entity, string projectBaseName, bool isProtected, string permissionName)
     {
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityListFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
-        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
+        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName, isProtected, permissionName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName)
+    public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName, bool isProtected, string permissionName)
     {
         var className = FileNames.GetEntityListFeatureClassName(entity.Name);
         var queryListName = FileNames.QueryListName(entity.Name);
@@ -34,12 +34,24 @@ public class QueryGetListBuilder
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        
+        FeatureBuilderHelpers.GetPermissionValuesForHandlers(srcDirectory, 
+            projectBaseName, 
+            isProtected, 
+            permissionName, 
+            out string heimGuardSetter, 
+            out string heimGuardCtor, 
+            out string permissionCheck, 
+            out string permissionsUsing,
+            out string heimGuardField);
 
         return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
+using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -62,17 +74,17 @@ public static class {className}
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly SieveProcessor _sieveProcessor;
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper;{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IMapper mapper, SieveProcessor sieveProcessor)
+        public Handler({repoInterface} {repoInterfaceProp}, IMapper mapper, SieveProcessor sieveProcessor{heimGuardCtor})
         {{
             _mapper = mapper;
             _{repoInterfaceProp} = {repoInterfaceProp};
-            _sieveProcessor = sieveProcessor;
+            _sieveProcessor = sieveProcessor;{heimGuardSetter}
         }}
 
         public async Task<PagedList<{readDto}>> Handle({queryListName} request, CancellationToken cancellationToken)
-        {{
+        {{{permissionCheck}
             var collection = _{repoInterfaceProp}.Query();
 
             var sieveModel = new SieveModel
