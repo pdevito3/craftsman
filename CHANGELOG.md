@@ -35,6 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * `RequireHttpsMetadata`  off in dev for BFF and boundaries
 * `SuperAdmin` text to `Super Admin`
 * `UserPolicyHandler` can accommodate realm roles for keycloak
+* Moved permission guards to each feature handler (still using `Authorize` attribute on controllers for authenication check).
 
 ### Fixed
 
