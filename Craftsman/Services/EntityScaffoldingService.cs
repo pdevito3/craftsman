@@ -137,7 +137,6 @@ public class EntityScaffoldingService
         new FakesBuilder(_utilities).CreateRolePermissionFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, entity);
         new RolePermissionsUnitTestBuilder(_utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new RolePermissionsUnitTestBuilder(_utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        new UserPolicyHandlerIntegrationTests(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new UserPolicyHandlerUnitTests(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
 
         // need to do db modifier
