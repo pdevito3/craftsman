@@ -15,11 +15,11 @@ public class ErrorHandlerFilterAttributeBuilder
     public void CreateErrorHandlerFilterAttribute(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, $"ErrorHandlerFilterAttribute.cs", projectBaseName);
-        var fileText = GetErrorHandlerFilterAttributeText(srcDirectory, projectBaseName, classPath.ClassNamespace);
+        var fileText = GetErrorHandlerFilterAttributeText(srcDirectory, classPath.ClassNamespace);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetErrorHandlerFilterAttributeText(string srcDirectory, string projectBaseName, string classNamespace)
+    public static string GetErrorHandlerFilterAttributeText(string srcDirectory, string classNamespace)
     {
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
 
@@ -43,13 +43,13 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
                 {{ typeof(FluentValidation.ValidationException), HandleFluentValidationException }},
                 {{ typeof(ValidationException), HandleValidationException }},
                 {{ typeof(NotFoundException), HandleNotFoundException }},
+                {{ typeof(ForbiddenAccessException), HandleForbiddenAccessException }}
             }};
     }}
 
     public override void OnException(ExceptionContext context)
     {{
         HandleException(context);
-
         base.OnException(context);
     }}
 
@@ -139,6 +139,23 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
         context.Result = new ObjectResult(details)
         {{
             StatusCode = StatusCodes.Status500InternalServerError
+        }};
+
+        context.ExceptionHandled = true;
+    }}
+    
+    private void HandleForbiddenAccessException(ExceptionContext context)
+    {{
+        var details = new ProblemDetails
+        {{
+            Status = StatusCodes.Status403Forbidden,
+            Title = ""Forbidden"",
+            Type = ""https://tools.ietf.org/html/rfc7231#section-6.5.3""
+        }};
+
+        context.Result = new ObjectResult(details)
+        {{
+            StatusCode = StatusCodes.Status403Forbidden
         }};
 
         context.ExceptionHandled = true;

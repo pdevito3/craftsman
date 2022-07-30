@@ -16,7 +16,7 @@ public class CreateRecordEndpointBuilder
         var primaryKeyProp = Entity.PrimaryKeyProperty;
         var addRecordCommandMethodName = FileNames.CommandAddName(entityName);
         var singleResponse = $@"{readDto}";
-        var addRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
+        var addRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
         var creationPropName = $"{lowercaseEntityVariable}ForCreation";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_CreateRecord(entity, addSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0)}{addRecordAuthorizations}
@@ -42,7 +42,7 @@ public class CreateRecordEndpointBuilder
         var creationDto = $"IEnumerable<{FileNames.GetDtoName(entityName, Dto.Creation)}>";
         var primaryKeyProp = Entity.PrimaryKeyProperty;
         var responseObj = $@"IEnumerable<{readDto}>";
-        var addRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
+        var addRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
         var batchPropNameLower = feature.BatchPropertyName.LowercaseFirstLetter();
         var creationPropName = $"{lowercaseEntityVariable}ForCreation";
 

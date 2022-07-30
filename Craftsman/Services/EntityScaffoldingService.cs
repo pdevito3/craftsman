@@ -77,8 +77,6 @@ public class EntityScaffoldingService
                 .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
             new UpdateEntityUnitTestBuilder(_utilities)
                 .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
-            new GetEntityListUnitTestBuilder(_utilities)
-                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
             
             // domain events
             _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
@@ -159,7 +157,7 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.AddRecord.Name)
         {
-            new CommandAddRecordBuilder(_utilities).CreateCommand(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
+            new CommandAddRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
             new AddCommandTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
             new CreateEntityTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.AddRecord, entity, addSwaggerComments,
@@ -168,7 +166,7 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.GetRecord.Name)
         {
-            new QueryGetRecordBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName);
+            new QueryGetRecordBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
             new GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
             new GetEntityRecordTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments,
@@ -177,16 +175,18 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.GetList.Name)
         {
-            new QueryGetListBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName);
+            new QueryGetListBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
             new GetListQueryTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
             new GetEntityListTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments,
                 feature, projectBaseName);
+            new GetEntityListUnitTestBuilder(_utilities)
+                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, feature.IsProtected);
         }
 
         if (feature.Type == FeatureType.DeleteRecord.Name)
         {
-            new CommandDeleteRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName);
+            new CommandDeleteRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
             new DeleteCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName, useSoftDelete);
             new DeleteEntityTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments,
@@ -195,7 +195,7 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.UpdateRecord.Name)
         {
-            new CommandUpdateRecordBuilder(_utilities).CreateCommand(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName);
+            new CommandUpdateRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
             new PutCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
             new PutEntityTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.UpdateRecord, entity, addSwaggerComments,
@@ -204,7 +204,7 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.PatchRecord.Name)
         {
-            new CommandPatchRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName);
+            new CommandPatchRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
             new PatchCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
             new PatchEntityTestBuilder(_utilities).CreateTests(solutionDirectory, srcDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.PatchRecord, entity, addSwaggerComments,
@@ -213,7 +213,7 @@ public class EntityScaffoldingService
 
         if (feature.Type == FeatureType.AddListByFk.Name)
         {
-            new CommandAddListBuilder(_utilities).CreateCommand(solutionDirectory, srcDirectory, entity, dbContextName, projectBaseName, feature);
+            new CommandAddListBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature, feature.IsProtected, feature.PermissionName);
             new AddListCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, feature, projectBaseName);
             new AddListTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.AddListByFk, entity, addSwaggerComments,

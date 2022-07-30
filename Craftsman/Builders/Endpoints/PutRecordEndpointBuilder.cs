@@ -16,7 +16,7 @@ public class PutRecordEndpointBuilder
         var primaryKeyProp = Entity.PrimaryKeyProperty;
         var updateRecordCommandMethodName = FileNames.CommandUpdateName(entityName);
         var pkPropertyType = primaryKeyProp.Type;
-        var updateRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
+        var updateRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_PutRecord(entity, addSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
     [Produces(""application/json"")]

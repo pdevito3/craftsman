@@ -15,7 +15,7 @@ public class PatchRecordEndpointBuilder
         var primaryKeyProp = Entity.PrimaryKeyProperty;
         var patchRecordCommandMethodName = FileNames.CommandPatchName(entityName);
         var pkPropertyType = primaryKeyProp.Type;
-        var updatePartialAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations(feature.PermissionName) : "";
+        var updatePartialAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_PatchRecord(entity, addSwaggerComments, updatePartialAuthorizations.Length > 0)}{updatePartialAuthorizations}
     [Consumes(""application/json"")]

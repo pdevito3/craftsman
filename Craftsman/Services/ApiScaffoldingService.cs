@@ -136,8 +136,9 @@ public class ApiScaffoldingService
             srcDirectory,
             projectBaseName,
             template.DbContext.ContextName,
-            template.DbContext.ProviderEnum);
-        new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ProviderEnum);
+            template.DbContext.ProviderEnum,
+            template.AddJwtAuthentication);
+        new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.AddJwtAuthentication);
         new WebAppFactoryBuilder(_utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
         new FunctionalTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName);
         new HealthTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);

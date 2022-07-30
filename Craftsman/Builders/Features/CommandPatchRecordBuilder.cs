@@ -14,14 +14,15 @@ public class CommandPatchRecordBuilder
         _utilities = utilities;
     }
 
-    public void CreateCommand(string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateCommand(string srcDirectory, Entity entity, string projectBaseName, bool isProtected, string permissionName)
     {
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.PatchEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
-        var fileText = GetCommandFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
+        var fileText = GetCommandFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName, isProtected,
+            permissionName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetCommandFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName)
+    public static string GetCommandFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName, bool isProtected, string permissionName)
     {
         var className = FileNames.PatchEntityFeatureClassName(entity.Name);
         var patchCommandName = FileNames.CommandPatchName(entity.Name);
@@ -36,16 +37,26 @@ public class CommandPatchRecordBuilder
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
         
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        
+        FeatureBuilderHelpers.GetPermissionValuesForHandlers(srcDirectory, 
+            projectBaseName, 
+            isProtected, 
+            permissionName, 
+            out string heimGuardSetter, 
+            out string heimGuardCtor, 
+            out string permissionCheck, 
+            out string permissionsUsing,
+            out string heimGuardField);
 
         return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
+using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
 using AutoMapper;
 using FluentValidation.Results;
 using MediatR;
@@ -69,17 +80,17 @@ public static class {className}
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper;{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper)
+        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper{heimGuardCtor})
         {{
             _mapper = mapper;
             _{repoInterfaceProp} = {repoInterfaceProp};
-            _unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;{heimGuardSetter}
         }}
 
         public async Task<bool> Handle({patchCommandName} request, CancellationToken cancellationToken)
-        {{
+        {{{permissionCheck}
             if (request.PatchDoc == null)
                 throw new ValidationException(
                     new List<ValidationFailure>()

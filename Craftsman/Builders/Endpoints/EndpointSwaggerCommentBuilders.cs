@@ -144,9 +144,9 @@ public class EndpointSwaggerCommentBuilders
     [ProducesResponseType(500)]" : "";
     }
 
-    public static string BuildAuthorizations(string permission)
+    public static string BuildAuthorizations()
     {
-        return $@"{Environment.NewLine}    [Authorize(Policy = Permissions.{permission})]";
+        return $@"{Environment.NewLine}    [Authorize]";
     }
 
     public static string GetAuthResponses(bool hasAuthentications)

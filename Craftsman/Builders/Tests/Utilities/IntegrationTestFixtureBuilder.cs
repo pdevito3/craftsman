@@ -13,20 +13,27 @@ public class IntegrationTestFixtureBuilder
         _utilities = utilities;
     }
 
-    public void CreateFixture(string testDirectory, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider)
+    public void CreateFixture(string testDirectory, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider, bool isProtected)
     {
         var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
-        var fileText = GetFixtureText(classPath.ClassNamespace, srcDirectory, projectBaseName, dbContextName, provider);
+        var fileText = GetFixtureText(classPath.ClassNamespace, srcDirectory, projectBaseName, dbContextName, provider, isProtected);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetFixtureText(string classNamespace, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider)
+    public static string GetFixtureText(string classNamespace, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider, bool isProtected)
     {
         var apiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
         var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
         var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
+        
+        var heimGuardMock = isProtected 
+            ? $@"{Environment.NewLine}        services.ReplaceServiceWithSingletonMock<IHeimGuardClient>();" 
+            : null;
+        var heimGuardUsing = isProtected 
+            ? $@"{Environment.NewLine}using HeimGuard;" 
+            : null;
 
         var equivalencyCall = $@"
         SetupDateAssertions();";
@@ -50,7 +57,7 @@ public class IntegrationTestFixtureBuilder
     }}"
             : null;
         
-        var usingStatement = provider == DbProvider.Postgres
+        var dbUsingStatement = provider == DbProvider.Postgres
             ? $@"
 using Npgsql;"
             : null;
@@ -93,7 +100,7 @@ using {configClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
-using {servicesClassPath.ClassNamespace};
+using {servicesClassPath.ClassNamespace};{heimGuardUsing}
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -102,7 +109,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Moq;{usingStatement}
+using Moq;{dbUsingStatement}
 using NUnit.Framework;
 using Respawn;
 using Respawn.Graph;
@@ -140,7 +147,7 @@ public class TestFixture
         var services = builder.Services;
 
         // add any mock services here
-        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();
+        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();{heimGuardMock}
 
         // MassTransit Harness Setup -- Do Not Delete Comment
 
