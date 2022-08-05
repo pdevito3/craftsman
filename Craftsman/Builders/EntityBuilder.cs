@@ -52,21 +52,22 @@ public class EntityBuilder
             foreignEntityUsings += $@"
 using {classPath.ClassNamespace};";
         }
-
-        var profileClassPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
+        
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
 
+        var createEntityVar = $"new{entity.Name.UppercaseFirstLetter()}";
+        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Select(property =>
+            $"        {createEntityVar}.{property.Name} = {creationDtoName.LowercaseFirstLetter()}.{property.Name};"));
+        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Select(property =>
+            $"        {property.Name} = {updateDtoName.LowercaseFirstLetter()}.{property.Name};"));
+        
         return @$"namespace {classNamespace};
 
-using {exceptionsClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {profileClassPath.ClassNamespace};
 using {validatorClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
-using AutoMapper;
 using FluentValidation;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
@@ -82,22 +83,22 @@ public class {entity.Name} : BaseEntity
     public static {entity.Name} Create({creationDtoName} {creationDtoName.LowercaseFirstLetter()})
     {{
         new {creationValidatorName}().ValidateAndThrow({creationDtoName.LowercaseFirstLetter()});
-        var mapper = new Mapper(new MapperConfiguration(cfg => {{
-            cfg.AddProfile<{profileName}>();
-        }}));
-        var new{entity.Name} = mapper.Map<{entity.Name}>({creationDtoName.LowercaseFirstLetter()});
-        new{entity.Name}.QueueDomainEvent(new {entityCreatedDomainMessage}(){{ {entity.Name} = new{entity.Name} }});
+
+        var {createEntityVar} = new {entity.Name}();
+
+{createPropsAssignment}
+
+        {createEntityVar}.QueueDomainEvent(new {entityCreatedDomainMessage}(){{ {entity.Name} = {createEntityVar} }});
         
-        return new{entity.Name};
+        return {createEntityVar};
     }}
 
     public void Update({updateDtoName} {updateDtoName.LowercaseFirstLetter()})
     {{
         new {updateValidatorName}().ValidateAndThrow({updateDtoName.LowercaseFirstLetter()});
-        var mapper = new Mapper(new MapperConfiguration(cfg => {{
-            cfg.AddProfile<{profileName}>();
-        }}));
-        mapper.Map({updateDtoName.LowercaseFirstLetter()}, this);
+
+{updatePropsAssignment}
+
         QueueDomainEvent(new {entityUpdatedDomainMessage}(){{ Id = Id }});
     }}
     
