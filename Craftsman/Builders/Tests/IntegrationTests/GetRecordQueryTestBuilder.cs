@@ -55,7 +55,7 @@ public class {queryName}Tests : TestBase
         var fakeEntity = FileNames.FakerName(entity.Name);
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
         var fakeEntityVariableName = $"fake{entity.Name}One";
-        var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
+        var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var pkName = Entity.PrimaryKeyProperty.Name;
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
@@ -69,10 +69,10 @@ public class {queryName}Tests : TestBase
 
         // Act
         var query = new {featureName}.{queryName}({fakeEntityVariableName}.{pkName});
-        var {lowercaseEntityPluralName} = await SendAsync(query);
+        var {lowercaseEntityName} = await SendAsync(query);
 
         // Assert
-        {lowercaseEntityPluralName}.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
+        {lowercaseEntityName}.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
             options.ExcludingMissingMembers());
     }}";
     }
