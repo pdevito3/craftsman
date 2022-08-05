@@ -69,7 +69,6 @@ public static class {FileNames.WebAppServiceConfiguration()}
         builder.Services.AddMvc(options => options.Filters.Add<ErrorHandlerFilterAttribute>());
 
         var config = TypeAdapterConfig.GlobalSettings;
-        config.Scan(Assembly.GetExecutingAssembly());
         builder.Services.AddSingleton(config);
         builder.Services.AddScoped<IMapper, ServiceMapper>();
 
