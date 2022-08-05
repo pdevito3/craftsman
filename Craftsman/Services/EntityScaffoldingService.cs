@@ -51,7 +51,7 @@ public class EntityScaffoldingService
             new EntityBuilder(_utilities).CreateEntity(solutionDirectory, srcDirectory, entity, projectBaseName);
             new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
             new ValidatorBuilder(_utilities).CreateValidators(solutionDirectory, srcDirectory, projectBaseName, entity);
-            new ProfileBuilder(_utilities).CreateProfile(srcDirectory, entity, projectBaseName);
+            new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity, projectBaseName);
             new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
             _mediator.Send(new DatabaseEntityConfigBuilder.DatabaseEntityConfigBuilderCommand(entity.Name, entity.Plural));
@@ -112,7 +112,7 @@ public class EntityScaffoldingService
 
         new EntityBuilder(_utilities).CreateEntity(solutionDirectory, srcDirectory, entity, projectBaseName);
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
-        new ProfileBuilder(_utilities).CreateProfile(srcDirectory, entity, projectBaseName);
+        new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName);
         
         _mediator.Send(new EntityRepositoryBuilder.EntityRepositoryBuilderCommand(dbContextName, 

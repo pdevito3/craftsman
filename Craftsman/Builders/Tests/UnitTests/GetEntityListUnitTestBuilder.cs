@@ -35,7 +35,7 @@ public class GetEntityListUnitTestBuilder
         
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var dtosClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entityPlural, projectBaseName);
-        var profileClassPath = ClassPathHelper.ProfileClassPath(srcDirectory, "", entityPlural, projectBaseName);
+        var profileClassPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var servicesClassPath = ClassPathHelper.EntityServicesClassPath(solutionDirectory, "", entityPlural, projectBaseName);

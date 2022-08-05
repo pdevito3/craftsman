@@ -53,7 +53,7 @@ public class EntityBuilder
 using {classPath.ClassNamespace};";
         }
 
-        var profileClassPath = ClassPathHelper.ProfileClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
+        var profileClassPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);

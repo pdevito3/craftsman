@@ -14,7 +14,7 @@
             var entity = new FakeEntity().Generate();
             entity.Name = "Product";
 
-            var fileText = ProfileBuilder.GetProfileFileText(classNamespace, entity, "", "MyBc");
+            var fileText = EntityMappingBuilder.GetProfileFileText(classNamespace, entity, "", "MyBc");
 
             var expectedText = @"namespace Application.Mappings
 {

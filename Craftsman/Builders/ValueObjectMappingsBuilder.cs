@@ -61,9 +61,9 @@ public class {mappingName} : IRegister
 {{
     public void Register(TypeAdapterConfig config)
     {{
-        config.NewConfig<string, Percent>()
+        config.NewConfig<decimal, Percent>()
             .MapWith(value => new Percent(value));
-        config.NewConfig<Percent, string>()
+        config.NewConfig<Percent, decimal>()
             .MapWith(percent => percent.Value);
     }}
 }}";
@@ -120,10 +120,10 @@ public class {mappingName} : IRegister
 {{
     public void Register(TypeAdapterConfig config)
     {{
-        config.NewConfig<string, MonetaryAmount>()
+        config.NewConfig<decimal, MonetaryAmount>()
             .MapWith(value => new MonetaryAmount(value));
-        config.NewConfig<MonetaryAmount, string>()
-            .MapWith(monetaryAmount => monetaryAmount.Value);
+        config.NewConfig<MonetaryAmount, decimal>()
+            .MapWith(monetaryAmount => monetaryAmount.Amount);
     }}
 }}";
         }
