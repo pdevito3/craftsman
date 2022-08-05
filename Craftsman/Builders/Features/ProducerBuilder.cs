@@ -40,7 +40,6 @@ using {contextClassPath.ClassNamespace};" : "";
 
 using {messagesClassPath.ClassNamespace};
 using MapsterMapper;
-using AutoMapper.QueryableExtensions;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -71,7 +70,7 @@ public static class {producer.ProducerName}
         {{
             var message = new {FileNames.MessageClassName(producer.MessageName)}
             {{
-                // map content to message here or with automapper
+                // map content to message here or with mapster
             }};
             await _publishEndpoint.Publish<{FileNames.MessageInterfaceName(producer.MessageName)}>(message, cancellationToken);
 
