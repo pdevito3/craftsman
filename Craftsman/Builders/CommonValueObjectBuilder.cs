@@ -158,8 +158,6 @@ public class PostalCode : ValueObject
     public string Value {{ get; }}
     public PostalCode(string value)
     {{
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ValidationException(""PostalCode cannot be null or empty string"");
         Value = value;
     }}
 
