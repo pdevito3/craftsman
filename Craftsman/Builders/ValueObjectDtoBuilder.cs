@@ -26,19 +26,26 @@ public static class ValueObjectDtoBuilder
 
         public Task<bool> Handle(ValueObjectDtoBuilderCommand request, CancellationToken cancellationToken)
         {
-            var addressClassPath = ClassPathHelper.WebApiValueObjectDtosClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"{ValueObjectEnum.Address.Name}.cs",
-                ValueObjectEnum.Address.Plural(),
+            var addressReadDtoClassPath = ClassPathHelper.WebApiValueObjectDtosClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                ValueObjectEnum.Address,
+                Dto.Read,
                 _scaffoldingDirectoryStore.ProjectBaseName);
+            var readDtoText = GetAddressDtoText(addressReadDtoClassPath.ClassNamespace);
+            _utilities.CreateFile(addressReadDtoClassPath, readDtoText);
             
-            var readDtoText = GetAddressDtoText(addressClassPath.ClassNamespace);
-            _utilities.CreateFile(addressClassPath, readDtoText);
+            var addressCreateDtoClassPath = ClassPathHelper.WebApiValueObjectDtosClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                ValueObjectEnum.Address,
+                Dto.Creation,
+                _scaffoldingDirectoryStore.ProjectBaseName);
+            var createDtoText = GetAddressCreateDtoText(addressCreateDtoClassPath.ClassNamespace);
+            _utilities.CreateFile(addressCreateDtoClassPath, createDtoText);
             
-            var createDtoText = GetAddressCreateDtoText(addressClassPath.ClassNamespace);
-            _utilities.CreateFile(addressClassPath, createDtoText);
-            
-            var updateDtoText = GetAddressUpdateDtoText(addressClassPath.ClassNamespace);
-            _utilities.CreateFile(addressClassPath, updateDtoText);
+            var addressUpdateDtoClassPath = ClassPathHelper.WebApiValueObjectDtosClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                ValueObjectEnum.Address,
+                Dto.Update,
+                _scaffoldingDirectoryStore.ProjectBaseName);
+            var updateDtoText = GetAddressUpdateDtoText(addressUpdateDtoClassPath.ClassNamespace);
+            _utilities.CreateFile(addressUpdateDtoClassPath, updateDtoText);
 
             return Task.FromResult(true);
         }

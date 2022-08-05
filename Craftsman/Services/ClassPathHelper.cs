@@ -232,9 +232,10 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", valueObjectPlural), className);
     }
 
-    public static ClassPath WebApiValueObjectDtosClassPath(string srcDirectory, string className, string valueObjectPlural, string projectBaseName)
+    public static ClassPath WebApiValueObjectDtosClassPath(string srcDirectory, ValueObjectEnum valueObjectEnum, Dto dto, string projectBaseName)
     {
-        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", valueObjectPlural, "Dtos"), className);
+        var dtoName = FileNames.GetDtoName(valueObjectEnum.Name, dto);
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", valueObjectEnum.Plural(), "Dtos"), $"{dtoName}.cs");
     }
 
     public static ClassPath WebApiValueObjectMappingsClassPath(string srcDirectory, ValueObjectEnum valueObjectEnum, string projectBaseName)

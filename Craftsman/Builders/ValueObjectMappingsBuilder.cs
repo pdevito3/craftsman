@@ -74,8 +74,8 @@ public class {mappingName} : IRegister
             var mappingName = FileNames.GetMappingName(ValueObjectEnum.Address.Name);
             var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
             var dtoClassPath = ClassPathHelper.WebApiValueObjectDtosClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"",
-                ValueObjectEnum.Address.Plural(),
+                ValueObjectEnum.Address,
+                Dto.Creation, // dto type doesn't actually matter here
                 _scaffoldingDirectoryStore.ProjectBaseName);
             
             return @$"namespace {classNamespace};
