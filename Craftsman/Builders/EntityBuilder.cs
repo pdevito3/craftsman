@@ -270,6 +270,7 @@ public abstract class BaseEntity
 
     private static string GetForeignProp(EntityProperty prop)
     {
-        return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public virtual {prop.ForeignEntityName} {prop.Name} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
+        var propName = !prop.IsPrimativeType ? prop.Name : prop.ForeignEntityName;
+        return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public virtual {prop.ForeignEntityName} {propName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
     }
 }
