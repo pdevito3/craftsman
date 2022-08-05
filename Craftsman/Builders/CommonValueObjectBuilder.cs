@@ -57,6 +57,7 @@ public static class CommonValueObjectBuilder
             return @$"namespace {classNamespace};
 
 using {voClassPath.ClassNamespace};
+using FluentValidation;
 
 // source: https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/Percent.cs
 public class {ValueObjectEnum.Percent.Name} : ValueObject
@@ -104,7 +105,6 @@ public static class PercentExtensions
             return @$"namespace {classNamespace};
 
 using {voClassPath.ClassNamespace};
-
 using FluentValidation;
 
 public class {ValueObjectEnum.Address.Name} : ValueObject
@@ -172,12 +172,16 @@ public class PostalCode : ValueObject
         
         private string GetMonetaryAmountFileText(string classNamespace)
         {
+            var percentClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                $"{ValueObjectEnum.Percent.Name}.cs",
+                ValueObjectEnum.Percent.Plural(),
+                _scaffoldingDirectoryStore.ProjectBaseName);
             var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
             
             return @$"namespace {classNamespace};
 
+using {percentClassPath.ClassNamespace};
 using {voClassPath.ClassNamespace};
-
 using FluentValidation;
 
 // source: https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/MonetaryAmount.cs
