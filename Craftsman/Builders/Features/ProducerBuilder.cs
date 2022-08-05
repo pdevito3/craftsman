@@ -39,7 +39,7 @@ using {contextClassPath.ClassNamespace};" : "";
         return @$"namespace {classNamespace};
 
 using {messagesClassPath.ClassNamespace};
-using AutoMapper;
+using MapsterMapper;
 using AutoMapper.QueryableExtensions;
 using MassTransit;
 using MediatR;

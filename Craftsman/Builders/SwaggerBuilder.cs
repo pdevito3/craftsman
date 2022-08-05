@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using System.IO.Abstractions;
 using Domain;
 using FluentAssertions.Common;
 using Helpers;
@@ -12,12 +11,10 @@ using Services;
 public class SwaggerBuilder
 {
     private readonly ICraftsmanUtilities _utilities;
-    private readonly IFileSystem _fileSystem;
 
-    public SwaggerBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+    public SwaggerBuilder(ICraftsmanUtilities utilities)
     {
         _utilities = utilities;
-        _fileSystem = fileSystem;
     }
 
     public void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string projectBaseName)
@@ -40,7 +37,6 @@ public class SwaggerBuilder
     {
         return @$"namespace {classNamespace};
 
-using AutoMapper;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

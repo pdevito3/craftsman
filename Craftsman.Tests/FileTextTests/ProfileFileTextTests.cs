@@ -19,7 +19,7 @@
             var expectedText = @"namespace Application.Mappings
 {
     using MyBc.Core.Dtos.Product;
-    using AutoMapper;
+    using MapsterMapper;
     using MyBc.Core.Entities;
 
     public class ProductProfile : Profile

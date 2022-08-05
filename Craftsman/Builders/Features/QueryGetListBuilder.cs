@@ -52,7 +52,7 @@ using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using AutoMapper;
+using MapsterMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Sieve.Models;

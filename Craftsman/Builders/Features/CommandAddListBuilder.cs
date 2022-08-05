@@ -84,7 +84,7 @@ using {servicesClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using AutoMapper;
+using MapsterMapper;
 using MediatR;
 
 public static class {className}

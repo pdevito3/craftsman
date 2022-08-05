@@ -53,7 +53,7 @@ using {dtosClassPath.ClassNamespace};
 using {profileClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
-using AutoMapper;
+using MapsterMapper;
 using FluentAssertions;{heimGuardUsing}
 using Microsoft.Extensions.Options;
 using MockQueryable.Moq;

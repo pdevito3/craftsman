@@ -34,7 +34,7 @@ using {contextClassPath.ClassNamespace};" : "";
         var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
         return @$"namespace {classNamespace};
 
-using AutoMapper;
+using MapsterMapper;
 using MassTransit;
 using {messagesClassPath.ClassNamespace};
 using System.Threading.Tasks;{contextUsing}

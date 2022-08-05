@@ -25,7 +25,7 @@ public class CorsExtensionsBuilder
         return @$"namespace {classNamespace};
 
 using {apiResourcesClassPath.ClassNamespace};
-using AutoMapper;
+using MapsterMapper;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
