@@ -31,7 +31,7 @@ public class GetEntityListUnitTestBuilder
         var paramDto = FileNames.GetDtoName(entityName, Dto.ReadParamaters);
         var featureClassName = FileNames.GetEntityListFeatureClassName(entityName);
         var queryListName = FileNames.QueryListName(entityName);
-        var profileName = FileNames.GetProfileName(entityName);
+        var profileName = FileNames.GetMappingName(entityName);
         
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var dtosClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entityPlural, projectBaseName);

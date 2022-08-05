@@ -116,9 +116,9 @@ public static class FileNames
         return $"{entityName.UppercaseFirstLetter()}Keys";
     }
 
-    public static string GetProfileName(string entityName)
+    public static string GetMappingName(string entityName)
     {
-        return $"{entityName}Profile";
+        return $"{entityName}Mappings";
     }
 
     public static string GetIntegrationTestFixtureName()

@@ -36,7 +36,7 @@ public class EntityBuilder
         var creationValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation);
         var updateDtoName = FileNames.GetDtoName(entity.Name, Dto.Update);
         var updateValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Update);
-        var profileName = FileNames.GetProfileName(entity.Name);
+        var profileName = FileNames.GetMappingName(entity.Name);
         var propString = EntityPropBuilder(entity.Properties);
         var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
         var tableAnnotation = EntityAnnotationBuilder(entity);

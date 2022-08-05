@@ -16,7 +16,7 @@ public class ProfileBuilder
 
     public void CreateProfile(string srcDirectory, Entity entity, string projectBaseName)
     {
-        var classPath = ClassPathHelper.ProfileClassPath(srcDirectory, $"{FileNames.GetProfileName(entity.Name)}.cs", entity.Plural, projectBaseName);
+        var classPath = ClassPathHelper.ProfileClassPath(srcDirectory, $"{FileNames.GetMappingName(entity.Name)}.cs", entity.Plural, projectBaseName);
         var fileText = GetProfileFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
@@ -32,9 +32,9 @@ using {dtoClassPath.ClassNamespace};
 using AutoMapper;
 using {entitiesClassPath.ClassNamespace};
 
-public class {FileNames.GetProfileName(entity.Name)} : Profile
+public class {FileNames.GetMappingName(entity.Name)} : Profile
 {{
-    public {FileNames.GetProfileName(entity.Name)}()
+    public {FileNames.GetMappingName(entity.Name)}()
     {{
         //createmap<to this, from this>
         CreateMap<{entity.Name}, {FileNames.GetDtoName(entity.Name, Dto.Read)}>()

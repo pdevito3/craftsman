@@ -27,8 +27,8 @@ public static class ValueObjectDtoBuilder
         public Task<bool> Handle(ValueObjectDtoBuilderCommand request, CancellationToken cancellationToken)
         {
             var addressClassPath = ClassPathHelper.WebApiValueObjectDtosClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"{ValueObjects.Address.Name}.cs",
-                ValueObjects.Address.Plural(),
+                $"{ValueObjectEnum.Address.Name}.cs",
+                ValueObjectEnum.Address.Plural(),
                 _scaffoldingDirectoryStore.ProjectBaseName);
             
             var readDtoText = GetAddressDtoText(addressClassPath.ClassNamespace);
@@ -45,7 +45,7 @@ public static class ValueObjectDtoBuilder
         
         private string GetAddressDtoText(string classNamespace)
         {
-            var dtoName = FileNames.GetDtoName(ValueObjects.Address.Name, Dto.Read);
+            var dtoName = FileNames.GetDtoName(ValueObjectEnum.Address.Name, Dto.Read);
             return $@"namespace {classNamespace};
             
 public class {dtoName}
@@ -61,7 +61,7 @@ public class {dtoName}
         
         private string GetAddressCreateDtoText(string classNamespace)
         {
-            var dtoName = FileNames.GetDtoName(ValueObjects.Address.Name, Dto.Creation);
+            var dtoName = FileNames.GetDtoName(ValueObjectEnum.Address.Name, Dto.Creation);
             return $@"namespace {classNamespace};
             
 public class {dtoName}
@@ -77,7 +77,7 @@ public class {dtoName}
         
         private string GetAddressUpdateDtoText(string classNamespace)
         {
-            var dtoName = FileNames.GetDtoName(ValueObjects.Address.Name, Dto.Update);
+            var dtoName = FileNames.GetDtoName(ValueObjectEnum.Address.Name, Dto.Update);
             return $@"namespace {classNamespace};
             
 public class {dtoName}

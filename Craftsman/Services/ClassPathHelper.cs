@@ -237,6 +237,12 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", valueObjectPlural, "Dtos"), className);
     }
 
+    public static ClassPath WebApiValueObjectMappingsClassPath(string srcDirectory, ValueObjectEnum valueObjectEnum, string projectBaseName)
+    {
+        var mappingName = FileNames.GetMappingName(valueObjectEnum.Name);
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", valueObjectEnum.Plural(), "Mappings"), $"{mappingName}.cs");
+    }
+
     public static ClassPath ValidationClassPath(string srcDirectory, string className, string entityPlural, string projectBaseName)
     {
         var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";

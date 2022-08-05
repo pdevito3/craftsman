@@ -27,22 +27,22 @@ public static class CommonValueObjectBuilder
         public Task<bool> Handle(CommonValueObjectBuilderCommand request, CancellationToken cancellationToken)
         {
             var percentClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"{ValueObjects.Percent.Name}.cs",
-                ValueObjects.Percent.Plural(),
+                $"{ValueObjectEnum.Percent.Name}.cs",
+                ValueObjectEnum.Percent.Plural(),
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var percentFileText = GetPercentFileText(percentClassPath.ClassNamespace);
             _utilities.CreateFile(percentClassPath, percentFileText);
             
             var addressClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"{ValueObjects.Address.Name}.cs",
-                ValueObjects.Address.Plural(),
+                $"{ValueObjectEnum.Address.Name}.cs",
+                ValueObjectEnum.Address.Plural(),
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var addressFileText = GetAddressFileText(addressClassPath.ClassNamespace);
             _utilities.CreateFile(addressClassPath, addressFileText);
             
             var monetaryAmountClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"{ValueObjects.MonetaryAmount.Name}.cs",
-                ValueObjects.MonetaryAmount.Plural(),
+                $"{ValueObjectEnum.MonetaryAmount.Name}.cs",
+                ValueObjectEnum.MonetaryAmount.Plural(),
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var monetaryAmountFileText = GetMonetaryAmountFileText(monetaryAmountClassPath.ClassNamespace);
             _utilities.CreateFile(monetaryAmountClassPath, monetaryAmountFileText);
@@ -59,7 +59,7 @@ public static class CommonValueObjectBuilder
 using {voClassPath.ClassNamespace};
 
 // source: https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/Percent.cs
-public class {ValueObjects.Percent.Name} : ValueObject
+public class {ValueObjectEnum.Percent.Name} : ValueObject
 {{
     public decimal Value {{ get; }}
         
@@ -107,7 +107,7 @@ using {voClassPath.ClassNamespace};
 
 using FluentValidation;
 
-public class {ValueObjects.Address.Name} : ValueObject
+public class {ValueObjectEnum.Address.Name} : ValueObject
 {{
     /// <summary>
     /// Address line 1 (e.g., street, PO Box, or company name).
@@ -139,12 +139,12 @@ public class {ValueObjects.Address.Name} : ValueObject
     /// </summary>
     public string Country {{ get; }}
     
-    public {ValueObjects.Address.Name}(string line1, string line2, string city, string state, string postalCode, string country)
+    public {ValueObjectEnum.Address.Name}(string line1, string line2, string city, string state, string postalCode, string country)
         : this(line1, line2, city, state, PostalCode.Of(postalCode), country)
     {{
     }}
 
-    public {ValueObjects.Address.Name}(string line1, string line2, string city, string state, PostalCode postalCode, string country)
+    public {ValueObjectEnum.Address.Name}(string line1, string line2, string city, string state, PostalCode postalCode, string country)
     {{
         // TODO country validation
 
@@ -181,7 +181,7 @@ using {voClassPath.ClassNamespace};
 using FluentValidation;
 
 // source: https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/MonetaryAmount.cs
-public class {ValueObjects.MonetaryAmount.Name} : ValueObject
+public class {ValueObjectEnum.MonetaryAmount.Name} : ValueObject
 {{
     public decimal Amount {{ get; }}
         
