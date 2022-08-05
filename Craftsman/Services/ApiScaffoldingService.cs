@@ -147,6 +147,7 @@ public class ApiScaffoldingService
         new CurrentUserServiceTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         _mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
         _mediator.Send(new CommonValueObjectBuilder.CommonValueObjectBuilderCommand());
+        _mediator.Send(new ValueObjectDtoBuilder.ValueObjectDtoBuilderCommand());
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());
 
         //services
