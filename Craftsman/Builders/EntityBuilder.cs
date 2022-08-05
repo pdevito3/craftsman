@@ -36,7 +36,6 @@ public class EntityBuilder
         var creationValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation);
         var updateDtoName = FileNames.GetDtoName(entity.Name, Dto.Update);
         var updateValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Update);
-        var profileName = FileNames.GetMappingName(entity.Name);
         var propString = EntityPropBuilder(entity.Properties);
         var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
         var tableAnnotation = EntityAnnotationBuilder(entity);
@@ -53,18 +52,20 @@ public class EntityBuilder
 using {classPath.ClassNamespace};";
         }
         
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         var createEntityVar = $"new{entity.Name.UppercaseFirstLetter()}";
-        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Select(property =>
+        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimativeType).Select(property =>
             $"        {createEntityVar}.{property.Name} = {creationDtoName.LowercaseFirstLetter()}.{property.Name};"));
-        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Select(property =>
+        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimativeType).Select(property =>
             $"        {property.Name} = {updateDtoName.LowercaseFirstLetter()}.{property.Name};"));
         
         return @$"namespace {classNamespace};
 
+using {exceptionClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {validatorClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
