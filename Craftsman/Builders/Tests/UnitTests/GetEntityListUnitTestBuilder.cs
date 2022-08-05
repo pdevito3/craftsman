@@ -66,7 +66,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
     
     private readonly SieveProcessor _sieveProcessor;
-    private readonly Mapper _mapper = new Mapper(new MapperConfiguration(cfg => {{ cfg.AddProfile<{profileName}>(); }}));
+    private readonly Mapper _mapper = new Mapper();
     private readonly Mock<{repoInterface}> {repoVar};{heimGuardMockProp}
 
     public {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}()
