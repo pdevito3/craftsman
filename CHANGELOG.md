@@ -193,6 +193,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Simplified return on batch add feature
 
+* CLI updates for auth server and bff scaffolds
+
 * Migrated mapper to use `Mapster` instead of `Automapper` for easier value object usage and better performance. To migrate your project
 
   * Update your mappers to look like this (almost identicial to `Automapper`:

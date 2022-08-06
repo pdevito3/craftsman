@@ -84,7 +84,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
 
         // auth server
         if (domainProject.AuthServer != null)
-            new AddAuthServerCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper, _mediator)
+            new AddAuthServerCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper, _mediator, _console)
                 .AddAuthServer(solutionDirectory, domainProject.AuthServer);
 
         // bff

@@ -19,11 +19,12 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
     private readonly IFileParsingHelper _fileParsingHelper;
     private readonly IMediator _mediator;
+    private readonly IAnsiConsole _console;
 
     public AddAuthServerCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileParsingHelper fileParsingHelper, IMediator mediator)
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileParsingHelper fileParsingHelper, IMediator mediator, IAnsiConsole console)
     {
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
@@ -31,6 +32,7 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _fileParsingHelper = fileParsingHelper;
         _mediator = mediator;
+        _console = console;
     }
 
     public class Settings : CommandSettings
@@ -58,22 +60,30 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
 
     public void AddAuthServer(string solutionDirectory, AuthServerTemplate template)
     {
-        var projectBaseName = template.Name;
+        _console.Status()
+            .AutoRefresh(true)
+            .Spinner(Spinner.Known.BouncingBar)
+            .Start($"[yellow]Adding Auth Server [/]", ctx =>
+            {
+                var projectBaseName = template.Name;
         
-        new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildAuthServerProject(solutionDirectory, projectBaseName);
+                new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildAuthServerProject(solutionDirectory, projectBaseName);
 
-        var pulumiYamlBuilder = new PulumiYamlBuilders(_utilities);
-        pulumiYamlBuilder.CreateBaseFile(solutionDirectory, projectBaseName);
-        pulumiYamlBuilder.CreateDevConfig(solutionDirectory, projectBaseName, template.Port, template.Username, template.Password);
+                var pulumiYamlBuilder = new PulumiYamlBuilders(_utilities);
+                pulumiYamlBuilder.CreateBaseFile(solutionDirectory, projectBaseName);
+                pulumiYamlBuilder.CreateDevConfig(solutionDirectory, projectBaseName, template.Port, template.Username, template.Password);
 
-        new ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, projectBaseName);
+                new ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, projectBaseName);
         
-        new UserExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName);
-        new ClientExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName);
-        new ClientFactoryBuilder(_utilities).Create(solutionDirectory, projectBaseName);
-        new ScopeFactoryBuilder(_utilities).Create(solutionDirectory, projectBaseName);
-        new RealmBuildBuilder(_utilities).Create(solutionDirectory, projectBaseName, template.RealmName, template.Clients);
+                new UserExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName);
+                new ClientExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName);
+                new ClientFactoryBuilder(_utilities).Create(solutionDirectory, projectBaseName);
+                new ScopeFactoryBuilder(_utilities).Create(solutionDirectory, projectBaseName);
+                new RealmBuildBuilder(_utilities).Create(solutionDirectory, projectBaseName, template.RealmName, template.Clients);
 
-        new DockerComposeBuilders(_utilities, _fileSystem).AddAuthServerToDockerCompose(solutionDirectory, template);
+                new DockerComposeBuilders(_utilities, _fileSystem).AddAuthServerToDockerCompose(solutionDirectory, template);
+                
+                _consoleWriter.WriteLogMessage($"Auth server scaffolding was successful");
+            });
     }
 }
