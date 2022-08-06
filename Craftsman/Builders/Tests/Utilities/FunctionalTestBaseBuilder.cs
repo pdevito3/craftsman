@@ -30,11 +30,11 @@ using {contextClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
+[Parallelizable]
 public class TestBase
 {{
     public static IServiceScopeFactory _scopeFactory;

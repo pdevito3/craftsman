@@ -162,7 +162,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Remove `.AddFluentValidation(cfg => {{ cfg.AutomaticValidationEnabled = false; }});` from registration as validation should be happening directly at domain level
 
-* Integration tests parallelized
+* Integration and functional tests parallelized
 
 * Integration tests updated to use `DotNet.Testcontainers` for simpler docker db setup
   * Note, there is still no db cleanup after each test, so you should write your assertions accordingly
