@@ -207,26 +207,15 @@ public static class FileNames
     }
     public static string GetDtoName(string entityName, Dto dto)
     {
-        switch (dto)
+        return dto switch
         {
-            case Dto.Manipulation:
-                return $"{entityName}ForManipulationDto";
-
-            case Dto.Creation:
-                return $"{entityName}ForCreationDto";
-
-            case Dto.Update:
-                return $"{entityName}ForUpdateDto";
-
-            case Dto.Read:
-                return $"{entityName}Dto";
-
-            case Dto.ReadParamaters:
-                return $"{entityName}ParametersDto";
-
-            default:
-                throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Dto), dto)}");
-        }
+            Dto.Manipulation => $"{entityName}ForManipulationDto",
+            Dto.Creation => $"{entityName}ForCreationDto",
+            Dto.Update => $"{entityName}ForUpdateDto",
+            Dto.Read => $"{entityName}Dto",
+            Dto.ReadParamaters => $"{entityName}ParametersDto",
+            _ => throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Dto), dto)}")
+        };
     }
 
     public static string EndpointBaseGenerator(string entityNamePlural)
