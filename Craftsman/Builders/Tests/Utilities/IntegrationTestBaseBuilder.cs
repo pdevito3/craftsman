@@ -50,7 +50,7 @@ public class TestBase
         {{
             // configure global autobogus settings here
             builder.WithDateTimeKind(DateTimeKind.Utc)
-                .WithRecursiveDepth(1)
+                .WithRecursiveDepth(3)
                 .WithTreeDepth(1)
                 .WithRepeatCount(1);
         }});
