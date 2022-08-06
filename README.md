@@ -31,6 +31,8 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Move permission guards to feature
 
+✅ Migrate `Automapper` to `Mapster`
+
 🚧 Message Bus Enhancements
 
 🚧 React Cleanup
