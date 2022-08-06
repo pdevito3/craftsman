@@ -12,153 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 * `ServiceCollectionServiceExtensions` in Integration `TextFixture` for easier service mocking with `ReplaceServiceWithSingletonMock`
-
 * Add default database configuration abstraction for each entity along with db context usage. Includes value object examples
-
-* Json serialization extension to better handle DateOnly and TimeOnly in swagger
-
+* Json serialization extension to better handle `DateOnly` and `TimeOnly` in swagger
 * Common value object scaffolding (`Address`, `Percent`, `MonetaryAmount`)
-
   * Scaffolds Dtos for `Address`
-
   * Scaffolds mappers
-
-  * ***TODO: DOCS*** For adding a value object
-
-    * Add a prop to your entity
-
-    * Add manual mappings to your factories
-
-      ```csharp
-      public class Author : BaseEntity
-      {
-          [Sieve(CanFilter = true, CanSort = true)]
-          public virtual string Name { get; private set; }
-          public virtual Address PhysicalAddress { get; private set; }
-      
-          [JsonIgnore]
-          [IgnoreDataMember]
-          [ForeignKey("Recipe")]
-          public virtual Guid RecipeId { get; private set; }
-          public virtual Recipe Recipe { get; private set; }
-      
-      
-          public static Author Create(AuthorForCreationDto authorForCreationDto)
-          {
-              new AuthorForCreationDtoValidator().ValidateAndThrow(authorForCreationDto);
-      
-              var newAuthor = new Author();
-      
-              newAuthor.Name = authorForCreationDto.Name;
-              newAuthor.RecipeId = authorForCreationDto.RecipeId;
-              newAuthor.PhysicalAddress = new Address(authorForCreationDto.PhysicalAddress.Line1,
-                  authorForCreationDto.PhysicalAddress.Line2,
-                  authorForCreationDto.PhysicalAddress.City,
-                  authorForCreationDto.PhysicalAddress.State,
-                  authorForCreationDto.PhysicalAddress.PostalCode,
-                  authorForCreationDto.PhysicalAddress.Country);
-      
-              newAuthor.QueueDomainEvent(new AuthorCreated(){ Author = newAuthor });
-              
-              return newAuthor;
-          }
-      
-          public void Update(AuthorForUpdateDto authorForUpdateDto)
-          {
-              new AuthorForUpdateDtoValidator().ValidateAndThrow(authorForUpdateDto);
-      
-              Name = authorForUpdateDto.Name;
-              RecipeId = authorForUpdateDto.RecipeId;
-              PhysicalAddress = new Address(authorForUpdateDto.PhysicalAddress.Line1,
-                  authorForUpdateDto.PhysicalAddress.Line2,
-                  authorForUpdateDto.PhysicalAddress.City,
-                  authorForUpdateDto.PhysicalAddress.State,
-                  authorForUpdateDto.PhysicalAddress.PostalCode,
-                  authorForUpdateDto.PhysicalAddress.Country);
-      
-              QueueDomainEvent(new AuthorUpdated(){ Id = Id });
-          }
-          
-          protected Author() { } // For EF + Mocking
-      }
-      ```
-
-    * Add prop to your dtos:
-
-      ```csharp
-          public class AuthorDto 
-          {
-              public Guid Id { get; set; }
-              public string Name { get; set; }
-              public AddressDto PhysicalAddress { get; set; }
-              public Guid RecipeId { get; set; }
-          }
-          public class AuthorForCreationDto : AuthorForManipulationDto
-          {
-              public AddressForCreationDto PhysicalAddress { get; set; }
-          }
-          public class AuthorForUpdateDto : AuthorForManipulationDto
-          {
-              public AddressForUpdateDto PhysicalAddress { get; set; }
-          }
-      ```
-
-    * Update your entity's database config:
-
-      ```csharp
-      public class AuthorConfiguration : IEntityTypeConfiguration<Author>
-      {
-          /// <summary>
-          /// The database configuration for Authors. 
-          /// </summary>
-          public void Configure(EntityTypeBuilder<Author> builder)
-          {
-              builder.OwnsOne(x => x.PhysicalAddress, opts =>
-              {
-                  opts.Property(x => x.Line1).HasColumnName("physical_address_line1");
-                  opts.Property(x => x.Line2).HasColumnName("physical_address_line2");
-                  opts.Property(x => x.City).HasColumnName("physical_address_city");
-                  opts.Property(x => x.State).HasColumnName("physical_address_state");
-                  opts.Property(x => x.PostalCode).HasColumnName("physical_address_postal_code")
-                      .HasConversion(x => x.Value, x => new PostalCode(x));
-                  opts.Property(x => x.Country).HasColumnName("physical_address_country");
-              }).Navigation(x => x.PhysicalAddress);
-          }
-      }
-      ```
-
-    * Add a new database migration (e.g. `dotnet ef migrations add AddPhysicalAddressToAuthor`)
-
-    * Update test exclusions and assertions where necessary (fluent assertions usually needs more direction on these assertions). Something like this should cover both types of scenarios.
-
-      * Excluding a complex object and explicity asserting it
-      * Singular property value objects need to use their prop name for the assertion (i.e. `PostalCode.Value`)
-
-      ```csharp
-          public void can_update_author()
-          {
-              // Arrange
-              var fakeAuthor = FakeAuthor.Generate();
-              var updatedAuthor = new FakeAuthorForUpdateDto().Generate();
-              
-              // Act
-              fakeAuthor.Update(updatedAuthor);
-      
-              // Assert
-              fakeAuthor.Should().BeEquivalentTo(updatedAuthor, options =>
-                  options.ExcludingMissingMembers()
-                      .Excluding(x => x.PhysicalAddress));
-              fakeAuthor.PhysicalAddress.Should().BeEquivalentTo(updatedAuthor.PhysicalAddress, 
-                  options => options.Excluding(x => x.PostalCode));
-              fakeAuthor.PhysicalAddress.PostalCode.Value.Should().BeEquivalentTo(updatedAuthor.PhysicalAddress.PostalCode);
-          }
-      ```
 
 * Port customization for RMQ broker and ui
 
 ### Updated
 
-* Removed `faulty` producer assertion in integration tests for better performance
+* Removed faulty producer assertion in integration tests for better performance
 
 * Remove `.AddFluentValidation(cfg => {{ cfg.AutomaticValidationEnabled = false; }});` from registration as validation should be happening directly at domain level
 
