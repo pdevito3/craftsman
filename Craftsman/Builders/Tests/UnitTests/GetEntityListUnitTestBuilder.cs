@@ -202,14 +202,14 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var {entityName}List = new List<{entityName}>() {{ {fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo} }};
         var mockDbData = {entityName}List.AsQueryable().BuildMock();
 
+        {repoVar}
+            .Setup(x => x.Query())
+            .Returns(mockDbData);
+
         //Act
         var query = new {featureClassName}.{queryListName}(queryParameters);
         var handler = new {featureClassName}.Handler({repoVar}.Object, _mapper, _sieveProcessor{heimGuardMockObj});
         var response = await handler.Handle(query, CancellationToken.None);
-
-        {repoVar}
-            .Setup(x => x.Query())
-            .Returns(mockDbData);
 
         // Assert
         response.FirstOrDefault()
