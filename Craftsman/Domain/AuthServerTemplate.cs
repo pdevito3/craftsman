@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Enums;
+using Helpers;
 
 public class AuthServerTemplate
 {
@@ -11,7 +12,15 @@ public class AuthServerTemplate
 
     public string RealmName { get; set; }
 
-    public int Port { get; set; }
+    private int _port = CraftsmanUtilities.GetFreePort();
+    /// <summary>
+    /// The port of the .NET app. Will initially boot to this port and then forward to the SPA proxy
+    /// </summary>
+    public int? Port
+    {
+        get => _port;
+        set => _port = value ?? _port;
+    }
 
     public string Username { get; set; } = "admin";
 
