@@ -71,7 +71,7 @@ class RealmBuild : Stack
     {{
         {realm}{scopesString}{clientsString}
         
-        var realmSuperUser = new Role(""Super Admin"", new RoleArgs
+        var realmSuperAdmin = new Role(""Super Admin"", new RoleArgs
         {{
             RealmId = realm.Id,
             Name = ""Super Admin"",
@@ -100,7 +100,7 @@ class RealmBuild : Stack
             Username = ""bob"",
             Enabled = true,
             Email = ""bob@domain.com"",
-            FirstName = ""Bob"",
+            FirstName = ""Smith"",
             LastName = ""Bobson"",
             InitialPassword = new UserInitialPasswordArgs
             {{
@@ -108,7 +108,23 @@ class RealmBuild : Stack
                 Temporary = true,
             }},
         }});
-        bob.SetRoles(realmSuperUser.Id);
+        bob.SetRoles(realmUser.Id);
+
+        var alice = new User(""user"", new UserArgs
+        {{
+            RealmId = realm.Id,
+            Username = ""alice"",
+            Enabled = true,
+            Email = ""alice@domain.com"",
+            FirstName = ""Alice"",
+            LastName = ""Smith"",
+            InitialPassword = new UserInitialPasswordArgs
+            {{
+                Value = ""alice"",
+                Temporary = true,
+            }},
+        }});
+        alice.SetRoles(realmSuperAdmin.Id);
     }}
 }}";
     }
