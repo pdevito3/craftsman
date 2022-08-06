@@ -28,7 +28,7 @@ public abstract class ValueObjectEnum : SmartEnum<ValueObjectEnum>
         public PercentType() : base(nameof(Percent), 1) { }
 
         public override string Plural()
-            => "Percents";
+            => "Percentages";
     }
 
     private class MonetaryAmountType : ValueObjectEnum
