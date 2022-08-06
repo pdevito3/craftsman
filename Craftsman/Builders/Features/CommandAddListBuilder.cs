@@ -128,10 +128,7 @@ public static class {className}
             await _{repoInterfaceProp}.AddRange({entityNameLowercaseListVar}, cancellationToken);
             await _unitOfWork.CommitChanges(cancellationToken);
 
-            var result = _{repoInterfaceProp}
-                .Query()
-                .Where({entity.Lambda} => {entityNameLowercaseListVar}.Select(listItem => listItem.{primaryKeyPropName}).Contains({entity.Lambda}.{primaryKeyPropName}));
-            return _mapper.Map<{readDto}>(result);
+            return _mapper.Map<{readDto}>({entityNameLowercaseListVar});
         }}
     }}
 }}";
