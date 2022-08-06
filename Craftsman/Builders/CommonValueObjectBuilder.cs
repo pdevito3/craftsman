@@ -1,6 +1,7 @@
 ﻿namespace Craftsman.Builders;
 
 using Domain;
+using Domain.Enums;
 using Helpers;
 using MediatR;
 using Services;
@@ -26,19 +27,22 @@ public static class CommonValueObjectBuilder
         public Task<bool> Handle(CommonValueObjectBuilderCommand request, CancellationToken cancellationToken)
         {
             var percentClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"Percent.cs",
+                $"{ValueObjectEnum.Percent.Name}.cs",
+                ValueObjectEnum.Percent.Plural(),
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var percentFileText = GetPercentFileText(percentClassPath.ClassNamespace);
             _utilities.CreateFile(percentClassPath, percentFileText);
             
             var addressClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"Address.cs",
+                $"{ValueObjectEnum.Address.Name}.cs",
+                ValueObjectEnum.Address.Plural(),
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var addressFileText = GetAddressFileText(addressClassPath.ClassNamespace);
             _utilities.CreateFile(addressClassPath, addressFileText);
             
             var monetaryAmountClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"MonetaryAmount.cs",
+                $"{ValueObjectEnum.MonetaryAmount.Name}.cs",
+                ValueObjectEnum.MonetaryAmount.Plural(),
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var monetaryAmountFileText = GetMonetaryAmountFileText(monetaryAmountClassPath.ClassNamespace);
             _utilities.CreateFile(monetaryAmountClassPath, monetaryAmountFileText);
@@ -53,9 +57,10 @@ public static class CommonValueObjectBuilder
             return @$"namespace {classNamespace};
 
 using {voClassPath.ClassNamespace};
+using FluentValidation;
 
 // source: https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/Percent.cs
-public class Percent : ValueObject
+public class {ValueObjectEnum.Percent.Name} : ValueObject
 {{
     public decimal Value {{ get; }}
         
@@ -100,10 +105,9 @@ public static class PercentExtensions
             return @$"namespace {classNamespace};
 
 using {voClassPath.ClassNamespace};
-
 using FluentValidation;
 
-public class Address : ValueObject
+public class {ValueObjectEnum.Address.Name} : ValueObject
 {{
     /// <summary>
     /// Address line 1 (e.g., street, PO Box, or company name).
@@ -135,12 +139,12 @@ public class Address : ValueObject
     /// </summary>
     public string Country {{ get; }}
     
-    public Address(string line1, string line2, string city, string state, string postalCode, string country)
+    public {ValueObjectEnum.Address.Name}(string line1, string line2, string city, string state, string postalCode, string country)
         : this(line1, line2, city, state, PostalCode.Of(postalCode), country)
     {{
     }}
 
-    public Address(string line1, string line2, string city, string state, PostalCode postalCode, string country)
+    public {ValueObjectEnum.Address.Name}(string line1, string line2, string city, string state, PostalCode postalCode, string country)
     {{
         // TODO country validation
 
@@ -168,16 +172,20 @@ public class PostalCode : ValueObject
         
         private string GetMonetaryAmountFileText(string classNamespace)
         {
+            var percentClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                $"{ValueObjectEnum.Percent.Name}.cs",
+                ValueObjectEnum.Percent.Plural(),
+                _scaffoldingDirectoryStore.ProjectBaseName);
             var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
             
             return @$"namespace {classNamespace};
 
+using {percentClassPath.ClassNamespace};
 using {voClassPath.ClassNamespace};
-
 using FluentValidation;
 
 // source: https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/MonetaryAmount.cs
-public class MonetaryAmount : ValueObject
+public class {ValueObjectEnum.MonetaryAmount.Name} : ValueObject
 {{
     public decimal Amount {{ get; }}
         

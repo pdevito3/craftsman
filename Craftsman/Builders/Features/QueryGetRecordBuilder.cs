@@ -52,7 +52,7 @@ public class QueryGetRecordBuilder
 using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using AutoMapper;
+using MapsterMapper;
 using MediatR;
 
 public static class {className}

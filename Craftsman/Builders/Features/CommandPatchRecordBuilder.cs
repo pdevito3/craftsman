@@ -57,7 +57,7 @@ using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using AutoMapper;
+using MapsterMapper;
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.JsonPatch;

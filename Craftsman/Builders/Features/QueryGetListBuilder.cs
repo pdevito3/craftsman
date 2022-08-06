@@ -52,8 +52,8 @@ using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
+using MapsterMapper;
+using Mapster;
 using MediatR;
 using Sieve.Models;
 using Sieve.Services;
@@ -95,7 +95,7 @@ public static class {className}
 
             var appliedCollection = _sieveProcessor.Apply(sieveModel, collection);
             var dtoCollection = appliedCollection
-                .ProjectTo<{readDto}>(_mapper.ConfigurationProvider);
+                .ProjectToType<{readDto}>();
 
             return await PagedList<{readDto}>.CreateAsync(dtoCollection,
                 request.QueryParameters.PageNumber,

@@ -14,12 +14,12 @@
             var entity = new FakeEntity().Generate();
             entity.Name = "Product";
 
-            var fileText = ProfileBuilder.GetProfileFileText(classNamespace, entity, "", "MyBc");
+            var fileText = EntityMappingBuilder.GetProfileFileText(classNamespace, entity, "", "MyBc");
 
             var expectedText = @"namespace Application.Mappings
 {
     using MyBc.Core.Dtos.Product;
-    using AutoMapper;
+    using MapsterMapper;
     using MyBc.Core.Entities;
 
     public class ProductProfile : Profile

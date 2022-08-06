@@ -36,7 +36,6 @@ public class EntityBuilder
         var creationValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation);
         var updateDtoName = FileNames.GetDtoName(entity.Name, Dto.Update);
         var updateValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Update);
-        var profileName = FileNames.GetProfileName(entity.Name);
         var propString = EntityPropBuilder(entity.Properties);
         var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
         var tableAnnotation = EntityAnnotationBuilder(entity);
@@ -52,21 +51,24 @@ public class EntityBuilder
             foreignEntityUsings += $@"
 using {classPath.ClassNamespace};";
         }
-
-        var profileClassPath = ClassPathHelper.ProfileClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
+        
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
 
+        var createEntityVar = $"new{entity.Name.UppercaseFirstLetter()}";
+        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimativeType).Select(property =>
+            $"        {createEntityVar}.{property.Name} = {creationDtoName.LowercaseFirstLetter()}.{property.Name};"));
+        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimativeType).Select(property =>
+            $"        {property.Name} = {updateDtoName.LowercaseFirstLetter()}.{property.Name};"));
+        
         return @$"namespace {classNamespace};
 
-using {exceptionsClassPath.ClassNamespace};
+using {exceptionClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {profileClassPath.ClassNamespace};
 using {validatorClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
-using AutoMapper;
 using FluentValidation;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
@@ -82,22 +84,22 @@ public class {entity.Name} : BaseEntity
     public static {entity.Name} Create({creationDtoName} {creationDtoName.LowercaseFirstLetter()})
     {{
         new {creationValidatorName}().ValidateAndThrow({creationDtoName.LowercaseFirstLetter()});
-        var mapper = new Mapper(new MapperConfiguration(cfg => {{
-            cfg.AddProfile<{profileName}>();
-        }}));
-        var new{entity.Name} = mapper.Map<{entity.Name}>({creationDtoName.LowercaseFirstLetter()});
-        new{entity.Name}.QueueDomainEvent(new {entityCreatedDomainMessage}(){{ {entity.Name} = new{entity.Name} }});
+
+        var {createEntityVar} = new {entity.Name}();
+
+{createPropsAssignment}
+
+        {createEntityVar}.QueueDomainEvent(new {entityCreatedDomainMessage}(){{ {entity.Name} = {createEntityVar} }});
         
-        return new{entity.Name};
+        return {createEntityVar};
     }}
 
     public void Update({updateDtoName} {updateDtoName.LowercaseFirstLetter()})
     {{
         new {updateValidatorName}().ValidateAndThrow({updateDtoName.LowercaseFirstLetter()});
-        var mapper = new Mapper(new MapperConfiguration(cfg => {{
-            cfg.AddProfile<{profileName}>();
-        }}));
-        mapper.Map({updateDtoName.LowercaseFirstLetter()}, this);
+
+{updatePropsAssignment}
+
         QueueDomainEvent(new {entityUpdatedDomainMessage}(){{ Id = Id }});
     }}
     

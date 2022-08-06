@@ -147,6 +147,8 @@ public class ApiScaffoldingService
         new CurrentUserServiceTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         _mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
         _mediator.Send(new CommonValueObjectBuilder.CommonValueObjectBuilderCommand());
+        _mediator.Send(new ValueObjectDtoBuilder.ValueObjectDtoBuilderCommand());
+        _mediator.Send(new ValueObjectMappingsBuilder.ValueObjectMappingsBuilderCommand());
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());
 
         //services
@@ -155,7 +157,7 @@ public class ApiScaffoldingService
         _mediator.Send(new GenericRepositoryBuilder.GenericRepositoryBuilderCommand(template.DbContext.ContextName));
 
         new CurrentUserServiceBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);
-        new SwaggerBuilder(_utilities, _fileSystem).AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName);
+        new SwaggerBuilder(_utilities).AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template.PolicyName, projectBaseName);
 
         if (template.Bus.AddBus)
             new AddBusCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper)

@@ -31,11 +31,11 @@ public class GetEntityListUnitTestBuilder
         var paramDto = FileNames.GetDtoName(entityName, Dto.ReadParamaters);
         var featureClassName = FileNames.GetEntityListFeatureClassName(entityName);
         var queryListName = FileNames.QueryListName(entityName);
-        var profileName = FileNames.GetProfileName(entityName);
+        var profileName = FileNames.GetMappingName(entityName);
         
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var dtosClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entityPlural, projectBaseName);
-        var profileClassPath = ClassPathHelper.ProfileClassPath(srcDirectory, "", entityPlural, projectBaseName);
+        var profileClassPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var servicesClassPath = ClassPathHelper.EntityServicesClassPath(solutionDirectory, "", entityPlural, projectBaseName);
@@ -53,7 +53,7 @@ using {dtosClassPath.ClassNamespace};
 using {profileClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
-using AutoMapper;
+using MapsterMapper;
 using FluentAssertions;{heimGuardUsing}
 using Microsoft.Extensions.Options;
 using MockQueryable.Moq;
@@ -66,7 +66,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
     
     private readonly SieveProcessor _sieveProcessor;
-    private readonly Mapper _mapper = new Mapper(new MapperConfiguration(cfg => {{ cfg.AddProfile<{profileName}>(); }}));
+    private readonly Mapper _mapper = new Mapper();
     private readonly Mock<{repoInterface}> {repoVar};{heimGuardMockProp}
 
     public {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}()

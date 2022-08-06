@@ -23,7 +23,7 @@ public class ApiVersioningExtensionsBuilder
     {
         return @$"namespace {classNamespace};
 
-using AutoMapper;
+using MapsterMapper;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

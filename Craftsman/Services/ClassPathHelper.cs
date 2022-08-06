@@ -227,9 +227,21 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine(projectBaseName, "Databases", "EntityConfigurations"), className);
     }
 
-    public static ClassPath WebApiValueObjectsClassPath(string srcDirectory, string className, string projectBaseName)
+    public static ClassPath WebApiValueObjectsClassPath(string srcDirectory, string className, string valueObjectPlural, string projectBaseName)
     {
-        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", "ValueObjects"), className);
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", valueObjectPlural), className);
+    }
+
+    public static ClassPath WebApiValueObjectDtosClassPath(string srcDirectory, ValueObjectEnum valueObjectEnum, Dto dto, string projectBaseName)
+    {
+        var dtoName = FileNames.GetDtoName(valueObjectEnum.Name, dto);
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", valueObjectEnum.Plural(), "Dtos"), $"{dtoName}.cs");
+    }
+
+    public static ClassPath WebApiValueObjectMappingsClassPath(string srcDirectory, ValueObjectEnum valueObjectEnum, string projectBaseName)
+    {
+        var mappingName = FileNames.GetMappingName(valueObjectEnum.Name);
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", valueObjectEnum.Plural(), "Mappings"), $"{mappingName}.cs");
     }
 
     public static ClassPath ValidationClassPath(string srcDirectory, string className, string entityPlural, string projectBaseName)
@@ -248,7 +260,7 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine(projectBaseName, "Domain", entityPlural, "Services"), className);
     }
 
-    public static ClassPath ProfileClassPath(string solutionDirectory, string className, string entityPlural, string projectBaseName)
+    public static ClassPath EntityMappingClassPath(string solutionDirectory, string className, string entityPlural, string projectBaseName)
     {
         var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
         return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural, "Mappings"), className);

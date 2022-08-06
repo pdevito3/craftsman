@@ -61,7 +61,7 @@ using {validatorsClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using AutoMapper;
+using MapsterMapper;
 using MediatR;
 
 public static class {className}

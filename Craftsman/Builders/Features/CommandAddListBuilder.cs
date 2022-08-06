@@ -84,7 +84,7 @@ using {servicesClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using AutoMapper;
+using MapsterMapper;
 using MediatR;
 
 public static class {className}
@@ -128,10 +128,7 @@ public static class {className}
             await _{repoInterfaceProp}.AddRange({entityNameLowercaseListVar}, cancellationToken);
             await _unitOfWork.CommitChanges(cancellationToken);
 
-            var result = _{repoInterfaceProp}
-                .Query()
-                .Where({entity.Lambda} => {entityNameLowercaseListVar}.Select(listItem => listItem.{primaryKeyPropName}).Contains({entity.Lambda}.{primaryKeyPropName}));
-            return _mapper.Map<{readDto}>(result);
+            return _mapper.Map<{readDto}>({entityNameLowercaseListVar});
         }}
     }}
 }}";

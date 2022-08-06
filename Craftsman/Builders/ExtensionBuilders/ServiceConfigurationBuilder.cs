@@ -34,6 +34,8 @@ using {servicesClassPath.ClassNamespace};
 using System.Text.Json.Serialization;
 using Serilog;
 using FluentValidation.AspNetCore;
+using Mapster;
+using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Sieve.Services;
@@ -65,7 +67,10 @@ public static class {FileNames.WebAppServiceConfiguration()}
         builder.Services.AddBoundaryServices(Assembly.GetExecutingAssembly());
 
         builder.Services.AddMvc(options => options.Filters.Add<ErrorHandlerFilterAttribute>());
-        builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+        var config = TypeAdapterConfig.GlobalSettings;
+        builder.Services.AddSingleton(config);
+        builder.Services.AddScoped<IMapper, ServiceMapper>();
 
         builder.Services.AddHealthChecks();
         builder.Services.AddSwaggerExtension();
