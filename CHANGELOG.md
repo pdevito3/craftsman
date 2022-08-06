@@ -20,23 +20,84 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Removed `faulty` producer assertion in integration tests for better performance
+
 * Remove `.AddFluentValidation(cfg => {{ cfg.AutomaticValidationEnabled = false; }});` from registration as validation should be happening directly at domain level
+
 * Integration tests parallelized
+
 * Integration tests updated to use `DotNet.Testcontainers` for simpler docker db setup
   * Note, there is still no db cleanup after each test, so you should write your assertions accordingly
+  
 * Moved pagination testing to a unit test
+
 * `UserPolicyHandler` uses RolePermission repo and handles finding no roles
+
 * Value Object cleanup
+
 * Better migration warning on integration tests
+
 * Move most `UserPolicyHandler` tests to unit tests
+
 * Move `CurrentUserServiceTests` test dir
+
 * Update `LocalConfig` to `Consts` for all constants in app (other than permissions and roles)
+
 * Update `AutoBogus` to `AutobogusLifesupport` to support .NET 6 and UTC
+
 * `RequireHttpsMetadata`  off in dev for BFF and boundaries
+
 * `SuperAdmin` text to `Super Admin`
+
 * `UserPolicyHandler` can accommodate realm roles for keycloak
+
 * Moved permission guards to each feature handler (still using `Authorize` attribute on controllers for authenication check).
+
 * Simplified return on batch add feature
+
+* Migrated mapper to use `Mapster` instead of `Automapper` for easier value object usage and better performance. To migrate your project
+
+  * Update your mappers to look like this (almost identicial to `Automapper`:
+
+    ```csharp
+    public class AuthorMappings : IRegister
+    {
+        public void Register(TypeAdapterConfig config)
+        {
+            config.NewConfig<AuthorDto, Author>()
+                .TwoWays();
+            config.NewConfig<AuthorForCreationDto, Author>()
+                .TwoWays();
+            config.NewConfig<AuthorForUpdateDto, Author>()
+                .TwoWays();
+        }
+    }
+    ```
+
+  * Manaully do mapping in your entity factories (due to recurssive nature of the dtos and mapping happining in the factories)
+
+  * Update usings to `using MapsterMapper;`
+
+  * Your `ProjectTo` mappings should look like this:
+
+    ```csharp
+    var dtoCollection = appliedCollection
+    		.ProjectToType<AuthorDto>();
+    ```
+
+    and import:
+
+    ```
+    using MapsterMapper;
+    using Mapster;
+    ```
+
+  * Your registration should now be:
+
+    ```csharp
+    var config = TypeAdapterConfig.GlobalSettings;
+    builder.Services.AddSingleton(config);
+    builder.Services.AddScoped<IMapper, ServiceMapper>();
+    ```
 
 ### Fixed
 
