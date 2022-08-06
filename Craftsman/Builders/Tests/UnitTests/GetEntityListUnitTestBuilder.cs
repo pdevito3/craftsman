@@ -289,12 +289,12 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
             .Generate());
         var queryParameters = new {entityParams}() {{ Filters = $""{propToTest.Name} == {{{expectedFilterableProperty}}}"" }};
 
+        var {entityName.LowercaseFirstLetter()}List = new List<{entityName}>() {{ {fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo} }};
+        var mockDbData = {entityName.LowercaseFirstLetter()}List.AsQueryable().BuildMock();
+
         {repoVar}
             .Setup(x => x.Query())
             .Returns(mockDbData);
-
-        var {entityName}List = new List<{entityName}>() {{ {fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo} }};
-        var mockDbData = {entityName}List.AsQueryable().BuildMock();
 
         //Act
         var query = new {featureClassName}.{queryListName}(queryParameters);
