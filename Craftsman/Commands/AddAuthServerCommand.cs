@@ -62,9 +62,11 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
     {
         _console.Status()
             .AutoRefresh(true)
-            .Spinner(Spinner.Known.BouncingBar)
+            .Spinner(Spinner.Known.Dots2)
             .Start($"[yellow]Adding Auth Server [/]", ctx =>
             {
+                ctx.Spinner(Spinner.Known.BouncingBar);
+                ctx.Status($"[bold blue]Scaffolding files for Auth Server [/]");
                 var projectBaseName = template.Name;
         
                 new SolutionBuilder(_utilities, _fileSystem, _mediator).BuildAuthServerProject(solutionDirectory, projectBaseName);

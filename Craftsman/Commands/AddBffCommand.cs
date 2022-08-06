@@ -70,9 +70,11 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
     {
         _console.Status()
             .AutoRefresh(true)
-            .Spinner(Spinner.Known.BouncingBar)
+            .Spinner(Spinner.Known.Dots2)
             .Start($"[yellow]Adding BFF [/]", ctx =>
             {
+                ctx.Spinner(Spinner.Known.BouncingBar);
+                ctx.Status($"[bold blue]Scaffolding files for Auth Server [/]");
                 var projectName = template.ProjectName;
                 var projectDirectory = template.GetProjectDirectory(domainDirectory);
                 var spaDirectory = template.GetSpaDirectory(domainDirectory);
