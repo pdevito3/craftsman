@@ -291,6 +291,10 @@ BoundedContexts:
       Type: string
       CanFilter: true
       CanSort: true
+    - Name: ExpiresOn
+      Type: DateTime?
+      CanFilter: true
+      CanSort: true
     - Name: Measure
       Type: string
       CanFilter: true

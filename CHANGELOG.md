@@ -167,7 +167,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Integration tests updated to use `DotNet.Testcontainers` for simpler docker db setup
   * Note, there is still no db cleanup after each test, so you should write your assertions accordingly
   
-* Moved pagination testing to a unit test
+* Moved pagination, filter, and sort testing to unit tests
 
 * `UserPolicyHandler` uses RolePermission repo and handles finding no roles
 
