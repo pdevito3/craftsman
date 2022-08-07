@@ -350,6 +350,8 @@ Bff:
       ApiAddress: https://localhost:5375/api/recipes
     - LocalPath: /api/ingredients
       ApiAddress: https://localhost:5375/api/ingredients
+  BoundaryScopes:
+    - recipe_management
   Entities:
   - Name: Recipe
     Features:
@@ -389,21 +391,21 @@ AuthServer:
       GrantType: ClientCredentials
       BaseUrl: 'https://oauth.pstmn.io/'
       Scopes:
-        - recipe_management #this should match the scope in your boundary auth and swagger specs
+        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs
     - Id: recipe_management.postman.code
       Name: RecipeManagement Postman Code
       Secret: 974d6f71-d41b-4601-9a7a-a33081f84680 #optional
       GrantType: Code
       BaseUrl: 'https://oauth.pstmn.io/'
       Scopes:
-        - recipe_management #this should match the scope in your boundary auth and swagger specs
+        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs
     - Id: recipe_management.swagger
       Name: RecipeManagement Swagger
       Secret: 974d6f71-d41b-4601-9a7a-a33081f80687
       GrantType: Code
       BaseUrl: 'https://localhost:5375/'
       Scopes:
-        - recipe_management #this should match the scope in your boundary auth and swagger specs
+        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs
     - Id: recipe_management.bff
       Name: RecipeManagement BFF
       Secret: 974d6f71-d41b-4601-9a7a-a33081f80688
@@ -413,7 +415,9 @@ AuthServer:
         - 'https://localhost:4378/signin-oidc'
       AllowedCorsOrigins:
         - 'https://localhost:5375' # api 1 - recipe_management
-        - 'https://localhost:4378'";
+        - 'https://localhost:4378'
+      Scopes:
+        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs";
     }
 
     private static string BasicTemplate(string name)
@@ -682,6 +686,8 @@ Bff:
   RemoteEndpoints:
     - LocalPath: /api/recipes
       ApiAddress: https://localhost:5375/api/recipes
+  BoundaryScopes:
+    - recipe_management
   Entities:
   - Name: Recipe
     Features:
@@ -710,16 +716,22 @@ AuthServer:
       Secret: 974d6f71-d41b-4601-9a7a-a33081f84682
       GrantType: ClientCredentials
       BaseUrl: 'https://oauth.pstmn.io/'
+      Scopes:
+        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs
     - Id: recipe_management.postman.code
       Name: RecipeManagement Postman Code
       Secret: 974d6f71-d41b-4601-9a7a-a33081f84680 #optional
       GrantType: Code
       BaseUrl: 'https://oauth.pstmn.io/'
+      Scopes:
+        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs
     - Id: recipe_management.swagger
       Name: RecipeManagement Swagger
       Secret: 974d6f71-d41b-4601-9a7a-a33081f80687
       GrantType: Code
       BaseUrl: 'https://localhost:5375/'
+      Scopes:
+        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs
     - Id: recipe_management.bff
       Name: RecipeManagement BFF
       Secret: 974d6f71-d41b-4601-9a7a-a33081f80688
@@ -730,6 +742,8 @@ AuthServer:
       AllowedCorsOrigins:
         - 'https://localhost:5375' # api 1 - recipe_management
         - 'https://localhost:4378'
+      Scopes:
+        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs
 ";
     }
 }
