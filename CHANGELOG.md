@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+* None yet!
+
+## [0.16.0] - 08/06/2022
+
 ### Added
 
 * `ServiceCollectionServiceExtensions` in Integration `TextFixture` for easier service mocking with `ReplaceServiceWithSingletonMock`
