@@ -65,7 +65,7 @@ public class GetEntityListUnitTestBuilder
         var sortTests = "";
         var filterTests = "";
 
-        foreach (var prop in entityProperties.Where(e => e.CanSort && e.Type != "Guid").ToList())
+        foreach (var prop in entityProperties.Where(e => e.CanSort && e.Type != "Guid" && !e.IsSmartEnum()).ToList())
             sortTests += @$"{Environment.NewLine}{Environment.NewLine}{GetEntitiesListTestForSortedOrder(entityName, 
                 entityLambda, 
                 prop,
@@ -75,7 +75,7 @@ public class GetEntityListUnitTestBuilder
                 heimGuardMockObj)}";
         
 
-        foreach (var prop in entityProperties.Where(e => e.CanFilter).ToList())
+        foreach (var prop in entityProperties.Where(e => e.CanFilter && !e.IsSmartEnum()).ToList())
             filterTests += @$"{Environment.NewLine}{Environment.NewLine}{GetEntitiesListFiltered(entityName, 
                 entityLambda, 
                 prop,

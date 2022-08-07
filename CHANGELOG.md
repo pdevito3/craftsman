@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.16.1] - 08/06/2022
+
+### Fixed
+
+* Unit test for filtering and sorting will exclude smart enum properties
+
 ## [0.16.0] - 08/06/2022
 
 ### Added
