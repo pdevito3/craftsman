@@ -94,7 +94,7 @@ class RealmBuild : Stack
             }},
         }});
 
-        var bob = new User(""user"", new UserArgs
+        var bob = new User(""bob"", new UserArgs
         {{
             RealmId = realm.Id,
             Username = ""bob"",
@@ -108,9 +108,8 @@ class RealmBuild : Stack
                 Temporary = true,
             }},
         }});
-        bob.SetRoles(realmUser.Id);
 
-        var alice = new User(""user"", new UserArgs
+        var alice = new User(""alice"", new UserArgs
         {{
             RealmId = realm.Id,
             Username = ""alice"",
