@@ -17,11 +17,27 @@ Craftsman is the workhorse behind the [Wrapt](https://wrapt.dev) framework and p
 
 For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wrapt.dev).
 
-## Upcoming Features in v0.16
+## Upcoming Features in v0.17
 
-The last few releases have brought a ton of new features, but there are still several items I want to address before I slap the v1.0 sticker on things. I have some of the larger lifts below. Not everything here will be in the next release and this is certainly not an exhaustive list of everything, but I want to be open about what's on the horizon. 🌅
+The last few releases have brought a ton of new features and while the backend is progressing nicely, there are still a few features I want to add before getting to a stable v1. 
+
+I'm planning on doing some more heavy front end work for this upcoming release and then I'll probably do a heavy dog food project to find practical gaps. I have some of the upcoming items below for the next release and this is certainly not an exhaustive list of everything, but I want to be open about what's on the horizon. 🌅
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
+
+🚧 React Cleanup
+
+🚧 React Controls 
+
+🚧 React Forms
+
+🚧 React Permissions Integration
+
+🚧 Json Schema or C# classes for easier file scaffolding
+
+
+
+### Some v0.16 highlights
 
 ✅ Testing Optimizations
 
@@ -32,14 +48,6 @@ Have a request for something you don't see below? Join [our discord](https://dis
 ✅ Move permission guards to feature
 
 ✅ Migrate `Automapper` to `Mapster`
-
-🚧 Message Bus Enhancements
-
-🚧 React Cleanup
-
-🚧 React Permissions Integration
-
-🚧 Json Schema for easier file scaffolding
 
 
 
