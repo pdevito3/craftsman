@@ -27,6 +27,7 @@ public class ErrorHandlerFilterAttributeBuilder
 
 namespace {classNamespace};
 
+using FluentValidation.Results;
 using {exceptionsClassPath.ClassNamespace};
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -43,7 +44,8 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
                 {{ typeof(FluentValidation.ValidationException), HandleFluentValidationException }},
                 {{ typeof(ValidationException), HandleValidationException }},
                 {{ typeof(NotFoundException), HandleNotFoundException }},
-                {{ typeof(ForbiddenAccessException), HandleForbiddenAccessException }}
+                {{ typeof(ForbiddenAccessException), HandleForbiddenAccessException }},
+                {{ typeof(InvalidSmartEnumPropertyName), HandleInvalidSmartEnumException }}
             }};
     }}
 
@@ -83,6 +85,17 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
         var failures = exception.Errors
             .ToList();
         var proper = new ValidationException(failures);
+        
+        HandleErrors(context, proper.Errors);
+    }}
+    
+    private void HandleInvalidSmartEnumException(ExceptionContext context)
+    {{
+        var exception = (InvalidSmartEnumPropertyName)context.Exception;
+        var proper = new ValidationException(new List<ValidationFailure>()
+        {{
+            new ValidationFailure(exception.Source, exception.Message)
+        }});
         
         HandleErrors(context, proper.Errors);
     }}

@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * Scaffolds mappers
 
 * Port customization for RMQ broker and ui
+* Added `ForbiddenAccessException` and `InvalidSmartEnumPropertyName` handling to `ErrorHandlerFilterAttribute`
 
 ### Updated
 
