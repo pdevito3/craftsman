@@ -16,9 +16,9 @@
     <PackageTags>webapi c-sharp dotnet-core vertical-slice-architecture asp-net-core docker net-6 ddd domain-driven-design web-dev cqrs mediatr masstransit event-driven-architecture</PackageTags>
     <RepositoryUrl>https://github.com/pdevito3/craftsman</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>0.16.2</AssemblyVersion>
-    <FileVersion>0.16.2</FileVersion>
-    <Version>0.16.2</Version>
+    <AssemblyVersion>0.16.3</AssemblyVersion>
+    <FileVersion>0.16.3</FileVersion>
+    <Version>0.16.3</Version>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
 
