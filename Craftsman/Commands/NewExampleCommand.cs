@@ -412,7 +412,7 @@ AuthServer:
       BaseUrl: 'https://localhost:4378/'
       GrantType: Code
       RedirectUris:
-        - 'https://localhost:4378/'
+        - 'https://localhost:4378/*'
       AllowedCorsOrigins:
         - 'https://localhost:5375' # api 1 - recipe_management
         - 'https://localhost:4378'
@@ -738,7 +738,7 @@ AuthServer:
       BaseUrl: 'https://localhost:4378/'
       GrantType: Code
       RedirectUris:
-        - 'https://localhost:4378/'
+        - 'https://localhost:4378/*'
       AllowedCorsOrigins:
         - 'https://localhost:5375' # api 1 - recipe_management
         - 'https://localhost:4378'
