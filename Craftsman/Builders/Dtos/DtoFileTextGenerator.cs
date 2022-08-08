@@ -27,7 +27,7 @@ public static class DtoFileTextGenerator
 
     public static string GetDtoText(IClassPath dtoClassPath, Entity entity, Dto dto)
     {
-        var propString = dto is Dto.Read ? $@"        public Guid Id {{ get; set; }}{Environment.NewLine}" : "";
+        var propString = dto is Dto.Read ? $@"        public int Id {{ get; set; }}{Environment.NewLine}" : "";
         propString += DtoPropBuilder(entity.Properties, dto);
         if (dto is Dto.Update or Dto.Creation)
             propString = "";

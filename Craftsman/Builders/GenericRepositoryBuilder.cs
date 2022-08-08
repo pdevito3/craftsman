@@ -45,7 +45,7 @@ public static class GenericRepositoryBuilder
 
             var repoName = FileNames.GenericRepository();
             var interfaceName = FileNames.GenericRepositoryInterface();
-            
+
             return @$"namespace {classNamespace};
 
 using {domainClassPath.ClassNamespace};
@@ -57,9 +57,9 @@ public interface {interfaceName}<TEntity> : {boundaryServiceName}
     where TEntity : BaseEntity
 {{
     IQueryable<TEntity> Query();
-    Task<TEntity> GetByIdOrDefault(Guid id, bool withTracking = true, CancellationToken cancellationToken = default);
-    Task<TEntity> GetById(Guid id, bool withTracking = true, CancellationToken cancellationToken = default);
-    Task<bool> Exists(Guid id, CancellationToken cancellationToken = default);
+    Task<TEntity> GetByIdOrDefault(int id, bool withTracking = true, CancellationToken cancellationToken = default);
+    Task<TEntity> GetById(int id, bool withTracking = true, CancellationToken cancellationToken = default);
+    Task<bool> Exists(int id, CancellationToken cancellationToken = default);
     Task Add(TEntity entity, CancellationToken cancellationToken = default);    
     Task AddRange(IEnumerable<TEntity> entity, CancellationToken cancellationToken = default);    
     void Update(TEntity entity);
@@ -82,7 +82,7 @@ public abstract class {repoName}<TEntity> : {interfaceName}<TEntity>
         return _dbContext.Set<TEntity>();
     }}
 
-    public virtual async Task<TEntity> GetByIdOrDefault(Guid id, bool withTracking = true, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity> GetByIdOrDefault(int id, bool withTracking = true, CancellationToken cancellationToken = default)
     {{
         return withTracking 
             ? await _dbContext.Set<TEntity>()
@@ -92,7 +92,7 @@ public abstract class {repoName}<TEntity> : {interfaceName}<TEntity>
                 .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }}
 
-    public virtual async Task<TEntity> GetById(Guid id, bool withTracking = true, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity> GetById(int id, bool withTracking = true, CancellationToken cancellationToken = default)
     {{
         var entity = await GetByIdOrDefault(id, withTracking, cancellationToken);
         
@@ -102,7 +102,7 @@ public abstract class {repoName}<TEntity> : {interfaceName}<TEntity>
         return entity;
     }}
 
-    public virtual async Task<bool> Exists(Guid id, CancellationToken cancellationToken = default)
+    public virtual async Task<bool> Exists(int id, CancellationToken cancellationToken = default)
     {{
         return await _dbContext.Set<TEntity>()
             .AnyAsync(e => e.Id == id, cancellationToken);

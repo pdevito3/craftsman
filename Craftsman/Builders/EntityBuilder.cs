@@ -51,7 +51,7 @@ public class EntityBuilder
             foreignEntityUsings += $@"
 using {classPath.ClassNamespace};";
         }
-        
+
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
@@ -62,7 +62,7 @@ using {classPath.ClassNamespace};";
             $"        {createEntityVar}.{property.Name} = {creationDtoName.LowercaseFirstLetter()}.{property.Name};"));
         var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimativeType).Select(property =>
             $"        {property.Name} = {updateDtoName.LowercaseFirstLetter()}.{property.Name};"));
-        
+
         return @$"namespace {classNamespace};
 
 using {exceptionClassPath.ClassNamespace};
@@ -133,7 +133,7 @@ public abstract class BaseEntity
 {{
     [Key]
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual Guid Id {{ get; private set; }} = Guid.NewGuid();
+    public virtual int Id {{ get; private set; }}
     public virtual DateTime CreatedOn {{ get; private set; }}
     public virtual string CreatedBy {{ get; private set; }}
     public virtual DateTime? LastModifiedOn {{ get; private set; }}
@@ -178,7 +178,7 @@ public abstract class BaseEntity
         foreach (var property in props)
         {
             var attributes = AttributeBuilder(property);
-            
+
             if (property.IsSmartEnum())
             {
                 propString += $@"    private {property.SmartEnumPropName} _{property.Name.LowercaseFirstLetter()};
@@ -236,7 +236,7 @@ public abstract class BaseEntity
     [IgnoreDataMember]
     [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
         }
-    
+
         if (entityProperty.IsMany || !entityProperty.IsPrimativeType)
             attributeString += $@"    [JsonIgnore]
     [IgnoreDataMember]{Environment.NewLine}";

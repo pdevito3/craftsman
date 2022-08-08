@@ -17,7 +17,7 @@ public class DeleteRecordEndpointBuilder
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_DeleteRecord(entity, addSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
     [Produces(""application/json"")]
-    [HttpDelete(""{{{lowercasePrimaryKey}:guid}}"", Name = ""Delete{entityName}"")]
+    [HttpDelete(""{{{lowercasePrimaryKey}:int}}"", Name = ""Delete{entityName}"")]
     public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercasePrimaryKey})
     {{
         var command = new {FileNames.DeleteEntityFeatureClassName(entity.Name)}.{deleteRecordCommandMethodName}({lowercasePrimaryKey});

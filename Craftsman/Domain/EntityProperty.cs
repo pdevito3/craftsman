@@ -142,13 +142,13 @@ public class EntityProperty
     private string _smartEnumPropName;
     public string SmartEnumPropName
     {
-        get => _smartEnumPropName ?? $"{Name}Enum"; 
+        get => _smartEnumPropName ?? $"{Name}Enum";
         set => _smartEnumPropName = value;
     }
 
     public List<string> SmartNames { get; set; } = new List<string>();
 
-    public List<SmartOption> GetSmartOptions() => SmartNames.Select((name, index) => new SmartOption { Name = name, Value = index}).ToList();
+    public List<SmartOption> GetSmartOptions() => SmartNames.Select((name, index) => new SmartOption { Name = name, Value = index }).ToList();
 
     public static EntityProperty GetPrimaryKey()
     {
@@ -158,7 +158,7 @@ public class EntityProperty
             IsRequired = true,
             CanManipulate = false,
             Name = "Id",
-            Type = "Guid"
+            Type = "int"
         };
     }
 }

@@ -47,7 +47,7 @@ public static class UpdatedDomainEventBuilder
 
 public class {FileNames.EntityUpdatedDomainMessage(entityName)} : DomainEvent
 {{
-    public Guid Id {{ get; set; }} 
+    public int Id {{ get; set; }} 
 }}
             ";
         }
