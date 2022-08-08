@@ -36,14 +36,14 @@ public class QueryGetRecordBuilder
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
-        
-        FeatureBuilderHelpers.GetPermissionValuesForHandlers(srcDirectory, 
-            projectBaseName, 
-            isProtected, 
-            permissionName, 
-            out string heimGuardSetter, 
-            out string heimGuardCtor, 
-            out string permissionCheck, 
+
+        FeatureBuilderHelpers.GetPermissionValuesForHandlers(srcDirectory,
+            projectBaseName,
+            isProtected,
+            permissionName,
+            out string heimGuardSetter,
+            out string heimGuardCtor,
+            out string permissionCheck,
             out string permissionsUsing,
             out string heimGuardField);
 
