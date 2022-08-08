@@ -23,7 +23,7 @@ public class ServiceConfigurationBuilder
     {
         var corsName = $"{projectBaseName}CorsPolicy";
         var boundaryServiceName = FileNames.BoundaryServiceInterface(projectBaseName);
-        
+
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var middlewareClassPath = ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, $"", projectBaseName);
 
@@ -49,7 +49,7 @@ public static class {FileNames.WebAppServiceConfiguration()}
         // TODO update CORS for your env
         builder.Services.AddCorsService(""{corsName}"", builder.Environment);
         builder.Services.OpenTelemetryRegistration(""{projectBaseName}"");
-        builder.Services.AddInfrastructure(builder.Environment);
+        builder.Services.AddInfrastructure(builder.Configuration,builder.Environment);
 
         // using Newtonsoft.Json to support PATCH docs since System.Text.Json does not support them https://github.com/dotnet/aspnetcore/issues/24333
         // if you are not using PatchDocs and would prefer to use System.Text.Json, you can remove The `AddNewtonSoftJson()` line

@@ -202,13 +202,13 @@ public class {dbContextName} : DbContext
 
         return dbSetText;
     }
-    
+
     public static string GetDbEntityConfigs(List<Entity> entities)
     {
         var configList = entities
             .Select(x => $"modelBuilder.ApplyConfiguration(new {FileNames.GetDatabaseEntityConfigName(x.Name)}());")
             .ToList();
-        
+
         var newLinedString = configList.Aggregate((current, next) => @$"{current}{Environment.NewLine}        {next}");
         return newLinedString;
     }
@@ -227,10 +227,6 @@ public class {dbContextName} : DbContext
         InstallDbProviderNugetPackages(dbProvider, srcDirectory);
 
         //TODO test for class and another for anything else
-        var namingConvention = namingConventionEnum == NamingConventionEnum.Class
-            ? ""
-            : @$"
-                            .{namingConventionEnum.ExtensionMethod()}()";
 
         var tempPath = $"{classPath.FullClassPath}temp";
         using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
@@ -244,26 +240,28 @@ public class {dbContextName} : DbContext
                     if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                     {
                         newText += @$"
-        if (env.IsEnvironment(Consts.Testing.FunctionalTestingEnvName))
-        {{
-            services.AddDbContext<{dbContextName}>(options =>
-                options.UseInMemoryDatabase($""{dbName ?? dbContextName}""));
-        }}
-        else
-        {{
-            var connectionString = Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"");
-            if(string.IsNullOrEmpty(connectionString))
+
+
+            var connectionString = configuration.GetConnectionString(""DefaultConnection"");
+            if (string.IsNullOrEmpty(connectionString))
             {{
-                // this makes local migrations easier to manage. feel free to refactor if desired.
-                connectionString = env.IsDevelopment() 
-                    ? ""{localDbConnection}""
-                    : throw new Exception(""DB_CONNECTION_STRING environment variable is not set."");
+                throw new Exception(""DefaultConnection variable is not set in appsettings."");
             }}
 
             services.AddDbContext<{dbContextName}>(options =>
-                options.{usingDbStatement}(connectionString,
-                    builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});
-        }}";
+                options.{usingDbStatement}(
+                    connectionString,
+                    builder => 
+                    {{
+                    builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName);
+                    builder.MigrationsHistoryTable(HistoryRepository.DefaultTableName, ""ms"");
+                    builder.EnableRetryOnFailure(
+                        maxRetryCount: 10,
+                        maxRetryDelay: TimeSpan.FromSeconds(5),
+                        errorNumbersToAdd: null
+                        );
+                    }}
+            ));";
                     }
 
                     output.WriteLine(newText);

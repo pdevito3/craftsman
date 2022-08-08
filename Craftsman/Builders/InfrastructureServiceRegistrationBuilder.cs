@@ -27,10 +27,11 @@ public class InfrastructureServiceRegistrationBuilder
 using {dbContextClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 public static class ServiceRegistration
 {{
-    public static void AddInfrastructure(this IServiceCollection services, IWebHostEnvironment env)
+    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {{
         // DbContext -- Do Not Delete
 
