@@ -11,6 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.16.2] - 08/07/2022
+
+### Fixed
+
+* Remove offline BFF scope
+* Fix example redirect for BFF
+
 ## [0.16.1] - 08/06/2022
 
 ### Fixed
