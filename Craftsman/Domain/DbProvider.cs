@@ -45,7 +45,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     }}";
         }
 
-        public override string IntegrationTestConnectionStringSetup() 
+        public override string IntegrationTestConnectionStringSetup()
             => $@"Environment.SetEnvironmentVariable(""DB_CONNECTION_STRING"", _dbContainer.ConnectionString);";
 
         public override int Port()
@@ -61,7 +61,11 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     {
         public SqlServerType() : base(nameof(SqlServer), 2) { }
         public override string PackageInclusionString(string version)
-            => @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""{version}"" />";
+        {
+            return @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""{version}"" />
+                <PackageReference Include = ""Microsoft.EntityFrameworkCore.Tools"" Version = ""{version}"" /> ";
+        }
+
         public override string OTelSource()
             => @$"Microsoft.EntityFrameworkCore.SqlServer";
 
@@ -87,9 +91,9 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     }}";
         }
 
-        public override string IntegrationTestConnectionStringSetup() 
+        public override string IntegrationTestConnectionStringSetup()
             => $@"Environment.SetEnvironmentVariable(""DB_CONNECTION_STRING"", $""{{_dbContainer.ConnectionString}}TrustServerCertificate=true;"");";
-        
+
         public override int Port()
             => 1433;
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword)
