@@ -24,11 +24,12 @@ public class CurrentUserServiceBuilder
 
         return @$"namespace {classNamespace};
 
+using System.Net;
 using System.Security.Claims;
 
 public interface ICurrentUserService : {boundaryServiceName}
 {{
-    string? UserId {{ get; }}
+    string UserId {{ get; }}
     ClaimsPrincipal? User {{ get; }}
 }}
 
@@ -41,7 +42,17 @@ public class CurrentUserService : ICurrentUserService
         _httpContextAccessor = httpContextAccessor;
     }}
 
-    public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+    public string UserId
+    {{
+        get
+        {{
+            if (_httpContextAccessor.HttpContext != null)
+                return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? Dns.GetHostEntry(_httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress)?.HostName;
+            return ""UserNotFound"";
+        }}
+    }}
+
     public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
 }}";
     }
