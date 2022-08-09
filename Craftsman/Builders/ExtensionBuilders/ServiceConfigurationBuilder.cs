@@ -38,6 +38,7 @@ using Mapster;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Resources;
 using Sieve.Services;
 using System.Reflection;
 
@@ -68,9 +69,13 @@ public static class {FileNames.WebAppServiceConfiguration()}
 
         builder.Services.AddMvc(options => options.Filters.Add<ErrorHandlerFilterAttribute>());
 
-        var config = TypeAdapterConfig.GlobalSettings;
-        builder.Services.AddSingleton(config);
-        builder.Services.AddScoped<IMapper, ServiceMapper>();
+        if(builder.Environment.EnvironmentName != Consts.Testing.FunctionalTestingEnvName)
+        {{
+            var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
+            typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
+            var mapperConfig = new Mapper(typeAdapterConfig);
+            builder.Services.AddSingleton<IMapper>(mapperConfig);
+        }}
 
         builder.Services.AddHealthChecks();
         builder.Services.AddSwaggerExtension();

@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.16.4] - 08/09/2022
+
+### Fixed
+
+* Mapster service registration uses assembly (and is escaped for web app factory in functional tests)
+
 ## [0.16.3] - 08/08/2022
 
 ### Fixed
