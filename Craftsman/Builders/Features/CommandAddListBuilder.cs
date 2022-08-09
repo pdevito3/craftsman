@@ -27,7 +27,7 @@ public class CommandAddListBuilder
         var className = feature.Name;
         var addCommandName = feature.Command;
         var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
-        readDto = $"IEnumerable<{readDto}>";
+        readDto = $"List<{readDto}>";
         var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
         createDto = $"IEnumerable<{createDto}>";
         var featurePropNameLowerFirst = feature.BatchPropertyName.LowercaseFirstLetter();
