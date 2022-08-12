@@ -44,7 +44,7 @@ const get{entityPluralUppercaseFirst} = (queryString: string) => {{
 		? queryString 
 		: `?${{queryString}}`;
 
-	return api.get(`/api/{entityPluralLowercase}?${{queryString}}`)
+	return api.get(`/api/{entityPluralLowercase}${{queryString}}`)
 		.then((response: AxiosResponse<{readDtoName}[]>) => {{
 			return {{
 				data: response.data as {readDtoName}[],

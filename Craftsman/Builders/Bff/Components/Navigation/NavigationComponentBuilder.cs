@@ -65,7 +65,7 @@ export default function PrivateSideNav() {{
 							enter='transition-opacity ease-linear duration-[400ms]'
 							enterFrom='opacity-0'
 							enterTo='opacity-100'
-							leave='transition-opacity ease-linear duration-[400ms]'
+							leave='transition-opacity ease-linear duration-150'
 							leaveFrom='opacity-100'
 							leaveTo='opacity-0'
 						>
@@ -76,11 +76,11 @@ export default function PrivateSideNav() {{
 							enter='transition ease-in-out duration-[400ms] transform'
 							enterFrom='translate-y-full'
 							enterTo='-translate-y-0'
-							leave='transition ease-in-out duration-[400ms] transform'
+							leave='transition ease-in-out duration-150 transform'
 							leaveFrom='-translate-y-0'
 							leaveTo='translate-y-full'
 						>
-							<div className='absolute bottom-0 w-full px-2 h-1/2'>
+							<div className='absolute bottom-0 w-full h-1/2'>
 								<div className='relative flex flex-col flex-1 w-full h-full bg-gray-800 rounded-t-xl'>
 									<Transition.Child
 										as={{Fragment}}

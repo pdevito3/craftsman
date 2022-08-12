@@ -66,7 +66,7 @@ export interface {dtoForUpdateName} extends {dtoForManipulationName} {{ }}
             var questionMark = bffEntityProperty.Nullable
                 ? "?"
                 : "";
-            propString += $@"{Environment.NewLine}  {bffEntityProperty.Name}{questionMark}: {bffEntityProperty.RawType};";
+            propString += $@"{Environment.NewLine}  {bffEntityProperty.Name.LowercaseFirstLetter()}{questionMark}: {bffEntityProperty.RawType};";
         }
 
         return propString;

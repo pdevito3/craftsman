@@ -365,6 +365,7 @@ Bff:
       Type: string #optional if string
     - Name: Directions
     - Name: RecipeSourceLink
+    - Name: Visibility
     - Name: Description
     - Name: Rating
       Type: number?
@@ -701,6 +702,7 @@ Bff:
       Type: string #optional if string
     - Name: Directions
     - Name: RecipeSourceLink
+    - Name: Visibility
     - Name: Description
     - Name: ImageLink
     - Name: Visibility
