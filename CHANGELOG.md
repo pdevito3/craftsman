@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Test Utility Mapper for Unit Tests
 
+### Updated
+
+* Extra Ef Tooles package for SqlServer
+
 ## [0.16.4] - 08/09/2022
 
 ### Updated

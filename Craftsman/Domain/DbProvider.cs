@@ -60,8 +60,10 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     private class SqlServerType : DbProvider
     {
         public SqlServerType() : base(nameof(SqlServer), 2) { }
-        public override string PackageInclusionString(string version)
-            => @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""{version}"" />";
+        public override string PackageInclusionString(string version) 
+            => @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""{version}"" />
+    <PackageReference Include = ""Microsoft.EntityFrameworkCore.Tools"" Version = ""{version}"" /> ";
+        
         public override string OTelSource()
             => @$"Microsoft.EntityFrameworkCore.SqlServer";
 
