@@ -205,6 +205,12 @@ public static class FileNames
     {
         return $"Fake{objectToFakeName}";
     }
+    
+    public static string UnitTestUtilsName()
+    {
+        return $"UnitTestUtils";
+    } 
+    
     public static string GetDtoName(string entityName, Dto dto)
     {
         return dto switch

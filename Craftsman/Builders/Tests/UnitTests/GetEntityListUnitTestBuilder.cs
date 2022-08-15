@@ -99,13 +99,14 @@ using MockQueryable.Moq;
 using Moq;
 using Sieve.Models;
 using Sieve.Services;
+using TestHelpers;
 using NUnit.Framework;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
     
     private readonly SieveProcessor _sieveProcessor;
-    private readonly Mapper _mapper = new Mapper();
+    private readonly Mapper _mapper = UnitTestUtils.GetApiMapper();
     private readonly Mock<{repoInterface}> {repoVar};{heimGuardMockProp}
 
     public {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}()

@@ -40,6 +40,11 @@ public static class ClassPathHelper
         return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Domain", entityPlural), className);
     }
 
+    public static ClassPath UnitTestHelpersClassPath(string testDirectory, string className, string projectBaseName)
+    {
+        return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "TestHelpers"), className);
+    }
+
     public static ClassPath UnitTestServiceTestsClassPath(string testDirectory, string className, string projectBaseName)
     {
         return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "ServiceTests"), className);
