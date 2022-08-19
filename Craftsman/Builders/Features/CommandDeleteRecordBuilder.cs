@@ -80,8 +80,7 @@ public static class {className}
             var recordToDelete = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
 
             _{repoInterfaceProp}.Remove(recordToDelete);
-            await _unitOfWork.CommitChanges(cancellationToken);
-            return true;
+            return await _unitOfWork.CommitChanges(cancellationToken) >= 1;
         }}
     }}
 }}";

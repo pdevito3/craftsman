@@ -15,7 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Updated
 
-* Extra Ef Tooles package for SqlServer
+* Unit of Work return a `Task<int>`
+* Delete and Update commands return response based on UoW response
+* Extra Ef Tools package for SqlServer
 
 ## [0.16.4] - 08/09/2022
 
