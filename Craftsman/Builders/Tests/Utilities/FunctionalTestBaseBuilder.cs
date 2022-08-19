@@ -33,8 +33,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Threading.Tasks;
-
-[Parallelizable]
+ 
 public class TestBase
 {{
     public static IServiceScopeFactory _scopeFactory;
