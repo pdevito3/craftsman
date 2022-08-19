@@ -24,7 +24,7 @@ public class CommandAddRecordBuilder
     public static string GetCommandFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName, bool isProtected, string permissionName)
     {
         var className = FileNames.AddEntityFeatureClassName(entity.Name);
-        var addCommandName = FileNames.CommandAddName(entity.Name);
+        var addCommandName = FileNames.CommandAddName();
         var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
         var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
 

@@ -26,7 +26,7 @@ public class PatchCommandTestBuilder
     {
         var featureName = FileNames.PatchEntityFeatureClassName(entity.Name);
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-        var commandName = FileNames.CommandPatchName(entity.Name);
+        var commandName = FileNames.CommandPatchName();
 
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
@@ -61,7 +61,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using static {testFixtureName};{foreignEntityUsings}
 
-public class {commandName}Tests : TestBase
+public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetAddCommandTest(commandName, entity, featureName, lookupVal, myProp)}
     {BadKey(commandName, entity, featureName)}{NullPatchDoc(commandName, entity, featureName)}

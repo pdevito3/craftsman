@@ -14,7 +14,7 @@ public class PutRecordEndpointBuilder
         var entityName = entity.Name;
         var updateDto = FileNames.GetDtoName(entityName, Dto.Update);
         var primaryKeyProp = Entity.PrimaryKeyProperty;
-        var updateRecordCommandMethodName = FileNames.CommandUpdateName(entityName);
+        var updateRecordCommandMethodName = FileNames.CommandUpdateName();
         var pkPropertyType = primaryKeyProp.Type;
         var updateRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 

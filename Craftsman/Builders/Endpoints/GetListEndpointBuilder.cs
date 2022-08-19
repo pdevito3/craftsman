@@ -14,7 +14,7 @@ public class GetListEndpointBuilder
         var entityNamePlural = entity.Plural;
         var readDto = FileNames.GetDtoName(entityName, Dto.Read);
         var readParamDto = FileNames.GetDtoName(entityName, Dto.ReadParamaters);
-        var queryListMethodName = FileNames.QueryListName(entityName);
+        var queryListMethodName = FileNames.QueryListName();
         var listResponse = $@"IEnumerable<{readDto}>";
         var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
         var getListAuthorization = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";

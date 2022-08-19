@@ -26,7 +26,7 @@ public class PutCommandTestBuilder
     {
         var featureName = FileNames.UpdateEntityFeatureClassName(entity.Name);
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-        var commandName = FileNames.CommandUpdateName(entity.Name);
+        var commandName = FileNames.CommandUpdateName();
         var fakeEntity = FileNames.FakerName(entity.Name);
         var fakeUpdateDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
@@ -56,7 +56,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using static {testFixtureName};{foreignEntityUsings}
 
-public class {commandName}Tests : TestBase
+public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     [Test]
     public async Task can_update_existing_{entity.Name.ToLower()}_in_db()

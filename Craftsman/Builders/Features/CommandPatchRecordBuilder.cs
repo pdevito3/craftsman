@@ -25,7 +25,7 @@ public class CommandPatchRecordBuilder
     public static string GetCommandFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName, bool isProtected, string permissionName)
     {
         var className = FileNames.PatchEntityFeatureClassName(entity.Name);
-        var patchCommandName = FileNames.CommandPatchName(entity.Name);
+        var patchCommandName = FileNames.CommandPatchName();
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;

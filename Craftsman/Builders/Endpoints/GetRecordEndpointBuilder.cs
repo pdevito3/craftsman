@@ -14,7 +14,7 @@ public class GetRecordEndpointBuilder
         var entityNamePlural = entity.Plural;
         var readDto = FileNames.GetDtoName(entityName, Dto.Read);
         var primaryKeyProp = Entity.PrimaryKeyProperty;
-        var queryRecordMethodName = FileNames.QueryRecordName(entityName);
+        var queryRecordMethodName = FileNames.QueryRecordName();
         var pkPropertyType = primaryKeyProp.Type;
         var singleResponse = $@"{readDto}";
         var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";

@@ -171,34 +171,34 @@ public static class FileNames
         return $"Patch{entityName}";
     }
 
-    public static string QueryListName(string entityName)
+    public static string QueryListName()
     {
-        return $"{entityName}ListQuery";
+        return $"Query";
     }
 
-    public static string QueryRecordName(string entityName)
+    public static string QueryRecordName()
     {
-        return $"{entityName}Query";
+        return $"Query";
     }
 
-    public static string CommandAddName(string entityName)
+    public static string CommandAddName()
     {
-        return $"Add{entityName}Command";
+        return $"Command";
     }
 
-    public static string CommandDeleteName(string entityName)
+    public static string CommandDeleteName()
     {
-        return $"Delete{entityName}Command";
+        return $"Command";
     }
 
-    public static string CommandUpdateName(string entityName)
+    public static string CommandUpdateName()
     {
-        return $"Update{entityName}Command";
+        return $"Command";
     }
 
-    public static string CommandPatchName(string entityName)
+    public static string CommandPatchName()
     {
-        return $"Patch{entityName}Command";
+        return $"Command";
     }
 
     public static string FakerName(string objectToFakeName)

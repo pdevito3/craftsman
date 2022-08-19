@@ -26,7 +26,7 @@ public class GetRecordQueryTestBuilder
     {
         var featureName = FileNames.GetEntityFeatureClassName(entity.Name);
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-        var queryName = FileNames.QueryRecordName(entity.Name);
+        var queryName = FileNames.QueryRecordName();
 
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
@@ -44,7 +44,7 @@ using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
-public class {queryName}Tests : TestBase
+public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetTest(queryName, entity, featureName)}{GetWithoutKeyTest(queryName, entity, featureName)}
 }}";

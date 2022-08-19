@@ -16,7 +16,7 @@ public class AddListCommandTestBuilder
 
     public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, Feature feature, string projectBaseName)
     {
-        var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{feature.Command}Tests.cs", entity.Plural, projectBaseName);
+        var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"AddList{entity.Name}CommandTests.cs", entity.Plural, projectBaseName);
         var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, feature, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
@@ -48,7 +48,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
-public class {commandName}Tests : TestBase
+public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetAddListCommandTest(entity, feature)}
 }}";

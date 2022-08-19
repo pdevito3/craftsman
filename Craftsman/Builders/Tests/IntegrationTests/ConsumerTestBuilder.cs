@@ -16,11 +16,11 @@ public class ConsumerTestBuilder
     public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Consumer consumer, string projectBaseName)
     {
         var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{consumer.ConsumerName}Tests.cs", "EventHandlers", projectBaseName);
-        var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, consumer, projectBaseName);
+        var fileText = WriteTestFileText(solutionDirectory, srcDirectory, classPath, consumer, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Consumer consumer, string projectBaseName)
+    private static string WriteTestFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, Consumer consumer, string projectBaseName)
     {
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
         var consumerClassPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, "", consumer.DomainDirectory, projectBaseName);

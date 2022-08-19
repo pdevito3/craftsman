@@ -13,7 +13,7 @@ public class PatchRecordEndpointBuilder
         var entityName = entity.Name;
         var updateDto = FileNames.GetDtoName(entityName, Dto.Update);
         var primaryKeyProp = Entity.PrimaryKeyProperty;
-        var patchRecordCommandMethodName = FileNames.CommandPatchName(entityName);
+        var patchRecordCommandMethodName = FileNames.CommandPatchName();
         var pkPropertyType = primaryKeyProp.Type;
         var updatePartialAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 

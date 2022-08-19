@@ -24,7 +24,7 @@ public class QueryGetRecordBuilder
     public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName, bool isProtected, string permissionName)
     {
         var className = FileNames.GetEntityFeatureClassName(entity.Name);
-        var queryRecordName = FileNames.QueryRecordName(entity.Name);
+        var queryRecordName = FileNames.QueryRecordName();
         var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;

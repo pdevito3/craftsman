@@ -6,6 +6,7 @@ public interface IClassPath
 {
     string ClassDirectory { get; }
     string ClassName { get; set; }
+    string ClassNameWithoutExt { get; }
     string ClassNamespace { get; }
     string FullClassPath { get; }
     string SolutionDirectory { get; set; }
@@ -20,6 +21,9 @@ public class ClassPath : IClassPath
         ClassNamespace = topPath.Replace(Path.DirectorySeparatorChar, '.');
         SolutionDirectory = solutionDirectory;
         ClassName = className;
+        
+        int lastDot = ClassName.LastIndexOf('.');
+        ClassNameWithoutExt = lastDot > 0 ? ClassName.Substring(0, lastDot) : ClassName;
     }
 
     /// <summary>
@@ -31,6 +35,8 @@ public class ClassPath : IClassPath
     /// This is the full path to the class, including the filename (e.g. C:\repo\Pets.cs)
     /// </summary>
     public string FullClassPath { get; private set; }
+
+    public string ClassNameWithoutExt { get; private set; }
 
     /// <summary>
     /// This is the converted namespace from the top path

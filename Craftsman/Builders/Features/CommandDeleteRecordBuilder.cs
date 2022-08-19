@@ -23,7 +23,7 @@ public class CommandDeleteRecordBuilder
     public static string GetCommandFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName, bool isProtected, string permissionName)
     {
         var className = FileNames.DeleteEntityFeatureClassName(entity.Name);
-        var deleteCommandName = FileNames.CommandDeleteName(entity.Name);
+        var deleteCommandName = FileNames.CommandDeleteName();
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;

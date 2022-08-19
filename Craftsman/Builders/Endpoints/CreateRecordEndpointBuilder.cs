@@ -14,7 +14,7 @@ public class CreateRecordEndpointBuilder
         var readDto = FileNames.GetDtoName(entityName, Dto.Read);
         var creationDto = FileNames.GetDtoName(entityName, Dto.Creation);
         var primaryKeyProp = Entity.PrimaryKeyProperty;
-        var addRecordCommandMethodName = FileNames.CommandAddName(entityName);
+        var addRecordCommandMethodName = FileNames.CommandAddName();
         var singleResponse = $@"{readDto}";
         var addRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
         var creationPropName = $"{lowercaseEntityVariable}ForCreation";

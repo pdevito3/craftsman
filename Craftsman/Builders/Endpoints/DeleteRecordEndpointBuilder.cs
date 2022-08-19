@@ -11,7 +11,7 @@ public class DeleteRecordEndpointBuilder
         var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
         var entityName = entity.Name;
         var primaryKeyProp = Entity.PrimaryKeyProperty;
-        var deleteRecordCommandMethodName = FileNames.CommandDeleteName(entityName);
+        var deleteRecordCommandMethodName = FileNames.CommandDeleteName();
         var pkPropertyType = primaryKeyProp.Type;
         var deleteRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 

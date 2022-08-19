@@ -26,7 +26,7 @@ public class AddCommandTestBuilder
     {
         var featureName = FileNames.AddEntityFeatureClassName(entity.Name);
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-        var commandName = FileNames.CommandAddName(entity.Name);
+        var commandName = FileNames.CommandAddName();
 
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
@@ -45,7 +45,7 @@ using {featuresClassPath.ClassNamespace};
 using static {testFixtureName};
 using {exceptionsClassPath.ClassNamespace};{foreignEntityUsings}
 
-public class {commandName}Tests : TestBase
+public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetAddCommandTest(commandName, entity, featureName)}
 }}";

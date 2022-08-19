@@ -26,7 +26,7 @@ public class DeleteCommandTestBuilder
     {
         var featureName = FileNames.DeleteEntityFeatureClassName(entity.Name);
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-        var commandName = FileNames.CommandDeleteName(entity.Name);
+        var commandName = FileNames.CommandDeleteName();
         var softDeleteTest = useSoftDelete ? SoftDeleteTest(commandName, entity, featureName) : "";
 
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
@@ -46,7 +46,7 @@ using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
-public class {commandName}Tests : TestBase
+public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetDeleteTest(commandName, entity, featureName)}{GetDeleteWithoutKeyTest(commandName, entity, featureName)}{softDeleteTest}
 }}";

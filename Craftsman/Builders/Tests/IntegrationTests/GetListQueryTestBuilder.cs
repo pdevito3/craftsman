@@ -47,7 +47,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using static {testFixtureName};{foreignEntityUsings}
 
-public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestBase
+public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetEntitiesTest(entity)}
 }}";
@@ -55,7 +55,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
     private static string GetEntitiesTest(Entity entity)
     {
-        var queryName = FileNames.QueryListName(entity.Name);
+        var queryName = FileNames.QueryListName();
         var fakeEntity = FileNames.FakerName(entity.Name);
         var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
         var fakeEntityVariableNameOne = $"fake{entity.Name}One";

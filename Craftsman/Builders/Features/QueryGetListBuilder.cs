@@ -24,7 +24,7 @@ public class QueryGetListBuilder
     public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName, bool isProtected, string permissionName)
     {
         var className = FileNames.GetEntityListFeatureClassName(entity.Name);
-        var queryListName = FileNames.QueryListName(entity.Name);
+        var queryListName = FileNames.QueryListName();
         var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
         var paramsDto = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
