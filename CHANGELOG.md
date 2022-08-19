@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Queries and Commands now just have a request class of `Query` or `Command` respectively
+* Change keycloak image from `jboss` to `sleighzy` for Apple Silicon support
 * Unit of Work return a `Task<int>`
 * Delete and Update commands return response based on UoW response
 * Extra Ef Tools package for SqlServer

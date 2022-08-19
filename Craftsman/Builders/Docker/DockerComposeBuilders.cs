@@ -327,7 +327,7 @@ volumes:
       - keycloak-data:/var/lib/postgresql/data
   
   keycloak:
-    image: jboss/keycloak:latest
+    image: sleighzy/keycloak:latest
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: keycloakdb
