@@ -43,7 +43,7 @@ public class UnitTestUtils
     public static Mapper GetApiMapper()
     {{
         var apiAssembly = GetAssemblyByName(""{_scaffoldingDirectoryStore.ProjectBaseName}"");
-        var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
+        var typeAdapterConfig = TypeAdapterConfig.GlobalSettings.Clone();
         typeAdapterConfig.Scan(apiAssembly);
         var mapper = new Mapper(typeAdapterConfig);
         return mapper;
