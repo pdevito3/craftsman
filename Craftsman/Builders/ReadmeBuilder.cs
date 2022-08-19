@@ -45,6 +45,9 @@ infrastructure depending on your configuration (e.g. RabbitMQ, Keycloak, Jaeger,
     you can use the `pulumi stack init` command to make a new stack first.
         > Note: The stack name must match the extension on your yaml config file (e.g. `Pulumi.dev.yaml`) would have a stack of `dev`.
     1. Select yes to apply the configuration to your local Keycloak instance.
+4. If running a BFF:
+    1. Make sure you have [`yarn` installed](https://yarnpkg.com/getting-started/install)
+    1. Run the project with `dotnet run` or your IDE
 
 ### Running Your Project(s)
 Once you have your database(s) running, you can run your API(s), BFF, and Auth Servers by using 
