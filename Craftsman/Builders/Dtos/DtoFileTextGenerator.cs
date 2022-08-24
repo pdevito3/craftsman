@@ -13,16 +13,16 @@ public static class DtoFileTextGenerator
     {
         var sharedDtoClassPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, "");
 
-        return @$"namespace {classNamespace}
-{{
-    using {sharedDtoClassPath.ClassNamespace};
+        return @$"namespace {classNamespace};
 
-    public class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
-    {{
-        public string Filters {{ get; set; }}
-        public string SortOrder {{ get; set; }}
-    }}
-}}";
+using {sharedDtoClassPath.ClassNamespace};
+
+public class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
+{{
+    public string Filters {{ get; set; }}
+    public string SortOrder {{ get; set; }}
+}}
+";
     }
 
     public static string GetDtoText(IClassPath dtoClassPath, Entity entity, Dto dto)
@@ -38,16 +38,13 @@ public static class DtoFileTextGenerator
         if (dto is Dto.Creation or Dto.Update)
             inheritanceString = $": {FileNames.GetDtoName(entity.Name, Dto.Manipulation)}";
 
-        return @$"namespace {dtoClassPath.ClassNamespace}
-{{
-    using System.Collections.Generic;
-    using System;
+        return @$"namespace {dtoClassPath.ClassNamespace};
 
-    public {abstractString}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanceString}
-    {{
+public {abstractString}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanceString}
+{{
 {propString}
-    }}
-}}";
+}}
+";
     }
 
     public static string DtoPropBuilder(List<EntityProperty> props, Dto dto)
