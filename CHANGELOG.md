@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Unit of Work return a `Task<int>`
 * Delete and Update commands return response based on UoW response
 * Extra Ef Tools package for SqlServer
+* `Development` Cors has `AllowCredentials`
 
 ## [0.16.5] - 08/18/2022
 

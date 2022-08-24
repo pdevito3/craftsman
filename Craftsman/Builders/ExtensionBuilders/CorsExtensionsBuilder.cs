@@ -52,6 +52,7 @@ public static class CorsServiceExtension
                     builder.SetIsOriginAllowed(_ => true)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
+                    .AllowCredentials()
                     .WithExposedHeaders(""X-Pagination""));
             }});
         }}
