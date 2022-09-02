@@ -89,7 +89,7 @@ public static class {className}
 
             var sieveModel = new SieveModel
             {{
-                Sorts = request.QueryParameters.SortOrder ?? ""{primaryKeyPropName}"",
+                Sorts = request.QueryParameters.SortOrder ?? ""-CreatedOn"",
                 Filters = request.QueryParameters.Filters
             }};
 

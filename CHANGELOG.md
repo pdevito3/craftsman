@@ -22,6 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Extra Ef Tools package for SqlServer
 * `Development` Cors has `AllowCredentials`
 * Better DTO indentation
+* Auditable fields are sortable and filterable
+* `GetList` feature defaults to `-CreatedOn` sort order if none is given
 
 ## [0.16.5] - 08/18/2022
 

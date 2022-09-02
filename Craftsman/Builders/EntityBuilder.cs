@@ -134,9 +134,17 @@ public abstract class BaseEntity
     [Key]
     [Sieve(CanFilter = true, CanSort = true)]
     public virtual Guid Id {{ get; private set; }} = Guid.NewGuid();
+    
+    [Sieve(CanFilter = true, CanSort = true)]
     public virtual DateTime CreatedOn {{ get; private set; }}
+    
+    [Sieve(CanFilter = true, CanSort = true)]
     public virtual string CreatedBy {{ get; private set; }}
+    
+    [Sieve(CanFilter = true, CanSort = true)]
     public virtual DateTime? LastModifiedOn {{ get; private set; }}
+    
+    [Sieve(CanFilter = true, CanSort = true)]
     public virtual string LastModifiedBy {{ get; private set; }}{isDeletedProp}
     
     [NotMapped]
