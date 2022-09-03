@@ -11,7 +11,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
     public static readonly FeatureType AddRecord = new AddRecordType();
     public static readonly FeatureType DeleteRecord = new DeleteRecordType();
     public static readonly FeatureType UpdateRecord = new UpdateRecordType();
-    public static readonly FeatureType PatchRecord = new PatchRecordType();
+    // public static readonly FeatureType PatchRecord = new PatchRecordType();
     public static readonly FeatureType AdHoc = new AdHocType();
     public static readonly FeatureType AddListByFk = new AddListByFkType();
 
@@ -84,17 +84,17 @@ public abstract class FeatureType : SmartEnum<FeatureType>
     }
 
 
-    private class PatchRecordType : FeatureType
-    {
-        public PatchRecordType() : base(nameof(PatchRecord), 6) { }
-
-        public override string FeatureName(string entityName, string featureName = null)
-            => featureName.EscapeSpaces() ?? $"Patch{entityName}";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Patch{entityName}Command";
-        public override string BffApiName(string entityName)
-            => throw new Exception("Patch Features need to be manually configured in a BFF.");
-    }
+    // private class PatchRecordType : FeatureType
+    // {
+    //     public PatchRecordType() : base(nameof(PatchRecord), 6) { }
+    //
+    //     public override string FeatureName(string entityName, string featureName = null)
+    //         => featureName.EscapeSpaces() ?? $"Patch{entityName}";
+    //     public override string CommandName(string command, string entityName)
+    //         => command.EscapeSpaces() ?? $"Patch{entityName}Command";
+    //     public override string BffApiName(string entityName)
+    //         => throw new Exception("Patch Features need to be manually configured in a BFF.");
+    // }
 
 
     private class AdHocType : FeatureType

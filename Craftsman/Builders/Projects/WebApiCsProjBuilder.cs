@@ -50,7 +50,6 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""MediatR"" Version=""10.0.1"" />
     <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""10.0.1"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""6.0.4"" />
-    <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""6.0.4"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.0.0"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""6.0.4"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""6.0.4"" />

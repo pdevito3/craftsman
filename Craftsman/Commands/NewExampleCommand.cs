@@ -225,8 +225,6 @@ BoundedContexts:
       IsProtected: true
     - Type: DeleteRecord
       IsProtected: true
-    - Type: PatchRecord
-      IsProtected: true
     Properties:
     - Name: Title
       Type: string

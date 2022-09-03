@@ -23,8 +23,6 @@ public class HttpClientExtensionsBuilder
     {
         return @$"namespace {classPath.ClassNamespace};
 
-using Microsoft.AspNetCore.JsonPatch;
-using Newtonsoft.Json;
 using System.Dynamic;
 using System.Net;
 using System.Net.Http.Json;
@@ -61,19 +59,6 @@ public static class HttpClientExtensions
     public static async Task<HttpResponseMessage> PutJsonRequestAsync(this HttpClient client, string url, object value)
     {{
         return await client.PutAsJsonAsync(url, value).ConfigureAwait(false);
-    }}
-
-    public static async Task<HttpResponseMessage> PatchJsonRequestAsync<TModel>(this HttpClient client, string url, JsonPatchDocument<TModel> patchDoc)
-        where TModel : class
-    {{
-        var serializedRecipeToUpdate = JsonConvert.SerializeObject(patchDoc);
-
-        var patchRequest = new HttpRequestMessage(new HttpMethod(""PATCH""), url)
-        {{
-            Content = new StringContent(serializedRecipeToUpdate, Encoding.Unicode, ""application/json"")
-        }};
-
-        return await client.SendAsync(patchRequest).ConfigureAwait(false);
     }}
 }}";
     }

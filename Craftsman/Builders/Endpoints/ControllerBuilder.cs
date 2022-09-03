@@ -42,7 +42,6 @@ using {featureClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};{permissionsUsing}
 using System.Text.Json;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

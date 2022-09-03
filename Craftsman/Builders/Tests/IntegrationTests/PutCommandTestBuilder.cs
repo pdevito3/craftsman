@@ -53,7 +53,6 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.JsonPatch;
 using static {testFixtureName};{foreignEntityUsings}
 
 public class {classPath.ClassNameWithoutExt} : TestBase

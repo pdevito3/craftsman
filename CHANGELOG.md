@@ -27,6 +27,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Better `DateOnly` serialization support
 * `Newtonsoft` -> `System.Text.Json`
 
+### Removed
+
+* Patch endpoint scaffolding
+
 ## [0.16.5] - 08/18/2022
 
 ### Fixed

@@ -50,8 +50,8 @@ public class ControllerModifier
                             endpoint = DeleteRecordEndpointBuilder.GetEndpointTextForDeleteRecord(entity, addSwaggerComments, feature);
                         else if (featureType == FeatureType.UpdateRecord)
                             endpoint = PutRecordEndpointBuilder.GetEndpointTextForPutRecord(entity, addSwaggerComments, feature);
-                        else if (featureType == FeatureType.PatchRecord)
-                            endpoint = PatchRecordEndpointBuilder.GetEndpointTextForPatchRecord(entity, addSwaggerComments, feature);
+                        // else if (featureType == FeatureType.PatchRecord)
+                        //     endpoint = PatchRecordEndpointBuilder.GetEndpointTextForPatchRecord(entity, addSwaggerComments, feature);
 
                         newText = $"{endpoint}{Environment.NewLine}{Environment.NewLine}{newText}";
                     }
