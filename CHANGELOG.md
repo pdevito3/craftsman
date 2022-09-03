@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Better DTO indentation
 * Auditable fields are sortable and filterable
 * `GetList` feature defaults to `-CreatedOn` sort order if none is given
+* Better `DateOnly` serialization support
+* `Newtonsoft` -> `System.Text.Json`
 
 ## [0.16.5] - 08/18/2022
 

@@ -247,6 +247,10 @@ BoundedContexts:
       Type: int?
       CanFilter: true
       CanSort: true
+    - Name: DateOfOrigin
+      Type: DateOnly?
+      CanFilter: true
+      CanSort: true
     - Name: Author
       Type: Author
       ForeignEntityName: Author
@@ -467,6 +471,10 @@ BoundedContexts:
       - Friends Only
       - Private
       CanFilter: true
+      CanSort: true
+    - Name: DateOfOrigin
+      Type: DateOnly?
+      CanFilter: true
       CanSort: true";
     }
 
@@ -523,6 +531,10 @@ BoundedContexts:
       - Private
       CanFilter: true
       CanSort: true
+    - Name: DateOfOrigin
+      Type: DateOnly?
+      CanFilter: true
+      CanSort: true
   Environment:
     AuthSettings:
       Authority: http://localhost:3255/auth/realms/DevRealm
@@ -577,6 +589,10 @@ BoundedContexts:
       - Public
       - Friends Only
       - Private
+      CanFilter: true
+      CanSort: true
+    - Name: DateOfOrigin
+      Type: DateOnly?
       CanFilter: true
       CanSort: true
   Environment:
@@ -667,6 +683,10 @@ BoundedContexts:
       - Public
       - Friends Only
       - Private
+      CanFilter: true
+      CanSort: true
+    - Name: DateOfOrigin
+      Type: DateOnly?
       CanFilter: true
       CanSort: true
   Environment:

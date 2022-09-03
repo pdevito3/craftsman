@@ -41,8 +41,6 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""Ardalis.SmartEnum"" Version=""2.1.0"" />
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
-    <PackageReference Include=""DateOnlyTimeOnly.AspNet"" Version=""1.0.3"" />
-    <PackageReference Include=""DateOnlyTimeOnly.AspNet.Swashbuckle"" Version=""1.0.3"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""6.0.0"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""10.4.0"" />
     <PackageReference Include=""HeimGuard"" Version=""0.2.1"" />
@@ -53,7 +51,6 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""10.0.1"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""6.0.4"" />
     <PackageReference Include=""Microsoft.AspNetCore.JsonPatch"" Version=""6.0.4"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.NewtonsoftJson"" Version=""6.0.4"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.0.0"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""6.0.4"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""6.0.4"" />
