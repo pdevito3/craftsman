@@ -31,6 +31,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Patch endpoint scaffolding
 
+## [0.16.6] - 09/05/2022
+
+### Fixed
+
+* Bad Test Fixture with SqlServer (fixes #95)
+
 ## [0.16.5] - 08/18/2022
 
 ### Fixed

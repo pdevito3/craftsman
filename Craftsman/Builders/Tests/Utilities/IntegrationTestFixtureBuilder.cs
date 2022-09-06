@@ -35,8 +35,13 @@ public class IntegrationTestFixtureBuilder
             ? $@"{Environment.NewLine}using HeimGuard;" 
             : null;
 
-        var equivalencyCall = $@"
-        SetupDateAssertions();";
+        var equivalencyCall = provider == DbProvider.Postgres 
+            ? $@"
+        SetupDateAssertions();" 
+            : null;
+        var sqlServerInteropUsing = provider == DbProvider.SqlServer
+            ? $"{Environment.NewLine}using System.Runtime.InteropServices;"
+            : null;
         var equivalencyMethod = provider == DbProvider.Postgres
             ? $@"
 
@@ -113,7 +118,7 @@ using Moq;{dbUsingStatement}
 using NUnit.Framework;
 using Respawn;
 using Respawn.Graph;
-using System.IO;
+using System.IO;{sqlServerInteropUsing}
 using System.Security.Claims;
 using System.Threading.Tasks;
 using DotNet.Testcontainers.Containers.Builders;
