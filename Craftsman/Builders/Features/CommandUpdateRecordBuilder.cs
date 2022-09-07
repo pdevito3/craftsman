@@ -94,6 +94,7 @@ public static class {className}
             var {updatedEntityProp} = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
 
             {updatedEntityProp}.Update(request.{commandProp});
+            _{repoInterfaceProp}.Update({updatedEntityProp});
             return await _unitOfWork.CommitChanges(cancellationToken) >= 1;
         }}
     }}

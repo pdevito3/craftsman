@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * `GetList` feature defaults to `-CreatedOn` sort order if none is given
 * Better `DateOnly` serialization support
 * `Newtonsoft` -> `System.Text.Json`
+* `Update` feature calls update in repository
 
 ### Removed
 
