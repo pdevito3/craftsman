@@ -138,7 +138,7 @@ public class EntityScaffoldingService
         new UserPolicyHandlerUnitTests(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
 
         // need to do db modifier
-        new DbContextModifier(_fileSystem).AddDbSet(srcDirectory, new List<Entity>() { entity }, dbContextName, projectBaseName);
+        new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { entity }, dbContextName, projectBaseName);
 
         // domain events
         _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));

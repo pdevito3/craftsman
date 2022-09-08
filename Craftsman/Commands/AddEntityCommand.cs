@@ -79,7 +79,7 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
             template.AddSwaggerComments,
             useSoftDelete);
 
-        new DbContextModifier(_fileSystem).AddDbSet(srcDirectory, template.Entities, template.DbContextName, _scaffoldingDirectoryStore.ProjectBaseName);
+        new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, template.Entities, template.DbContextName, _scaffoldingDirectoryStore.ProjectBaseName);
     }
 
     private AddEntityTemplate GetDbContext(string srcDirectory, AddEntityTemplate template, string projectBaseName)

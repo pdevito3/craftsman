@@ -107,7 +107,6 @@ public class {dbContextName} : DbContext
         base.OnModelCreating(modelBuilder);{modelBuilderFilter}
 
         #region Entity Database Config Region - Only delete if you don't want to automatically add configurations
-        {GetDbEntityConfigs(entities)}
         #endregion Entity Database Config Region - Only delete if you don't want to automatically add configurations
     }}
 
@@ -201,16 +200,6 @@ public class {dbContextName} : DbContext
         }
 
         return dbSetText;
-    }
-    
-    public static string GetDbEntityConfigs(List<Entity> entities)
-    {
-        var configList = entities
-            .Select(x => $"modelBuilder.ApplyConfiguration(new {FileNames.GetDatabaseEntityConfigName(x.Name)}());")
-            .ToList();
-        
-        var newLinedString = configList.Aggregate((current, next) => @$"{current}{Environment.NewLine}        {next}");
-        return newLinedString;
     }
 
     private void RegisterContext(string srcDirectory, DbProvider dbProvider, string dbContextName, string dbName, string localDbConnection, NamingConventionEnum namingConventionEnum, string projectBaseName)

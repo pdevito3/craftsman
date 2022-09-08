@@ -16,7 +16,7 @@ public class DbContextModifier
         _fileSystem = fileSystem;
     }
 
-    public void AddDbSet(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
+    public void AddDbSetAndConfig(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
     {
         var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs", projectBaseName);
         var entitiesUsings = "";
@@ -51,6 +51,11 @@ public class DbContextModifier
                     {
                         newText = $"{entitiesUsings}{line}";
                     }
+                    
+                    if (line.Contains($"#region Entity Database Config Region"))
+                    {
+                        newText += @$"{GetDbEntityConfigs(entities)}";
+                    }
 
                     output.WriteLine(newText);
                 }
@@ -60,5 +65,17 @@ public class DbContextModifier
         // delete the old file and set the name of the new one to the original name
         File.Delete(classPath.FullClassPath);
         File.Move(tempPath, classPath.FullClassPath);
+    }
+
+
+    
+    public static string GetDbEntityConfigs(List<Entity> entities)
+    {
+        var configList = entities
+            .Select(x => $"modelBuilder.ApplyConfiguration(new {FileNames.GetDatabaseEntityConfigName(x.Name)}());")
+            .ToList();
+        
+        var newLinedString = configList.Aggregate((current, next) => @$"{current}{Environment.NewLine}        {next}");
+        return newLinedString;
     }
 }

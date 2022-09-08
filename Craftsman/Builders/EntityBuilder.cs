@@ -283,4 +283,116 @@ public abstract class BaseEntity
         var propName = !prop.IsPrimativeType ? prop.Name : prop.ForeignEntityName;
         return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public virtual {prop.ForeignEntityName} {propName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
     }
+    
+
+    public void CreateUserEntity(string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
+        var fileText = GetUserEntityFileText(classPath.ClassNamespace, srcDirectory, entity, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    public static string GetUserEntityFileText(string classNamespace, string srcDirectory, Entity entity, string projectBaseName)
+    {
+        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
+        var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
+        var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+
+        return @$"namespace {classNamespace};
+
+using {dtoClassPath.ClassNamespace};
+using {validatorClassPath.ClassNamespace};
+using {domainEventsClassPath.ClassNamespace};
+using FluentValidation;
+using System.Text.Json.Serialization;
+using System.Runtime.Serialization;
+using Sieve.Attributes;
+using Roles;
+
+public class User : BaseEntity
+{{
+    [Sieve(CanFilter = true, CanSort = true)]
+    public virtual string Sid {{ get; private set; }}
+
+    [Sieve(CanFilter = true, CanSort = true)]
+    public virtual string FirstName {{ get; private set; }}
+
+    [Sieve(CanFilter = true, CanSort = true)]
+    public virtual string LastName {{ get; private set; }}
+
+    [Sieve(CanFilter = true, CanSort = true)]
+    public virtual string Email {{ get; private set; }}
+
+    [Sieve(CanFilter = true, CanSort = true)]
+    public virtual string Username {{ get; private set; }}
+
+    [JsonIgnore]
+    [IgnoreDataMember]
+    public virtual ICollection<UserRole> Roles {{ get; private set; }} = new List<UserRole>();
+
+
+    public static User Create(UserForCreationDto userForCreationDto)
+    {{
+        new UserForCreationDtoValidator().ValidateAndThrow(userForCreationDto);
+
+        var newUser = new User();
+
+        newUser.Identifier = userForCreationDto.Identifier;
+        newUser.FirstName = userForCreationDto.FirstName;
+        newUser.LastName = userForCreationDto.LastName;
+        newUser.Email = userForCreationDto.Email;
+        newUser.Username = userForCreationDto.Username;
+
+        newUser.QueueDomainEvent(new UserCreated(){{ User = newUser }});
+        
+        return newUser;
+    }}
+
+    public void Update(UserForUpdateDto userForUpdateDto)
+    {{
+        new UserForUpdateDtoValidator().ValidateAndThrow(userForUpdateDto);
+
+        Identifier = userForUpdateDto.Identifier;
+        FirstName = userForUpdateDto.FirstName;
+        LastName = userForUpdateDto.LastName;
+        Email = userForUpdateDto.Email;
+        Username = userForUpdateDto.Username;
+
+        QueueDomainEvent(new UserUpdated(){{ Id = Id }});
+    }}
+
+    public UserRole AddRole(Role role)
+    {{
+        var newList = Roles.ToList();
+        var userRole = UserRole.Create(Id, role);
+        newList.Add(userRole);
+        UpdateRoles(newList);
+        return userRole;
+    }}
+
+    public UserRole RemoveRole(Role role)
+    {{
+        var newList = Roles.ToList();
+        var roleToRemove = Roles.FirstOrDefault(x => x.Role == role);
+        newList.Remove(roleToRemove);
+        UpdateRoles(newList);
+        return roleToRemove;
+    }}
+
+    private void UpdateRoles(IList<UserRole> updates)
+    {{
+        var additions = updates.Where(userRole => Roles.All(x => x.Role != userRole.Role)).ToList();
+        var removals = Roles.Where(userRole => updates.All(x => x.Role != userRole.Role)).ToList();
+    
+        var newList = Roles.ToList();
+        removals.ForEach(toRemove => newList.Remove(toRemove));
+        additions.ForEach(newRole => newList.Add(newRole));
+        Roles = newList;
+        QueueDomainEvent(new UserRolesUpdated(){{ UserId = Id }});
+    }}
+    
+    protected User() {{ }} // For EF + Mocking
+}}";
+    }
+
 }
