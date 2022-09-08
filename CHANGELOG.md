@@ -42,6 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Better `DateOnly` serialization support
 * `Newtonsoft` -> `System.Text.Json`
 * `Update` feature calls update in repository
+* Added `8632` to `NoWarn` list in API projects -- ` [CS8632] The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.`
 
 ### Fixed
 

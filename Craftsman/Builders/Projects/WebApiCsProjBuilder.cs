@@ -30,11 +30,11 @@ public class WebApiCsProjBuilder
 
   <PropertyGroup Condition=""'$(Configuration)|$(Platform)'=='Debug|AnyCPU'"">
     <DocumentationFile></DocumentationFile>
-    <NoWarn>1701;1702;</NoWarn>
+    <NoWarn>1701;1702;8632;</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=""'$(Configuration)|$(Platform)'=='Release|AnyCPU'"">
     <DocumentationFile></DocumentationFile>
-    <NoWarn>1701;1702;</NoWarn>
+    <NoWarn>1701;1702;8632;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
