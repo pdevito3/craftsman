@@ -130,7 +130,7 @@ public class Fake{objectToFakeClassName}
 
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var policyDomainClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
-        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+        var rolesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", "Roles", projectBaseName);
 
         var fileText = @$"namespace {classPath.ClassNamespace};
 
@@ -144,7 +144,7 @@ public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
     public Fake{objectToFakeClassName}()
     {{
         RuleFor(rp => rp.Permission, f => f.PickRandom(Permissions.List()));
-        RuleFor(rp => rp.Role, f => f.PickRandom(Roles.List()));
+        RuleFor(rp => rp.Role, f => f.PickRandom(Role.ListNames()));
     }}
 }}";
 

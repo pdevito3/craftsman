@@ -273,6 +273,7 @@ public class Role : ValueObject
     
     public static Role Of(string value) => new Role(value);
     public static implicit operator string(Role value) => value.Value;
+    public static List<string> ListNames() => RoleEnum.List.Select(x => x.Name).ToList();
 
     public static Role User() => new Role(RoleEnum.User.Name);
     public static Role SuperAdmin() => new Role(RoleEnum.SuperAdmin.Name);

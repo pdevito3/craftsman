@@ -23,20 +23,22 @@ public class HttpClientExtensionsBuilder
     {
         return @$"namespace {classPath.ClassNamespace};
 
-using System.Dynamic;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 public static class HttpClientExtensions
 {{
-    public static HttpClient AddAuth(this HttpClient client, params string[] roles)
+    public static HttpClient AddAuth(this HttpClient client, string nameIdentifier = null)
     {{
-        dynamic data = new ExpandoObject();
-        data.sub = Guid.NewGuid();
-        data.role = roles;
-        client.SetFakeBearerToken((object)data);
+        nameIdentifier ??= Guid.NewGuid().ToString();
+        var claims = new Dictionary<string, string>()
+        {{
+            {{ ClaimTypes.NameIdentifier , nameIdentifier }},
+        }};
+        
+        client.SetFakeBearerToken(claims);
 
         return client;
     }}

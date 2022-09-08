@@ -58,7 +58,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         testName += isProtected ? "_using_valid_auth_credentials" : "";
         var clientAuth = isProtected ? @$"
 
-        _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
+        var user = await AddNewSuperAdmin();
+        _client.AddAuth(user.Identifier);" : "";
 
         return $@"[Test]
     public async Task {testName}()

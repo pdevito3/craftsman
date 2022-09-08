@@ -77,11 +77,13 @@ public class EntityScaffoldingService
                 .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
             new UpdateEntityUnitTestBuilder(_utilities)
                 .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName);
-            
+
             // domain events
             _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
             _mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(entity.Name, entity.Plural));
         }
+
+        new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);
     }
 
     public void ScaffoldRolePermissions(string solutionDirectory,
@@ -110,11 +112,11 @@ public class EntityScaffoldingService
                 }
         };
 
-        new EntityBuilder(_utilities).CreateEntity(solutionDirectory, srcDirectory, entity, projectBaseName);
+        new EntityBuilder(_utilities).CreateRolePermissionsEntity(srcDirectory, entity, projectBaseName);
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
         new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName);
-        _mediator.Send(new DatabaseEntityConfigBuilder.Command(entity.Name, entity.Plural));
+        _mediator.Send(new DatabaseEntityConfigRolePermissionBuilder.Command());
         
         _mediator.Send(new EntityRepositoryBuilder.Command(dbContextName, 
             entity.Name, 
@@ -136,7 +138,6 @@ public class EntityScaffoldingService
         new FakesBuilder(_utilities).CreateRolePermissionFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, entity);
         new RolePermissionsUnitTestBuilder(_utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new RolePermissionsUnitTestBuilder(_utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        new UserPolicyHandlerUnitTests(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
 
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { entity }, dbContextName, projectBaseName);
@@ -208,10 +209,11 @@ public class EntityScaffoldingService
         new AddUserFeatureOverrideModifier(_fileSystem).UpdateAddUserFeature(srcDirectory, projectBaseName);
 
         // Shared Tests
-        new FakesBuilder(_utilities).CreateRolePermissionFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, userEntity);
+        new FakesBuilder(_utilities).CreateFakes(srcDirectory, testDirectory, projectBaseName, userEntity);
+        // TODO unit tests
+        
         // new RolePermissionsUnitTestBuilder(_utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         // new RolePermissionsUnitTestBuilder(_utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        // new UserPolicyHandlerUnitTests(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
 
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { userEntity }, dbContextName, projectBaseName);
@@ -240,7 +242,11 @@ public class EntityScaffoldingService
         if (feature.Type == FeatureType.AddRecord.Name)
         {
             new CommandAddRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
-            new AddCommandTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
+            if(entity.Name == "RolePermission")
+                new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.AddCommandTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
+            else
+                new AddCommandTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
+
             new CreateEntityTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.AddRecord, entity, addSwaggerComments,
                 feature, projectBaseName);
@@ -249,7 +255,11 @@ public class EntityScaffoldingService
         if (feature.Type == FeatureType.GetRecord.Name)
         {
             new QueryGetRecordBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
-            new GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+            if(entity.Name == "RolePermission")
+                new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+            else
+                new GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+
             new GetEntityRecordTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments,
                 feature, projectBaseName);
@@ -278,7 +288,12 @@ public class EntityScaffoldingService
         if (feature.Type == FeatureType.UpdateRecord.Name)
         {
             new CommandUpdateRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
-            new PutCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+            
+            if(entity.Name == "RolePermission")
+                new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.PutCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+            else
+                new PutCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+            
             new PutEntityTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.UpdateRecord, entity, addSwaggerComments,
                 feature, projectBaseName);

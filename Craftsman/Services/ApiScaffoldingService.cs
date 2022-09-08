@@ -147,7 +147,7 @@ public class ApiScaffoldingService
             template.AddJwtAuthentication);
         new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.AddJwtAuthentication);
         new WebAppFactoryBuilder(_utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
-        new FunctionalTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName);
+        new FunctionalTestBaseBuilder(_utilities).CreateBase(srcDirectory, testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
         new HealthTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         new HttpClientExtensionsBuilder(_utilities).Create(testDirectory, projectBaseName);
         new EntityBuilder(_utilities).CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete);
@@ -157,6 +157,9 @@ public class ApiScaffoldingService
         _mediator.Send(new ValueObjectDtoBuilder.ValueObjectDtoBuilderCommand());
         _mediator.Send(new ValueObjectMappingsBuilder.ValueObjectMappingsBuilderCommand(template.AddJwtAuthentication));
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());
+        
+        if(template.AddJwtAuthentication)
+            new UserPolicyHandlerUnitTests(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
 
         //services
         _mediator.Send(new UnitTestUtilsBuilder.Command());

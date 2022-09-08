@@ -53,10 +53,10 @@ public static class ValueObjectMappingsBuilder
             if (request.HasAuth)
             {
                 var roleClassPath = ClassPathHelper.WebApiValueObjectMappingsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                    ValueObjectEnum.MonetaryAmount,
+                    ValueObjectEnum.Role,
                     _scaffoldingDirectoryStore.ProjectBaseName);
                 var roleFileText = GetRoleFileText(roleClassPath.ClassNamespace);
-                
+                _utilities.CreateFile(roleClassPath, roleFileText);
             }
             
             return Task.FromResult(true);
