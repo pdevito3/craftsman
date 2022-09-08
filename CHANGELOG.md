@@ -43,6 +43,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * `Newtonsoft` -> `System.Text.Json`
 * `Update` feature calls update in repository
 
+### Fixed
+
+* Db configs are added for all entities
+
 ### Removed
 
 * Patch endpoint scaffolding
