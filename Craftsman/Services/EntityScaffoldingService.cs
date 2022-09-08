@@ -16,6 +16,7 @@ using Builders.Features;
 using Builders.Tests.Fakes;
 using Builders.Tests.FunctionalTests;
 using Builders.Tests.IntegrationTests;
+using Builders.Tests.IntegrationTests.UserRoles;
 using Builders.Tests.UnitTests;
 using Builders.Tests.Utilities;
 using Domain;
@@ -208,13 +209,11 @@ public class EntityScaffoldingService
         new CommandRemoveUserRoleBuilder(_utilities).CreateCommand(srcDirectory, userEntity, projectBaseName);
         new AddUserFeatureOverrideModifier(_fileSystem).UpdateAddUserFeature(srcDirectory, projectBaseName);
 
-        // Shared Tests
+        // extra testing
         new FakesBuilder(_utilities).CreateFakes(srcDirectory, testDirectory, projectBaseName, userEntity);
-        // TODO unit tests
+        new CreateUserRoleUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        new AddRemoveUserRoleTestsBuilder(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
         
-        // new RolePermissionsUnitTestBuilder(_utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        // new RolePermissionsUnitTestBuilder(_utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { userEntity }, dbContextName, projectBaseName);
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { new Entity()
