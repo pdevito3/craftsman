@@ -25,7 +25,7 @@ I'm planning on doing some more heavy front end work for this upcoming release a
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-✅ Users and Roles Managed in each Boundary (AuthN still separate)
+✅ Users and Roles managed in each boundary (AuthN still separate)
 
 🚧 React Cleanup
 
