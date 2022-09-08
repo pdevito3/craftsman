@@ -123,13 +123,11 @@ public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulati
     {
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
-        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
 
         return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
 using {permissionsClassPath.ClassNamespace};
-using {rolesClassPath.ClassNamespace};
 using FluentValidation;
 
 public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {FileNames.GetDtoName(entity.Name, Dto.Manipulation)}
@@ -139,19 +137,11 @@ public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulati
         RuleFor(rp => rp.Permission)
             .Must(BeAnExistingPermission)
             .WithMessage(""Please use a valid permission."");
-        RuleFor(rp => rp.Role)
-            .Must(BeAnExistingRole)
-            .WithMessage(""Please use a valid role."");
     }}
     
     private static bool BeAnExistingPermission(string permission)
     {{
         return Permissions.List().Contains(permission, StringComparer.InvariantCultureIgnoreCase);
-    }}
-
-    private static bool BeAnExistingRole(string role)
-    {{
-        return Roles.List().Contains(role, StringComparer.InvariantCultureIgnoreCase);
     }}
 }}";
     }

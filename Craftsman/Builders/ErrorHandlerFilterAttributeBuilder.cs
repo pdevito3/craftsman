@@ -45,6 +45,7 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
                 {{ typeof(ValidationException), HandleValidationException }},
                 {{ typeof(NotFoundException), HandleNotFoundException }},
                 {{ typeof(ForbiddenAccessException), HandleForbiddenAccessException }},
+                {{ typeof(NoRolesAssignedException), HandleNoRolesAssignedException }},
                 {{ typeof(InvalidSmartEnumPropertyName), HandleInvalidSmartEnumException }}
             }};
     }}
@@ -164,6 +165,24 @@ public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
             Status = StatusCodes.Status403Forbidden,
             Title = ""Forbidden"",
             Type = ""https://tools.ietf.org/html/rfc7231#section-6.5.3""
+        }};
+
+        context.Result = new ObjectResult(details)
+        {{
+            StatusCode = StatusCodes.Status403Forbidden
+        }};
+
+        context.ExceptionHandled = true;
+    }}
+
+    private void HandleNoRolesAssignedException(ExceptionContext context)
+    {{
+        var details = new ProblemDetails
+        {{
+            Status = StatusCodes.Status403Forbidden,
+            Title = ""Forbidden"",
+            Type = ""https://tools.ietf.org/html/rfc7231#section-6.5.3"",
+            Detail =  ""This user has no roles assigned. Please contact an admin to be assigned a role.""
         }};
 
         context.Result = new ObjectResult(details)

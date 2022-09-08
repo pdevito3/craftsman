@@ -23,7 +23,8 @@ public class DbContextModifier
         foreach (var entity in entities)
         {
             var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
-            entitiesUsings += $"using {entityClassPath.ClassNamespace};{Environment.NewLine}"; // note this foreach adds newline after where dbbuilder adds before
+            if(entity.Name != "UserRole")
+                entitiesUsings += $"using {entityClassPath.ClassNamespace};{Environment.NewLine}"; // note this foreach adds newline after where dbbuilder adds before
         }
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
@@ -43,7 +44,7 @@ public class DbContextModifier
                     var newText = $"{line}";
                     if (line.Contains($"#region DbSet Region"))
                     {
-                        newText += @$"{Environment.NewLine}{DbContextBuilder.GetDbSetText(entities)}";
+                        newText += @$"{Environment.NewLine}{GetDbSetText(entities)}";
                     }
 
                     // TODO add test. assumes that this using exists and that the builder above adds a new line after the usings
@@ -52,7 +53,7 @@ public class DbContextModifier
                         newText = $"{entitiesUsings}{line}";
                     }
                     
-                    if (line.Contains($"#region Entity Database Config Region"))
+                    if (line.Contains($"#region Entity Database Config"))
                     {
                         newText += @$"{GetDbEntityConfigs(entities)}";
                     }
@@ -67,15 +68,26 @@ public class DbContextModifier
         File.Move(tempPath, classPath.FullClassPath);
     }
 
-
-    
     public static string GetDbEntityConfigs(List<Entity> entities)
     {
         var configList = entities
-            .Select(x => $"modelBuilder.ApplyConfiguration(new {FileNames.GetDatabaseEntityConfigName(x.Name)}());")
+            .Select(x => $"{Environment.NewLine}        modelBuilder.ApplyConfiguration(new {FileNames.GetDatabaseEntityConfigName(x.Name)}());")
             .ToList();
         
-        var newLinedString = configList.Aggregate((current, next) => @$"{current}{Environment.NewLine}        {next}");
+        var newLinedString = configList.Aggregate((current, next) => @$"{current}{next}");
         return newLinedString;
+    }
+
+    private static string GetDbSetText(List<Entity> entities)
+    {
+        var dbSetText = "";
+
+        foreach (var entity in entities)
+        {
+            var newLine = entity == entities.LastOrDefault() ? "" : $"{Environment.NewLine}";
+            dbSetText += @$"    public DbSet<{entity.Name}> {entity.Plural} {{ get; set; }}{newLine}";
+        }
+
+        return dbSetText;
     }
 }

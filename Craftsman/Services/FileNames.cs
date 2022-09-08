@@ -61,6 +61,8 @@ public static class FileNames
         return $"{entityName}Updated";
     }
 
+    public static string UserRolesUpdateDomainMessage() => "UserRolesUpdated";
+
     public static string GetApiRouteClass(string entityPlural)
     {
         return entityPlural;
@@ -126,50 +128,24 @@ public static class FileNames
         return $"TestFixture";
     }
 
-    public static string CreateEntityUnitTestName(string entityName)
-    {
-        return $"Create{entityName}Tests";
-    }
+    public static string CreateEntityUnitTestName(string entityName) => $"Create{entityName}Tests";
 
-    public static string GetEntityListUnitTestName(string entityName)
-    {
-        return $"Get{entityName}ListTests";
-    }
+    public static string GetEntityListUnitTestName(string entityName) => $"Get{entityName}ListTests";
 
-    public static string UpdateEntityUnitTestName(string entityName)
-    {
-        return $"Update{entityName}Tests";
-    }
+    public static string UpdateEntityUnitTestName(string entityName) => $"Update{entityName}Tests";
 
-    public static string GetEntityFeatureClassName(string entityName)
-    {
-        return $"Get{entityName}";
-    }
+    public static string GetEntityFeatureClassName(string entityName) => $"Get{entityName}";
 
-    public static string GetEntityListFeatureClassName(string entityName)
-    {
-        return $"Get{entityName}List";
-    }
+    public static string GetEntityListFeatureClassName(string entityName) => $"Get{entityName}List";
 
-    public static string AddEntityFeatureClassName(string entityName)
-    {
-        return $"Add{entityName}";
-    }
+    public static string AddEntityFeatureClassName(string entityName) => $"Add{entityName}";
 
-    public static string DeleteEntityFeatureClassName(string entityName)
-    {
-        return $"Delete{entityName}";
-    }
+    public static string DeleteEntityFeatureClassName(string entityName) => $"Delete{entityName}";
 
-    public static string UpdateEntityFeatureClassName(string entityName)
-    {
-        return $"Update{entityName}";
-    }
-
-    public static string PatchEntityFeatureClassName(string entityName)
-    {
-        return $"Patch{entityName}";
-    }
+    public static string UpdateEntityFeatureClassName(string entityName) => $"Update{entityName}";
+    public static string PatchEntityFeatureClassName(string entityName) =>  $"Patch{entityName}";
+    public static string AddUserRoleFeatureClassName() => $"AddUserRole";
+    public static string RemoveUserRoleFeatureClassName() => $"RemoveUserRole";
 
     public static string QueryListName()
     {

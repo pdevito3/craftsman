@@ -73,7 +73,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         testName += isProtected ? "_and__valid_auth_credentials" : "";
         var clientAuth = isProtected ? @$"
 
-        _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
+        var user = await AddNewSuperAdmin();
+        _client.AddAuth(user.Identifier);" : "";
 
         // if no string properties, do one with an int
         if (myProp == null)

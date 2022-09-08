@@ -103,11 +103,18 @@ public class ApiScaffoldingService
 
         if (template.AddJwtAuthentication)
         {
-            new PermissionsBuilder(_utilities).GetPermissions(srcDirectory, projectBaseName); // <-- needs to run before entity features
-            new RolesBuilder(_utilities).GetRoles(solutionDirectory);
+            new PermissionsBuilder(_utilities).GetPermissions(srcDirectory, projectBaseName, template.AddJwtAuthentication); // <-- needs to run before entity features
             new UserPolicyHandlerBuilder(_utilities).CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName);
             new InfrastructureServiceRegistrationModifier(_fileSystem).InitializeAuthServices(srcDirectory, projectBaseName);
             new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldRolePermissions(solutionDirectory,
+                srcDirectory,
+                testDirectory,
+                projectBaseName,
+                template.DbContext.ContextName,
+                template.SwaggerConfig.AddSwaggerComments,
+                template.UseSoftDelete);
+
+            new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldUser(solutionDirectory,
                 srcDirectory,
                 testDirectory,
                 projectBaseName,
@@ -140,16 +147,19 @@ public class ApiScaffoldingService
             template.AddJwtAuthentication);
         new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.AddJwtAuthentication);
         new WebAppFactoryBuilder(_utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
-        new FunctionalTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName);
+        new FunctionalTestBaseBuilder(_utilities).CreateBase(srcDirectory, testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
         new HealthTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         new HttpClientExtensionsBuilder(_utilities).Create(testDirectory, projectBaseName);
         new EntityBuilder(_utilities).CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete);
         new CurrentUserServiceTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         _mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
-        _mediator.Send(new CommonValueObjectBuilder.CommonValueObjectBuilderCommand());
+        _mediator.Send(new CommonValueObjectBuilder.Command(template.AddJwtAuthentication));
         _mediator.Send(new ValueObjectDtoBuilder.ValueObjectDtoBuilderCommand());
-        _mediator.Send(new ValueObjectMappingsBuilder.ValueObjectMappingsBuilderCommand());
+        _mediator.Send(new ValueObjectMappingsBuilder.ValueObjectMappingsBuilderCommand(template.AddJwtAuthentication));
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());
+        
+        if(template.AddJwtAuthentication)
+            new UserPolicyHandlerUnitTests(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
 
         //services
         _mediator.Send(new UnitTestUtilsBuilder.Command());

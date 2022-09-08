@@ -98,8 +98,6 @@ public class {dbContextName} : DbContext
     }}
 
     #region DbSet Region - Do Not Delete
-
-{GetDbSetText(entities)}
     #endregion DbSet Region - Do Not Delete
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -187,19 +185,6 @@ public class {dbContextName} : DbContext
         }}
     }}
 }}";
-    }
-
-    public static string GetDbSetText(List<Entity> entities)
-    {
-        var dbSetText = "";
-
-        foreach (var entity in entities)
-        {
-            var newLine = entity == entities.LastOrDefault() ? "" : $"{Environment.NewLine}";
-            dbSetText += @$"    public DbSet<{entity.Name}> {entity.Plural} {{ get; set; }}{newLine}";
-        }
-
-        return dbSetText;
     }
 
     private void RegisterContext(string srcDirectory, DbProvider dbProvider, string dbContextName, string dbName, string localDbConnection, NamingConventionEnum namingConventionEnum, string projectBaseName)

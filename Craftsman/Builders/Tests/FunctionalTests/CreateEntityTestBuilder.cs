@@ -63,7 +63,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         testName += isProtected ? "_and_valid_auth_credentials" : "";
         var clientAuth = isProtected ? @$"
 
-        _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
+        var user = await AddNewSuperAdmin();
+        _client.AddAuth(user.Identifier);" : "";
 
         return $@"[Test]
     public async Task {testName}()
@@ -82,18 +83,15 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
     private static string CreateEntityTestUnauthorized(Entity entity)
     {
-        var fakeEntity = FileNames.FakerName(entity.Name);
         var fakeEntityVariableName = $"fake{entity.Name}";
-        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+        var fakeEntityForCreation = $"Fake{FileNames.GetDtoName(entity.Name, Dto.Creation)}";
 
         return $@"
     [Test]
     public async Task create_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
     {{
         // Arrange
-        var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
-
-        await InsertAsync({fakeEntityVariableName});
+        var {fakeEntityVariableName} = new {fakeEntityForCreation} {{ }}.Generate();
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Create;
@@ -106,19 +104,16 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
     private static string CreateEntityTestForbidden(Entity entity)
     {
-        var fakeEntity = FileNames.FakerName(entity.Name);
         var fakeEntityVariableName = $"fake{entity.Name}";
-        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+        var fakeEntityForCreation = $"Fake{FileNames.GetDtoName(entity.Name, Dto.Creation)}";
 
         return $@"
     [Test]
     public async Task create_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
     {{
         // Arrange
-        var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
+        var {fakeEntityVariableName} = new {fakeEntityForCreation} {{ }}.Generate();
         _client.AddAuth();
-
-        await InsertAsync({fakeEntityVariableName});
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Create;

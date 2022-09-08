@@ -12,22 +12,52 @@ public class FunctionalTestBaseBuilder
         _utilities = utilities;
     }
 
-    public void CreateBase(string solutionDirectory, string projectBaseName, string dbContextName)
+    public void CreateBase(string srcDirectory, string testDirectory, string projectBaseName, string dbContextName, bool hasAuth)
     {
-        var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(solutionDirectory, "TestBase.cs", projectBaseName);
-        var fileText = GetBaseText(classPath.ClassNamespace, solutionDirectory, projectBaseName, dbContextName);
+        var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(testDirectory, "TestBase.cs", projectBaseName);
+        var fileText = GetBaseText(classPath.ClassNamespace, srcDirectory, testDirectory, projectBaseName, dbContextName, hasAuth);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetBaseText(string classNamespace, string solutionDirectory, string projectBaseName, string dbContextName)
+    public static string GetBaseText(string classNamespace, string srcDirectory, string testDirectory, string projectBaseName, string dbContextName, bool hasAuth)
     {
-        var contextClassPath = ClassPathHelper.DbContextClassPath(solutionDirectory, "", projectBaseName);
-        var apiClassPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, "", projectBaseName);
+        var contextClassPath = ClassPathHelper.DbContextClassPath(testDirectory, "", projectBaseName);
+        var apiClassPath = ClassPathHelper.WebApiProjectRootClassPath(testDirectory, "", projectBaseName);
+        var rolesEntityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Roles", projectBaseName);
+        var usersEntityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Users", projectBaseName);
+        var fakeUserEntityClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", "User", projectBaseName);
 
+        var authUsings = hasAuth ? $@"
+using {rolesEntityClassPath.ClassNamespace};
+using {usersEntityClassPath.ClassNamespace};
+using {fakeUserEntityClassPath.ClassNamespace};" : null;
+
+        var authHelperMethods = hasAuth
+            ? $@"
+
+    public static async Task<User> AddNewSuperAdmin()
+    {{
+        var user = FakeUser.Generate();
+        user.AddRole(Role.SuperAdmin());
+        await InsertAsync(user);
+        return user;
+    }}
+
+    public static async Task<User> AddNewUser(List<Role> roles)
+    {{
+        var user = FakeUser.Generate();
+        foreach (var role in roles)
+            user.AddRole(role);
+        
+        await InsertAsync(user);
+        return user;
+    }}"
+            : null;
+        
         return @$"namespace {classNamespace};
 
 using {contextClassPath.ClassNamespace};
-using {apiClassPath.ClassNamespace};
+using {apiClassPath.ClassNamespace};{authUsings}
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -149,7 +179,7 @@ public class TestBase
             }}
             return db.SaveChangesAsync();
         }});
-    }}
+    }}{authHelperMethods}
 }}";
     }
 }

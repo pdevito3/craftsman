@@ -7,6 +7,7 @@ using Helpers;
 public abstract class ValueObjectEnum : SmartEnum<ValueObjectEnum>
 {
     public static readonly ValueObjectEnum Address = new AddressType();
+    public static readonly ValueObjectEnum Role = new RoleType();
     public static readonly ValueObjectEnum Percent = new PercentType();
     public static readonly ValueObjectEnum MonetaryAmount = new MonetaryAmountType();
 
@@ -37,5 +38,13 @@ public abstract class ValueObjectEnum : SmartEnum<ValueObjectEnum>
 
         public override string Plural()
             => "MonetaryAmounts";
+    }
+
+    private class RoleType : ValueObjectEnum
+    {
+        public RoleType() : base(nameof(Role), 3) { }
+
+        public override string Plural()
+            => "Roles";
     }
 }

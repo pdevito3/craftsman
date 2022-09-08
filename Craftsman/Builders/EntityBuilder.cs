@@ -283,9 +283,8 @@ public abstract class BaseEntity
         var propName = !prop.IsPrimativeType ? prop.Name : prop.ForeignEntityName;
         return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public virtual {prop.ForeignEntityName} {propName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
     }
-    
 
-    public void CreateUserEntity(string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateUserEntity(string srcDirectory, Entity entity, string projectBaseName)
     {
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
         var fileText = GetUserEntityFileText(classPath.ClassNamespace, srcDirectory, entity, projectBaseName);
@@ -312,7 +311,7 @@ using Roles;
 public class User : BaseEntity
 {{
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual string Sid {{ get; private set; }}
+    public virtual string Identifier {{ get; private set; }}
 
     [Sieve(CanFilter = true, CanSort = true)]
     public virtual string FirstName {{ get; private set; }}
@@ -394,5 +393,105 @@ public class User : BaseEntity
     protected User() {{ }} // For EF + Mocking
 }}";
     }
+    
 
+    public void CreateUserRoleEntity(string srcDirectory, string projectBaseName)
+    {
+        var entityName = "UserRole";
+        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entityName}.cs", "Users", projectBaseName);
+        var fileText = GetUserRoleEntityFileText(classPath.ClassNamespace, srcDirectory, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    public static string GetUserRoleEntityFileText(string classNamespace, string srcDirectory, string projectBaseName)
+    {
+        var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", "Users", projectBaseName);
+
+        return @$"namespace {classNamespace};
+
+using {domainEventsClassPath.ClassNamespace};
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using Roles;
+
+public class UserRole : BaseEntity
+{{
+    [JsonIgnore]
+    [IgnoreDataMember]
+    [ForeignKey(""User"")]
+    public virtual Guid UserId {{ get; private set; }}
+    public virtual User User {{ get; private set; }}
+
+    public virtual Role Role {{ get; private set; }}
+    
+
+    public static UserRole Create(Guid userId, Role role)
+    {{
+        var newUserRole = new UserRole
+        {{
+            UserId = userId,
+            Role = role
+        }};
+
+        newUserRole.QueueDomainEvent(new UserRolesUpdated(){{ UserId = userId }});
+        
+        return newUserRole;
+    }}
+    
+    protected UserRole() {{ }} // For EF + Mocking
+}}";
+    }
+    
+
+    public void CreateRolePermissionsEntity(string srcDirectory, Entity entity, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
+        var fileText = GetRolePermissionsEntityFileText(classPath.ClassNamespace);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    public static string GetRolePermissionsEntityFileText(string classNamespace)
+    {
+        return @$"namespace {classNamespace};
+
+using Dtos;
+using Validators;
+using DomainEvents;
+using FluentValidation;
+using Roles;
+
+public class RolePermission : BaseEntity
+{{
+    public virtual Role Role {{ get; private set; }}
+    public virtual string Permission {{ get; private set; }}
+
+
+    public static RolePermission Create(RolePermissionForCreationDto rolePermissionForCreationDto)
+    {{
+        new RolePermissionForCreationDtoValidator().ValidateAndThrow(rolePermissionForCreationDto);
+
+        var newRolePermission = new RolePermission();
+
+        newRolePermission.Role = new Role(rolePermissionForCreationDto.Role);
+        newRolePermission.Permission = rolePermissionForCreationDto.Permission;
+
+        newRolePermission.QueueDomainEvent(new RolePermissionCreated(){{ RolePermission = newRolePermission }});
+        
+        return newRolePermission;
+    }}
+
+    public void Update(RolePermissionForUpdateDto rolePermissionForUpdateDto)
+    {{
+        new RolePermissionForUpdateDtoValidator().ValidateAndThrow(rolePermissionForUpdateDto);
+
+        Role = new Role(rolePermissionForUpdateDto.Role);
+        Permission = rolePermissionForUpdateDto.Permission;
+
+        QueueDomainEvent(new RolePermissionUpdated(){{ Id = Id }});
+    }}
+    
+    protected RolePermission() {{ }} // For EF + Mocking
+}}";
+    }
 }
