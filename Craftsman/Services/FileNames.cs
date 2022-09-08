@@ -61,6 +61,8 @@ public static class FileNames
         return $"{entityName}Updated";
     }
 
+    public static string UserRolesUpdateDomainMessage() => "UserRolesUpdated";
+
     public static string GetApiRouteClass(string entityPlural)
     {
         return entityPlural;

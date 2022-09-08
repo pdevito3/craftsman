@@ -103,11 +103,18 @@ public class ApiScaffoldingService
 
         if (template.AddJwtAuthentication)
         {
-            new PermissionsBuilder(_utilities).GetPermissions(srcDirectory, projectBaseName); // <-- needs to run before entity features
-            new RolesBuilder(_utilities).GetRoles(solutionDirectory);
+            new PermissionsBuilder(_utilities).GetPermissions(srcDirectory, projectBaseName, template.AddJwtAuthentication); // <-- needs to run before entity features
             new UserPolicyHandlerBuilder(_utilities).CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName);
             new InfrastructureServiceRegistrationModifier(_fileSystem).InitializeAuthServices(srcDirectory, projectBaseName);
             new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldRolePermissions(solutionDirectory,
+                srcDirectory,
+                testDirectory,
+                projectBaseName,
+                template.DbContext.ContextName,
+                template.SwaggerConfig.AddSwaggerComments,
+                template.UseSoftDelete);
+
+            new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldUser(solutionDirectory,
                 srcDirectory,
                 testDirectory,
                 projectBaseName,
@@ -146,9 +153,9 @@ public class ApiScaffoldingService
         new EntityBuilder(_utilities).CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete);
         new CurrentUserServiceTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         _mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
-        _mediator.Send(new CommonValueObjectBuilder.CommonValueObjectBuilderCommand());
+        _mediator.Send(new CommonValueObjectBuilder.Command(template.AddJwtAuthentication));
         _mediator.Send(new ValueObjectDtoBuilder.ValueObjectDtoBuilderCommand());
-        _mediator.Send(new ValueObjectMappingsBuilder.ValueObjectMappingsBuilderCommand());
+        _mediator.Send(new ValueObjectMappingsBuilder.ValueObjectMappingsBuilderCommand(template.AddJwtAuthentication));
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());
 
         //services

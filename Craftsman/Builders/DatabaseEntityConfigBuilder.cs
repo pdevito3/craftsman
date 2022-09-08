@@ -7,19 +7,19 @@ using Services;
 
 public static class DatabaseEntityConfigBuilder
 {
-    public class DatabaseEntityConfigBuilderCommand : IRequest<bool>
+    public class Command : IRequest<bool>
     {
         public readonly string EntityName;
         public readonly string EntityPlural;
 
-        public DatabaseEntityConfigBuilderCommand(string entityName, string entityPlural)
+        public Command(string entityName, string entityPlural)
         {
             EntityName = entityName;
             EntityPlural = entityPlural;
         }
     }
 
-    public class Handler : IRequestHandler<DatabaseEntityConfigBuilderCommand, bool>
+    public class Handler : IRequestHandler<Command, bool>
     {
         private readonly ICraftsmanUtilities _utilities;
         private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
@@ -31,7 +31,7 @@ public static class DatabaseEntityConfigBuilder
             _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         }
 
-        public Task<bool> Handle(DatabaseEntityConfigBuilderCommand request, CancellationToken cancellationToken)
+        public Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {
             var classPath = ClassPathHelper.DatabaseConfigClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
                 $"{FileNames.GetDatabaseEntityConfigName(request.EntityName)}.cs",
@@ -80,4 +80,5 @@ public class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntityTypeCo
 }}";
         }
     }
+    
 }

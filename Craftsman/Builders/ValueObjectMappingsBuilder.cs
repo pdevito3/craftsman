@@ -10,6 +10,12 @@ public static class ValueObjectMappingsBuilder
 {
     public class ValueObjectMappingsBuilderCommand : IRequest<bool>
     {
+        public readonly bool HasAuth;
+
+        public ValueObjectMappingsBuilderCommand(bool hasAuth)
+        {
+            HasAuth = hasAuth;
+        }
     }
 
     public class Handler : IRequestHandler<ValueObjectMappingsBuilderCommand, bool>
@@ -44,6 +50,15 @@ public static class ValueObjectMappingsBuilder
             var monetaryAmountFileText = GetMonetaryAmountFileText(monetaryAmountClassPath.ClassNamespace);
             _utilities.CreateFile(monetaryAmountClassPath, monetaryAmountFileText);
 
+            if (request.HasAuth)
+            {
+                var roleClassPath = ClassPathHelper.WebApiValueObjectMappingsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                    ValueObjectEnum.MonetaryAmount,
+                    _scaffoldingDirectoryStore.ProjectBaseName);
+                var roleFileText = GetRoleFileText(roleClassPath.ClassNamespace);
+                
+            }
+            
             return Task.FromResult(true);
         }
         
@@ -127,5 +142,28 @@ public class {mappingName} : IRegister
     }}
 }}";
         }
+        
+        private string GetRoleFileText(string classNamespace)
+        {
+            var mappingName = FileNames.GetMappingName(ValueObjectEnum.Role.Name);
+            var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
+            
+            return @$"namespace {classNamespace};
+
+using {voClassPath.ClassNamespace};
+using Mapster;
+
+public class {mappingName} : IRegister
+{{
+    public void Register(TypeAdapterConfig config)
+    {{
+        config.NewConfig<string, Role>()
+            .MapWith(value => new Role(value));
+        config.NewConfig<Role, string>()
+            .MapWith(role => role.Value);
+    }}
+}}";
+        }
+        
     }
 }

@@ -22,50 +22,52 @@ public class UserPolicyHandlerBuilder
     private static string GetPolicyBuilderText(string classNamespace, string solutionDirectory, string srcDirectory, string projectBaseName)
     {
         var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
-        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
         var entityServices = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
 
         return @$"namespace {classNamespace};
 
-using System.Security.Claims;
+using Domain.Roles;
+using Domain.Users.Dtos;
+using Domain.Users.Features;
+using Domain.Users.Services;
 using {entityServices.ClassNamespace};
-using {rolesClassPath.ClassNamespace};
 using {domainPolicyClassPath.ClassNamespace};
+using {exceptionsClassPath.ClassNamespace};
 using HeimGuard;
-using Newtonsoft.Json;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 public class UserPolicyHandler : IUserPolicyHandler
 {{
     private readonly IRolePermissionRepository _rolePermissionRepository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IUserRepository _userRepository;
+    private readonly IMediator _mediator;
 
-    public UserPolicyHandler(IRolePermissionRepository rolePermissionRepository, ICurrentUserService currentUserService)
+    public UserPolicyHandler(IRolePermissionRepository rolePermissionRepository, ICurrentUserService currentUserService, IUserRepository userRepository, IMediator mediator)
     {{
         _rolePermissionRepository = rolePermissionRepository;
         _currentUserService = currentUserService;
+        _userRepository = userRepository;
+        _mediator = mediator;
     }}
     
     public async Task<IEnumerable<string>> GetUserPermissions()
     {{
-        var user = _currentUserService.User;
-        if (user == null) throw new ArgumentNullException(nameof(user));
-
-        var traditionalRoles = user.Claims
-            .Where(c => c.Type is ClaimTypes.Role or ""client_role"")
-            .Select(r => r.Value)
-            .Distinct()
-            .ToArray();
-
-        var realmRoles = user.Claims
-            .Where(c => c.Type is ""realm_access"")
-            .Select(r => JsonConvert.DeserializeObject<RealmAccess>(r.Value))
-            .SelectMany(x => x?.Roles);
-            
-        var roles = traditionalRoles.Concat(realmRoles).ToArray();
+        var claimsPrincipal = _currentUserService.User;
+        if (claimsPrincipal == null) throw new ArgumentNullException(nameof(claimsPrincipal));
         
-        if(roles.Length == 0)
-            return Array.Empty<string>();
+        var nameIdentifier = _currentUserService.UserId;
+        var usersExist = _userRepository.Query().Any();
+        
+        if (!usersExist)
+            await SeedRootUser(nameIdentifier);
+
+        var roles = GetRoles(nameIdentifier);
+
+        if (roles.Length == 0)
+            throw new NoRolesAssignedException();
 
         // super admins can do everything
         if(roles.Contains(Roles.SuperAdmin))
@@ -80,9 +82,31 @@ public class UserPolicyHandler : IUserPolicyHandler
         return await Task.FromResult(permissions);
     }}
 
-    private class RealmAccess
+    private async Task SeedRootUser(string userId)
     {{
-        public string[] Roles {{ get; set; }}
+        var rootUser = new UserForCreationDto()
+        {{
+            Username = _currentUserService.Username,
+            Email = _currentUserService.Email,
+            FirstName = _currentUserService.FirstName,
+            LastName = _currentUserService.LastName,
+            Identifier = userId
+        }};
+
+        var userCommand = new AddUser.Command(rootUser, true);
+        var createdUser = await _mediator.Send(userCommand);
+
+        var roleCommand = new AddUserRole.Command(createdUser.Id, Role.SuperAdmin().Value, true);
+        await _mediator.Send(roleCommand);
+        
+    }}
+
+    private string[] GetRoles(string nameIdentifier)
+    {{
+        if(!string.IsNullOrEmpty(nameIdentifier))
+            return _userRepository.GetRolesByUserSid(nameIdentifier).ToArray();
+
+        return Array.Empty<string>();
     }}
 }}";
     }

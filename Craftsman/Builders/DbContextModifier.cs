@@ -67,8 +67,6 @@ public class DbContextModifier
         File.Move(tempPath, classPath.FullClassPath);
     }
 
-
-    
     public static string GetDbEntityConfigs(List<Entity> entities)
     {
         var configList = entities

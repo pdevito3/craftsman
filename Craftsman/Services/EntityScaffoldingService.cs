@@ -54,8 +54,8 @@ public class EntityScaffoldingService
             new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity, projectBaseName);
             new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
-            _mediator.Send(new DatabaseEntityConfigBuilder.DatabaseEntityConfigBuilderCommand(entity.Name, entity.Plural));
-            _mediator.Send(new EntityRepositoryBuilder.EntityRepositoryBuilderCommand(dbContextName, 
+            _mediator.Send(new DatabaseEntityConfigBuilder.Command(entity.Name, entity.Plural));
+            _mediator.Send(new EntityRepositoryBuilder.Command(dbContextName, 
                 entity.Name, 
                 entity.Plural));
 
@@ -114,8 +114,9 @@ public class EntityScaffoldingService
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
         new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName);
+        _mediator.Send(new DatabaseEntityConfigBuilder.Command(entity.Name, entity.Plural));
         
-        _mediator.Send(new EntityRepositoryBuilder.EntityRepositoryBuilderCommand(dbContextName, 
+        _mediator.Send(new EntityRepositoryBuilder.Command(dbContextName, 
             entity.Name, 
             entity.Plural));
 
@@ -143,6 +144,87 @@ public class EntityScaffoldingService
         // domain events
         _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
         _mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(entity.Name, entity.Plural));
+    }
+
+
+    public void ScaffoldUser(string solutionDirectory,
+        string srcDirectory,
+        string testDirectory,
+        string projectBaseName,
+        string dbContextName,
+        bool addSwaggerComments,
+        bool useSoftDelete)
+    {
+        var userEntity = new Entity()
+        {
+            Name = "User",
+            Features = new List<Feature>()
+                {
+                    new() { Type = FeatureType.GetList.Name, IsProtected = true, PermissionName = "CanReadUsers" },
+                    new() { Type = FeatureType.GetRecord.Name, IsProtected = true, PermissionName = "CanReadUsers" },
+                    new() { Type = FeatureType.AddRecord.Name, IsProtected = true },
+                    new() { Type = FeatureType.UpdateRecord.Name, IsProtected = true },
+                    new() { Type = FeatureType.DeleteRecord.Name, IsProtected = true },
+                },
+            Properties = new List<EntityProperty>()
+                {
+                    new() { Name = "Identifier", Type = "string", CanFilter = false, CanSort = false },
+                    new() { Name = "FirstName", Type = "string", CanFilter = false, CanSort = false },
+                    new() { Name = "LastName", Type = "string", CanFilter = false, CanSort = false },
+                    new() { Name = "Email", Type = "string", CanFilter = false, CanSort = false },
+                    new() { Name = "Username", Type = "string", CanFilter = false, CanSort = false },
+                    new() { Name = "UserRoles", Type = "ICollection<UserRole>", ForeignEntityPlural = "UserRoles", CanFilter = false, CanSort = false },
+                }
+        };
+
+        var entityBuilder = new EntityBuilder(_utilities);
+        entityBuilder.CreateUserEntity(srcDirectory, userEntity, projectBaseName);
+        entityBuilder.CreateUserRoleEntity(srcDirectory, projectBaseName);
+        
+        // TODO custom dto for roles
+        new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, userEntity, projectBaseName);
+        
+        // TODO custom mapper for email
+        new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, userEntity, projectBaseName);
+        new ApiRouteModifier(_fileSystem).AddRoutesForUser(testDirectory, projectBaseName);
+        _mediator.Send(new DatabaseEntityConfigBuilder.Command(userEntity.Name, userEntity.Plural));
+        _mediator.Send(new DatabaseEntityConfigUserRoleBuilder.Command());
+        
+        _mediator.Send(new UserEntityRepositoryBuilder.Command(dbContextName, 
+            userEntity.Name, 
+            userEntity.Plural));
+
+        new ValidatorBuilder(_utilities).CreateValidators(solutionDirectory, srcDirectory, projectBaseName, userEntity);
+        
+        new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, userEntity.Name, userEntity.Plural, projectBaseName, true);
+        new ControllerModifier(_fileSystem).AddCustomUserEndpoint(srcDirectory, projectBaseName);
+        
+        foreach (var feature in userEntity.Features)
+        {
+            AddFeatureToProject(solutionDirectory, srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, userEntity, useSoftDelete);
+        }
+        new CommandAddUserRoleBuilder(_utilities).CreateCommand(srcDirectory, userEntity, projectBaseName);
+        new CommandRemoveUserRoleBuilder(_utilities).CreateCommand(srcDirectory, userEntity, projectBaseName);
+        
+
+        // Shared Tests
+        new FakesBuilder(_utilities).CreateRolePermissionFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, userEntity);
+        new RolePermissionsUnitTestBuilder(_utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        new RolePermissionsUnitTestBuilder(_utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        new UserPolicyHandlerUnitTests(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+
+        // need to do db modifier
+        new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { userEntity }, dbContextName, projectBaseName);
+        new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { new Entity()
+        {
+            Name = "UserRole",
+            Plural = "UserRoles"
+        } }, dbContextName, projectBaseName);
+
+        // domain events
+        _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(userEntity.Name, userEntity.Plural));
+        _mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(userEntity.Name, userEntity.Plural));
+        _mediator.Send(new UpdatedUserRoleDomainEventBuilder.Command());
     }
 
     public void AddFeatureToProject(string solutionDirectory, string srcDirectory, string testDirectory, string projectBaseName,

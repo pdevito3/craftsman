@@ -66,6 +66,13 @@ public static class CoreExceptionBuilder
             _utilities.CreateFile(classPath, fileText);
         }
 
+        public void CreateNoRolesAssignedException(string solutionDirectory)
+        {
+            var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"NoRolesAssignedException.cs");
+            var fileText = GetNoRolesAssignedExceptionFileText(classPath.ClassNamespace);
+            _utilities.CreateFile(classPath, fileText);
+        }
+
         public void CreateInvalidSmartEnumPropertyNameException(string solutionDirectory)
         {
             var classPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, $"InvalidSmartEnumPropertyNameException.cs");
@@ -131,6 +138,20 @@ public static class CoreExceptionBuilder
     public class ForbiddenAccessException : Exception
     {{
         public ForbiddenAccessException() : base() {{ }}
+    }}
+}}";
+        }
+
+        public static string GetNoRolesAssignedExceptionFileText(string classNamespace)
+        {
+            return @$"namespace {classNamespace}
+{{
+    using System;
+    using System.Globalization;
+
+    public class NoRolesAssignedException : Exception
+    {{
+        public NoRolesAssignedException() : base() {{ }}
     }}
 }}";
         }
