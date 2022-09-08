@@ -80,7 +80,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             {{
                 Password = ""#testingDockerPassword#"",
             }})
-            .WithName($""IntegrationTesting_RecipeManagement_{Guid.NewGuid()}"");
+            .WithName($""IntegrationTesting_{projectBaseName}_{Guid.NewGuid()}"");
             
         if(isRunningOnMacOsArm64)
             baseDb.WithImage(""mcr.microsoft.com/azure-sql-edge:latest"");
