@@ -16,7 +16,7 @@ public class CommandRemoveUserRoleBuilder
 
     public void CreateCommand(string srcDirectory, Entity entity, string projectBaseName)
     {
-        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.AddEntityFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.RemoveUserRoleFeatureClassName()}.cs", entity.Plural, projectBaseName);
         var fileText = GetCommandFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
@@ -40,7 +40,7 @@ using HeimGuard;
 using MediatR;
 using Roles;
 
-public static class RemoveUserRole
+public static class {FileNames.RemoveUserRoleFeatureClassName()}
 {{
     public class Command : IRequest<bool>
     {{

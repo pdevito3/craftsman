@@ -205,13 +205,13 @@ public class EntityScaffoldingService
         }
         new CommandAddUserRoleBuilder(_utilities).CreateCommand(srcDirectory, userEntity, projectBaseName);
         new CommandRemoveUserRoleBuilder(_utilities).CreateCommand(srcDirectory, userEntity, projectBaseName);
-        
+        new AddUserFeatureOverrideModifier(_fileSystem).UpdateAddUserFeature(srcDirectory, projectBaseName);
 
         // Shared Tests
         new FakesBuilder(_utilities).CreateRolePermissionFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, userEntity);
-        new RolePermissionsUnitTestBuilder(_utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        new RolePermissionsUnitTestBuilder(_utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        new UserPolicyHandlerUnitTests(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        // new RolePermissionsUnitTestBuilder(_utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        // new RolePermissionsUnitTestBuilder(_utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        // new UserPolicyHandlerUnitTests(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
 
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { userEntity }, dbContextName, projectBaseName);

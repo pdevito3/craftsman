@@ -23,7 +23,8 @@ public class DbContextModifier
         foreach (var entity in entities)
         {
             var entityClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", entity.Plural, projectBaseName);
-            entitiesUsings += $"using {entityClassPath.ClassNamespace};{Environment.NewLine}"; // note this foreach adds newline after where dbbuilder adds before
+            if(entity.Name != "UserRole")
+                entitiesUsings += $"using {entityClassPath.ClassNamespace};{Environment.NewLine}"; // note this foreach adds newline after where dbbuilder adds before
         }
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))

@@ -271,13 +271,13 @@ public static class ClassPathHelper
         return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural, "Mappings"), className);
     }
 
-    public static ClassPath FeaturesClassPath(string srcDirectory, string className, string entityName, string projectBaseName)
+    public static ClassPath FeaturesClassPath(string srcDirectory, string className, string entityPlural, string projectBaseName)
     {
         var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-        return string.IsNullOrEmpty(entityName)
+        return string.IsNullOrEmpty(entityPlural)
             ? new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain"), className)
             : new ClassPath(srcDirectory,
-                Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityName, "Features"), className);
+                Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural, "Features"), className);
     }
 
     public static ClassPath ConsumerFeaturesClassPath(string srcDirectory, string className, string domainDirectory, string projectBaseName)

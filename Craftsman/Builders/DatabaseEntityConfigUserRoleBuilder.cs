@@ -44,6 +44,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 public class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntityTypeConfiguration<{entityName}>
 {{
+    /// <summary>
+    /// The database configuration for UserRoles. 
+    /// </summary>
+    public void Configure(EntityTypeBuilder<UserRole> builder)
+    {{
         builder.Property(x => x.Role)
             .HasConversion(x => x.Value, x => new Role(x))
             .HasColumnName(""role"");

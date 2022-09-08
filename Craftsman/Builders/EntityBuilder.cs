@@ -311,7 +311,7 @@ using Roles;
 public class User : BaseEntity
 {{
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual string Sid {{ get; private set; }}
+    public virtual string Identifier {{ get; private set; }}
 
     [Sieve(CanFilter = true, CanSort = true)]
     public virtual string FirstName {{ get; private set; }}

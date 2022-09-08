@@ -70,7 +70,7 @@ public class UserPolicyHandler : IUserPolicyHandler
             throw new NoRolesAssignedException();
 
         // super admins can do everything
-        if(roles.Contains(Roles.SuperAdmin))
+        if(roles.Contains(Role.SuperAdmin().Value))
             return Permissions.List();
 
         var permissions = await _rolePermissionRepository.Query()
@@ -104,7 +104,7 @@ public class UserPolicyHandler : IUserPolicyHandler
     private string[] GetRoles(string nameIdentifier)
     {{
         if(!string.IsNullOrEmpty(nameIdentifier))
-            return _userRepository.GetRolesByUserSid(nameIdentifier).ToArray();
+            return _userRepository.GetRolesByUserIdentifier(nameIdentifier).ToArray();
 
         return Array.Empty<string>();
     }}

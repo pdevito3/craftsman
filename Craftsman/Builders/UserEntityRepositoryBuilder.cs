@@ -70,7 +70,7 @@ using {servicesClassPath.ClassNamespace};
 
 public interface {repoInterface} : {genericRepositoryInterface}<{entityName}>
 {{
-    public IEnumerable<string> GetRolesByUserSid(string userSid);
+    public IEnumerable<string> GetRolesByUserIdentifier(string identifier);
     public Task AddRole(UserRole entity, CancellationToken cancellationToken = default);
     public void RemoveRole(UserRole entity);
 }}
@@ -106,11 +106,11 @@ public class {repoName} : {genericRepoName}<{entityName}>, {repoInterface}
         _dbContext.UserRoles.Remove(userRole);
     }}
 
-    public IEnumerable<string> GetRolesByUserSid(string userSid)
+    public IEnumerable<string> GetRolesByUserIdentifier(string identifier)
     {{
         return _dbContext.UserRoles
             .Include(x => x.User)
-            .Where(x => x.User.Sid == userSid)
+            .Where(x => x.User.Identifier == identifier)
             .Select(x => x.Role.Value);
     }}
 }}

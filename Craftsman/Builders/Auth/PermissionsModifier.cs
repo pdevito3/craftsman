@@ -23,7 +23,7 @@ public class PermissionsModifier
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
         var fileText = _fileSystem.File.ReadAllText(classPath.FullClassPath);
-        if (fileText.Contains($"const string {permission}"))
+        if (fileText.Contains($"const string {permission} ="))
             return;
 
         var tempPath = $"{classPath.FullClassPath}temp";

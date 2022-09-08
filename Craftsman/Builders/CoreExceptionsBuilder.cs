@@ -42,6 +42,7 @@ public static class CoreExceptionBuilder
             CreateNotFoundException(solutionDirectory);
             CreateValidationException(solutionDirectory);
             CreateForbiddenException(solutionDirectory);
+            CreateNoRolesAssignedException(solutionDirectory);
             CreateInvalidSmartEnumPropertyNameException(solutionDirectory);
         }
 
