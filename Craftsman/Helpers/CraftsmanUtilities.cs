@@ -19,7 +19,7 @@ public interface ICraftsmanUtilities
     void AddProjectReference(IClassPath classPath, string relativeProjectPath);
     void CreateFile(IClassPath classPath, string fileText);
     string GetDbContext(string srcDirectory, string projectBaseName);
-    void IsSolutionDirectoryGuard(string proposedDirectory);
+    void IsSolutionDirectoryGuard(string proposedDirectory, bool slnIsInParent = false);
     bool ProjectUsesSoftDelete(string srcDirectory, string projectBaseName);
     string GetRootDir();
     void IsBoundedContextDirectoryGuard();
@@ -59,10 +59,15 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         return "";
     }
 
-    public void IsSolutionDirectoryGuard(string proposedDirectory)
+    public void IsSolutionDirectoryGuard(string proposedDirectory, bool slnIsInParent = false)
     {
-        if (!_fileSystem.Directory.EnumerateFiles(proposedDirectory, "*.sln").Any())
-            throw new SolutionNotFoundException();
+        if (_fileSystem.Directory.EnumerateFiles(proposedDirectory, "*.sln").Any())
+            return;
+
+        if(slnIsInParent) 
+            throw new SolutionNotFoundException("A solution file was not found in the parent directory. You might need to go down one level to your boundary directory (has 'src' and 'test' directories) and run your command there instead.");
+
+        throw new SolutionNotFoundException();
     }
 
     public void CreateFile(IClassPath classPath, string fileText)

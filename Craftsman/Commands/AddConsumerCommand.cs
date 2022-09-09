@@ -43,7 +43,7 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
         var potentialBoundaryDirectory = _utilities.GetRootDir();
 
         var solutionDirectory = _fileSystem.Directory.GetParent(potentialBoundaryDirectory)?.FullName;
-        _utilities.IsSolutionDirectoryGuard(solutionDirectory);
+        _utilities.IsSolutionDirectoryGuard(solutionDirectory, true);
         _scaffoldingDirectoryStore.SetSolutionDirectory(solutionDirectory);
 
         var projectName = new DirectoryInfo(potentialBoundaryDirectory).Name;
