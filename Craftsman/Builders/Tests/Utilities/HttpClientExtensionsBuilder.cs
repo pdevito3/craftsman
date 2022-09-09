@@ -26,7 +26,9 @@ public class HttpClientExtensionsBuilder
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Extensions.Services;
 
 public static class HttpClientExtensions
 {{
@@ -55,12 +57,16 @@ public static class HttpClientExtensions
 
     public static async Task<HttpResponseMessage> PostJsonRequestAsync(this HttpClient client, string url, object value)
     {{
-        return await client.PostAsJsonAsync(url, value).ConfigureAwait(false);
+        var options = new JsonSerializerOptions();
+        options.AddDateOnlyConverters();
+        return await client.PostAsJsonAsync(url, value, options).ConfigureAwait(false);
     }}
 
     public static async Task<HttpResponseMessage> PutJsonRequestAsync(this HttpClient client, string url, object value)
     {{
-        return await client.PutAsJsonAsync(url, value).ConfigureAwait(false);
+        var options = new JsonSerializerOptions();
+        options.AddDateOnlyConverters();
+        return await client.PutAsJsonAsync(url, value, options).ConfigureAwait(false);
     }}
 }}";
     }
