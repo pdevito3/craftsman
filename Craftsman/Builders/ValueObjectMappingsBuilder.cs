@@ -49,6 +49,12 @@ public static class ValueObjectMappingsBuilder
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var monetaryAmountFileText = GetMonetaryAmountFileText(monetaryAmountClassPath.ClassNamespace);
             _utilities.CreateFile(monetaryAmountClassPath, monetaryAmountFileText);
+            
+            var emailClassPath = ClassPathHelper.WebApiValueObjectMappingsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                ValueObjectEnum.Email,
+                _scaffoldingDirectoryStore.ProjectBaseName);
+            var emailFileText = GetEmailFileText(emailClassPath.ClassNamespace);
+            _utilities.CreateFile(emailClassPath, emailFileText);
 
             if (request.HasAuth)
             {
@@ -165,5 +171,26 @@ public class {mappingName} : IRegister
 }}";
         }
         
+        private string GetEmailFileText(string classNamespace)
+        {
+            var mappingName = FileNames.GetMappingName(ValueObjectEnum.Email.Name);
+            var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
+            
+            return @$"namespace {classNamespace};
+
+using {voClassPath.ClassNamespace};
+using Mapster;
+
+public class {mappingName} : IRegister
+{{
+    public void Register(TypeAdapterConfig config)
+    {{
+        config.NewConfig<string, Email>()
+            .MapWith(value => new Email(value));
+        config.NewConfig<Email, string>()
+            .MapWith(email => email.Value);
+    }}
+}}";
+        }
     }
 }

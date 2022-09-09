@@ -52,6 +52,13 @@ public static class CommonValueObjectBuilder
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var monetaryAmountFileText = GetMonetaryAmountFileText(monetaryAmountClassPath.ClassNamespace);
             _utilities.CreateFile(monetaryAmountClassPath, monetaryAmountFileText);
+            
+            var emailClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                $"{ValueObjectEnum.Email.Name}.cs",
+                ValueObjectEnum.Email.Plural(),
+                _scaffoldingDirectoryStore.ProjectBaseName);
+            var emailFileText = GetEmailFileText(emailClassPath.ClassNamespace);
+            _utilities.CreateFile(emailClassPath, emailFileText);
 
             if (request.HasAuth)
             {
@@ -301,6 +308,44 @@ public abstract class RoleEnum : SmartEnum<RoleEnum>
     {{
         public SuperAdminType() : base(""Super Admin"", 1)
         {{
+        }}
+    }}
+}}";
+        }
+        private string GetEmailFileText(string classNamespace)
+        {
+            var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
+
+            return @$"namespace {classNamespace};
+
+using {voClassPath.ClassNamespace};
+using FluentValidation;
+
+public class Email : ValueObject
+{{
+    public virtual string Value {{ get; set; }}
+    
+    public Email(string value)
+    {{
+        if (string.IsNullOrEmpty(value))
+        {{
+            Value = null;
+            return;
+        }}
+        new EmailValidator().ValidateAndThrow(value);
+        Value = value;
+    }}
+    
+    public static Email Of(string value) => new Email(value);
+    public static implicit operator string(Email value) => value.Value;
+
+    protected Email() {{ }} // EF Core
+    
+    private class EmailValidator : AbstractValidator<string> 
+    {{
+        public EmailValidator()
+        {{
+            RuleFor(email => email).EmailAddress();
         }}
     }}
 }}";

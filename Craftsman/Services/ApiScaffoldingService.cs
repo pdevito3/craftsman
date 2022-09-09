@@ -9,6 +9,7 @@ using Builders.Tests.UnitTests;
 using Builders.Tests.Utilities;
 using Commands;
 using Domain;
+using Domain.Enums;
 using FluentAssertions.Common;
 using Helpers;
 using MediatR;
@@ -157,6 +158,11 @@ public class ApiScaffoldingService
         _mediator.Send(new ValueObjectDtoBuilder.ValueObjectDtoBuilderCommand());
         _mediator.Send(new ValueObjectMappingsBuilder.ValueObjectMappingsBuilderCommand(template.AddJwtAuthentication));
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());
+        new EmailUnitTestBuilder(_utilities).CreateTests(testDirectory,
+            srcDirectory,
+            ValueObjectEnum.Email.Name,
+            ValueObjectEnum.Email.Plural(),
+            projectBaseName);
         
         if(template.AddJwtAuthentication)
             new UserPolicyHandlerUnitTests(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
