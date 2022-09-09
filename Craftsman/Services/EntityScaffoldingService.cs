@@ -186,10 +186,9 @@ public class EntityScaffoldingService
         // TODO custom dto for roles
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, userEntity, projectBaseName);
         
-        // TODO custom mapper for email
         new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, userEntity, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutesForUser(testDirectory, projectBaseName);
-        _mediator.Send(new DatabaseEntityConfigBuilder.Command(userEntity.Name, userEntity.Plural));
+        _mediator.Send(new DatabaseEntityConfigUserBuilder.Command());
         _mediator.Send(new DatabaseEntityConfigUserRoleBuilder.Command());
         
         _mediator.Send(new UserEntityRepositoryBuilder.Command(dbContextName, 
@@ -210,7 +209,7 @@ public class EntityScaffoldingService
         new AddUserFeatureOverrideModifier(_fileSystem).UpdateAddUserFeature(srcDirectory, projectBaseName);
 
         // extra testing
-        new FakesBuilder(_utilities).CreateFakes(srcDirectory, testDirectory, projectBaseName, userEntity);
+        new FakesBuilder(_utilities).CreateUserFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, userEntity);
         new CreateUserRoleUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new AddRemoveUserRoleTestsBuilder(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
         
@@ -243,6 +242,8 @@ public class EntityScaffoldingService
             new CommandAddRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
             if(entity.Name == "RolePermission")
                 new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.AddCommandTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
+            else if(entity.Name == "User")
+                new Craftsman.Builders.Tests.IntegrationTests.Users.AddCommandTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
             else
                 new AddCommandTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
 
@@ -256,6 +257,8 @@ public class EntityScaffoldingService
             new QueryGetRecordBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
             if(entity.Name == "RolePermission")
                 new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+            else if(entity.Name == "User")
+                new Craftsman.Builders.Tests.IntegrationTests.Users.GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
             else
                 new GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
 
@@ -290,6 +293,8 @@ public class EntityScaffoldingService
             
             if(entity.Name == "RolePermission")
                 new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.PutCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+            else if(entity.Name == "User")
+                new Craftsman.Builders.Tests.IntegrationTests.Users.PutCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
             else
                 new PutCommandTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
             

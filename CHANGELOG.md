@@ -26,7 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * If you have multiple boundaries, you can make the call on how you manage things. By default each boundary will store it's own set of users and roles. This might be useful if say you want to manage users in your billing boundary separate from your inventory boundary, but you may want to combine them too. Feel free to consolidate this as you wish if desired.
   * Users can be managed at the `/users` endpoints. This includes adding and removing their roles as user roles have no standalone meaning without a user.
   * Updated functional tests to properly handle the token setup
-  * New `Email` Value Object
+  * New `Email` Value Object. Used on `User` if you want to see it in use
 
 
 ### Updated

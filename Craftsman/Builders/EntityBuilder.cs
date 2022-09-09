@@ -296,17 +296,19 @@ public abstract class BaseEntity
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var emailsClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", "Emails", projectBaseName);
 
         return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
 using {validatorClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
+using {emailsClassPath.ClassNamespace};
+using Roles;
 using FluentValidation;
 using System.Text.Json.Serialization;
 using System.Runtime.Serialization;
 using Sieve.Attributes;
-using Roles;
 
 public class User : BaseEntity
 {{
@@ -320,7 +322,7 @@ public class User : BaseEntity
     public virtual string LastName {{ get; private set; }}
 
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual string Email {{ get; private set; }}
+    public virtual Email Email {{ get; private set; }}
 
     [Sieve(CanFilter = true, CanSort = true)]
     public virtual string Username {{ get; private set; }}
@@ -339,7 +341,7 @@ public class User : BaseEntity
         newUser.Identifier = userForCreationDto.Identifier;
         newUser.FirstName = userForCreationDto.FirstName;
         newUser.LastName = userForCreationDto.LastName;
-        newUser.Email = userForCreationDto.Email;
+        newUser.Email = new Email(userForCreationDto.Email);
         newUser.Username = userForCreationDto.Username;
 
         newUser.QueueDomainEvent(new UserCreated(){{ User = newUser }});
@@ -354,7 +356,7 @@ public class User : BaseEntity
         Identifier = userForUpdateDto.Identifier;
         FirstName = userForUpdateDto.FirstName;
         LastName = userForUpdateDto.LastName;
-        Email = userForUpdateDto.Email;
+        Email = new Email(userForUpdateDto.Email);
         Username = userForUpdateDto.Username;
 
         QueueDomainEvent(new UserUpdated(){{ Id = Id }});

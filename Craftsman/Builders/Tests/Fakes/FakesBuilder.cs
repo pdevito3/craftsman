@@ -44,6 +44,20 @@ public class FakesBuilder
         CreateRolePermissionFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName);
     }
 
+    public void CreateUserFakes(string srcDirectory, string solutionDirectory, string testDirectory, string projectBaseName, Entity entity)
+    {
+        var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"", entity.Name, projectBaseName);
+
+        if (!Directory.Exists(classPath.ClassDirectory))
+            Directory.CreateDirectory(classPath.ClassDirectory);
+
+        CreateFakerEntityFile(srcDirectory, testDirectory, entity.Name, entity, projectBaseName);
+        CreateFakerFile(srcDirectory, testDirectory, Dto.Read, entity, projectBaseName);
+
+        CreateUserFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName);
+        CreateUserFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName);
+    }
+
     private void CreateFakerFile(string srcDirectory, string testDirectory, Dto dtoType, Entity entity, string projectBaseName)
     {
         var objectToFakeClassName = FileNames.GetDtoName(entity.Name, dtoType);
@@ -145,6 +159,34 @@ public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
     {{
         RuleFor(rp => rp.Permission, f => f.PickRandom(Permissions.List()));
         RuleFor(rp => rp.Role, f => f.PickRandom(Role.ListNames()));
+    }}
+}}";
+
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+
+    private void CreateUserFakerForCreationOrUpdateFile(string srcDirectory, string solutionDirectory, string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName)
+    {
+        var fakeFilename = $"Fake{objectToFakeClassName}.cs";
+        var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, entity.Name, projectBaseName);
+
+        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var policyDomainClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
+        var rolesClassPath = ClassPathHelper.EntityClassPath(solutionDirectory, "", "Roles", projectBaseName);
+
+        var fileText = @$"namespace {classPath.ClassNamespace};
+
+using AutoBogus;
+using {policyDomainClassPath.ClassNamespace};
+using {dtoClassPath.ClassNamespace};
+using {rolesClassPath.ClassNamespace};
+
+public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
+{{
+    public Fake{objectToFakeClassName}()
+    {{
+        RuleFor(u => u.Email, f => f.Person.Email);
     }}
 }}";
 
