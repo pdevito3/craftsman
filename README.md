@@ -25,15 +25,23 @@ I'm planning on doing some more heavy front end work for this upcoming release a
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-✅ Users and Roles managed in each boundary (AuthN still separate)
+- ✅ Users and Roles managed in each boundary (AuthN still separate)
 
-🚧 React Cleanup
+- ✅ New `Email` Value Object
 
-🚧 React Controls 
+- 🚧 NextJS template with Auth and *much* more (still a WIP, but you can find [the sandbox for things here](https://github.com/pdevito3/next-template-wrapt-sand))
 
-🚧 React Forms
+  - ✅ OIDC Auth support
+  - ✅ List View
+  - ✅ Add entity form
+  - ✅ Edit entity form
+  - ✅ Delete entity
+  - ✅ Custom forms with [Mantine](https://mantine.dev) and [TailwindCSS](https://tailwindcss.com/)
+  - ✅ Light/Dark Mode
+  - ✅ Responsive
+  - 🚧 Entity Scaffolding with Craftsman
 
-🚧 React Permissions Integration
+  - 🚧 Permissions Integration
 
 🚧 Json Schema or C# classes for easier file scaffolding
 
