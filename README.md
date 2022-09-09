@@ -29,19 +29,21 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 - ✅ New `Email` Value Object
 
-- 🚧 NextJS template with Auth and *much* more (still a WIP, but you can find [the sandbox for things here](https://github.com/pdevito3/next-template-wrapt-sand))
+- 🚧 NextJS template (still a WIP, but you can find [the sandbox for things here](https://github.com/pdevito3/next-template-wrapt-sand))
 
   - ✅ OIDC Auth support
   - ✅ List View
   - ✅ Add entity form
   - ✅ Edit entity form
   - ✅ Delete entity
-  - ✅ Custom forms with [Mantine](https://mantine.dev) and [TailwindCSS](https://tailwindcss.com/)
+  - ✅ Custom form components with [Mantine](https://mantine.dev) and [TailwindCSS](https://tailwindcss.com/)
   - ✅ Light/Dark Mode
   - ✅ Responsive
   - 🚧 Entity Scaffolding with Craftsman
 
   - 🚧 Permissions Integration
+  
+  - lots more...
 
 🚧 Json Schema or C# classes for easier file scaffolding
 
