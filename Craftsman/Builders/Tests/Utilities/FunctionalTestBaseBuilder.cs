@@ -53,6 +53,13 @@ using {fakeUserEntityClassPath.ClassNamespace};" : null;
         return user;
     }}"
             : null;
+
+        var seedRootUser = hasAuth
+            ? $@"
+        
+        // seed root user so tests won't always have user as super admin
+        await AddNewSuperAdmin();"
+            : null;
         
         return @$"namespace {classNamespace};
 
@@ -71,11 +78,11 @@ public class TestBase
     public static HttpClient _client;
 
     [SetUp]
-    public void TestSetUp()
+    public async Task TestSetUp()
     {{
         _factory = new {FileNames.GetWebHostFactoryName()}();
         _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
-        _client = _factory.CreateClient(new WebApplicationFactoryClientOptions());
+        _client = _factory.CreateClient(new WebApplicationFactoryClientOptions());{seedRootUser}
     }}
 
     public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
