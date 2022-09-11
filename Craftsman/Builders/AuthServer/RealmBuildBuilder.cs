@@ -71,29 +71,6 @@ class RealmBuild : Stack
     {{
         {realm}{scopesString}{clientsString}
         
-        var realmSuperAdmin = new Role(""Super Admin"", new RoleArgs
-        {{
-            RealmId = realm.Id,
-            Name = ""Super Admin"",
-            Description = ""Super Admin Role"",
-        }});
-        var realmUser = new Role(""User"", new RoleArgs
-        {{
-            RealmId = realm.Id,
-            Name = ""User"",
-            Description = ""User Role"",
-        }});
-        var defaultRoles = new DefaultRoles(""default-roles"", new DefaultRolesArgs()
-        {{
-            RealmId = realm.Id,
-            RoleNames = 
-            {{
-                ""uma_authorization"",
-                ""offline_access"",
-                ""User""
-            }},
-        }});
-
         var bob = new User(""bob"", new UserArgs
         {{
             RealmId = realm.Id,
@@ -123,7 +100,6 @@ class RealmBuild : Stack
                 Temporary = true,
             }},
         }});
-        alice.SetRoles(realmSuperAdmin.Id);
     }}
 }}";
     }
