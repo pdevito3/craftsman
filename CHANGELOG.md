@@ -67,6 +67,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * `Update` feature calls update in repository
 * Added `8632` to `NoWarn` list in API projects -- ` [CS8632] The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.`
 * Better error handling message for incorrect directory with boundary based commands
+* New props on complex example
 
 ### Fixed
 

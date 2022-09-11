@@ -249,6 +249,10 @@ BoundedContexts:
       Type: DateOnly?
       CanFilter: true
       CanSort: true
+    - Name: HaveMadeItMyself
+      Type: bool
+      CanFilter: true
+      CanSort: true
     - Name: Author
       Type: Author
       ForeignEntityName: Author
@@ -371,6 +375,10 @@ Bff:
     - Name: Description
     - Name: Rating
       Type: number?
+    - Name: DateOfOrigin
+      Type: Date
+    - Name: HaveMadeItMyself
+      Type: boolean
   - Name: Ingredient
     Features:
     - Type: GetList
