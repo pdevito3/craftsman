@@ -257,7 +257,7 @@ using Ardalis.SmartEnum;
 public class Role : ValueObject
 {{
     private RoleEnum _role;
-    public virtual string Value
+    public string Value
     {{
         get => _role.Name;
         private set
@@ -323,7 +323,7 @@ using FluentValidation;
 
 public class Email : ValueObject
 {{
-    public virtual string Value {{ get; set; }}
+    public string Value {{ get; set; }}
     
     public Email(string value)
     {{
