@@ -17,7 +17,7 @@ public static class DtoFileTextGenerator
 
 using {sharedDtoClassPath.ClassNamespace};
 
-public class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
+public sealed class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
 {{
     public string Filters {{ get; set; }}
     public string SortOrder {{ get; set; }}
@@ -32,7 +32,7 @@ public class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
         if (dto is Dto.Update or Dto.Creation)
             propString = "";
 
-        var abstractString = dto == Dto.Manipulation ? $"abstract " : "";
+        var classAccessor = dto == Dto.Manipulation ? $"abstract " : "sealed ";
 
         var inheritanceString = "";
         if (dto is Dto.Creation or Dto.Update)
@@ -40,7 +40,7 @@ public class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
 
         return @$"namespace {dtoClassPath.ClassNamespace};
 
-public {abstractString}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanceString}
+public {classAccessor}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanceString}
 {{
 {propString}
 }}

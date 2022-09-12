@@ -42,7 +42,7 @@ using Roles;
 
 public static class {FileNames.AddUserRoleFeatureClassName()}
 {{
-    public class Command : IRequest<bool>
+    public sealed class Command : IRequest<bool>
     {{
         public readonly Guid UserId;
         public readonly string Role;
@@ -56,7 +56,7 @@ public static class {FileNames.AddUserRoleFeatureClassName()}
         }}
     }}
 
-    public class Handler : IRequestHandler<Command, bool>
+    public sealed class Handler : IRequestHandler<Command, bool>
     {{
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;

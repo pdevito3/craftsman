@@ -39,7 +39,7 @@ using MassTransit;
 using {messagesClassPath.ClassNamespace};
 using System.Threading.Tasks;{contextUsing}
 
-public class {consumer.ConsumerName} : IConsumer<{FileNames.MessageInterfaceName(consumer.MessageName)}>
+public sealed class {consumer.ConsumerName} : IConsumer<{FileNames.MessageInterfaceName(consumer.MessageName)}>
 {{
     private readonly IMapper _mapper;{dbReadOnly}
 

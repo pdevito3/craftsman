@@ -65,7 +65,7 @@ public class ValidatorBuilder
 using {dtoClassPath.ClassNamespace};
 using FluentValidation;
 
-public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation)}: {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{FileNames.GetDtoName(entity.Name, Dto.Creation)}>
+public sealed class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation)}: {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{FileNames.GetDtoName(entity.Name, Dto.Creation)}>
 {{
     public {FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation)}()
     {{
@@ -83,7 +83,7 @@ public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation)}
 using {dtoClassPath.ClassNamespace};
 using FluentValidation;
 
-public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Update)}: {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{FileNames.GetDtoName(entity.Name, Dto.Update)}>
+public sealed class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Update)}: {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<{FileNames.GetDtoName(entity.Name, Dto.Update)}>
 {{
     public {FileNames.ValidatorNameGenerator(entity.Name, Validator.Update)}()
     {{

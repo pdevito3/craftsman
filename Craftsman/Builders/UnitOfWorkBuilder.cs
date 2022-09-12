@@ -50,7 +50,7 @@ public interface IUnitOfWork : {boundaryServiceName}
     Task<int> CommitChanges(CancellationToken cancellationToken = default);
 }}
 
-public class UnitOfWork : IUnitOfWork
+public sealed class UnitOfWork : IUnitOfWork
 {{
     private readonly {dbContextName} _dbContext;
 

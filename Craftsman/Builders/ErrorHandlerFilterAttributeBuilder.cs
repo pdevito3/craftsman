@@ -32,7 +32,7 @@ using {exceptionsClassPath.ClassNamespace};
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
+public sealed class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
 {{
     private readonly IDictionary<Type, Action<ExceptionContext>> _exceptionHandlers;
 

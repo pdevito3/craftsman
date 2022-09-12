@@ -60,7 +60,7 @@ using Sieve.Services;
 
 public static class {className}
 {{
-    public class {queryListName} : IRequest<PagedList<{readDto }>>
+    public sealed class {queryListName} : IRequest<PagedList<{readDto }>>
     {{
         public readonly {paramsDto} QueryParameters;
 
@@ -70,7 +70,7 @@ public static class {className}
         }}
     }}
 
-    public class Handler : IRequestHandler<{queryListName}, PagedList<{readDto}>>
+    public sealed class Handler : IRequestHandler<{queryListName}, PagedList<{readDto}>>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly SieveProcessor _sieveProcessor;

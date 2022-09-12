@@ -32,7 +32,7 @@ using {dtoClassPath.ClassNamespace};
 using {entitiesClassPath.ClassNamespace};
 using Mapster;
 
-public class {FileNames.GetMappingName(entity.Name)} : IRegister
+public sealed class {FileNames.GetMappingName(entity.Name)} : IRegister
 {{
     public void Register(TypeAdapterConfig config)
     {{

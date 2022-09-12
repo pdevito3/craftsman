@@ -48,14 +48,14 @@ using System.Threading.Tasks;{contextUsing}
 
 public static class {producer.ProducerName}
 {{
-    public class {commandName} : IRequest<{propTypeToReturn}>
+    public sealed class {commandName} : IRequest<{propTypeToReturn}>
     {{
         public {commandName}()
         {{
         }}
     }}
 
-    public class Handler : IRequestHandler<{commandName}, {propTypeToReturn}>
+    public sealed class Handler : IRequestHandler<{commandName}, {propTypeToReturn}>
     {{
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly IMapper _mapper;{dbReadOnly}

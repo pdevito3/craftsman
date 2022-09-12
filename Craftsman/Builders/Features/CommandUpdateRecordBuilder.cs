@@ -66,7 +66,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public class {updateCommandName} : IRequest<bool>
+    public sealed class {updateCommandName} : IRequest<bool>
     {{
         public readonly {primaryKeyPropType} {primaryKeyPropName};
         public readonly {updateDto} {commandProp};
@@ -78,7 +78,7 @@ public static class {className}
         }}
     }}
 
-    public class Handler : IRequestHandler<{updateCommandName}, bool>
+    public sealed class Handler : IRequestHandler<{updateCommandName}, bool>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly IUnitOfWork _unitOfWork;{heimGuardField}

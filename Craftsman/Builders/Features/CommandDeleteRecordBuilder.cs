@@ -54,7 +54,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public class {deleteCommandName} : IRequest<bool>
+    public sealed class {deleteCommandName} : IRequest<bool>
     {{
         public readonly {primaryKeyPropType} {primaryKeyPropName};
 
@@ -64,7 +64,7 @@ public static class {className}
         }}
     }}
 
-    public class Handler : IRequestHandler<{deleteCommandName}, bool>
+    public sealed class Handler : IRequestHandler<{deleteCommandName}, bool>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly IUnitOfWork _unitOfWork;{heimGuardField}

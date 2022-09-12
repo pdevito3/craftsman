@@ -57,7 +57,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public class {queryRecordName} : IRequest<{readDto}>
+    public sealed class {queryRecordName} : IRequest<{readDto}>
     {{
         public readonly {primaryKeyPropType} {primaryKeyPropName};
 
@@ -67,7 +67,7 @@ public static class {className}
         }}
     }}
 
-    public class Handler : IRequestHandler<{queryRecordName}, {readDto}>
+    public sealed class Handler : IRequestHandler<{queryRecordName}, {readDto}>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly IMapper _mapper;{heimGuardField}

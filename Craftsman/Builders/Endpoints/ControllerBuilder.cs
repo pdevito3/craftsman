@@ -52,7 +52,7 @@ using MediatR;
 [ApiController]
 [Route(""{endpointBase}"")]
 [ApiVersion(""1.0"")]
-public class {entityPlural}Controller: ControllerBase
+public sealed class {entityPlural}Controller: ControllerBase
 {{
     private readonly IMediator _mediator;
 

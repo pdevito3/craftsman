@@ -85,7 +85,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
 
-public class {dbContextName} : DbContext
+public sealed class {dbContextName} : DbContext
 {{
     private readonly ICurrentUserService _currentUserService;
     private readonly IMediator _mediator;

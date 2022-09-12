@@ -70,7 +70,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public class {addCommandName} : IRequest<{readDto}>
+    public sealed class {addCommandName} : IRequest<{readDto}>
     {{
         public readonly {createDto} {commandProp};
         public readonly bool SkipPermissions;
@@ -82,7 +82,7 @@ public static class {className}
         }}
     }}
 
-    public class Handler : IRequestHandler<{addCommandName}, {readDto}>
+    public sealed class Handler : IRequestHandler<{addCommandName}, {readDto}>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly IUnitOfWork _unitOfWork;

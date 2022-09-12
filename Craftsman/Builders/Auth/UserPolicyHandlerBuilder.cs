@@ -38,7 +38,7 @@ using HeimGuard;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-public class UserPolicyHandler : IUserPolicyHandler
+public sealed class UserPolicyHandler : IUserPolicyHandler
 {{
     private readonly IRolePermissionRepository _rolePermissionRepository;
     private readonly ICurrentUserService _currentUserService;

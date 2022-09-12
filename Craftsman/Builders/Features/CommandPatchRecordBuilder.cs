@@ -64,7 +64,7 @@ using Microsoft.AspNetCore.JsonPatch;
 
 public static class {className}
 {{
-    public class {patchCommandName} : IRequest<bool>
+    public sealed class {patchCommandName} : IRequest<bool>
     {{
         public readonly {primaryKeyPropType} {primaryKeyPropName};
         public readonly JsonPatchDocument<{updateDto}> PatchDoc;
@@ -76,7 +76,7 @@ public static class {className}
         }}
     }}
 
-    public class Handler : IRequestHandler<{patchCommandName}, bool>
+    public sealed class Handler : IRequestHandler<{patchCommandName}, bool>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly IUnitOfWork _unitOfWork;

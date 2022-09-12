@@ -78,7 +78,7 @@ public static class ValueObjectMappingsBuilder
 using {voClassPath.ClassNamespace};
 using Mapster;
 
-public class {mappingName} : IRegister
+public sealed class {mappingName} : IRegister
 {{
     public void Register(TypeAdapterConfig config)
     {{
@@ -105,7 +105,7 @@ using {dtoClassPath.ClassNamespace};
 using {voClassPath.ClassNamespace};
 using Mapster;
 
-public class {mappingName} : IRegister
+public sealed class {mappingName} : IRegister
 {{
     public void Register(TypeAdapterConfig config)
     {{
@@ -137,7 +137,7 @@ public class {mappingName} : IRegister
 using {voClassPath.ClassNamespace};
 using Mapster;
 
-public class {mappingName} : IRegister
+public sealed class {mappingName} : IRegister
 {{
     public void Register(TypeAdapterConfig config)
     {{
@@ -159,7 +159,7 @@ public class {mappingName} : IRegister
 using {voClassPath.ClassNamespace};
 using Mapster;
 
-public class {mappingName} : IRegister
+public sealed class {mappingName} : IRegister
 {{
     public void Register(TypeAdapterConfig config)
     {{
@@ -181,7 +181,7 @@ public class {mappingName} : IRegister
 using {voClassPath.ClassNamespace};
 using Mapster;
 
-public class {mappingName} : IRegister
+public sealed class {mappingName} : IRegister
 {{
     public void Register(TypeAdapterConfig config)
     {{

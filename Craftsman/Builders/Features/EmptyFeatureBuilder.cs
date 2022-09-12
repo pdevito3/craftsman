@@ -54,14 +54,14 @@ using System.Collections.Generic;
 
 public static class {featureClassName}
 {{
-    public class {commandName} : IRequest<{returnPropType}>
+    public sealed class {commandName} : IRequest<{returnPropType}>
     {{
         public {commandName}()
         {{
         }}
     }}
 
-    public class Handler : IRequestHandler<{commandName}, {returnPropType}>
+    public sealed class Handler : IRequestHandler<{commandName}, {returnPropType}>
     {{
         {handlerCtor}
 

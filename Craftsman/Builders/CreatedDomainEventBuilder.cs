@@ -45,7 +45,7 @@ public static class CreatedDomainEventBuilder
         {
             return @$"namespace {classNamespace};
 
-public class {FileNames.EntityCreatedDomainMessage(entityName)} : DomainEvent
+public sealed class {FileNames.EntityCreatedDomainMessage(entityName)} : DomainEvent
 {{
     public {entityName} {entityName} {{ get; set; }} 
 }}

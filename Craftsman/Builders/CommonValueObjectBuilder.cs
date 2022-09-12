@@ -321,7 +321,7 @@ public abstract class RoleEnum : SmartEnum<RoleEnum>
 using {voClassPath.ClassNamespace};
 using FluentValidation;
 
-public class Email : ValueObject
+public sealed class Email : ValueObject
 {{
     public string Value {{ get; set; }}
     
@@ -339,9 +339,9 @@ public class Email : ValueObject
     public static Email Of(string value) => new Email(value);
     public static implicit operator string(Email value) => value.Value;
 
-    protected Email() {{ }} // EF Core
+    private Email() {{ }} // EF Core
     
-    private class EmailValidator : AbstractValidator<string> 
+    private sealed class EmailValidator : AbstractValidator<string> 
     {{
         public EmailValidator()
         {{
