@@ -27,7 +27,7 @@ public class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
 
     public static string GetDtoText(IClassPath dtoClassPath, Entity entity, Dto dto)
     {
-        var propString = dto is Dto.Read ? $@"        public Guid Id {{ get; set; }}{Environment.NewLine}" : "";
+        var propString = dto is Dto.Read or Dto.FormView or Dto.ListView ? $@"        public Guid Id {{ get; set; }}{Environment.NewLine}" : "";
         propString += DtoPropBuilder(entity.Properties, dto);
         if (dto is Dto.Update or Dto.Creation)
             propString = "";

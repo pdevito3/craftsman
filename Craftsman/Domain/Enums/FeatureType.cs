@@ -8,6 +8,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 {
     public static readonly FeatureType GetRecord = new GetRecordType();
     public static readonly FeatureType GetList = new GetListType();
+    public static readonly FeatureType GetFormView = new GetFormViewType();
+    public static readonly FeatureType GetListView = new GetListViewType();
     public static readonly FeatureType AddRecord = new AddRecordType();
     public static readonly FeatureType DeleteRecord = new DeleteRecordType();
     public static readonly FeatureType UpdateRecord = new UpdateRecordType();
@@ -19,7 +21,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
     {
     }
     public abstract string FeatureName(string entityName, string featureName = null);
-    public abstract string CommandName(string command, string entityName);
+    public abstract string CommandName();
     public abstract string BffApiName(string entityName);
 
     private class GetRecordType : FeatureType
@@ -28,8 +30,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Get{entityName}";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Get{entityName}Query";
+        public override string CommandName()
+            => $"Query";
         public override string BffApiName(string entityName)
             => $"get{entityName}";
     }
@@ -40,8 +42,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Get{entityName}List";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Get{entityName}ListQuery";
+        public override string CommandName()
+            => $"Query";
         public override string BffApiName(string entityName)
             => $"get{entityName}List";
     }
@@ -52,8 +54,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Add{entityName}";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Add{entityName}Command";
+        public override string CommandName()
+            => $"Command";
         public override string BffApiName(string entityName)
             => $"add{entityName}";
     }
@@ -64,8 +66,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Delete{entityName}";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Delete{entityName}Command";
+        public override string CommandName()
+            => $"Command";
         public override string BffApiName(string entityName)
             => $"delete{entityName}";
     }
@@ -77,8 +79,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Update{entityName}";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Update{entityName}Command";
+        public override string CommandName()
+            => $"Command";
         public override string BffApiName(string entityName)
             => $"update{entityName}";
     }
@@ -91,7 +93,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
     //     public override string FeatureName(string entityName, string featureName = null)
     //         => featureName.EscapeSpaces() ?? $"Patch{entityName}";
     //     public override string CommandName(string command, string entityName)
-    //         => command.EscapeSpaces() ?? $"Patch{entityName}Command";
+    //         => ommand";
     //     public override string BffApiName(string entityName)
     //         => throw new Exception("Patch Features need to be manually configured in a BFF.");
     // }
@@ -103,8 +105,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string featureName = null)
             => featureName.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");
+        public override string CommandName()
+            => throw new Exception("Ad Hoc Features require a name path.");
         public override string BffApiName(string entityName)
             => throw new Exception("Ad Hoc Features need to be manually configured in a BFF.");
     }
@@ -115,9 +117,33 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Add{entityName}List";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Add{entityName}ListCommand";
+        public override string CommandName()
+            => $"Command";
         public override string BffApiName(string entityName)
             => throw new Exception("Add List Features need to be manually configured in a BFF.");
+    }
+
+    private class GetFormViewType : FeatureType
+    {
+        public GetFormViewType() : base(nameof(GetFormView), 9) { }
+
+        public override string FeatureName(string entityName, string featureName = null)
+            => featureName.EscapeSpaces() ?? $"Get{entityName}FormView";
+        public override string CommandName()
+            => $"Query";
+        public override string BffApiName(string entityName)
+            => $"get{entityName}FormView";
+    }
+
+    private class GetListViewType : FeatureType
+    {
+        public GetListViewType() : base(nameof(GetListView), 10) { }
+
+        public override string FeatureName(string entityName, string featureName = null)
+            => featureName.EscapeSpaces() ?? $"Get{entityName}ListView";
+        public override string CommandName()
+            => $"Query";
+        public override string BffApiName(string entityName)
+            => $"get{entityName}ListView";
     }
 }

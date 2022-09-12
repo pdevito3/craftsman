@@ -39,17 +39,21 @@ public class ControllerModifier
                     {
                         var endpoint = "";
                         if (featureType == FeatureType.GetList)
-                            endpoint = GetListEndpointBuilder.GetEndpointTextForGetList(entity, addSwaggerComments, feature);
+                            endpoint = GetListEndpointBuilder.GetEndpointText(entity, addSwaggerComments, feature);
                         else if (featureType == FeatureType.GetRecord)
-                            endpoint = GetRecordEndpointBuilder.GetEndpointTextForGetRecord(entity, addSwaggerComments, feature);
+                            endpoint = GetRecordEndpointBuilder.GetEndpointText(entity, addSwaggerComments, feature);
+                        else if (featureType == FeatureType.GetFormView)
+                            endpoint = GetFormViewEndpointBuilder.GetEndpointText(entity, addSwaggerComments, feature);
+                        else if (featureType == FeatureType.GetListView)
+                            endpoint = GetListViewEndpointBuilder.GetEndpointText(entity, addSwaggerComments, feature);
                         else if (featureType == FeatureType.AddRecord)
                             endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateRecord(entity, addSwaggerComments, feature);
                         else if (featureType == FeatureType.AddListByFk)
                             endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateList(entity, addSwaggerComments, feature);
                         else if (featureType == FeatureType.DeleteRecord)
-                            endpoint = DeleteRecordEndpointBuilder.GetEndpointTextForDeleteRecord(entity, addSwaggerComments, feature);
+                            endpoint = DeleteRecordEndpointBuilder.GetEndpointText(entity, addSwaggerComments, feature);
                         else if (featureType == FeatureType.UpdateRecord)
-                            endpoint = PutRecordEndpointBuilder.GetEndpointTextForPutRecord(entity, addSwaggerComments, feature);
+                            endpoint = PutRecordEndpointBuilder.GetEndpointText(entity, addSwaggerComments, feature);
                         // else if (featureType == FeatureType.PatchRecord)
                         //     endpoint = PatchRecordEndpointBuilder.GetEndpointTextForPatchRecord(entity, addSwaggerComments, feature);
 

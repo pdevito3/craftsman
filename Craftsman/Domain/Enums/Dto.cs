@@ -6,5 +6,8 @@ public enum Dto
     Creation,
     Manipulation,
     Update,
-    ReadParamaters
+    ReadParameters,
+    FormView,
+    ListView,
+    ListViewParameters,
 }

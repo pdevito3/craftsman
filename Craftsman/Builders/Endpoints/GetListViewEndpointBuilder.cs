@@ -5,26 +5,24 @@ using Domain.Enums;
 using Helpers;
 using Services;
 
-public class GetListEndpointBuilder
+public class GetListViewEndpointBuilder
 {
     public static string GetEndpointText(Entity entity, bool addSwaggerComments, Feature feature)
     {
         var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
         var entityName = entity.Name;
-        var entityNamePlural = entity.Plural;
-        var readDto = FileNames.GetDtoName(entityName, Dto.Read);
-        var readParamDto = FileNames.GetDtoName(entityName, Dto.ReadParameters);
-        var queryListMethodName = FileNames.QueryListName();
+        var readDto = FileNames.GetDtoName(entityName, Dto.ListView);
+        var readParamDto = FileNames.GetDtoName(entityName, Dto.ListViewParameters);
+        var queryListMethodName = FileNames.QueryListViewName();
         var listResponse = $@"IEnumerable<{readDto}>";
-        var getListEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}List" : $@"Get{entityNamePlural}";
         var getListAuthorization = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetList(entity, addSwaggerComments, listResponse, getListAuthorization.Length > 0)}{getListAuthorization}
     [Produces(""application/json"")]
-    [HttpGet(Name = ""{getListEndpointName}"")]
-    public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
+    [HttpGet(""views/list"", Name = ""{feature.Name.UppercaseFirstLetter()}"")]
+    public async Task<IActionResult> {feature.Name.UppercaseFirstLetter()}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
     {{
-        var query = new {FileNames.GetEntityListFeatureClassName(entity.Name)}.{queryListMethodName}({lowercaseEntityVariable}ParametersDto);
+        var query = new {FileNames.GetEntityListViewFeatureClassName(entity.Name)}.{queryListMethodName}({lowercaseEntityVariable}ParametersDto);
         var queryResponse = await _mediator.Send(query);
 
         var paginationMetadata = new

@@ -7,7 +7,7 @@ using Services;
 
 public class PutRecordEndpointBuilder
 {
-    public static string GetEndpointTextForPutRecord(Entity entity, bool addSwaggerComments, Feature feature)
+    public static string GetEndpointText(Entity entity, bool addSwaggerComments, Feature feature)
     {
         var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
         var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();

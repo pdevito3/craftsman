@@ -17,7 +17,48 @@ public class EndpointSwaggerCommentBuilders
     /// </summary>
     /// <response code=""200"">{entity.Name} list returned successfully.</response>
     /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
-    /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
+    /// <response code=""500"">There was an error on the server while getting the {entity.Name} list.</response>
+    /// <remarks>
+    /// Requests can be narrowed down with a variety of query string values:
+    /// ## Query String Parameters
+    /// - **PageNumber**: An integer value that designates the page of records that should be returned.
+    /// - **PageSize**: An integer value that designates the number of records returned on the given page that you would like to return. This value is capped by the internal MaxPageSize.
+    /// - **SortOrder**: A comma delimited ordered list of property names to sort by. Adding a `-` before the name switches to sorting descendingly.
+    /// - **Filters**: A comma delimited list of fields to filter by formatted as `{{Name}}{{Operator}}{{Value}}` where
+    ///     - {{Name}} is the name of a filterable property. You can also have multiple names (for OR logic) by enclosing them in brackets and using a pipe delimiter, eg. `(LikeCount|CommentCount)>10` asks if LikeCount or CommentCount is >10
+    ///     - {{Operator}} is one of the Operators below
+    ///     - {{Value}} is the value to use for filtering. You can also have multiple values (for OR logic) by using a pipe delimiter, eg.`Title@= new|hot` will return posts with titles that contain the text ""new"" or ""hot""
+    ///
+    ///    | Operator | Meaning                       | Operator  | Meaning                                      |
+    ///    | -------- | ----------------------------- | --------- | -------------------------------------------- |
+    ///    | `==`     | Equals                        |  `!@=`    | Does not Contains                            |
+    ///    | `!=`     | Not equals                    |  `!_=`    | Does not Starts with                         |
+    ///    | `>`      | Greater than                  |  `@=*`    | Case-insensitive string Contains             |
+    ///    | `&lt;`   | Less than                     |  `_=*`    | Case-insensitive string Starts with          |
+    ///    | `>=`     | Greater than or equal to      |  `==*`    | Case-insensitive string Equals               |
+    ///    | `&lt;=`  | Less than or equal to         |  `!=*`    | Case-insensitive string Not equals           |
+    ///    | `@=`     | Contains                      |  `!@=*`   | Case-insensitive string does not Contains    |
+    ///    | `_=`     | Starts with                   |  `!_=*`   | Case-insensitive string does not Starts with |
+    /// </remarks>
+    [ProducesResponseType(typeof({listResponse}), 200)]
+    [ProducesResponseType(400)]{authResponses}
+    [ProducesResponseType(500)]";
+
+        return "";
+    }
+    public static string GetSwaggerComments_GetListView(Entity entity, bool buildComments, string listResponse, bool hasAuthentications)
+    {
+        var authResponses = GetAuthResponses(hasAuthentications);
+        var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+
+        if (buildComments)
+            return $@"
+    /// <summary>
+    /// Gets a list of all {entity.Plural} for a list view.
+    /// </summary>
+    /// <response code=""200"">{entity.Name} list returned successfully.</response>
+    /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
+    /// <response code=""500"">There was an error on the server while getting the {entity.Name} list.</response>
     /// <remarks>
     /// Requests can be narrowed down with a variety of query string values:
     /// ## Query String Parameters
@@ -58,7 +99,24 @@ public class EndpointSwaggerCommentBuilders
     /// </summary>
     /// <response code=""200"">{entity.Name} record returned successfully.</response>
     /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
-    /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
+    /// <response code=""500"">There was an error on the server while getting the {entity.Name}.</response>
+    [ProducesResponseType(typeof({singleResponse}), 200)]
+    [ProducesResponseType(400)]{authResponses}
+    [ProducesResponseType(500)]" : "";
+    }
+
+    public static string GetSwaggerComments_GetFormView(Entity entity, bool buildComments, string singleResponse, bool hasAuthentications)
+    {
+        var authResponses = GetAuthResponses(hasAuthentications);
+        var authCommentResponses = GetAuthCommentResponses(hasAuthentications);
+
+        return buildComments ? $@"
+    /// <summary>
+    /// Gets a form view for a {entity.Name} by ID.
+    /// </summary>
+    /// <response code=""200"">{entity.Name} record returned successfully.</response>
+    /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
+    /// <response code=""500"">There was an error on the server while getting the {entity.Name}.</response>
     [ProducesResponseType(typeof({singleResponse}), 200)]
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
@@ -106,7 +164,7 @@ public class EndpointSwaggerCommentBuilders
     /// </summary>
     /// <response code=""204"">{entity.Name} deleted.</response>
     /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
-    /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
+    /// <response code=""500"">There was an error on the server while deleting the {entity.Name}.</response>
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
@@ -122,7 +180,7 @@ public class EndpointSwaggerCommentBuilders
     /// </summary>
     /// <response code=""204"">{entity.Name} updated.</response>
     /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
-    /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
+    /// <response code=""500"">There was an error on the server while updating the {entity.Name}.</response>
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";
@@ -138,7 +196,7 @@ public class EndpointSwaggerCommentBuilders
     /// </summary>
     /// <response code=""204"">{entity.Name} updated.</response>
     /// <response code=""400"">{entity.Name} has missing/invalid values.</response>{authCommentResponses}
-    /// <response code=""500"">There was an error on the server while creating the {entity.Name}.</response>
+    /// <response code=""500"">There was an error on the server while updating the {entity.Name}.</response>
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]{authResponses}
     [ProducesResponseType(500)]" : "";

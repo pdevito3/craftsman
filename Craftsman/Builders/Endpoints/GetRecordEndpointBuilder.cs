@@ -7,14 +7,14 @@ using Services;
 
 public class GetRecordEndpointBuilder
 {
-    public static string GetEndpointTextForGetRecord(Entity entity, bool addSwaggerComments, Feature feature)
+    public static string GetEndpointText(Entity entity, bool addSwaggerComments, Feature feature)
     {
         var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
         var entityName = entity.Name;
         var entityNamePlural = entity.Plural;
         var readDto = FileNames.GetDtoName(entityName, Dto.Read);
-        var primaryKeyProp = Entity.PrimaryKeyProperty;
         var queryRecordMethodName = FileNames.QueryRecordName();
+        var primaryKeyProp = Entity.PrimaryKeyProperty;
         var pkPropertyType = primaryKeyProp.Type;
         var singleResponse = $@"{readDto}";
         var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";
