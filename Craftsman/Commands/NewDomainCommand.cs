@@ -74,13 +74,18 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
 
         // need this before boundaries to give them something to build against
         new DockerComposeBuilders(_utilities, _fileSystem).CreateDockerComposeSkeleton(solutionDirectory);
-        new DockerComposeBuilders(_utilities, _fileSystem).AddJaegerToDockerCompose(solutionDirectory);
+
+        var otelAgentPort = CraftsmanUtilities.GetFreePort();
+        new DockerComposeBuilders(_utilities, _fileSystem).AddJaegerToDockerCompose(solutionDirectory, otelAgentPort);
         // DockerBuilders.CreateDockerComposeDbSkeleton(solutionDirectory);
 
         //Parallel.ForEach(domainProject.BoundedContexts, (template) =>
         //    ApiScaffolding.ScaffoldApi(solutionDirectory, template, verbosity));
         foreach (var bc in domainProject.BoundedContexts)
+        {
+            bc.DockerConfig.OTelAgentPort = otelAgentPort;
             new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem, _mediator, _fileParsingHelper).ScaffoldApi(solutionDirectory, bc);
+        }
 
         // auth server
         if (domainProject.AuthServer != null)

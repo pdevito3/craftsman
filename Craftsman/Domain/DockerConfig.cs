@@ -30,6 +30,7 @@ public class DockerConfig
         set => _dbPassword = value;
     }
     public string AuthServerPort { get; set; }
+    internal int OTelAgentPort { get; set; }
 
     private int? _dbPort = CraftsmanUtilities.GetFreePort();
     public int? DbPort

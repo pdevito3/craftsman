@@ -88,23 +88,31 @@ volumes:
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 
-    public void AddJaegerToDockerCompose(string solutionDirectory)
+    public void AddJaegerToDockerCompose(string solutionDirectory, int otelAgentPort)
     {
+        var portFor5775 = CraftsmanUtilities.GetFreePort();
+        var portFor6832 = CraftsmanUtilities.GetFreePort();
+        var portFor5778 = CraftsmanUtilities.GetFreePort();
+        var portFor16686Ui = CraftsmanUtilities.GetFreePort();
+        var portFor14250 = CraftsmanUtilities.GetFreePort();
+        var portFor14268 = CraftsmanUtilities.GetFreePort();
+        var portFor14269 = CraftsmanUtilities.GetFreePort();
+        var portFor9411 = CraftsmanUtilities.GetFreePort();
         var services = $@"
 
   jaeger:
     image: jaegertracing/all-in-one:latest
 #    port mappings: https://www.jaegertracing.io/docs/1.32/getting-started/
     ports:
-      - ""5775:5775/udp""
-      - ""6831:6831/udp""
-      - ""6832:6832/udp""
-      - ""5778:5778""
-      - ""16686:16686""
-      - ""14250:14250""
-      - ""14268:14268""
-      - ""14269:14269""
-      - ""9411:9411""
+      - ""{portFor5775}:5775/udp""
+      - ""{otelAgentPort}:6831/udp""
+      - ""{portFor6832}:6832/udp""
+      - ""{portFor5778}:5778""
+      - ""{portFor16686Ui}:16686""
+      - ""{portFor14250}:14250""
+      - ""{portFor14268}:14268""
+      - ""{portFor14269}:14269""
+      - ""{portFor9411}:9411""
 ";
 
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");

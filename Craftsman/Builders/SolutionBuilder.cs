@@ -30,17 +30,17 @@ public class SolutionBuilder
         BuildSharedKernelProject(solutionDirectory);
     }
 
-    public void AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, DbProvider dbProvider, string dbName, string projectBaseName, bool addJwtAuth)
+    public void AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, DbProvider dbProvider, string projectBaseName, bool addJwtAuth, int otelAgentPort)
     {
         // add webapi first so it is default project
-        BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, dbName);
+        BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, otelAgentPort);
         BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName);
         BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName);
         BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName);
         BuildUnitTestProject(solutionDirectory, testDirectory, projectBaseName);
     }
 
-    private void BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, DbProvider dbProvider, string dbName)
+    private void BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, DbProvider dbProvider, int otelAgentPort)
     {
         var solutionFolder = srcDirectory.GetSolutionFolder(solutionDirectory);
         var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
@@ -61,7 +61,7 @@ public class SolutionBuilder
 
         new ApiVersioningExtensionsBuilder(_utilities).CreateApiVersioningServiceExtension(srcDirectory, projectBaseName);
         new CorsExtensionsBuilder(_utilities).CreateCorsServiceExtension(srcDirectory, projectBaseName);
-        new OpenTelemetryExtensionsBuilder(_utilities).CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider);
+        new OpenTelemetryExtensionsBuilder(_utilities).CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider, otelAgentPort);
         new ErrorHandlerFilterAttributeBuilder(_utilities).CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName);
         new WebApiLaunchSettingsBuilder(_utilities).CreateLaunchSettings(srcDirectory, projectBaseName);
         new ProgramBuilder(_utilities).CreateWebApiProgram(srcDirectory, useJwtAuth, projectBaseName);
