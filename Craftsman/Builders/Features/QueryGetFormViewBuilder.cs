@@ -5,34 +5,35 @@ using Domain.Enums;
 using Helpers;
 using Services;
 
-public class QueryGetListBuilder
+public class QueryGetFormViewBuilder
 {
     private readonly ICraftsmanUtilities _utilities;
 
-    public QueryGetListBuilder(ICraftsmanUtilities utilities)
+    public QueryGetFormViewBuilder(ICraftsmanUtilities utilities)
     {
         _utilities = utilities;
     }
 
     public void CreateQuery(string srcDirectory, Entity entity, string projectBaseName, bool isProtected, string permissionName)
     {
-        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityListFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityFormViewFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
         var fileText = GetQueryFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName, isProtected, permissionName);
         _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName, bool isProtected, string permissionName)
     {
-        var className = FileNames.GetEntityListFeatureClassName(entity.Name);
-        var queryListName = FileNames.QueryListName();
-        var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
-        var paramsDto = FileNames.GetDtoName(entity.Name, Dto.ReadParameters);
+        var className = FileNames.GetEntityFormViewFeatureClassName(entity.Name);
+        var queryRecordName = FileNames.QueryFormViewName();
+        var readDto = FileNames.GetDtoName(entity.Name, Dto.FormView);
+
+        var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
+        var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
         var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
-        
+
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         
@@ -50,57 +51,37 @@ public class QueryGetListBuilder
 
 using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
-using {wrapperClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
 using MapsterMapper;
-using Mapster;
 using MediatR;
-using Sieve.Models;
-using Sieve.Services;
 
 public static class {className}
 {{
-    public class {queryListName} : IRequest<PagedList<{readDto }>>
+    public class {queryRecordName} : IRequest<{readDto}>
     {{
-        public readonly {paramsDto} QueryParameters;
+        public readonly {primaryKeyPropType} {primaryKeyPropName};
 
-        public {queryListName}({paramsDto} queryParameters)
+        public {queryRecordName}({primaryKeyPropType} {primaryKeyPropNameLowercase})
         {{
-            QueryParameters = queryParameters;
+            {primaryKeyPropName} = {primaryKeyPropNameLowercase};
         }}
     }}
 
-    public class Handler : IRequestHandler<{queryListName}, PagedList<{readDto}>>
+    public class Handler : IRequestHandler<{queryRecordName}, {readDto}>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly SieveProcessor _sieveProcessor;
         private readonly IMapper _mapper;{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IMapper mapper, SieveProcessor sieveProcessor{heimGuardCtor})
+        public Handler({repoInterface} {repoInterfaceProp}, IMapper mapper{heimGuardCtor})
         {{
             _mapper = mapper;
-            _{repoInterfaceProp} = {repoInterfaceProp};
-            _sieveProcessor = sieveProcessor;{heimGuardSetter}
+            _{repoInterfaceProp} = {repoInterfaceProp};{heimGuardSetter}
         }}
 
-        public async Task<PagedList<{readDto}>> Handle({queryListName} request, CancellationToken cancellationToken)
+        public async Task<{readDto}> Handle({queryRecordName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            var collection = _{repoInterfaceProp}.Query();
-
-            var sieveModel = new SieveModel
-            {{
-                Sorts = request.QueryParameters.SortOrder ?? ""-CreatedOn"",
-                Filters = request.QueryParameters.Filters
-            }};
-
-            var appliedCollection = _sieveProcessor.Apply(sieveModel, collection);
-            var dtoCollection = appliedCollection
-                .ProjectToType<{readDto}>();
-
-            return await PagedList<{readDto}>.CreateAsync(dtoCollection,
-                request.QueryParameters.PageNumber,
-                request.QueryParameters.PageSize,
-                cancellationToken);
+            var result = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
+            return _mapper.Map<{readDto}>(result);
         }}
     }}
 }}";

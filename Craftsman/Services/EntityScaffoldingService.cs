@@ -278,6 +278,32 @@ public class EntityScaffoldingService
                 .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, entity.Lambda, entity.Properties, projectBaseName, feature.IsProtected);
         }
 
+        if (feature.Type == FeatureType.GetFormView.Name)
+        {
+            new QueryGetFormViewBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
+            // if(entity.Name == "RolePermission")
+            //     new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+            // else if(entity.Name == "User")
+            //     new Craftsman.Builders.Tests.IntegrationTests.Users.GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+            // else
+            //     new GetRecordQueryTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+
+            // new GetEntityRecordTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
+            new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetFormView, entity, addSwaggerComments,
+                feature, projectBaseName);
+        }
+
+        if (feature.Type == FeatureType.GetListView.Name)
+        {
+            new QueryGetListViewBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
+            // new GetListQueryTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
+            // new GetEntityListTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
+            new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetListView, entity, addSwaggerComments,
+                feature, projectBaseName);
+            // new GetEntityListUnitTestBuilder(_utilities)
+            //     .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, entity.Lambda, entity.Properties, projectBaseName, feature.IsProtected);
+        }
+
         if (feature.Type == FeatureType.DeleteRecord.Name)
         {
             new CommandDeleteRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);

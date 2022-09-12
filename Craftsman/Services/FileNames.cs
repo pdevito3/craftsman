@@ -138,6 +138,10 @@ public static class FileNames
 
     public static string GetEntityListFeatureClassName(string entityName) => $"Get{entityName}List";
 
+    public static string GetEntityFormViewFeatureClassName(string entityName) => $"Get{entityName}FormView";
+
+    public static string GetEntityListViewFeatureClassName(string entityName) => $"Get{entityName}ListView";
+
     public static string AddEntityFeatureClassName(string entityName) => $"Add{entityName}";
 
     public static string DeleteEntityFeatureClassName(string entityName) => $"Delete{entityName}";
@@ -147,45 +151,16 @@ public static class FileNames
     public static string AddUserRoleFeatureClassName() => $"AddUserRole";
     public static string RemoveUserRoleFeatureClassName() => $"RemoveUserRole";
 
-    public static string QueryListName()
-    {
-        return $"Query";
-    }
-
-    public static string QueryRecordName()
-    {
-        return $"Query";
-    }
-
-    public static string CommandAddName()
-    {
-        return $"Command";
-    }
-
-    public static string CommandDeleteName()
-    {
-        return $"Command";
-    }
-
-    public static string CommandUpdateName()
-    {
-        return $"Command";
-    }
-
-    public static string CommandPatchName()
-    {
-        return $"Command";
-    }
-
-    public static string FakerName(string objectToFakeName)
-    {
-        return $"Fake{objectToFakeName}";
-    }
-    
-    public static string UnitTestUtilsName()
-    {
-        return $"UnitTestUtils";
-    } 
+    public static string QueryListName() => $"Query";
+    public static string QueryRecordName() => $"Query";
+    public static string QueryFormViewName() => $"Query";
+    public static string QueryListViewName() => $"Query";
+    public static string CommandAddName() => $"Command";
+    public static string CommandDeleteName() => $"Command";
+    public static string CommandUpdateName() => $"Command";
+    public static string CommandPatchName() => $"Command";
+    public static string FakerName(string objectToFakeName) => $"Fake{objectToFakeName}";    
+    public static string UnitTestUtilsName() => $"UnitTestUtils";
     
     public static string GetDtoName(string entityName, Dto dto)
     {
@@ -195,7 +170,10 @@ public static class FileNames
             Dto.Creation => $"{entityName}ForCreationDto",
             Dto.Update => $"{entityName}ForUpdateDto",
             Dto.Read => $"{entityName}Dto",
-            Dto.ReadParamaters => $"{entityName}ParametersDto",
+            Dto.ReadParameters => $"{entityName}ParametersDto",
+            Dto.FormView => $"{entityName}FormViewDto",
+            Dto.ListView => $"{entityName}ListViewDto",
+            Dto.ListViewParameters => $"{entityName}ListViewParametersDto",
             _ => throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Dto), dto)}")
         };
     }

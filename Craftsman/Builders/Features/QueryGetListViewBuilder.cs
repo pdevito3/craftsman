@@ -5,29 +5,28 @@ using Domain.Enums;
 using Helpers;
 using Services;
 
-public class QueryGetListBuilder
+public class QueryGetListViewBuilder
 {
     private readonly ICraftsmanUtilities _utilities;
 
-    public QueryGetListBuilder(ICraftsmanUtilities utilities)
+    public QueryGetListViewBuilder(ICraftsmanUtilities utilities)
     {
         _utilities = utilities;
     }
 
     public void CreateQuery(string srcDirectory, Entity entity, string projectBaseName, bool isProtected, string permissionName)
     {
-        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityListFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityListViewFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
         var fileText = GetQueryFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName, isProtected, permissionName);
         _utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName, bool isProtected, string permissionName)
     {
-        var className = FileNames.GetEntityListFeatureClassName(entity.Name);
+        var className = FileNames.GetEntityListViewFeatureClassName(entity.Name);
         var queryListName = FileNames.QueryListName();
-        var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
-        var paramsDto = FileNames.GetDtoName(entity.Name, Dto.ReadParameters);
-        var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
+        var readDto = FileNames.GetDtoName(entity.Name, Dto.ListView);
+        var paramsDto = FileNames.GetDtoName(entity.Name, Dto.ListViewParameters);
         var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
         

@@ -6,7 +6,7 @@ using Services;
 
 public class DeleteRecordEndpointBuilder
 {
-    public static string GetEndpointTextForDeleteRecord(Entity entity, bool addSwaggerComments, Feature feature)
+    public static string GetEndpointText(Entity entity, bool addSwaggerComments, Feature feature)
     {
         var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
         var entityName = entity.Name;

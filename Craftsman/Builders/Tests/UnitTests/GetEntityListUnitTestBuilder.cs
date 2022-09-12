@@ -46,7 +46,7 @@ public class GetEntityListUnitTestBuilder
         var repoVar = $"_{entityName.LowercaseFirstLetter()}Repository";
         var repoInterface = FileNames.EntityRepositoryInterface(entityName);
         var listVar = $"{entityName.LowercaseFirstLetter()}";
-        var paramDto = FileNames.GetDtoName(entityName, Dto.ReadParamaters);
+        var paramDto = FileNames.GetDtoName(entityName, Dto.ReadParameters);
         var featureClassName = FileNames.GetEntityListFeatureClassName(entityName);
         var queryListName = FileNames.QueryListName();
         
@@ -155,7 +155,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         string heimGuardMockObj)
     {
         var fakeEntity = FileNames.FakerName(entityName);
-        var entityParams = FileNames.GetDtoName(entityName, Dto.ReadParamaters);
+        var entityParams = FileNames.GetDtoName(entityName, Dto.ReadParameters);
         var fakeEntityVariableNameOne = $"fake{entityName}One";
         var fakeEntityVariableNameTwo = $"fake{entityName}Two";
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entityName, Dto.Creation));
@@ -232,7 +232,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         string heimGuardMockObj)
     {
         var fakeEntity = FileNames.FakerName(entityName);
-        var entityParams = FileNames.GetDtoName(entityName, Dto.ReadParamaters);
+        var entityParams = FileNames.GetDtoName(entityName, Dto.ReadParameters);
         var fakeEntityVariableNameOne = $"fake{entityName}One";
         var fakeEntityVariableNameTwo = $"fake{entityName}Two";
         var expectedFilterableProperty = @$"fake{entityName}Two.{propToTest.Name}";

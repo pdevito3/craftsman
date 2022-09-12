@@ -29,7 +29,10 @@ public class DtoBuilder
         CreateDtoFile(srcDirectory, entity, Dto.Manipulation, projectBaseName);
         CreateDtoFile(srcDirectory, entity, Dto.Creation, projectBaseName);
         CreateDtoFile(srcDirectory, entity, Dto.Update, projectBaseName);
-        CreateDtoFile(srcDirectory, entity, Dto.ReadParamaters, projectBaseName);
+        CreateDtoFile(srcDirectory, entity, Dto.ReadParameters, projectBaseName);
+        CreateDtoFile(srcDirectory, entity, Dto.FormView, projectBaseName);
+        CreateDtoFile(srcDirectory, entity, Dto.ListView, projectBaseName);
+        CreateDtoFile(srcDirectory, entity, Dto.ListViewParameters, projectBaseName);
     }
 
     public void CreateDtoFile(string srcDirectory, Entity entity, Dto dto, string projectBaseName)
@@ -42,7 +45,7 @@ public class DtoBuilder
 
     public static string GetDtoFileText(string srcDirectory, ClassPath classPath, Entity entity, Dto dto)
     {
-        if (dto == Dto.ReadParamaters)
+        if (dto == Dto.ReadParameters || dto == Dto.ListViewParameters)
             return DtoFileTextGenerator.GetReadParameterDtoText(srcDirectory, classPath.ClassNamespace, entity, dto);
 
         return DtoFileTextGenerator.GetDtoText(classPath, entity, dto);

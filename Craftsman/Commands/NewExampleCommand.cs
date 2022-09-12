@@ -219,6 +219,12 @@ BoundedContexts:
     - Type: GetRecord
       IsProtected: true
       PermissionName: CanReadRecipes
+    - Type: GetFormView
+      IsProtected: true
+      PermissionName: CanReadRecipes
+    - Type: GetListView
+      IsProtected: true
+      PermissionName: CanReadRecipes
     - Type: AddRecord
       IsProtected: true
     - Type: UpdateRecord

@@ -38,7 +38,7 @@ public class Feature
     private string _command = null;
     public string Command
     {
-        get => FeatureType.CommandName(_command, EntityName);
+        get => FeatureType.CommandName();
         set => _command = value;
     }
 
