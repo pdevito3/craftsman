@@ -48,6 +48,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
   * Updated functional tests to properly handle the token setup
 
+* New `RolesController` when using auth
+
 * New `Email` Value Object. Used on `User` if you want to see it in use
 
 
@@ -69,9 +71,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Better error handling message for incorrect directory with boundary based commands
 * New props on complex example
 * Jaeger will get random free ports exposed for HOST in `docker-compose`
-* Seal classes in api project by default
-  * https://www.youtube.com/watch?v=d76WWAD99Yo
-
 
 ### Fixed
 

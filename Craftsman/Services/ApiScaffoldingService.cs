@@ -4,6 +4,7 @@ using System.IO.Abstractions;
 using Builders;
 using Builders.Auth;
 using Builders.Docker;
+using Builders.Endpoints;
 using Builders.Tests.FunctionalTests;
 using Builders.Tests.UnitTests;
 using Builders.Tests.Utilities;
@@ -123,6 +124,7 @@ public class ApiScaffoldingService
                 template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
                 template.UseSoftDelete);
+            new RolesControllerBuilder(_utilities).CreateController(srcDirectory, projectBaseName);
         }
 
         //entities
