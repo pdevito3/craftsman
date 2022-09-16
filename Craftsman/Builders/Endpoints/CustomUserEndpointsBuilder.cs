@@ -49,7 +49,7 @@ public class CustomUserEndpointsBuilder
     [ProducesResponseType(500)]
     [Consumes(""application/json"")]
     [Authorize]
-    [HttpDelete(""{{userId:guid}}/removeRole"", Name = ""RemoveRole"")]
+    [HttpPut(""{{userId:guid}}/removeRole"", Name = ""RemoveRole"")]
     public async Task<ActionResult> RemoveRole([FromRoute] Guid userId, [FromBody] string role)
     {{
         var command = new RemoveUserRole.Command(userId, role);
