@@ -58,7 +58,7 @@ public class GetEntityListUnitTestBuilder
         var servicesClassPath = ClassPathHelper.EntityServicesClassPath(solutionDirectory, "", entityPlural, projectBaseName);
 
         var heimGuardUsing = isProtected ? $"{Environment.NewLine}using HeimGuard;" : "";
-        var heimGuardMockProp = isProtected ? $"{Environment.NewLine}      private readonly Mock<IHeimGuardClient> _heimGuard;" : "";
+        var heimGuardMockProp = isProtected ? $"{Environment.NewLine}    private readonly Mock<IHeimGuardClient> _heimGuard;" : "";
         var heimGuardMockSetup = isProtected ? $"{Environment.NewLine}        _heimGuard = new Mock<IHeimGuardClient>();" : "";
         var heimGuardMockObj = isProtected ? $", _heimGuard.Object" : "";
 
