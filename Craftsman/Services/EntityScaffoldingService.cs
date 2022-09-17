@@ -186,7 +186,7 @@ public class EntityScaffoldingService
         // TODO custom dto for roles
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, userEntity, projectBaseName);
         
-        new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, userEntity, projectBaseName);
+        new EntityMappingBuilder(_utilities).CreateUserMapping(srcDirectory, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutesForUser(testDirectory, projectBaseName);
         _mediator.Send(new DatabaseEntityConfigUserBuilder.Command());
         _mediator.Send(new DatabaseEntityConfigUserRoleBuilder.Command());

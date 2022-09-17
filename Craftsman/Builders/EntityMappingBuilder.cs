@@ -45,4 +45,36 @@ public sealed class {FileNames.GetMappingName(entity.Name)} : IRegister
     }}
 }}";
     }
+
+    public void CreateUserMapping(string srcDirectory, string projectBaseName)
+    {
+        var classPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, $"{FileNames.GetMappingName("User")}.cs", "Users", projectBaseName);
+        var fileText = GetUserMappings(classPath.ClassNamespace, srcDirectory, projectBaseName);
+        _utilities.CreateFile(classPath, fileText);
+    }
+
+    public static string GetUserMappings(string classNamespace, string srcDirectory, string projectBaseName)
+    {
+        var entitiesClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Users", projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", "Users", projectBaseName);
+
+        return @$"namespace {classNamespace};
+
+using {dtoClassPath.ClassNamespace};
+using {entitiesClassPath.ClassNamespace};
+using Mapster;
+
+public sealed class UserMappings : IRegister
+{{
+    public void Register(TypeAdapterConfig config)
+    {{
+        config.NewConfig<User, UserDto>()
+            .Map(x => x.Email, y => y.Email.Value);
+        config.NewConfig<UserForCreationDto, User>()
+            .TwoWays();
+        config.NewConfig<UserForUpdateDto, User>()
+            .TwoWays();
+    }}
+}}";
+    }
 }
