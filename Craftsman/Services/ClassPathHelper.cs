@@ -174,6 +174,22 @@ public static class ClassPathHelper
         return new ClassPath(spaDirectory, "", className);
     }
 
+    public static ClassPath NextSideNavClassPath(string nextSrc)
+    {
+        return new ClassPath(nextSrc, Path.Combine("components"), "PrivateHeader.tsx");
+    }
+
+    public static ClassPath NextJsSpaFeatureClassPath(string nextSrc, string entityName, NextJsFeatureCategory category, string className)
+    {
+        return category.Name switch
+        {
+            nameof(BffFeatureCategory.Routes) => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter(), "routes"), className),
+            nameof(BffFeatureCategory.Api) => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter(), "api"), className),
+            nameof(BffFeatureCategory.Types) => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter(), "types"), className),
+            _ => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter()), className)
+        };
+    }
+    
     public static ClassPath AuthServerFactoriesClassPath(string solutionDirectory, string className, string authServerProjectName)
     {
         return new ClassPath(solutionDirectory, Path.Combine($"{authServerProjectName}", "Factories"), className);

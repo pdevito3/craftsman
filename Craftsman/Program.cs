@@ -131,6 +131,15 @@ app.Configure(config =>
             .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
             .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
             .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+
+        config.AddBranch("next", @new =>
+        {
+            @new.AddCommand<AddNextEntityCommand>("entity")
+                .WithDescription(
+                    "Adds basic entity scaffolding including apis, forms, and routes to a NextJS project using a formatted yaml or json file.")
+                .WithExample(new[]
+                    { "add next entity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" });
+        });
     });
 
     config.AddBranch("register", @new =>

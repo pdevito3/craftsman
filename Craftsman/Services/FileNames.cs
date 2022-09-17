@@ -82,51 +82,18 @@ public static class FileNames
     {
         return $"{entityName}Configuration";
     }
-
-    public static string GetSeederName(Entity entity)
-    {
-        return $"{entity.Name}Seeder";
-    }
-
-    public static string GetInfraRegistrationName()
-    {
-        return "InfrastructureServiceExtension";
-    }
-
-    public static string GetSwaggerServiceExtensionName()
-    {
-        return "SwaggerServiceExtension";
-    }
-
-    public static string GetAppSettingsName(bool asJson = true)
-    {
-        return asJson ? $"appsettings.json" : $"appsettings";
-    }
-
-    public static string BffApiKeysFilename(string entityName)
-    {
-        return $"{entityName.LowercaseFirstLetter()}.keys";
-    }
-
-    public static string BffEntityListRouteComponentName(string entityName)
-    {
-        return $"{entityName.UppercaseFirstLetter()}List";
-    }
-
-    public static string BffApiKeysExport(string entityName)
-    {
-        return $"{entityName.UppercaseFirstLetter()}Keys";
-    }
-
-    public static string GetMappingName(string entityName)
-    {
-        return $"{entityName}Mappings";
-    }
-
-    public static string GetIntegrationTestFixtureName()
-    {
-        return $"TestFixture";
-    }
+    public static string GetSeederName(Entity entity) => $"{entity.Name}Seeder";
+    public static string GetInfraRegistrationName() => "InfrastructureServiceExtension";
+    public static string GetSwaggerServiceExtensionName() => "SwaggerServiceExtension";
+    public static string GetAppSettingsName(bool asJson = true) => asJson ? $"appsettings.json" : $"appsettings";
+    public static string BffApiKeysFilename(string entityName) => $"{entityName.LowercaseFirstLetter()}.keys";
+    public static string BffEntityListRouteComponentName(string entityName) => $"{entityName.UppercaseFirstLetter()}List";
+    public static string BffApiKeysExport(string entityName) => $"{entityName.UppercaseFirstLetter()}Keys";
+    public static string NextJsApiKeysFilename(string entityName) => $"{entityName.LowercaseFirstLetter()}.keys";
+    public static string NextJsEntityListRouteComponentName(string entityName) => $"{entityName.UppercaseFirstLetter()}List";
+    public static string NextJsApiKeysExport(string entityName) => $"{entityName.UppercaseFirstLetter()}Keys";
+    public static string GetMappingName(string entityName) => $"{entityName}Mappings";
+    public static string GetIntegrationTestFixtureName() => $"TestFixture";
 
     public static string CreateEntityUnitTestName(string entityName) => $"Create{entityName}Tests";
 
