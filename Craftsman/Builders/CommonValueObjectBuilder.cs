@@ -218,9 +218,15 @@ public class {ValueObjectEnum.MonetaryAmount.Name} : ValueObject
 
     public MonetaryAmount Add(MonetaryAmount other) => new MonetaryAmount(Amount + other.Amount);
 
+    public MonetaryAmount Add(decimal amount) => Add(new MonetaryAmount(amount));
+
     public MonetaryAmount Subtract(MonetaryAmount other) => new MonetaryAmount(Amount - other.Amount);
+
+    public MonetaryAmount Subtract(decimal amount) => Subtract(new MonetaryAmount(amount));
         
     public MonetaryAmount MultiplyByPercent(Percent percent) => new MonetaryAmount((Amount * percent.Value)/100M);
+
+    public MonetaryAmount MultiplyByPercent(decimal percent) => MultiplyByPercent(new Percent(percent));
 
     public static MonetaryAmount operator +(MonetaryAmount one, MonetaryAmount two) => one.Add(two);
         
@@ -235,6 +241,8 @@ public class {ValueObjectEnum.MonetaryAmount.Name} : ValueObject
     public static bool operator >=(MonetaryAmount one, MonetaryAmount two) => one.CompareTo(two)>=0;
         
     public static bool operator <=(MonetaryAmount one, MonetaryAmount two) => one.CompareTo(two)<=0;
+    
+    public static MonetaryAmount Of(decimal value) => new MonetaryAmount(value);
 
     public int CompareTo(MonetaryAmount other)
     {{
