@@ -72,6 +72,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * New props on complex example
 * Jaeger will get random free ports exposed for HOST in `docker-compose`
 * More flexible `MonetaryAmount` VO
+* Simplified mapping
 
 ### Fixed
 
