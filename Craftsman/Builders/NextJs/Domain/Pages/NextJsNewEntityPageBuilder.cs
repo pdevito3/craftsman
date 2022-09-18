@@ -25,41 +25,32 @@ public class NextJsNewEntityPageBuilder
     public static string GetFileText(string entityName, string entityPlural)
     {
         var entityPluralLowercase = entityPlural.ToLower();
-        var entityNameLowerFirst = entityName.LowercaseFirstLetter();
         var entityNameUpperFirst = entityName.UppercaseFirstLetter();
         var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var formName = FileNames.NextJsEntityFeatureFormName(entityName);
+        var entityStartsWithVowel = "aeiouAEIOU".IndexOf(entityName) >= 0;
+        var aOrAn = entityStartsWithVowel ? "an" : "a";
 
         return @$"import {{ PrivateLayout }} from ""@/components"";
 import {{ Button }} from ""@/components/forms"";
-import {{ {formName}, useGet{entityNameUpperFirst} }} from ""@/domain/{entityPluralLowercaseFirst}"";
-import {{ useRouter }} from ""next/router"";
+import {{ {formName} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 
-export default function Edit{entityNameUpperFirst}() {{
-  const router = useRouter();
-  const {{ {entityNameLowerFirst}Id }} = router.query;
-  const {{ data }} = useGet{entityNameUpperFirst}({entityNameLowerFirst}Id?.toString());
-
+export default function NewUser() {{
   return (
     <PrivateLayout>
       <div className=""space-y-6"">
-        <Button 
-          href={{""/{entityPluralLowercase}""}}
-          buttonStyle=""secondary""
-        >
+        <Button buttonStyle=""secondary"" href={{""/{entityPluralLowercase}""}}>
           Back
         </Button>
         <div className="""">
-          <h1 className=""h1"">Edit {entityNameUpperFirst}</h1>
-          <div className=""py-6"">
-            <{formName} {entityNameLowerFirst}Id={{{entityNameLowerFirst}Id?.toString()}} {entityNameLowerFirst}Data={{data}} />
+          <h1 className=""h1"">Add {aOrAn} {entityNameUpperFirst}</h1>
+          <div className=""max-w-3xl py-6 space-y-5"">
+            <{formName} />
           </div>
         </div>
       </div>
     </PrivateLayout>
   );
-}}
-
-";
+}}";
     }
 }

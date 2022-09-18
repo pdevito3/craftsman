@@ -28,15 +28,13 @@ public class NextJsEditEntityPageBuilder
         var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var entityUpperFirst = entityName.UppercaseFirstLetter();
         var entityLowerFirst = entityName.LowercaseFirstLetter();
-        var entityStartsWithVowel = "aeiouAEIOU".IndexOf(entityName) >= 0;
-        var aOrAn = entityStartsWithVowel ? "an" : "a";
 
         return @$"import {{ PrivateLayout }} from ""@/components"";
 import {{ Button }} from ""@/components/forms"";
 import {{ {FileNames.NextJsEntityFeatureFormName(entityName)}, useGet{entityUpperFirst} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 import {{ useRouter }} from ""next/router"";
 
-export default function New{entityUpperFirst}() {{
+export default function EditUser() {{
   const router = useRouter();
   const {{ {entityLowerFirst}Id }} = router.query;
   const {{ data }} = useGet{entityUpperFirst}({entityLowerFirst}Id?.toString());
@@ -44,22 +42,18 @@ export default function New{entityUpperFirst}() {{
   return (
     <PrivateLayout>
       <div className=""space-y-6"">
-        <Button 
-          href={{""/{entityPluralLowercase}""}}
-          buttonStyle=""secondary""
-        >
+        <Button buttonStyle=""secondary"" href={{""/{entityPluralLowercase}""}}>
           Back
         </Button>
         <div className="""">
-          <h1 className=""h1"">Add {aOrAn} {entityUpperFirst}</h1>
-          <div className=""py-6"">
+          <h1 className=""h1"">Edit {entityName.UppercaseFirstLetter()}</h1>
+          <div className=""max-w-3xl py-6 space-y-5"">
             <{FileNames.NextJsEntityFeatureFormName(entityName)} {entityLowerFirst}Id={{{entityLowerFirst}Id?.toString()}} {entityLowerFirst}Data={{data}} />
           </div>
         </div>
       </div>
     </PrivateLayout>
   );
-}}
-";
+}}";
     }
 }
