@@ -17,7 +17,7 @@ public class NextJsApiKeysBuilder
     {
         var routesIndexClassPath = ClassPathHelper.NextJsSpaFeatureClassPath(spaDirectory,
             entityPlural,
-            NextJsFeatureCategory.Api,
+            NextJsDomainCategory.Api,
             $"{FileNames.NextJsApiKeysFilename(entityName)}.ts");
         var routesIndexFileText = GetDynamicFeatureKeysText(entityName);
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);

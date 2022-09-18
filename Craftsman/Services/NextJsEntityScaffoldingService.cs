@@ -1,12 +1,10 @@
 ﻿namespace Craftsman.Services;
 
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Abstractions;
 using Builders.NextJs.Domain;
 using Builders.NextJs.Domain.Api;
+using Builders.NextJs.Domain.Pages;
 using Domain;
-using Domain.Enums;
 using Helpers;
 using MediatR;
 using Craftsman.Builders.NextJs;
@@ -63,20 +61,14 @@ public class NextJsEntityScaffoldingService
             
             // features
             new NextJsEntityListTableBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural, entity.Properties);
-            
-            
-            
-            
-            
-            
-            new DynamicFeatureBuilder(_utilities).CreateDynamicFeatureIndex(nextSrc, entity.Plural);
-            new DynamicFeatureRoutesBuilder(_utilities).CreateDynamicFeatureRoutes(nextSrc, entity.Name,
-                entity.Plural);
-            new NextJsApiTypesBuilder(_utilities).CreateDynamicFeatureTypes(nextSrc, entity.Name, entity.Plural,
-                entity.Properties);
-            new DynamicFeatureRoutesModifier(_fileSystem).AddRoute(nextSrc, entity.Name, entity.Plural);
-            new NavigationComponentModifier(_fileSystem).AddFeatureListRouteToNav(nextSrc, entity.Plural);
-            new DynamicFeatureRoutesModifier(_fileSystem).AddRoute(nextSrc, entity.Name, entity.Plural);
+            new NextJsEntityFormBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural, entity.Properties);
+
+            new NextJsEntityValidationBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural, entity.Properties);
+
+            // pages
+            new NextJsEntityIndexPageBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural, entity.Properties);
+            new NextJsNewEntityPageBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural);
+            new NextJsEditEntityPageBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural);
 
             
             

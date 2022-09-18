@@ -18,7 +18,7 @@ public class NextJsApiTypesBuilder
     {
         var routesIndexClassPath = ClassPathHelper.NextJsSpaFeatureClassPath(spaDirectory,
             entityPlural,
-            NextJsFeatureCategory.Types,
+            NextJsDomainCategory.Types,
             "index.ts");
         var routesIndexFileText = GetFileText(entityName, props);
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);

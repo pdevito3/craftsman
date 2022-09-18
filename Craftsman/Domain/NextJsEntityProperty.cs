@@ -1,5 +1,6 @@
 namespace Craftsman.Domain;
 
+using Enums;
 using Helpers;
 
 public class NextJsEntityProperty
@@ -13,15 +14,21 @@ public class NextJsEntityProperty
         get => _name.UppercaseFirstLetter();
         set => _name = value;
     }
-
-    private string _type = "string";
+    
     /// <summary>
-    /// Type of property (e.g. string, int, DateTime?, etc.)
+    /// Label for form controls
+    /// </summary>
+    public string Label { get; set; }
+
+    public TypescriptPropertyType TypeEnum { get; private set; } = TypescriptPropertyType.StringProperty;
+
+    /// <summary>
+    /// Type of property (e.g. string, number, Date?, etc.)
     /// </summary>
     public string Type
     {
-        get => _type;
-        set => _type = CraftsmanUtilities.PropTypeCleanupTypeScript(value);
+        get => TypeEnum.TypescriptPropType();
+        set => TypeEnum = CraftsmanUtilities.PropTypeCleanupTypeScript(value);
     }
 
     public bool Nullable => Type.Contains('?');

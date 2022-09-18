@@ -15,7 +15,7 @@ public class DomainIndexBuilder
 
     public void CreateDynamicFeatureIndex(string spaDirectory, string entityPlural)
     {
-        var classPath = ClassPathHelper.NextJsSpaFeatureClassPath(spaDirectory, entityPlural, NextJsFeatureCategory.Index, "index.ts");
+        var classPath = ClassPathHelper.NextJsSpaFeatureClassPath(spaDirectory, entityPlural, NextJsDomainCategory.Index, "index.ts");
         var fileText = GetDynamicFeatureIndexText();
         _utilities.CreateFile(classPath, fileText);
     }
@@ -24,6 +24,7 @@ public class DomainIndexBuilder
     {
         return @$"export * from ""./api"";
 export * from ""./features"";
-export * from ""./types"";";
+export * from ""./types"";
+export * from ""./validation"";";
     }
 }

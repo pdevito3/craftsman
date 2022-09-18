@@ -16,7 +16,7 @@ public class NavigationComponentModifier
 
     public void AddFeatureListRouteToNav(string nextSrcDirectory, string entityPlural)
     {
-        var classPath = ClassPathHelper.NextSideNavClassPath(nextSrcDirectory);
+        var classPath = ClassPathHelper.NextJsSideNavClassPath(nextSrcDirectory);
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);

@@ -174,18 +174,24 @@ public static class ClassPathHelper
         return new ClassPath(spaDirectory, "", className);
     }
 
-    public static ClassPath NextSideNavClassPath(string nextSrc)
+    public static ClassPath NextJsSideNavClassPath(string nextSrc)
     {
         return new ClassPath(nextSrc, Path.Combine("components"), "PrivateHeader.tsx");
     }
 
-    public static ClassPath NextJsSpaFeatureClassPath(string nextSrc, string entityName, NextJsFeatureCategory category, string className)
+    public static ClassPath NextJsPagesClassPath(string nextSrc, string entityPlural, string className)
+    {
+        return new ClassPath(nextSrc, Path.Combine("pages", entityPlural.LowercaseFirstLetter()), className);
+    }
+
+    public static ClassPath NextJsSpaFeatureClassPath(string nextSrc, string entityName, NextJsDomainCategory category, string className)
     {
         return category.Name switch
         {
-            nameof(BffFeatureCategory.Routes) => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter(), "routes"), className),
-            nameof(BffFeatureCategory.Api) => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter(), "api"), className),
-            nameof(BffFeatureCategory.Types) => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter(), "types"), className),
+            nameof(NextJsDomainCategory.Routes) => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter(), "routes"), className),
+            nameof(NextJsDomainCategory.Api) => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter(), "api"), className),
+            nameof(NextJsDomainCategory.Types) => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter(), "types"), className),
+            nameof(NextJsDomainCategory.Features) => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter(), "features"), className),
             _ => new ClassPath(nextSrc, Path.Combine("domain", entityName.LowercaseFirstLetter()), className)
         };
     }

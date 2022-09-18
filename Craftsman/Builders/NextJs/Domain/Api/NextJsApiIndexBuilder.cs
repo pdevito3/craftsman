@@ -15,7 +15,7 @@ public class NextJsApiIndexBuilder
 
     public void CreateDynamicFeatureApiIndex(string spaDirectory, string entityName, string entityPlural)
     {
-        var routesIndexClassPath = ClassPathHelper.NextJsSpaFeatureClassPath(spaDirectory, entityPlural, NextJsFeatureCategory.Api, "index.ts");
+        var routesIndexClassPath = ClassPathHelper.NextJsSpaFeatureClassPath(spaDirectory, entityPlural, NextJsDomainCategory.Api, "index.ts");
         var routesIndexFileText = GetDynamicFeatureApisIndexText(entityName);
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
     }

@@ -18,15 +18,14 @@ public class NextJsEntityListTableBuilder
     {
         var routesIndexClassPath = ClassPathHelper.NextJsSpaFeatureClassPath(nextSrc,
             entityPlural,
-            NextJsFeatureCategory.Api,
-            $"{FeatureType.AddRecord.NextJsApiName(entityName)}.tsx");
+            NextJsDomainCategory.Api,
+            $"{FileNames.NextJsEntityFeatureListTableName(entityName)}.tsx");
         var routesIndexFileText = GetFileText(entityName, entityPlural, properties);
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
     }
 
     public static string GetFileText(string entityName, string entityPlural, List<NextJsEntityProperty> properties)
     {
-        var dtoForCreationName = FileNames.GetDtoName(entityName, Dto.Creation);
         var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
         var entityPluralLowercase = entityPlural.ToLower();
         var entityPluralUpperFirst = entityPlural.UppercaseFirstLetter();
@@ -110,10 +109,7 @@ export function {entityUpperFirst}ListTable({{ queryFilter }}: {entityUpperFirst
       onRowClick={{(row) => router.push(`/{entityPluralLowercase}/${{row.id}}`)}}
     />
   );
-}}
-
-
-";
+}}";
     }
 
     private static string GetColumnHelpers(List<NextJsEntityProperty> properties)
