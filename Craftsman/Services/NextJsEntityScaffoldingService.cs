@@ -25,7 +25,7 @@ public class NextJsEntityScaffoldingService
 
     public void ScaffoldEntities(NextJsEntityTemplate template, string nextSrc)
     {
-        var clientName = template.ClientName;
+        var clientName = template.ClientName.LowercaseFirstLetter();
         foreach (var entity in template.Entities)
         {
             new NavigationComponentModifier(_fileSystem).AddFeatureListRouteToNav(nextSrc, entity.Plural);
@@ -54,6 +54,9 @@ public class NextJsEntityScaffoldingService
                 entity.Name,
                 entity.Plural, 
                 clientName);
+            new NextJsEntityFeatureIndexPageBuilder(_utilities).CreateFile(nextSrc, 
+                entity.Name,
+                entity.Plural);
             
             // types
             new NextJsApiTypesBuilder(_utilities).CreateDynamicFeatureTypes(nextSrc, entity.Name, entity.Plural,
@@ -64,14 +67,12 @@ public class NextJsEntityScaffoldingService
             new NextJsEntityFormBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural, entity.Properties);
 
             new NextJsEntityValidationBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural, entity.Properties);
+            new NextJsEntityIndexBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural, entity.Properties);
 
             // pages
             new NextJsEntityIndexPageBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural, entity.Properties);
             new NextJsNewEntityPageBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural);
             new NextJsEditEntityPageBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural);
-
-            
-            
         }
     }
 }

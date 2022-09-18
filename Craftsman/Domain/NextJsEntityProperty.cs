@@ -14,11 +14,16 @@ public class NextJsEntityProperty
         get => _name.UppercaseFirstLetter();
         set => _name = value;
     }
-    
+
+    private string _label;
     /// <summary>
     /// Label for form controls
     /// </summary>
-    public string Label { get; set; }
+    public string Label
+    {
+        get => _label.UppercaseFirstLetter() ?? Name.UppercaseFirstLetter();
+        set => _label = value;
+    }
 
     public TypescriptPropertyType TypeEnum { get; private set; } = TypescriptPropertyType.StringProperty;
 

@@ -5,11 +5,11 @@ using Craftsman.Domain.Enums;
 using Craftsman.Helpers;
 using Craftsman.Services;
 
-public class NextJsEntityValidationBuilder
+public class NextJsEntityIndexBuilder
 {
     private readonly ICraftsmanUtilities _utilities;
 
-    public NextJsEntityValidationBuilder(ICraftsmanUtilities utilities)
+    public NextJsEntityIndexBuilder(ICraftsmanUtilities utilities)
     {
         _utilities = utilities;
     }
@@ -19,7 +19,7 @@ public class NextJsEntityValidationBuilder
         var routesIndexClassPath = ClassPathHelper.NextJsSpaFeatureClassPath(nextSrc,
             entityPlural,
             NextJsDomainCategory.Index,
-            $"validation.tsx");
+            $"index.ts");
         var routesIndexFileText = GetFileText(entityName, properties);
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
     }
@@ -28,20 +28,10 @@ public class NextJsEntityValidationBuilder
     {
         var validationSchema = FileNames.NextJsEntityValidationName(entityName);
 
-        return @$"import * as yup from ""yup"";
-
-export const {validationSchema} = yup.object({{{GetValidations(properties)}
-}});";
-    }
-
-    private static string GetValidations(List<NextJsEntityProperty> properties)
-    {
-        var validations = "";
-        foreach (var property in properties)
-        {
-            validations += property.TypeEnum.YupValidation(property.Name);
-        }
-
-        return validations;
+        return @$"export * from ""./api"";
+export * from ""./features"";
+export * from ""./types"";
+export * from ""./validation"";
+";
     }
 }

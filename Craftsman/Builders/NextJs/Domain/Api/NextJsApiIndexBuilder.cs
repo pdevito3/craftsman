@@ -28,6 +28,6 @@ export * from ""./{FeatureType.AddRecord.NextJsApiName(entityName)}"";
 export * from ""./{FeatureType.GetList.NextJsApiName(entityName)}"";
 export * from ""./{FeatureType.GetRecord.NextJsApiName(entityName)}"";
 export * from ""./{FeatureType.DeleteRecord.NextJsApiName(entityName)}"";
-export * from ""./{FeatureType.UpdateRecord.NextJsApiName(entityName)};";
+export * from ""./{FeatureType.UpdateRecord.NextJsApiName(entityName)}"";";
     }
 }

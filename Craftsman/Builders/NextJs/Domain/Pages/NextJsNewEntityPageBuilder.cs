@@ -27,11 +27,12 @@ public class NextJsNewEntityPageBuilder
         var entityPluralLowercase = entityPlural.ToLower();
         var entityNameLowerFirst = entityName.LowercaseFirstLetter();
         var entityNameUpperFirst = entityName.UppercaseFirstLetter();
+        var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var formName = FileNames.NextJsEntityFeatureFormName(entityName);
 
         return @$"import {{ PrivateLayout }} from ""@/components"";
 import {{ Button }} from ""@/components/forms"";
-import {{ {formName}, useGet{entityNameUpperFirst} }} from ""@/domain/{entityPluralLowercase}"";
+import {{ {formName}, useGet{entityNameUpperFirst} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 import {{ useRouter }} from ""next/router"";
 
 export default function Edit{entityNameUpperFirst}() {{
@@ -42,7 +43,12 @@ export default function Edit{entityNameUpperFirst}() {{
   return (
     <PrivateLayout>
       <div className=""space-y-6"">
-        <Button href={{""/{entityPluralLowercase}""}}>Back</Button>
+        <Button 
+          href={{""/{entityPluralLowercase}""}}
+          buttonStyle=""secondary""
+        >
+          Back
+        </Button>
         <div className="""">
           <h1 className=""h1"">Edit {entityNameUpperFirst}</h1>
           <div className=""py-6"">

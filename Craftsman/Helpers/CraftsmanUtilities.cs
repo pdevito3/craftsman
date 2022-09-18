@@ -21,6 +21,7 @@ public interface ICraftsmanUtilities
     void CreateFile(IClassPath classPath, string fileText);
     string GetDbContext(string srcDirectory, string projectBaseName);
     void IsSolutionDirectoryGuard(string proposedDirectory, bool slnIsInParent = false);
+    void IsNextJsRootDir(string proposedDirectory);
     bool ProjectUsesSoftDelete(string srcDirectory, string projectBaseName);
     string GetRootDir();
     void IsBoundedContextDirectoryGuard();
@@ -69,6 +70,14 @@ public class CraftsmanUtilities : ICraftsmanUtilities
             throw new SolutionNotFoundException("A solution file was not found in the parent directory. You might need to go down one level to your boundary directory (has 'src' and 'test' directories) and run your command there instead.");
 
         throw new SolutionNotFoundException();
+    }
+
+    public void IsNextJsRootDir(string proposedDirectory)
+    {
+        if (_fileSystem.Directory.EnumerateFiles(proposedDirectory, "next.config*").Any())
+            return;
+        
+        throw new NextConfigNotFoundException();
     }
 
     public void CreateFile(IClassPath classPath, string fileText)
@@ -145,6 +154,7 @@ using {parentClassPath.ClassNamespace};";
             "string" => TypescriptPropertyType.StringProperty,
             "datetime" => TypescriptPropertyType.DateProperty,
             "dateonly" => TypescriptPropertyType.DateProperty,
+            "date" => TypescriptPropertyType.DateProperty,
             "timeonly" => TypescriptPropertyType.DateProperty,
             "datetimeoffset" => TypescriptPropertyType.DateProperty,
             "guid" => TypescriptPropertyType.StringProperty,

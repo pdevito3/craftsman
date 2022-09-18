@@ -28,6 +28,7 @@ public class NextJsApiAddEntityBuilder
         var dtoForCreationName = FileNames.GetDtoName(entityName, Dto.Creation);
         var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
         var entityPluralLowercase = entityPlural.ToLower();
+        var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var entityUpperFirst = entityName.UppercaseFirstLetter();
         var keysImport = FileNames.NextJsApiKeysFilename(entityName);
         var keyExportName = FileNames.NextJsApiKeysExport(entityName);
@@ -35,7 +36,7 @@ public class NextJsApiAddEntityBuilder
         return @$"import {{ clients }} from ""@/lib/axios"";
 import {{ AxiosError }} from ""axios"";
 import {{ useMutation, UseMutationOptions, useQueryClient }} from ""react-query"";
-import {{ {readDtoName}, {dtoForCreationName}, {keyExportName} }} from ""@/domain/{entityPluralLowercase}"";
+import {{ {readDtoName}, {dtoForCreationName}, {keyExportName} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 
 const add{entityUpperFirst} = async (data: {dtoForCreationName}) => {{
   const axios = await clients.{clientName}();

@@ -176,12 +176,12 @@ public static class ClassPathHelper
 
     public static ClassPath NextJsSideNavClassPath(string nextSrc)
     {
-        return new ClassPath(nextSrc, Path.Combine("components"), "PrivateHeader.tsx");
+        return new ClassPath(nextSrc, Path.Combine("components"), "PrivateSideNav.tsx");
     }
 
     public static ClassPath NextJsPagesClassPath(string nextSrc, string entityPlural, string className)
     {
-        return new ClassPath(nextSrc, Path.Combine("pages", entityPlural.LowercaseFirstLetter()), className);
+        return new ClassPath(nextSrc, Path.Combine("pages", entityPlural.ToLower()), className);
     }
 
     public static ClassPath NextJsSpaFeatureClassPath(string nextSrc, string entityName, NextJsDomainCategory category, string className)

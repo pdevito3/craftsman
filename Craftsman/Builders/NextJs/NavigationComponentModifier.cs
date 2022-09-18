@@ -34,7 +34,7 @@ public class NavigationComponentModifier
                 {
                     var newText = $"{line}";
                     if (line.Contains("/* route marker"))
-                        newText += @$"{Environment.NewLine}	{{ name: '{entityPlural.UppercaseFirstLetter()}', href: '/{entityPlural.LowercaseFirstLetter()}', icon: IoFolder }},";
+                        newText += @$"{Environment.NewLine}	{{ name: '{entityPlural.UppercaseFirstLetter()}', href: '/{entityPlural.ToLower()}', icon: IconFolder }},";
 
 
                     output.WriteLine(newText);

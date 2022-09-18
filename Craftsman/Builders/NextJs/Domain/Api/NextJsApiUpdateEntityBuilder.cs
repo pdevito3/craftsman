@@ -23,18 +23,20 @@ public class NextJsApiUpdateEntityBuilder
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
     }
 
-    public static string GetApiText(string entityName, string clientName, string entityPlural)
+    public static string GetApiText(string entityName, string entityPlural, string clientName)
     {
         var dtoForUpdateName = FileNames.GetDtoName(entityName, Dto.Update);
         var entityPluralLowercase = entityPlural.ToLower();
         var entityUpperFirst = entityName.UppercaseFirstLetter();
+        var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
+        var entityLowerFirst = entityName.LowercaseFirstLetter();
         var keysImport = FileNames.NextJsApiKeysFilename(entityName);
         var keyExportName = FileNames.NextJsApiKeysExport(entityName);
 
         return @$"import {{ clients }} from ""@/lib/axios"";
 import {{ AxiosError }} from ""axios"";
 import {{ useMutation, UseMutationOptions, useQueryClient }} from ""react-query"";
-import {{ {dtoForUpdateName}, {keyExportName} }} from ""@/domain/{entityPluralLowercase}"";
+import {{ {dtoForUpdateName}, {keyExportName} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 
 const update{entityUpperFirst} = async (id: string, data: {dtoForUpdateName}) => {{
   const axios = await clients.{clientName}();

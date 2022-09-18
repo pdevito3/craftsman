@@ -4,6 +4,7 @@ public interface IScaffoldingDirectoryStore
 {
     string SolutionDirectory { get; }
     public string SpaDirectory { get; }
+    public string SpaSrcDirectory { get; }
     string BoundedContextDirectory { get; }
     string SrcDirectory { get; }
     string TestDirectory { get; }
@@ -11,6 +12,7 @@ public interface IScaffoldingDirectoryStore
     string SetSolutionDirectory(string rootDir, string domainName);
     string SetSolutionDirectory(string solutionDir);
     string SetBoundedContextDirectoryAndProject(string projectName);
+    string SetNextJsDir(string projectName);
     void SetSpaDirectory(string spaDirectory);
 }
 
@@ -18,6 +20,9 @@ public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
 {
     public string SolutionDirectory { get; private set; }
     public string SpaDirectory { get; private set; }
+    public string SpaSrcDirectory => string.IsNullOrEmpty(SpaDirectory)
+        ? null
+        : Path.Combine(SpaDirectory, "src");
     public string BoundedContextDirectory { get; private set; }
     public string ProjectBaseName { get; private set; }
     public string SrcDirectory => string.IsNullOrEmpty(BoundedContextDirectory)
@@ -55,6 +60,12 @@ public class ScaffoldingDirectoryStore : IScaffoldingDirectoryStore
         ProjectBaseName = projectName;
         BoundedContextDirectory = Path.Combine(SolutionDirectory, projectName);
         return SolutionDirectory;
+    }
+
+    public string SetNextJsDir(string nextJsRootDir)
+    {
+        SpaDirectory = nextJsRootDir;
+        return SpaDirectory;
     }
 
     public void SetSpaDirectory(string spaDirectory)

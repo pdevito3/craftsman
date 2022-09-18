@@ -28,13 +28,14 @@ public class NextJsApiGetEntityBuilder
         var entityPluralLowercase = entityPlural.ToLower();
         var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
         var entityUpperFirst = entityName.UppercaseFirstLetter();
+        var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var keysImport = FileNames.NextJsApiKeysFilename(entityName);
         var keyExportName = FileNames.NextJsApiKeysExport(entityName);
 
         return @$"import {{ clients }} from ""@/lib/axios"";
 import {{ AxiosResponse }} from ""axios"";
 import {{ useQuery }} from ""react-query"";
-import {{ {readDtoName}, {keyExportName} }} from ""@/domain/{entityPluralLowercase}"";
+import {{ {readDtoName}, {keyExportName} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 
 const get{entityUpperFirst} = async (id: string) => {{
   const axios = await clients.{clientName}();

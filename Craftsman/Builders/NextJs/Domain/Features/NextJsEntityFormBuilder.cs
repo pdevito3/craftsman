@@ -30,6 +30,7 @@ public class NextJsEntityFormBuilder
         var dtoForUpdateName = FileNames.GetDtoName(entityName, Dto.Update);
         var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
         var entityPluralLowercase = entityPlural.ToLower();
+        var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var entityUpperFirst = entityName.UppercaseFirstLetter();
         var entityLowerFirst = entityName.LowercaseFirstLetter();
         var validationSchema = FileNames.NextJsEntityValidationName(entityName);
@@ -51,7 +52,7 @@ import {{
   {validationSchema},
   useAdd{entityUpperFirst},
   useUpdate{entityUpperFirst},
-}} from ""@/domain/{entityPluralLowercase}"";
+}} from ""@/domain/{entityPluralLowercaseFirst}"";
 import {{ FormMode }} from ""@/types"";
 import {{ getSimpleDirtyFields, useAutosave }} from ""@/utils"";
 import {{ DevTool }} from ""@hookform/devtools"";

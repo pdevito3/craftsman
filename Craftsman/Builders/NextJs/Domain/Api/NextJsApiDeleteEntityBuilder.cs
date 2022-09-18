@@ -27,13 +27,14 @@ public class NextJsApiDeleteEntityBuilder
     {
         var entityPluralLowercase = entityPlural.ToLower();
         var entityUpperFirst = entityName.UppercaseFirstLetter();
+        var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var keysImport = FileNames.NextJsApiKeysFilename(entityName);
         var keyExportName = FileNames.NextJsApiKeysExport(entityName);
 
         return @$"import {{ clients }} from ""@/lib/axios"";
 import {{ AxiosError }} from ""axios"";
 import {{ useMutation, UseMutationOptions, useQueryClient }} from ""react-query"";
-import {{ {keyExportName} }} from ""@/domain/{entityPluralLowercase}"";
+import {{ {keyExportName} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 
 async function delete{entityUpperFirst}(id: string) {{
   const axios = await clients.{clientName}();

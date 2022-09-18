@@ -28,6 +28,7 @@ public class NextJsApiGetListEntityBuilder
         var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
         var entityPluralUppercaseFirst = entityPlural.UppercaseFirstLetter();
         var entityPluralLowercase = entityPlural.ToLower();
+        var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var entityNameLowercase = entityName.ToLower();
         var keysImport = FileNames.NextJsApiKeysFilename(entityName);
         var keyExportName = FileNames.NextJsApiKeysExport(entityName);
@@ -38,7 +39,7 @@ import {{ generateSieveSortOrder }} from ""@/utils/sorting"";
 import {{ AxiosResponse }} from ""axios"";
 import queryString from ""query-string"";
 import {{ useQuery }} from ""react-query"";
-import {{ QueryParams, {readDtoName}, {keyExportName} }} from ""@/domain/{entityPluralLowercase}"";
+import {{ QueryParams, {readDtoName}, {keyExportName} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 
 interface delayProps {{
   hasArtificialDelay?: boolean;
@@ -60,7 +61,7 @@ const get{entityPluralUppercaseFirst} = async ({{
   const [json] = await Promise.all([
     clients.{clientName}().then((axios) =>
       axios
-        .get(`/{entityPluralLowercase}{{queryString}}`)
+        .get(`/{entityPluralLowercase}${{queryString}}`)
         .then((response: AxiosResponse<{readDtoName}[]>) => {{
           return {{
             data: response.data as {readDtoName}[],

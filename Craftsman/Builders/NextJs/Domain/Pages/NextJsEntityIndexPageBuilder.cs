@@ -27,6 +27,7 @@ public class NextJsEntityIndexPageBuilder
     {
         var entityPluralLowercase = entityPlural.ToLower();
         var entityUpperFirst = entityName.UppercaseFirstLetter();
+        var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
 
         return @$"import {{ PrivateLayout, SearchInput }} from ""@/components"";
 import {{
@@ -34,7 +35,7 @@ import {{
   PaginatedTableProvider,
   useGlobalFilter,
 }} from ""@/components/forms"";
-import {{ {FileNames.NextJsEntityFeatureListTableName(entityName)} }} from ""@/domain/recipes"";
+import {{ {FileNames.NextJsEntityFeatureListTableName(entityName)} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 import ""@tanstack/react-table"";
 import {{ IconCirclePlus }} from ""tabler-icons"";
 
@@ -69,7 +70,7 @@ export default function {entityUpperFirst}List() {{
                   icon={{<IconCirclePlus className=""w-5 h-5"" />}}
                   href=""/{entityPluralLowercase}/new""
                 >
-                  Add Recipe
+                  Add {entityName}
                 </Button>
               </div>
 

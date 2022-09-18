@@ -2,7 +2,7 @@
   "profiles": {
     "Craftsman Dev": {
       "commandName": "Project",
-      "commandLineArgs": "new example",
+      "commandLineArgs": "next entity /Users/paul/Documents/NextEntityScaffold.yaml",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Dev"
       }

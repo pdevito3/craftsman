@@ -21,7 +21,7 @@ public class BffEntityProperty
     public string Type
     {
         get => _type;
-        set => _type = CraftsmanUtilities.PropTypeCleanupTypeScript(value);
+        set => _type = CraftsmanUtilities.PropTypeCleanupTypeScript(value).TypescriptPropType();
     }
 
     public bool Nullable => Type.Contains('?');

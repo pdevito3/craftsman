@@ -38,20 +38,18 @@ public class AddNextEntityCommand : Command<AddNextEntityCommand.Settings>
 
     public override int Execute(CommandContext context, Settings settings)
     {
-        var potentialSolutionDir = _utilities.GetRootDir();
+        var potentialNextRootDir = _utilities.GetRootDir();
 
-        _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
-        _scaffoldingDirectoryStore.SetSolutionDirectory(potentialSolutionDir);
+        _utilities.IsNextJsRootDir(potentialNextRootDir);
+        _scaffoldingDirectoryStore.SetNextJsDir(potentialNextRootDir);
 
         _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
         var template = _fileParsingHelper.GetTemplateFromFile<NextJsEntityTemplate>(settings.Filepath);
         _consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
-
-        var nextSrc = tbd
         
-        new NextJsEntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldEntities(template, _scaffoldingDirectoryStore.SpaDirectory);
+        new NextJsEntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldEntities(template, _scaffoldingDirectoryStore.SpaSrcDirectory);
 
-        _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
+        _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your entity scaffolding has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
         return 0;
     }
 }

@@ -18,7 +18,7 @@ public class NextJsEntityListTableBuilder
     {
         var routesIndexClassPath = ClassPathHelper.NextJsSpaFeatureClassPath(nextSrc,
             entityPlural,
-            NextJsDomainCategory.Api,
+            NextJsDomainCategory.Features,
             $"{FileNames.NextJsEntityFeatureListTableName(entityName)}.tsx");
         var routesIndexFileText = GetFileText(entityName, entityPlural, properties);
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
@@ -30,6 +30,7 @@ public class NextJsEntityListTableBuilder
         var entityPluralLowercase = entityPlural.ToLower();
         var entityPluralUpperFirst = entityPlural.UppercaseFirstLetter();
         var entityUpperFirst = entityName.UppercaseFirstLetter();
+        var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var entityLowerFirst = entityName.LowercaseFirstLetter();
 
         string columnHelpers = GetColumnHelpers(properties);
@@ -41,7 +42,7 @@ public class NextJsEntityListTableBuilder
 }} from ""@/components/forms"";
 import useDeleteModal from ""@/components/modal/ConfirmDeleteModal"";
 import {{ Notifications }} from ""@/components/notifications"";
-import {{ {readDtoName}, useDelete{entityUpperFirst}, use{entityPluralUpperFirst} }} from ""@/domain/{entityPluralLowercase}"";
+import {{ {readDtoName}, useDelete{entityUpperFirst}, use{entityPluralUpperFirst} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 import ""@tanstack/react-table"";
 import {{ createColumnHelper, SortingState }} from ""@tanstack/react-table"";
 import {{ useRouter }} from ""next/router"";
