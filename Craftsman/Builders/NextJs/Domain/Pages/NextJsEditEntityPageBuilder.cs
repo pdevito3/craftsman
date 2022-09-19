@@ -31,6 +31,7 @@ public class NextJsEditEntityPageBuilder
 
         return @$"import {{ PrivateLayout }} from ""@/components"";
 import {{ Button }} from ""@/components/forms"";
+import Head from ""next/head"";
 import {{ {FileNames.NextJsEntityFeatureFormName(entityName)}, useGet{entityUpperFirst} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 import {{ useRouter }} from ""next/router"";
 
@@ -40,21 +41,26 @@ export default function EditUser() {{
   const {{ data }} = useGet{entityUpperFirst}({entityLowerFirst}Id?.toString());
 
   return (
-    <PrivateLayout>
-      <div className=""space-y-6"">
-        <div className=""pt-4"">
-          <Button buttonStyle=""secondary"" href={{""/{entityPluralLowercase}""}}>
-            Back
-          </Button>
-        </div>
-        <div className="""">
-          <h1 className=""h1"">Edit {entityName.UppercaseFirstLetter()}</h1>
-          <div className=""max-w-3xl py-6 space-y-5"">
-            <{FileNames.NextJsEntityFeatureFormName(entityName)} {entityLowerFirst}Id={{{entityLowerFirst}Id?.toString()}} {entityLowerFirst}Data={{data}} />
+    <>
+      <Head>
+        <title>Edit {entityUpperFirst}</title>
+      </Head>
+      <PrivateLayout>
+        <div className=""space-y-6"">
+          <div className=""pt-4"">
+            <Button buttonStyle=""secondary"" href={{""/{entityPluralLowercase}""}}>
+              Back
+            </Button>
+          </div>
+          <div className="""">
+            <h1 className=""h1"">Edit {entityName.UppercaseFirstLetter()}</h1>
+            <div className=""max-w-3xl py-6 space-y-5"">
+              <{FileNames.NextJsEntityFeatureFormName(entityName)} {entityLowerFirst}Id={{{entityLowerFirst}Id?.toString()}} {entityLowerFirst}Data={{data}} />
+            </div>
           </div>
         </div>
-      </div>
-    </PrivateLayout>
+      </PrivateLayout>
+    </>
   );
 }}";
     }

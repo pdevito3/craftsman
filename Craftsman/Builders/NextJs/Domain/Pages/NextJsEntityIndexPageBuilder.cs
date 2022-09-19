@@ -48,40 +48,46 @@ export default function {entityUpperFirst}List() {{
   }} = useGlobalFilter((value) => `({string.Join("|", properties.Select(x => x.Name.LowercaseFirstLetter()))})@=*${{value}}`);
 
   return (
-    <PrivateLayout>
-      <div className=""space-y-6 max-w-9xl"">
-        <div className="""">
-          <h1 className=""h1"">{entityPlural.UppercaseFirstLetter()}</h1>
-          <div className=""py-4"">
-            <PaginatedTableProvider>
-              <div className=""flex items-center justify-between"">
-                <div className=""mt-1"">
-                  <SearchInput
-                    value={{globalFilter ?? """"}}
-                    onChange={{(value) =>
-                      calculateAndSetQueryFilter(String(value))
-                    }}
-                    placeholder=""Search all columns...""
-                  />
+    <>
+      <Head>
+        <title>{entityPlural}</title>
+      </Head>
+
+      <PrivateLayout>
+        <div className=""space-y-6 max-w-9xl"">
+          <div className="""">
+            <h1 className=""h1"">{entityPlural.UppercaseFirstLetter()}</h1>
+            <div className=""py-4"">
+              <PaginatedTableProvider>
+                <div className=""flex items-center justify-between"">
+                  <div className=""mt-1"">
+                    <SearchInput
+                      value={{globalFilter ?? """"}}
+                      onChange={{(value) =>
+                        calculateAndSetQueryFilter(String(value))
+                      }}
+                      placeholder=""Search all columns...""
+                    />
+                  </div>
+
+                  <Button
+                    buttonStyle=""primary""
+                    icon={{<IconCirclePlus className=""w-5 h-5"" />}}
+                    href=""/{entityPluralLowercase}/new""
+                  >
+                    Add {entityName}
+                  </Button>
                 </div>
 
-                <Button
-                  buttonStyle=""primary""
-                  icon={{<IconCirclePlus className=""w-5 h-5"" />}}
-                  href=""/{entityPluralLowercase}/new""
-                >
-                  Add {entityName}
-                </Button>
-              </div>
-
-              <div className=""pt-2"">
-                <{FileNames.NextJsEntityFeatureListTableName(entityName)} queryFilter={{queryFilter}} />
-              </div>
-            </PaginatedTableProvider>
+                <div className=""pt-2"">
+                  <{FileNames.NextJsEntityFeatureListTableName(entityName)} queryFilter={{queryFilter}} />
+                </div>
+              </PaginatedTableProvider>
+            </div>
           </div>
         </div>
-      </div>
-    </PrivateLayout>
+      </PrivateLayout>
+    </>
   );
 }}
 ";
