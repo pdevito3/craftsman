@@ -73,7 +73,8 @@ public class GetEntityListUnitTestBuilder
                 repoVar,
                 queryListName,
                 heimGuardMockObj)}";
-        
+        if (entityName == "RolePermission")
+            sortTests = "";
 
         foreach (var prop in entityProperties.Where(e => e.CanFilter && !e.IsSmartEnum()).ToList())
             filterTests += @$"{Environment.NewLine}{Environment.NewLine}{GetEntitiesListFiltered(entityName, 
@@ -83,6 +84,8 @@ public class GetEntityListUnitTestBuilder
                 repoVar,
                 queryListName,
                 heimGuardMockObj)}";
+        if (entityName == "RolePermission")
+            filterTests = "";
         
         return @$"namespace {classPath.ClassNamespace};
 

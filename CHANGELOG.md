@@ -73,6 +73,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Jaeger will get random free ports exposed for HOST in `docker-compose`
 * More flexible `MonetaryAmount` VO
 * Simplified mapping
+* `RolePermisison` properties can be filtered and sorted
 
 ### Fixed
 

@@ -108,8 +108,8 @@ public class EntityScaffoldingService
                 },
             Properties = new List<EntityProperty>()
                 {
-                    new() { Name = "Role", Type = "string", CanFilter = false, CanSort = false },
-                    new() { Name = "Permission", Type = "string", CanFilter = false, CanSort = false }
+                    new() { Name = "Role", Type = "string", CanFilter = true, CanSort = true },
+                    new() { Name = "Permission", Type = "string", CanFilter = true, CanSort = true }
                 }
         };
 
