@@ -24,6 +24,16 @@ public class NextJsEntity
         set => _plural = value;
     }
 
+    private string _icon;
+    /// <summary>
+    /// Icon for navigation
+    /// </summary>
+    public string Icon
+    {
+        get => _icon.UppercaseFirstLetter() ?? "IconFolder";
+        set => _icon = value;
+    }
+
     /// <summary>
     /// List of properties associated to the entity
     /// </summary>

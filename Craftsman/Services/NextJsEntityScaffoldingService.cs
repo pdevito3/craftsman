@@ -28,7 +28,7 @@ public class NextJsEntityScaffoldingService
         var clientName = template.ClientName.LowercaseFirstLetter();
         foreach (var entity in template.Entities)
         {
-            new NavigationComponentModifier(_fileSystem).AddFeatureListRouteToNav(nextSrc, entity.Plural);
+            new NavigationComponentModifier(_fileSystem).AddFeatureListRouteToNav(nextSrc, entity.Plural, entity.Icon);
             
             // apis
             new NextJsApiKeysBuilder(_utilities).CreateDynamicFeatureKeys(nextSrc, entity.Name, entity.Plural);
