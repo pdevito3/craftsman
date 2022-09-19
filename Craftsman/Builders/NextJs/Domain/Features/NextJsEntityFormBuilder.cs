@@ -130,7 +130,7 @@ function {entityUpperFirst}Form({{ {entityLowerFirst}Id, {entityLowerFirst}Data 
         );
       }})
       .catch((e) => {{
-        Notifications.error(""There was an error updating the {entityLowerFirst}"");
+        Notifications.error(""There was an error updating the {entityUpperFirst}"");
         console.error(e);
       }});
   }}
