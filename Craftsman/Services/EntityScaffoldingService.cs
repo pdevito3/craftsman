@@ -195,7 +195,7 @@ public class EntityScaffoldingService
             userEntity.Name, 
             userEntity.Plural));
 
-        new ValidatorBuilder(_utilities).CreateValidators(solutionDirectory, srcDirectory, projectBaseName, userEntity);
+        new ValidatorBuilder(_utilities).CreateUserValidators(solutionDirectory, srcDirectory, projectBaseName, userEntity);
         
         new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, userEntity.Name, userEntity.Plural, projectBaseName, true);
         new ControllerModifier(_fileSystem).AddCustomUserEndpoint(srcDirectory, projectBaseName);
@@ -212,6 +212,8 @@ public class EntityScaffoldingService
         new FakesBuilder(_utilities).CreateUserFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, userEntity);
         new CreateUserRoleUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new AddRemoveUserRoleTestsBuilder(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
+        new UserUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        new UserUnitTestBuilder(_utilities).UpdateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { userEntity }, dbContextName, projectBaseName);

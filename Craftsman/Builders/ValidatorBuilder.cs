@@ -35,6 +35,16 @@ public class ValidatorBuilder
         _utilities.CreateFile(manipulationClassPath, manipulationFileText);
     }
 
+    public void CreateUserValidators(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity)
+    {
+        BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Creation);
+        BuildValidatorClass(solutionDirectory, srcDirectory, projectBaseName, entity, Validator.Update);
+
+        var manipulationClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"{FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}.cs", entity.Plural, projectBaseName);
+        var manipulationFileText = GetUserManipulationValidatorFileText(solutionDirectory, srcDirectory, projectBaseName, manipulationClassPath.ClassNamespace, entity);
+        _utilities.CreateFile(manipulationClassPath, manipulationFileText);
+    }
+
     private static void BuildValidatorClass(string solutionDirectory, string srcDirectory, string projectBaseName, Entity entity, Validator validator)
     {
         var classPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"{FileNames.ValidatorNameGenerator(entity.Name, validator)}.cs", entity.Plural, projectBaseName);
@@ -142,6 +152,28 @@ public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulati
     private static bool BeAnExistingPermission(string permission)
     {{
         return Permissions.List().Contains(permission, StringComparer.InvariantCultureIgnoreCase);
+    }}
+}}";
+    }
+
+    public static string GetUserManipulationValidatorFileText(string solutionDirectory, string srcDirectory, string projectBaseName, string classNamespace, Entity entity)
+    {
+        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+
+        return @$"namespace {classNamespace};
+
+using {dtoClassPath.ClassNamespace};
+using {permissionsClassPath.ClassNamespace};
+using FluentValidation;
+
+public class {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}<T> : AbstractValidator<T> where T : {FileNames.GetDtoName(entity.Name, Dto.Manipulation)}
+{{
+    public {FileNames.ValidatorNameGenerator(entity.Name, Validator.Manipulation)}()
+    {{
+        RuleFor(u => u.Identifier)
+            .NotEmpty()
+            .WithMessage(""Please provide an identifier."");
     }}
 }}";
     }
