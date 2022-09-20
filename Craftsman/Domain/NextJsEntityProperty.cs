@@ -42,16 +42,4 @@ public class NextJsEntityProperty
     /// The Type with the optional marker removed
     /// </summary>
     public string RawType => Type.Replace("?", "");
-
-    public string BuildColumnHelperText()
-    {
-        var nameLowerFirst = Name.LowercaseFirstLetter();
-        var dateConversion = Type == "Date" ? "?.toLocaleString()" : "";
-        return $@"
-    columnHelper.accessor((row) => row.{nameLowerFirst}, {{
-      id: ""{nameLowerFirst}"",
-      cell: (info) => <p className="""">{{info.getValue(){dateConversion}}}</p>,
-      header: () => <span className="""">{Name}</span>,
-    }}),";
-    }
 }

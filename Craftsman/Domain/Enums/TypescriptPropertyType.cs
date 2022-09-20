@@ -24,6 +24,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
     }
     public abstract string TypescriptPropType();
     public abstract string FormDefaultValue(string propName);
+    public abstract string ColumnHelperText(string propName);
     public abstract string YupValidation(string propName);
     public abstract string FormControl(string propName, string label, string validationSchema);
     public abstract string FormSetValue(string propName, string entityName);
@@ -34,7 +35,18 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
 
         public override string TypescriptPropType()
             => _isNullable ? "string?" : "string";
-            
+
+        public override string ColumnHelperText(string propName)
+        {
+            var nameLowerFirst = propName.LowercaseFirstLetter();
+            return $@"
+    columnHelper.accessor((row) => row.{nameLowerFirst}, {{
+      id: ""{nameLowerFirst}"",
+      cell: (info) => <p className="""">{{info.getValue()}}</p>,
+      header: () => <span className="""">{propName}</span>,
+    }}),";
+        }
+
         public override string YupValidation(string propName)
             => _isNullable 
                 ? @$"
@@ -111,6 +123,17 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
 
         public override string TypescriptPropType()
             => _isNullable ? "boolean?" : "boolean";
+
+        public override string ColumnHelperText(string propName)
+        {
+            var nameLowerFirst = propName.LowercaseFirstLetter();
+            return $@"
+    columnHelper.accessor((row) => row.{nameLowerFirst}, {{
+      id: ""{nameLowerFirst}"",
+        <Checkbox isSelected={{info.getValue()}} required={{false}} />
+      header: () => <span className="""">{propName}</span>,
+    }}),";
+        }
             
         public override string YupValidation(string propName)
             => _isNullable 
@@ -161,6 +184,17 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
 
         public override string TypescriptPropType()
             => _isNullable ? "Date?" : "Date";
+
+        public override string ColumnHelperText(string propName)
+        {
+            var nameLowerFirst = propName.LowercaseFirstLetter();
+            return $@"
+    columnHelper.accessor((row) => row.{nameLowerFirst}, {{
+      id: ""{nameLowerFirst}"",
+      cell: (info) => <p className="""">{{info.getValue()?.toLocaleString()}}</p>,
+      header: () => <span className="""">{propName}</span>,
+    }}),";
+        }
             
         public override string YupValidation(string propName)
             => _isNullable 
@@ -218,6 +252,17 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
 
         public override string TypescriptPropType()
             => _isNullable ? "number?" : "number";
+
+        public override string ColumnHelperText(string propName)
+        {
+            var nameLowerFirst = propName.LowercaseFirstLetter();
+            return $@"
+    columnHelper.accessor((row) => row.{nameLowerFirst}, {{
+      id: ""{nameLowerFirst}"",
+      cell: (info) => <p className="""">{{info.getValue()}}</p>,
+      header: () => <span className="""">{propName}</span>,
+    }}),";
+        }
             
         public override string YupValidation(string propName)
             => _isNullable 
@@ -271,6 +316,17 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
 
         public override string TypescriptPropType()
             => _isNullable ? "unknown?" : "unknown";
+
+        public override string ColumnHelperText(string propName)
+        {
+            var nameLowerFirst = propName.LowercaseFirstLetter();
+            return $@"
+    columnHelper.accessor((row) => row.{nameLowerFirst}, {{
+      id: ""{nameLowerFirst}"",
+      cell: (info) => <p className="""">{{info.getValue()}}</p>,
+      header: () => <span className="""">{propName}</span>,
+    }}),";
+        }
             
         public override string YupValidation(string propName)
             => _isNullable ? "unknown?" 
