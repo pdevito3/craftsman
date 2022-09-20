@@ -49,8 +49,6 @@ export const useGet{entityUpperFirst} = (id: string | null | undefined) => {{
   return useQuery({keyExportName}.detail(id!), () => get{entityUpperFirst}(id!), {{
     enabled: id !== null && id !== undefined,
   }});
-}};
-;
-";
+}};";
     }
 }

@@ -96,8 +96,6 @@ export const use{entityPluralUppercaseFirst} = ({{
   return useQuery({keyExportName}.list(queryParams ?? """"), () =>
     get{entityPluralUppercaseFirst}({{ queryString: queryParams, hasArtificialDelay, delayInMs }})
   );
-}};
-;
-";
+}};";
     }
 }
