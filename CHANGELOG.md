@@ -48,7 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
   * Updated functional tests to properly handle the token setup
 
-* New `RolesController` when using auth
+* New `RolesController` and `PermissionsController` when using auth
 
 * New `Email` Value Object. Used on `User` if you want to see it in use
 
@@ -73,7 +73,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Jaeger will get random free ports exposed for HOST in `docker-compose`
 * More flexible `MonetaryAmount` VO
 * Simplified mapping
-* `RolePermisison` properties can be filtered and sorted
 
 ### Fixed
 

@@ -125,6 +125,7 @@ public class ApiScaffoldingService
                 template.SwaggerConfig.AddSwaggerComments,
                 template.UseSoftDelete);
             new RolesControllerBuilder(_utilities).CreateController(srcDirectory, projectBaseName);
+            new PermissionsControllerBuilder(_utilities).CreateController(srcDirectory, projectBaseName);
         }
 
         //entities

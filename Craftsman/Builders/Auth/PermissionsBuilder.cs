@@ -26,7 +26,8 @@ public class PermissionsBuilder
             rolePermissions += $@"
     public const string CanRemoveUserRole = nameof(CanRemoveUserRole);
     public const string CanAddUserRole = nameof(CanAddUserRole);
-    public const string CanGetRoles = nameof(CanGetRoles);";
+    public const string CanGetRoles = nameof(CanGetRoles);
+    public const string CanGetPermissions = nameof(CanGetPermissions);";
         
         return @$"namespace {classNamespace};
 
