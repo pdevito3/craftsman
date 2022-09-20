@@ -70,6 +70,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
             control={{control}}
             render={{({{ field, fieldState }}) => (
               <TextInput
+                {{...field}}
                 label={{""{label}""}}
                 placeholder=""{upperFirst}...""
                 testSelector=""{lowerFirst}""
@@ -79,7 +80,6 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
                     ?.exclusiveTests?.required
                 }}
                 error={{fieldState.error?.message}}
-                {{...field}}
               />
             )}}
           />
@@ -130,7 +130,12 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
             return $@"
     columnHelper.accessor((row) => row.{nameLowerFirst}, {{
       id: ""{nameLowerFirst}"",
-        <Checkbox isSelected={{info.getValue()}} required={{false}} />
+        <Checkbox
+          isSelected={{info.getValue()}}  
+          required={{false}} 
+          testSelector={{""{propName}""}}  
+          label={{""""}}  
+        />
       header: () => <span className="""">{propName}</span>,
     }}),";
         }
@@ -158,6 +163,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
             control={{control}}
             render={{({{ field, fieldState }}) => (
               <Checkbox
+                {{...field}}
                 label={{""{label}""}}
                 testSelector=""{lowerFirst}""
                 required={{
@@ -165,8 +171,8 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
                     ?.exclusiveTests?.required
                 }}
                 isSelected={{field.value}}
+                value={{field.value?.toString()}}
                 error={{fieldState?.error?.message}}
-                {{...field}}
               />
             )}}
           />
