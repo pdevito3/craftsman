@@ -35,7 +35,7 @@ import Head from ""next/head"";
 import {{ {FileNames.NextJsEntityFeatureFormName(entityName)}, useGet{entityUpperFirst} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 import {{ useRouter }} from ""next/router"";
 
-export default function EditUser() {{
+export default function Edit{entityName}() {{
   const router = useRouter();
   const {{ {entityLowerFirst}Id }} = router.query;
   const {{ data }} = useGet{entityUpperFirst}({entityLowerFirst}Id?.toString());

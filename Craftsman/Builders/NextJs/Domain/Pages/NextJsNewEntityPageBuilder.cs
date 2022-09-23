@@ -36,7 +36,7 @@ import {{ Button }} from ""@/components/forms"";
 import {{ {formName} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 import Head from ""next/head"";
 
-export default function NewUser() {{
+export default function New{entityName}() {{
   return (
     <>
       <Head>
