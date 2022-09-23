@@ -36,10 +36,12 @@ using SharedKernel.Exceptions;
 public sealed class PermissionsController: ControllerBase
 {{
     private readonly IHeimGuardClient _heimGuard;
+    private readonly IUserPolicyHandler _userPolicyHandler;
 
-    public PermissionsController(IHeimGuardClient heimGuard)
+    public PermissionsController(IHeimGuardClient heimGuard, IUserPolicyHandler userPolicyHandler)
     {{
         _heimGuard = heimGuard;
+        _userPolicyHandler = userPolicyHandler;
     }}
 
     /// <summary>
@@ -47,12 +49,25 @@ public sealed class PermissionsController: ControllerBase
     /// </summary>
     /// <response code=""200"">List retrieved.</response>
     /// <response code=""500"">There was an error getting the list of permissions.</response>
-    [HttpGet(Name = ""GetPermissions"")]
     [Authorize]
+    [HttpGet(Name = ""GetPermissions"")]
     public List<string> GetPermissions()
     {{
         _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanGetPermissions);
         return Permissions.List();
+    }}
+
+    /// <summary>
+    /// Gets a list of the current user's assigned permissions.
+    /// </summary>
+    /// <response code=""200"">List retrieved.</response>
+    /// <response code=""500"">There was an error getting the list of permissions.</response>
+    [Authorize]
+    [HttpGet(""mine"", Name = ""GetAssignedPermissions"")]
+    public async Task<List<string>> GetAssignedPermissions()
+    {{
+        var permissions = await _userPolicyHandler.GetUserPermissions();
+        return permissions.ToList();
     }}
 }}";
     }
