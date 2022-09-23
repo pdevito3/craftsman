@@ -52,7 +52,7 @@ public class Feature
     private string _permission;
     public string PermissionName
     {
-        get => _permission ?? $"Can{Name}";
+        get => _permission ?? FeatureType.DefaultPermission(EntityPlural);
         set => _permission = value;
     }
 

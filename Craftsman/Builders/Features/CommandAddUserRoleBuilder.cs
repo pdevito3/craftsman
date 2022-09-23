@@ -72,7 +72,7 @@ public static class {FileNames.AddUserRoleFeatureClassName()}
         public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {{
             if(!request.SkipPermissions)
-                await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanAddUserRole);
+                await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanAddUserRoles);
             
             var user = await _userRepository.GetById(request.UserId, true, cancellationToken);
 

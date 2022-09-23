@@ -19,7 +19,7 @@ public class AddUserFeatureOverrideModifier
     {
         var entityName = "User";
         var entityPlural = "Users";
-        var permissionName = "CanAddUser";
+        var permissionName = FeatureType.AddRecord.DefaultPermission("Users");
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.AddEntityFeatureClassName(entityName)}.cs", entityPlural, projectBaseName);
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
@@ -98,7 +98,7 @@ public static class {className}
         public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
         {{
             if(!request.SkipPermissions)
-                await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanAddUser);
+                await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.{permissionName});
 
             var {entityNameLowercase} = {entityName}.Create(request.{commandProp});
             await _{repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);

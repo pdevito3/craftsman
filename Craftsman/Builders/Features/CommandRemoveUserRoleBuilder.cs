@@ -69,7 +69,7 @@ public static class {FileNames.RemoveUserRoleFeatureClassName()}
 
         public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {{
-            await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanRemoveUserRole);
+            await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanRemoveUserRoles);
             var user = await _userRepository.GetById(request.UserId, true, cancellationToken);
 
             var roleToRemove = user.RemoveRole(new Role(request.Role));

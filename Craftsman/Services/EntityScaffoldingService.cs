@@ -162,8 +162,8 @@ public class EntityScaffoldingService
             Name = "User",
             Features = new List<Feature>()
                 {
-                    new() { Type = FeatureType.GetList.Name, IsProtected = true, PermissionName = "CanReadUsers" },
-                    new() { Type = FeatureType.GetRecord.Name, IsProtected = true, PermissionName = "CanReadUsers" },
+                    new() { Type = FeatureType.GetList.Name, IsProtected = true },
+                    new() { Type = FeatureType.GetRecord.Name, IsProtected = true },
                     new() { Type = FeatureType.AddRecord.Name, IsProtected = true },
                     new() { Type = FeatureType.UpdateRecord.Name, IsProtected = true },
                     new() { Type = FeatureType.DeleteRecord.Name, IsProtected = true },

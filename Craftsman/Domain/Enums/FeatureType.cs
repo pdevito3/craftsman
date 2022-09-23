@@ -22,6 +22,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
     public abstract string CommandName(string command, string entityName);
     public abstract string BffApiName(string entityName);
     public abstract string NextJsApiName(string entityName);
+    public abstract string DefaultPermission(string entityPlural);
 
     private class GetRecordType : FeatureType
     {
@@ -35,6 +36,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"get{entityName}";
         public override string NextJsApiName(string entityName)
             => $"get{entityName}";
+        public override string DefaultPermission(string entityPlural)
+            => $"CanRead{entityPlural}";
     }
 
     private class GetListType : FeatureType
@@ -49,6 +52,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"get{entityName}List";
         public override string NextJsApiName(string entityName)
             => $"get{entityName}List";
+        public override string DefaultPermission(string entityPlural)
+            => $"CanRead{entityPlural}";
     }
 
     private class AddRecordType : FeatureType
@@ -63,6 +68,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"add{entityName}";
         public override string NextJsApiName(string entityName)
             => $"add{entityName}";
+        public override string DefaultPermission(string entityPlural)
+            => $"CanAdd{entityPlural}";
     }
 
     private class DeleteRecordType : FeatureType
@@ -77,6 +84,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"delete{entityName}";
         public override string NextJsApiName(string entityName)
             => $"delete{entityName}";
+        public override string DefaultPermission(string entityPlural)
+            => $"CanDelete{entityPlural}";
     }
 
 
@@ -92,6 +101,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"update{entityName}";
         public override string NextJsApiName(string entityName)
             => $"update{entityName}";
+        public override string DefaultPermission(string entityPlural)
+            => $"CanUpdate{entityPlural}";
     }
 
 
@@ -120,6 +131,8 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => throw new Exception("Ad Hoc Features need to be manually configured in a BFF.");
         public override string NextJsApiName(string entityName)
             => throw new Exception("Ad Hoc Features need to be manually configured in a BFF.");
+        public override string DefaultPermission(string entityPlural)
+            => $"CanPerformAdHocFeature";
     }
 
     private class AddListByFkType : FeatureType
@@ -134,5 +147,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => throw new Exception("Add List Features need to be manually configured in a BFF.");
         public override string NextJsApiName(string entityName)
             => throw new Exception("Add List Features need to be manually configured in a BFF.");
+        public override string DefaultPermission(string entityPlural)
+            => $"CanAdd{entityPlural}";
     }
 }
