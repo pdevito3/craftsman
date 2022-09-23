@@ -130,12 +130,12 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
             return $@"
     columnHelper.accessor((row) => row.{nameLowerFirst}, {{
       id: ""{nameLowerFirst}"",
-        <Checkbox
+      cell: (info) => <Checkbox
           isSelected={{info.getValue()}}  
           required={{false}} 
           testSelector={{""{propName}""}}  
           label={{""""}}  
-        />
+        />,
       header: () => <span className="""">{propName}</span>,
     }}),";
         }
