@@ -37,7 +37,7 @@ import {{
 }} from ""@/components/forms"";
 import {{ {FileNames.NextJsEntityFeatureListTableName(entityName)} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 import ""@tanstack/react-table"";
-import {{ IconCirclePlus }} from ""tabler-icons"";
+import {{ IconCirclePlus }} from ""@tabler/icons"";
 
 {entityUpperFirst}List.isPublic = false;
 export default function {entityUpperFirst}List() {{

@@ -38,7 +38,7 @@ public class NavigationComponentModifier
                         iconExists = true;
                     if (line.Contains("/* route marker"))
                         newText += @$"{Environment.NewLine}	{{ name: '{entityPlural.UppercaseFirstLetter()}', href: '/{entityPlural.ToLower()}', icon: {icon} }},";
-                    if (line.Contains(@$"}} from ""tabler-icons""") && !iconExists)
+                    if (line.Contains(@$"}} from ""@tabler/icons""") && !iconExists)
                         newText = @$"  {icon},{Environment.NewLine}{line}";
 
                     output.WriteLine(newText);
