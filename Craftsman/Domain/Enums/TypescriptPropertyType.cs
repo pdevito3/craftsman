@@ -24,7 +24,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
     }
     public abstract string TypescriptPropType();
     public abstract string FormDefaultValue(string propName);
-    public abstract string ColumnHelperText(string propName);
+    public abstract string ColumnHelperText(string propName, string label);
     public abstract string YupValidation(string propName);
     public abstract string FormControl(string propName, string label, string validationSchema, FormControlType controlType);
     public abstract string FormSetValue(string propName, string entityName);
@@ -36,14 +36,14 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
         public override string TypescriptPropType()
             => _isNullable ? "string?" : "string";
 
-        public override string ColumnHelperText(string propName)
+        public override string ColumnHelperText(string propName, string label)
         {
             var nameLowerFirst = propName.LowercaseFirstLetter();
             return $@"
     columnHelper.accessor((row) => row.{nameLowerFirst}, {{
       id: ""{nameLowerFirst}"",
       cell: (info) => <p className="""">{{info.getValue()}}</p>,
-      header: () => <span className="""">{propName}</span>,
+      header: () => <span className="""">{label}</span>,
     }}),";
         }
 
@@ -156,7 +156,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
         public override string TypescriptPropType()
             => _isNullable ? "boolean?" : "boolean";
 
-        public override string ColumnHelperText(string propName)
+        public override string ColumnHelperText(string propName, string label)
         {
             var nameLowerFirst = propName.LowercaseFirstLetter();
             return $@"
@@ -168,7 +168,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
           testSelector={{""{propName}""}}  
           label={{""""}}  
         />,
-      header: () => <span className="""">{propName}</span>,
+      header: () => <span className="""">{label}</span>,
     }}),";
         }
             
@@ -223,14 +223,14 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
         public override string TypescriptPropType()
             => _isNullable ? "Date?" : "Date";
 
-        public override string ColumnHelperText(string propName)
+        public override string ColumnHelperText(string propName, string label)
         {
             var nameLowerFirst = propName.LowercaseFirstLetter();
             return $@"
     columnHelper.accessor((row) => row.{nameLowerFirst}, {{
       id: ""{nameLowerFirst}"",
       cell: (info) => <p className="""">{{info.getValue()?.toLocaleString()}}</p>,
-      header: () => <span className="""">{propName}</span>,
+      header: () => <span className="""">{label}</span>,
     }}),";
         }
             
@@ -291,14 +291,14 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
         public override string TypescriptPropType()
             => _isNullable ? "number?" : "number";
 
-        public override string ColumnHelperText(string propName)
+        public override string ColumnHelperText(string propName, string label)
         {
             var nameLowerFirst = propName.LowercaseFirstLetter();
             return $@"
     columnHelper.accessor((row) => row.{nameLowerFirst}, {{
       id: ""{nameLowerFirst}"",
       cell: (info) => <p className="""">{{info.getValue()}}</p>,
-      header: () => <span className="""">{propName}</span>,
+      header: () => <span className="""">{label}</span>,
     }}),";
         }
             
@@ -355,14 +355,14 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
         public override string TypescriptPropType()
             => _isNullable ? "unknown?" : "unknown";
 
-        public override string ColumnHelperText(string propName)
+        public override string ColumnHelperText(string propName, string label)
         {
             var nameLowerFirst = propName.LowercaseFirstLetter();
             return $@"
     columnHelper.accessor((row) => row.{nameLowerFirst}, {{
       id: ""{nameLowerFirst}"",
       cell: (info) => <p className="""">{{info.getValue()}}</p>,
-      header: () => <span className="""">{propName}</span>,
+      header: () => <span className="""">{label}</span>,
     }}),";
         }
             

@@ -130,7 +130,7 @@ export function {entityUpperFirst}ListTable({{ queryFilter }}: {entityUpperFirst
         var columnHelpers = "";
         foreach (var property in properties)
         {
-            columnHelpers += property.TypeEnum.ColumnHelperText(property.Name);
+            columnHelpers += property.TypeEnum.ColumnHelperText(property.Name, property.Label);
         }
 
         return columnHelpers;
