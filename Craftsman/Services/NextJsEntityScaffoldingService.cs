@@ -9,6 +9,7 @@ using Helpers;
 using MediatR;
 using Craftsman.Builders.NextJs;
 using Craftsman.Builders.NextJs.Domain.Features;
+using Domain.Enums;
 
 public class NextJsEntityScaffoldingService
 {
@@ -73,6 +74,13 @@ public class NextJsEntityScaffoldingService
             new NextJsEntityIndexPageBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural, entity.Properties);
             new NextJsNewEntityPageBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural);
             new NextJsEditEntityPageBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural);
+            
+            // permissions
+            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.GetList.DefaultPermission(entity.Plural));
+            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.GetRecord.DefaultPermission(entity.Plural));
+            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.AddRecord.DefaultPermission(entity.Plural));
+            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.UpdateRecord.DefaultPermission(entity.Plural));
+            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.DeleteRecord.DefaultPermission(entity.Plural));
         }
     }
 }

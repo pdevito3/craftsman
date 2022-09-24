@@ -179,6 +179,11 @@ public static class ClassPathHelper
         return new ClassPath(nextSrc, Path.Combine("components"), "PrivateSideNav.tsx");
     }
 
+    public static ClassPath NextJsPermissionTypesClassPath(string nextSrc)
+    {
+        return new ClassPath(nextSrc, Path.Combine("domain", "permissions", "utils"), "permissions.ts");
+    }
+
     public static ClassPath NextJsPagesClassPath(string nextSrc, string entityPlural, string className)
     {
         return new ClassPath(nextSrc, Path.Combine("pages", entityPlural.ToLower()), className);
