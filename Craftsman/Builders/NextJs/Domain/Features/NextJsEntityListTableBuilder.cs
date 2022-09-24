@@ -32,6 +32,8 @@ public class NextJsEntityListTableBuilder
         var entityUpperFirst = entityName.UppercaseFirstLetter();
         var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var entityLowerFirst = entityName.LowercaseFirstLetter();
+        var deletePermission = FeatureType.DeleteRecord.DefaultPermission(entityPlural);
+        var updatePermission = FeatureType.UpdateRecord.DefaultPermission(entityPlural);
 
         string columnHelpers = GetColumnHelpers(properties);
 
@@ -41,6 +43,7 @@ public class NextJsEntityListTableBuilder
   TrashButton,
   usePaginatedTableContext,
 }} from ""@/components/forms"";
+import {{ useHasPermission }} from ""@/domain/permissions"";
 import useDeleteModal from ""@/components/modal/ConfirmDeleteModal"";
 import {{ Notifications }} from ""@/components/notifications"";
 import {{ {readDtoName}, useDelete{entityUpperFirst}, use{entityPluralUpperFirst} }} from ""@/domain/{entityPluralLowercaseFirst}"";
@@ -55,6 +58,12 @@ interface {entityUpperFirst}ListTableProps {{
 export function {entityUpperFirst}ListTable({{ queryFilter }}: {entityUpperFirst}ListTableProps) {{
   const router = useRouter();
   const {{ sorting, pageSize, pageNumber }} = usePaginatedTableContext();
+  const {deletePermission.LowercaseFirstLetter()} = useHasPermission(""{deletePermission}"");
+  const {updatePermission.LowercaseFirstLetter()} = useHasPermission(""{updatePermission}"");
+
+  const onRowClick = {updatePermission.LowercaseFirstLetter()}.hasPermission
+    ? (row) => router.push(`/{entityPluralLowercase}/${{row.id}}`)
+    : undefined;
 
   const openDeleteModal = useDeleteModal();
   const delete{entityUpperFirst}Api = useDelete{entityUpperFirst}();
@@ -87,14 +96,16 @@ export function {entityUpperFirst}ListTable({{ queryFilter }}: {entityUpperFirst
       meta: {{ thClassName: ""w-10"" }},
       cell: (row) => (
         <div className=""flex items-center justify-center w-full"">
-          <TrashButton
-            onClick={{(e) => {{
-              openDeleteModal({{
-                onConfirm: () => delete{entityUpperFirst}(row.getValue()),
-              }});
-              e.stopPropagation();
-            }}}}
-          />
+          {{{deletePermission.LowercaseFirstLetter()}.hasPermission && (
+            <TrashButton
+              onClick={{(e) => {{
+                openDeleteModal({{
+                  onConfirm: () => delete{entityUpperFirst}(row.getValue()),
+                }});
+                e.stopPropagation();
+              }}}}
+            />
+          )}}
         </div>
       ),
       header: () => <span className=""""></span>,
@@ -108,7 +119,7 @@ export function {entityUpperFirst}ListTable({{ queryFilter }}: {entityUpperFirst
       apiPagination={{{entityLowerFirst}Pagination}}
       entityPlural=""{entityPluralUpperFirst}""
       isLoading={{isLoading}}
-      onRowClick={{(row) => router.push(`/{entityPluralLowercase}/${{row.id}}`)}}
+      onRowClick={{onRowClick}}
     />
   );
 }}";

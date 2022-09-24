@@ -30,32 +30,41 @@ public class NextJsNewEntityPageBuilder
         var formName = FileNames.NextJsEntityFeatureFormName(entityName);
         var entityStartsWithVowel = "aeiouAEIOU".IndexOf(entityName) >= 0;
         var aOrAn = entityStartsWithVowel ? "an" : "a";
+        var addPermission = FeatureType.AddRecord.DefaultPermission(entityPlural);
 
         return @$"import {{ PrivateLayout }} from ""@/components"";
 import {{ Button }} from ""@/components/forms"";
+import {{ Forbidden }} from ""@/domain/auth"";
+import {{ useHasPermission }} from ""@/domain/permissions"";
 import {{ {formName} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 import Head from ""next/head"";
 
 export default function New{entityName}() {{
+  const {addPermission.LowercaseFirstLetter()} = useHasPermission(""{addPermission}"");
+
   return (
     <>
       <Head>
         <title>Edit {entityNameUpperFirst}</title>
       </Head>
       <PrivateLayout>
-        <div className=""space-y-6"">
-          <div className=""pt-4"">
-            <Button buttonStyle=""secondary"" href={{""/{entityPluralLowercase}""}}>
-              Back
-            </Button>
-          </div>
-          <div className="""">
-            <h1 className=""h1"">Add {aOrAn} {entityNameUpperFirst}</h1>
-            <div className=""max-w-3xl py-6 space-y-5"">
-              <{formName} />
+        {{{addPermission.LowercaseFirstLetter()}.hasPermission ? (
+          <div className=""space-y-6"">
+            <div className=""pt-4"">
+              <Button buttonStyle=""secondary"" href={{""/{entityPluralLowercase}""}}>
+                Back
+              </Button>
+            </div>
+            <div className="""">
+              <h1 className=""h1"">Add {aOrAn} {entityNameUpperFirst}</h1>
+              <div className=""max-w-3xl py-6 space-y-5"">
+                <{formName} />
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <Forbidden/>
+        )}}
       </PrivateLayout>
     </>
   );

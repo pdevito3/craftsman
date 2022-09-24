@@ -28,6 +28,8 @@ public class NextJsEntityIndexPageBuilder
         var entityPluralLowercase = entityPlural.ToLower();
         var entityUpperFirst = entityName.UppercaseFirstLetter();
         var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
+        var addPermission = FeatureType.AddRecord.DefaultPermission(entityPlural);
+        var readPermission = FeatureType.GetList.DefaultPermission(entityPlural);
 
         return @$"import {{ PrivateLayout, SearchInput }} from ""@/components"";
 import {{
@@ -35,6 +37,8 @@ import {{
   PaginatedTableProvider,
   useGlobalFilter,
 }} from ""@/components/forms"";
+import {{ Forbidden }} from ""@/domain/auth"";
+import {{ useHasPermission }} from ""@/domain/permissions"";
 import {{ {FileNames.NextJsEntityFeatureListTableName(entityName)} }} from ""@/domain/{entityPluralLowercaseFirst}"";
 import ""@tanstack/react-table"";
 import Head from ""next/head"";
@@ -47,8 +51,10 @@ export default function {entityUpperFirst}List() {{
     queryFilter,
     calculateAndSetQueryFilter,
   }} = useGlobalFilter((value) => `({string.Join("|", properties.Select(x => x.Name.LowercaseFirstLetter()))})@=*${{value}}`);
+  const {addPermission.LowercaseFirstLetter()} = useHasPermission(""{addPermission}"");
+  const {readPermission.LowercaseFirstLetter()} = useHasPermission(""{readPermission}"");
 
-  return (
+        return (
     <>
       <Head>
         <title>{entityPlural}</title>
@@ -70,18 +76,27 @@ export default function {entityUpperFirst}List() {{
                       placeholder=""Search all columns...""
                     />
                   </div>
-
-                  <Button
-                    buttonStyle=""primary""
-                    icon={{<IconCirclePlus className=""w-5 h-5"" />}}
-                    href=""/{entityPluralLowercase}/new""
-                  >
-                    Add {entityName}
-                  </Button>
+                 {{{addPermission.LowercaseFirstLetter()}.hasPermission && (
+                   <Button
+                      buttonStyle=""primary""
+                      icon={{<IconCirclePlus className=""w-5 h-5"" />}}
+                      href=""/{entityPluralLowercase}/new""
+                    >
+                      Add {entityName}
+                    </Button>
+                  )}}
                 </div>
 
                 <div className=""pt-2"">
-                  <{FileNames.NextJsEntityFeatureListTableName(entityName)} queryFilter={{queryFilter}} />
+                  {{{readPermission.LowercaseFirstLetter()}.isLoading ? null : (
+                    <>
+                      {{{readPermission.LowercaseFirstLetter()}.hasPermission ? (
+                        <{FileNames.NextJsEntityFeatureListTableName(entityName)} queryFilter={{queryFilter}} />
+                      ) : (
+                        <Forbidden/>
+                      )}}
+                    </>
+                  )}}
                 </div>
               </PaginatedTableProvider>
             </div>
