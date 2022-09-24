@@ -34,7 +34,7 @@ public class NavigationComponentModifier
                 while (null != (line = input.ReadLine()))
                 {
                     var newText = $"{line}";
-                    if (line.Contains(icon))
+                    if (line.Contains($"{icon},"))
                         iconExists = true;
                     if (line.Contains("/* route marker"))
                         newText += @$"{Environment.NewLine}	{{ name: '{entityPlural.UppercaseFirstLetter()}', href: '/{entityPlural.ToLower()}', icon: {icon} }},";
