@@ -36,6 +36,20 @@ public class NextJsEntityProperty
         set => TypeEnum = CraftsmanUtilities.PropTypeCleanupTypeScript(value);
     }
 
+    
+    public FormControlType FormControlEnum { get; private set; } = FormControlType.Default;
+    public string FormControl
+    {
+        get => FormControlEnum.Name;
+        set
+        {
+            if (!FormControlType.TryFromName(value, true, out var parsed))
+                FormControlEnum = FormControlType.Default;
+            
+            FormControlEnum = parsed;
+        }
+    }
+
     public bool Nullable => Type.Contains('?');
 
     /// <summary>

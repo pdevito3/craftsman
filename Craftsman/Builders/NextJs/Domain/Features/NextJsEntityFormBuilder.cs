@@ -191,7 +191,7 @@ export {{ {entityUpperFirst}Form }};";
         var controls = "";
         foreach (var property in properties)
         {
-            controls += property.TypeEnum.FormControl(property.Name, property.Label, validationSchema);
+            controls += property.TypeEnum.FormControl(property.Name, property.Label, validationSchema, property.FormControlEnum);
         }
 
         return controls;

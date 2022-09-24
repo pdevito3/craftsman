@@ -26,7 +26,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
     public abstract string FormDefaultValue(string propName);
     public abstract string ColumnHelperText(string propName);
     public abstract string YupValidation(string propName);
-    public abstract string FormControl(string propName, string label, string validationSchema);
+    public abstract string FormControl(string propName, string label, string validationSchema, FormControlType controlType);
     public abstract string FormSetValue(string propName, string entityName);
 
     private class StringPropertyType : TypescriptPropertyType
@@ -58,34 +58,12 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
             => @$"
       {propName.LowercaseFirstLetter()}: """",";
 
-        public override string FormControl(string propName, string label, string validationSchema)
+        public override string FormControl(string propName, string label, string validationSchema, FormControlType controlType)
         {
             var lowerFirst = propName.LowercaseFirstLetter();
             var upperFirst = propName.UppercaseFirstLetter();
-            return $@"
-
-        <div className=""w-full sm:w-80 lg:w-96"">
-          <Controller
-            name=""{lowerFirst}""
-            control={{control}}
-            render={{({{ field, fieldState }}) => (
-              <TextInput
-                {{...field}}
-                label={{""{label}""}}
-                placeholder=""{upperFirst}...""
-                testSelector=""{lowerFirst}""
-                required={{
-                  // @ts-ignore
-                  {validationSchema}.fields?.{lowerFirst}
-                    ?.exclusiveTests?.required
-                }}
-                error={{fieldState.error?.message}}
-              />
-            )}}
-          />
-        </div>
-
-        {{/* OR use a TextArea... */}}
+            if(controlType == FormControlType.TextArea)
+                return $@"
 
         <div className=""w-full sm:w-80 lg:w-96"">
           <Controller
@@ -104,6 +82,60 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
                   // @ts-ignore
                   {validationSchema}.fields?.{lowerFirst}?.exclusiveTests
                     ?.required
+                }}
+                error={{fieldState.error?.message}}
+              />
+            )}}
+          />
+        </div>";
+            
+            if(controlType == FormControlType.Combobox)
+                return $@"
+
+        <div className=""w-full sm:w-80 lg:w-96"">
+          <Controller
+            name=""{lowerFirst}""
+            control={{control}}
+            render={{({{ field, fieldState }}) => (
+              <ComboBox
+                {{...field}}
+                label={{""{label}""}}
+                placeholder=""{upperFirst}...""
+                testSelector=""{lowerFirst}""
+                required={{
+                  // @ts-ignore
+                  {validationSchema}.fields?.{lowerFirst}?.exclusiveTests
+                    ?.required
+                }}
+                error={{fieldState.error?.message}}
+                data={{
+                  [
+                    ""TODO""
+                  ]
+                }}
+                clearable
+                searchable
+              />
+            )}}
+          />
+        </div>";
+
+            return $@"
+
+        <div className=""w-full sm:w-80 lg:w-96"">
+          <Controller
+            name=""{lowerFirst}""
+            control={{control}}
+            render={{({{ field, fieldState }}) => (
+              <TextInput
+                {{...field}}
+                label={{""{label}""}}
+                placeholder=""{upperFirst}...""
+                testSelector=""{lowerFirst}""
+                required={{
+                  // @ts-ignore
+                  {validationSchema}.fields?.{lowerFirst}
+                    ?.exclusiveTests?.required
                 }}
                 error={{fieldState.error?.message}}
               />
@@ -151,7 +183,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
             => @$"
       {propName.LowercaseFirstLetter()}: false,";
 
-        public override string FormControl(string propName, string label, string validationSchema)
+        public override string FormControl(string propName, string label, string validationSchema, FormControlType controlType)
         {
             var lowerFirst = propName.LowercaseFirstLetter();
             
@@ -214,7 +246,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
       // @ts-ignore -- need default value to reset form
       {propName.LowercaseFirstLetter()}: null,";
         
-        public override string FormControl(string propName, string label, string validationSchema)
+        public override string FormControl(string propName, string label, string validationSchema, FormControlType controlType)
         {
             var lowerFirst = propName.LowercaseFirstLetter();
             
@@ -281,7 +313,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
             => @$"
       //TODO possible default for {propName}";
         
-        public override string FormControl(string propName, string label, string validationSchema)
+        public override string FormControl(string propName, string label, string validationSchema, FormControlType controlType)
         {
             var lowerFirst = propName.LowercaseFirstLetter();
             var upperFirst = propName.UppercaseFirstLetter();
@@ -343,7 +375,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
             => @$"
       // TODO possible default for {propName}";
 
-        public override string FormControl(string propName, string label, string validationSchema)
+        public override string FormControl(string propName, string label, string validationSchema, FormControlType controlType)
             => $@"
 
         {{/* TODO form control for {propName} */}}";
