@@ -38,6 +38,7 @@ public class AddCommandTestBuilder
 
 using {fakerClassPath.ClassNamespace};
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -84,11 +85,41 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}Returned.Id));
 
-        // Assert
-        {lowercaseEntityName}Returned.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-            options.ExcludingMissingMembers());
-        {lowercaseEntityName}Created.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-            options.ExcludingMissingMembers());
+        // Assert{GetAssertions(entity.Properties, lowercaseEntityName, fakeEntityVariableName)}
     }}";
+    }
+
+    private static string GetAssertions(List<EntityProperty> properties, string lowercaseEntityName, string fakeEntityVariableName)
+    {
+        var dtoAssertions = "";
+        var entityAssertions = "";
+        foreach (var entityProperty in properties.Where(x => x.IsPrimativeType))
+        {
+            switch (entityProperty.Type)
+            {
+                case "DateTime" or "DateTimeOffset" or "TimeOnly":
+                    dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());";
+                    break;
+                case "DateTime?":
+                    dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());";
+                    break;
+                case "DateTimeOffset?":
+                    dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());";
+                    break;
+                case "TimeOnly?":
+                    dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());";
+                    break;
+                default:
+                    dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().Be({fakeEntityVariableName}.{entityProperty.Name});";
+                    entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().Be({fakeEntityVariableName}.{entityProperty.Name});";
+                    break;
+            }
+        }
+
+        return string.Join(Environment.NewLine, dtoAssertions, entityAssertions);
     }
 }

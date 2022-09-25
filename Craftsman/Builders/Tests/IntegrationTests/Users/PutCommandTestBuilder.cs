@@ -75,10 +75,11 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
 
         // Assert
-        updated{entity.Name}.Should().BeEquivalentTo(updated{entity.Name}Dto, options =>
-            options.ExcludingMissingMembers()
-                .Excluding(x => x.Email));
-        updated{entity.Name}.Email.Value.Should().Be(updated{entity.Name}Dto.Email);
+        updatedUser?.FirstName.Should().Be(updatedUserDto.FirstName);
+        updatedUser?.LastName.Should().Be(updatedUserDto.LastName);
+        updatedUser?.Username.Should().Be(updatedUserDto.Username);
+        updatedUser?.Identifier.Should().Be(updatedUserDto.Identifier);
+        updatedUser?.Email.Value.Should().Be(updatedUserDto.Email);
     }}
 }}";
     }

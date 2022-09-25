@@ -50,6 +50,7 @@ using {dtoClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -74,10 +75,31 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         await SendAsync(command);
         var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
 
-        // Assert
-        updated{entity.Name}.Should().BeEquivalentTo(updated{entity.Name}Dto, options =>
-            options.ExcludingMissingMembers());
+        // Assert{GetAssertions(entity.Properties, entity.Name)}
     }}
 }}";
+    }
+
+    private static string GetAssertions(List<EntityProperty> properties, string entityName)
+    {
+        var entityAssertions = "";
+        foreach (var entityProperty in properties.Where(x => x.IsPrimativeType))
+        {
+            entityAssertions += entityProperty.Type switch
+            {
+                "DateTime" or "DateTimeOffset" or "TimeOnly" =>
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeCloseTo(updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
+                "DateTime?" =>
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeCloseTo((DateTime)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
+                "DateTimeOffset?" =>
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
+                "TimeOnly?" =>
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeCloseTo((TimeOnly)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
+                _ =>
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().Be(updated{entityName}Dto.{entityProperty.Name});"
+            };
+        }
+
+        return entityAssertions;
     }
 }

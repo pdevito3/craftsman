@@ -38,6 +38,7 @@ public class GetRecordQueryTestBuilder
 using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using {exceptionsClassPath.ClassNamespace};
@@ -71,9 +72,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var query = new {featureName}.{queryName}({fakeEntityVariableName}.{pkName});
         var {lowercaseEntityName} = await SendAsync(query);
 
-        // Assert
-        {lowercaseEntityName}.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-            options.ExcludingMissingMembers());
+        // Assert{GetAssertions(entity.Properties, lowercaseEntityName, fakeEntityVariableName)}
     }}";
     }
 
@@ -96,5 +95,28 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
     }}";
+    }
+
+    private static string GetAssertions(List<EntityProperty> properties, string lowercaseEntityName, string fakeEntityVariableName)
+    {
+        var entityAssertions = "";
+        foreach (var entityProperty in properties.Where(x => x.IsPrimativeType))
+        {
+            entityAssertions += entityProperty.Type switch
+            {
+                "DateTime" or "DateTimeOffset" or "TimeOnly" =>
+                    $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());",
+                "DateTime?" =>
+                    $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());",
+                "DateTimeOffset?" =>
+                    $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());",
+                "TimeOnly?" =>
+                    $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());",
+                _ =>
+                    $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().Be({fakeEntityVariableName}.{entityProperty.Name});"
+            };
+        }
+
+        return entityAssertions;
     }
 }

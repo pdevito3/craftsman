@@ -85,14 +85,17 @@ public class {classPath.ClassNameWithoutExt} : TestBase
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}Returned.Id));
 
         // Assert
-        {lowercaseEntityName}Returned.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-            options.ExcludingMissingMembers()
-                .Excluding(x => x.Email));
-        {lowercaseEntityName}Returned.Email.Should().Be({fakeEntityVariableName}.Email);
-        {lowercaseEntityName}Created.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-            options.ExcludingMissingMembers()
-                .Excluding(x => x.Email));
-        {lowercaseEntityName}Created.Email.Value.Should().Be({fakeEntityVariableName}.Email);
+        userReturned.FirstName.Should().Be(fakeUserOne.FirstName);
+        userReturned.LastName.Should().Be(fakeUserOne.LastName);
+        userReturned.Username.Should().Be(fakeUserOne.Username);
+        userReturned.Identifier.Should().Be(fakeUserOne.Identifier);
+        userReturned.Email.Should().Be(fakeUserOne.Email);
+
+        userCreated?.FirstName.Should().Be(fakeUserOne.FirstName);
+        userCreated?.LastName.Should().Be(fakeUserOne.LastName);
+        userCreated?.Username.Should().Be(fakeUserOne.Username);
+        userCreated?.Identifier.Should().Be(fakeUserOne.Identifier);
+        userCreated?.Email.Value.Should().Be(fakeUserOne.Email);
     }}";
     }
 }

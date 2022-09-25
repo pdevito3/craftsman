@@ -85,14 +85,11 @@ public class {classPath.ClassNameWithoutExt} : TestBase
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}Returned.Id));
 
         // Assert
-        {lowercaseEntityName}Returned.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-            options.ExcludingMissingMembers()
-                .Excluding(x => x.Role));
+        {lowercaseEntityName}Returned.Permission.Should().Be({fakeEntityVariableName}.Permission);
         {lowercaseEntityName}Returned.Role.Should().Be({fakeEntityVariableName}.Role);
-        {lowercaseEntityName}Created.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-            options.ExcludingMissingMembers()
-                .Excluding(x => x.Role));
-        {lowercaseEntityName}Created.Role.Value.Should().Be({fakeEntityVariableName}.Role);
+
+        {lowercaseEntityName}Created?.Permission.Should().Be({fakeEntityVariableName}.Permission);
+        {lowercaseEntityName}Created?.Role.Value.Should().Be({fakeEntityVariableName}.Role);
     }}";
     }
 }

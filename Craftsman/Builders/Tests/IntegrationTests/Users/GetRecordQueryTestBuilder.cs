@@ -72,10 +72,11 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var {lowercaseEntityName} = await SendAsync(query);
 
         // Assert
-        {lowercaseEntityName}.Should().BeEquivalentTo({fakeEntityVariableName}, options =>
-            options.ExcludingMissingMembers()
-                .Excluding(x => x.Email));
-        {lowercaseEntityName}.Email.Should().Be({fakeEntityVariableName}.Email.Value);
+        user.FirstName.Should().Be(fakeUserOne.FirstName);
+        user.LastName.Should().Be(fakeUserOne.LastName);
+        user.Username.Should().Be(fakeUserOne.Username);
+        user.Identifier.Should().Be(fakeUserOne.Identifier);
+        user.Email.Should().Be(fakeUserOne.Email.Value);
     }}";
     }
 

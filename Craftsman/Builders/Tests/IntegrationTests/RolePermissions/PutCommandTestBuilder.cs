@@ -75,10 +75,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
 
         // Assert
-        updated{entity.Name}.Should().BeEquivalentTo(updated{entity.Name}Dto, options =>
-            options.ExcludingMissingMembers()
-                .Excluding(x => x.Role));
-        updated{entity.Name}.Role.Value.Should().Be(updated{entity.Name}Dto.Role);
+        updated{entity.Name}?.Permission.Should().Be(updated{entity.Name}Dto.Permission);
+        updated{entity.Name}?.Role.Value.Should().Be(updated{entity.Name}Dto.Role);
     }}
 }}";
     }

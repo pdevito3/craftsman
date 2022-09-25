@@ -43,6 +43,7 @@ using {parentFakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -76,18 +77,60 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         // Act
         var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}}}, {fakeParentEntity}.Id);
         var {lowercaseEntityName}Returned = await SendAsync(command);
-        var {lowercaseEntityName}Db = await ExecuteDbContextAsync(db => db.{entity.Plural}.ToListAsync());
+        var firstReturned = {lowercaseEntityName}Returned.FirstOrDefault();
+        var secondReturned = {lowercaseEntityName}Returned.Skip(1).FirstOrDefault();
 
-        // Assert
-        {lowercaseEntityName}Returned.Should().ContainEquivalentOf({fakeEntityVariableNameOne}, options =>
-            options.ExcludingMissingMembers());
-        {lowercaseEntityName}Db.Should().ContainEquivalentOf({fakeEntityVariableNameOne}, options =>
-            options.ExcludingMissingMembers());
+        var {lowercaseEntityName}Db = await ExecuteDbContextAsync(db => db.{entity.Plural}
+            .Where(x => x.Id == firstReturned.Id || x.Id == secondReturned.Id)
+            .ToListAsync());
+        var firstDbRecord = {lowercaseEntityName}Db.FirstOrDefault();
+        var secondDbRecord = {lowercaseEntityName}Db.Skip(1).FirstOrDefault();
 
-        {lowercaseEntityName}Returned.Should().ContainEquivalentOf({fakeEntityVariableNameTwo}, options =>
-            options.ExcludingMissingMembers());
-        {lowercaseEntityName}Db.Should().ContainEquivalentOf({fakeEntityVariableNameTwo}, options =>
-            options.ExcludingMissingMembers());
+        // Assert{GetAssertions(entity.Properties, fakeEntityVariableNameOne, fakeEntityVariableNameTwo)}
     }}";
+    }
+
+    private static string GetAssertions(List<EntityProperty> properties, string fakeEntityVariableNameOne, string fakeEntityVariableNameTwo)
+    {
+        var dtoAssertions = "";
+        var entityAssertions = "";
+        foreach (var entityProperty in properties.Where(x => x.IsPrimativeType))
+        {
+            switch (entityProperty.Type)
+            {
+                case "DateTime" or "DateTimeOffset" or "TimeOnly":
+                    dtoAssertions += $@"{Environment.NewLine}        firstReturned?.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondReturned?.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord?.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondDbRecord?.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    break;
+                case "DateTime?":
+                    dtoAssertions += $@"{Environment.NewLine}        firstReturned?.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondReturned?.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord?.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondDbRecord?.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    break;
+                case "DateTimeOffset?":
+                    dtoAssertions += $@"{Environment.NewLine}        firstReturned?.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondReturned?.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord?.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondDbRecord?.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    break;
+                case "TimeOnly?":
+                    dtoAssertions += $@"{Environment.NewLine}        firstReturned?.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondReturned?.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord?.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondDbRecord?.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    break;
+                default:
+                    dtoAssertions += $@"{Environment.NewLine}        firstReturned?.{entityProperty.Name}.Should().Be({fakeEntityVariableNameOne}.{entityProperty.Name});
+        secondReturned?.{entityProperty.Name}.Should().Be({fakeEntityVariableNameTwo}.{entityProperty.Name});";
+                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord?.{entityProperty.Name}.Should().Be({fakeEntityVariableNameOne}.{entityProperty.Name});
+        secondDbRecord?.{entityProperty.Name}.Should().Be({fakeEntityVariableNameTwo}.{entityProperty.Name});";
+                    break;
+            }
+        }
+
+        return string.Join(Environment.NewLine, dtoAssertions, entityAssertions);
     }
 }
