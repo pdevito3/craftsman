@@ -213,7 +213,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
 
         public override string FormSetValue(string propName, string entityName) 
             => @$"
-      setValue(""{propName.LowercaseFirstLetter()}"", {entityName.LowercaseFirstLetter()}Data?.{propName.LowercaseFirstLetter()});";
+      setValue(""{propName.LowercaseFirstLetter()}"", {entityName.LowercaseFirstLetter()}Data?.{propName.LowercaseFirstLetter()} ?? false);";
     }
 
     private class DatePropertyType : TypescriptPropertyType
@@ -344,7 +344,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
 
         public override string FormSetValue(string propName, string entityName) 
             => @$"
-      setValue(""{propName.LowercaseFirstLetter()}"", {entityName.LowercaseFirstLetter()}Data?.{propName.LowercaseFirstLetter()} ?? false);";
+      setValue(""{propName.LowercaseFirstLetter()}"", {entityName.LowercaseFirstLetter()}Data?.{propName.LowercaseFirstLetter()});";
     }
 
 
