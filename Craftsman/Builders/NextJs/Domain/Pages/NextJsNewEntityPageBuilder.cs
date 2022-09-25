@@ -45,7 +45,7 @@ export default function New{entityName}() {{
   return (
     <>
       <Head>
-        <title>Edit {entityNameUpperFirst}</title>
+        <title>Add {entityNameUpperFirst}</title>
       </Head>
       <PrivateLayout>
         {{{addPermission.LowercaseFirstLetter()}.hasPermission ? (
