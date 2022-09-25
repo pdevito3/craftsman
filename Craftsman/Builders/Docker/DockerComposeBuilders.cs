@@ -255,33 +255,31 @@ volumes:
 
         // just add all env vars potentially needed. can be ignored or deleted if not needed. updated if vals change?
         services += $@"
-   {dockerConfig.DbHostName}:{dbService}
 
-   {dockerConfig.ApiServiceName}:
-     build:
-       context: .
-       dockerfile: {dockerConfig.ProjectName}/src/{dockerConfig.ProjectName}/Dockerfile
-     ports:
-       - ""{dockerConfig.ApiPort}:8080""
-     environment:
-       ASPNETCORE_ENVIRONMENT: ""Development""
-       DB_CONNECTION_STRING: ""{dockerConfig.DbConnectionStringCompose}""
-       ASPNETCORE_URLS: ""https://+:8080;""
-       ASPNETCORE_Kestrel__Certificates__Default__Path: ""/https/aspnetappcert.pfx""
-       ASPNETCORE_Kestrel__Certificates__Default__Password: ""password""
-       AUTH_AUDIENCE: {audience}
-       AUTH_AUTHORITY: https://auth-server:{dockerConfig.AuthServerPort}
-       AUTH_AUTHORIZATION_URL: https://auth-server:{dockerConfig.AuthServerPort}/connect/authorize
-       AUTH_TOKEN_URL: https://auth-server:{dockerConfig.AuthServerPort}/connect/token
-       AUTH_CLIENT_ID: {clientId}
-       AUTH_CLIENT_SECRET: {clientSecret}
-       RMQ_HOST: rabbitmq
-       RMQ_VIRTUAL_HOST: /
-       RMQ_USERNAME: guest
-       RMQ_PASSWORD: guest
-
-     volumes:
-       - ~/.aspnet/https:/https:ro";
+  {dockerConfig.ApiServiceName}:
+    build:
+      context: .
+      dockerfile: {dockerConfig.ProjectName}/src/{dockerConfig.ProjectName}/Dockerfile
+    ports:
+    - ""{dockerConfig.ApiPort}:8080""
+    environment:
+      ASPNETCORE_ENVIRONMENT: ""Development""
+      DB_CONNECTION_STRING: ""{dockerConfig.DbConnectionStringCompose}""
+#      ASPNETCORE_URLS: ""http://+:8080;""
+#      ASPNETCORE_Kestrel__Certificates__Default__Path: ""/https/aspnetappcert.pfx""
+#      ASPNETCORE_Kestrel__Certificates__Default__Password: ""password""
+#      AUTH_AUDIENCE: {audience}
+#      AUTH_AUTHORITY: http://keycloak:{dockerConfig.AuthServerPort}
+#      AUTH_AUTHORIZATION_URL: http://keycloak:{dockerConfig.AuthServerPort}/connect/authorize
+#      AUTH_TOKEN_URL: http://keycloak:{dockerConfig.AuthServerPort}/connect/token
+#      AUTH_CLIENT_ID: {clientId}
+#      AUTH_CLIENT_SECRET: {clientSecret}
+#      RMQ_HOST: rabbitmq
+#      RMQ_VIRTUAL_HOST: /
+#      RMQ_USERNAME: guest
+#      RMQ_PASSWORD: guest
+    volumes:
+    - ~/.aspnet/https:/https:ro";
 
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
 
@@ -304,10 +302,10 @@ volumes:
                     {
                         newText += @$"{services}";
                     }
-                    if (line.Equals($"volumes:"))
-                    {
-                        newText += @$"{volumes}";
-                    }
+                    // if (line.Equals($"volumes:"))
+                    // {
+                    //     newText += @$"{volumes}";
+                    // }
 
                     output.WriteLine(newText);
                 }

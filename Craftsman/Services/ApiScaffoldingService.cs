@@ -194,7 +194,7 @@ public class ApiScaffoldingService
 
         new WebApiDockerfileBuilder(_utilities).CreateStandardDotNetDockerfile(srcDirectory, projectBaseName);
         new DockerIgnoreBuilder(_utilities).CreateDockerIgnore(srcDirectory, projectBaseName);
-        // DockerBuilders.AddBoundaryToDockerCompose(solutionDirectory,
+        // new DockerComposeBuilders(_utilities, _fileSystem).AddBoundaryToDockerCompose(solutionDirectory,
         //     template.DockerConfig,
         //     template.Environment.AuthSettings.ClientId,
         //     template.Environment.AuthSettings.ClientSecret,
