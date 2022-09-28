@@ -26,7 +26,6 @@ public class FakesBuilder
 
         CreateFakerEntityFile(srcDirectory, testDirectory, entity.Name, entity, projectBaseName);
         CreateFakerFile(srcDirectory, testDirectory, Dto.Creation, entity, projectBaseName);
-        CreateFakerFile(srcDirectory, testDirectory, Dto.Read, entity, projectBaseName);
         CreateFakerFile(srcDirectory, testDirectory, Dto.Update, entity, projectBaseName);
     }
 
@@ -38,7 +37,6 @@ public class FakesBuilder
             Directory.CreateDirectory(classPath.ClassDirectory);
 
         CreateFakerEntityFile(srcDirectory, testDirectory, entity.Name, entity, projectBaseName);
-        CreateFakerFile(srcDirectory, testDirectory, Dto.Read, entity, projectBaseName);
 
         CreateRolePermissionFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName);
         CreateRolePermissionFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName);
@@ -52,7 +50,6 @@ public class FakesBuilder
             Directory.CreateDirectory(classPath.ClassDirectory);
 
         CreateFakerEntityFile(srcDirectory, testDirectory, entity.Name, entity, projectBaseName);
-        CreateFakerFile(srcDirectory, testDirectory, Dto.Read, entity, projectBaseName);
 
         CreateUserFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName);
         CreateUserFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName);
