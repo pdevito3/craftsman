@@ -75,6 +75,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Simplified mapping
 * Deafult permissions will be the same for both GETS and use the entity plural ((e.g. `CanReadRecipes` ). All permissions will use the entity plural.
 * Integration tests have explicit property assertions
+* Query list uses `AsNoTracking`
 
 ### Fixed
 

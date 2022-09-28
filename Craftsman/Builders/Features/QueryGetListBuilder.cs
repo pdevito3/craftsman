@@ -52,6 +52,7 @@ using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
+using Microsoft.EntityFrameworkCore;
 using MapsterMapper;
 using Mapster;
 using MediatR;
@@ -85,7 +86,7 @@ public static class {className}
 
         public async Task<PagedList<{readDto}>> Handle({queryListName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            var collection = _{repoInterfaceProp}.Query();
+            var collection = _{repoInterfaceProp}.Query().AsNoTracking();
 
             var sieveModel = new SieveModel
             {{
