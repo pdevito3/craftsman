@@ -5,6 +5,7 @@ using System.IO;
 using Domain;
 using Domain.Enums;
 using Helpers;
+using IntegrationTests.Services;
 using Services;
 
 public class DeleteEntityTestBuilder
@@ -29,6 +30,7 @@ public class DeleteEntityTestBuilder
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
         var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
         var permissionsUsing = isProtected
             ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};{Environment.NewLine}using {rolesClassPath.ClassNamespace};"
@@ -41,7 +43,7 @@ public class DeleteEntityTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};{permissionsUsing}
+using {testUtilClassPath.ClassNamespace};{permissionsUsing}{foreignEntityUsings}
 using FluentAssertions;
 using NUnit.Framework;
 using System.Net;
@@ -59,6 +61,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeEntityVariableName = $"fake{entity.Name}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
 
         var testName = $"delete_{entity.Name.ToLower()}_returns_nocontent_when_entity_exists";
         testName += isProtected ? "_and_auth_credentials_are_valid" : "";
@@ -71,7 +74,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     public async Task {testName}()
     {{
         // Arrange
-        var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());{clientAuth}
+        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());{clientAuth}
         await InsertAsync({fakeEntityVariableName});
 
         // Act

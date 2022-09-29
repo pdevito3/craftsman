@@ -65,6 +65,7 @@ using {fakeUserEntityClassPath.ClassNamespace};" : null;
 
 using {contextClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};{authUsings}
+using AutoBogus;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -82,7 +83,16 @@ public class TestBase
     {{
         _factory = FunctionalTestFixture.Factory;
         _scopeFactory = FunctionalTestFixture.ScopeFactory;
-        FactoryClient = _factory.CreateClient(new WebApplicationFactoryClientOptions());{seedRootUser}
+        FactoryClient = _factory.CreateClient(new WebApplicationFactoryClientOptions());
+
+        AutoFaker.Configure(builder =>
+        {{
+            // configure global autobogus settings here
+            builder.WithDateTimeKind(DateTimeKind.Utc)
+                .WithRecursiveDepth(3)
+                .WithTreeDepth(1)
+                .WithRepeatCount(1);
+        }});{seedRootUser}
     }}
 
     public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)

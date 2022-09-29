@@ -29,6 +29,7 @@ public class CreateEntityTestBuilder
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
         var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
+        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
         var permissionsUsing = isProtected
             ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};{Environment.NewLine}using {rolesClassPath.ClassNamespace};"
@@ -41,7 +42,7 @@ public class CreateEntityTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};{permissionsUsing}
+using {testUtilClassPath.ClassNamespace};{permissionsUsing}{foreignEntityUsings}
 using FluentAssertions;
 using NUnit.Framework;
 using System.Net;
@@ -55,9 +56,23 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
     private static string CreateEntityTest(Entity entity, bool isProtected)
     {
-        var fakeEntityForCreation = $"Fake{FileNames.GetDtoName(entity.Name, Dto.Creation)}";
+        var fakeCreationDto = $"Fake{FileNames.GetDtoName(entity.Name, Dto.Creation)}";
         var fakeEntityVariableName = $"fake{entity.Name}";
-        var pkName = Entity.PrimaryKeyProperty.Name;
+
+        var fakeParent = "";
+        var fakeParentIdRuleFor = "";
+        foreach (var entityProperty in entity.Properties)
+        {
+            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
+            {
+                var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
+                var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
+                fakeParent += @$"var fake{entityProperty.ForeignEntityName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
+        await InsertAsync(fake{entityProperty.ForeignEntityName}One);{Environment.NewLine}{Environment.NewLine}        ";
+                fakeParentIdRuleFor +=
+                    $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}One.Id){Environment.NewLine}            ";
+            }
+        }
 
         var testName = $"create_{entity.Name.ToLower()}_returns_created_using_valid_dto";
         testName += isProtected ? "_and_valid_auth_credentials" : "";
@@ -70,7 +85,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     public async Task {testName}()
     {{
         // Arrange
-        var {fakeEntityVariableName} = new {fakeEntityForCreation} {{ }}.Generate();{clientAuth}
+        {fakeParent}var {fakeEntityVariableName} = new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate();{clientAuth}
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Create;
@@ -84,14 +99,14 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string CreateEntityTestUnauthorized(Entity entity)
     {
         var fakeEntityVariableName = $"fake{entity.Name}";
-        var fakeEntityForCreation = $"Fake{FileNames.GetDtoName(entity.Name, Dto.Creation)}";
+        var fakeCreationDto = $"Fake{FileNames.GetDtoName(entity.Name, Dto.Creation)}";
 
         return $@"
     [Test]
     public async Task create_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
     {{
         // Arrange
-        var {fakeEntityVariableName} = new {fakeEntityForCreation} {{ }}.Generate();
+        var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Create;
@@ -105,14 +120,14 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string CreateEntityTestForbidden(Entity entity)
     {
         var fakeEntityVariableName = $"fake{entity.Name}";
-        var fakeEntityForCreation = $"Fake{FileNames.GetDtoName(entity.Name, Dto.Creation)}";
+        var fakeCreationDto = $"Fake{FileNames.GetDtoName(entity.Name, Dto.Creation)}";
 
         return $@"
     [Test]
     public async Task create_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
     {{
         // Arrange
-        var {fakeEntityVariableName} = new {fakeEntityForCreation} {{ }}.Generate();
+        var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
         FactoryClient.AddAuth();
 
         // Act
