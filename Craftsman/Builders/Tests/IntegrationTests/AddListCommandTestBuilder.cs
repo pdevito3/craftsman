@@ -77,8 +77,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         // Act
         var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}}}, {fakeParentEntity}.Id);
         var {lowercaseEntityName}Returned = await SendAsync(command);
-        var firstReturned = {lowercaseEntityName}Returned.FirstOrDefault();
-        var secondReturned = {lowercaseEntityName}Returned.Skip(1).FirstOrDefault();
+        var firstReturned = {lowercaseEntityName}Returned.FirstOrDefault(x => x.Id == firstReturned.Id);
+        var secondReturned = {lowercaseEntityName}Returned.FirstOrDefault(x => x.Id == secondReturned.Id);
 
         var {lowercaseEntityName}Db = await ExecuteDbContextAsync(db => db.{entity.Plural}
             .Where(x => x.Id == firstReturned.Id || x.Id == secondReturned.Id)
