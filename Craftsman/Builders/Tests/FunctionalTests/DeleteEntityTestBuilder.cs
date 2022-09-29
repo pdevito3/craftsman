@@ -65,7 +65,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var clientAuth = isProtected ? @$"
 
         var user = await AddNewSuperAdmin();
-        _client.AddAuth(user.Identifier);" : "";
+        FactoryClient.AddAuth(user.Identifier);" : "";
 
         return $@"[Test]
     public async Task {testName}()
@@ -76,7 +76,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Delete.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-        var result = await _client.DeleteRequestAsync(route);
+        var result = await FactoryClient.DeleteRequestAsync(route);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -101,7 +101,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Delete.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-        var result = await _client.DeleteRequestAsync(route);
+        var result = await FactoryClient.DeleteRequestAsync(route);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -121,13 +121,13 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     {{
         // Arrange
         var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
-        _client.AddAuth();
+        FactoryClient.AddAuth();
 
         await InsertAsync({fakeEntityVariableName});
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Delete.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-        var result = await _client.DeleteRequestAsync(route);
+        var result = await FactoryClient.DeleteRequestAsync(route);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Forbidden);

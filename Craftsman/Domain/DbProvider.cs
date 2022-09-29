@@ -14,7 +14,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
 
     public abstract string PackageInclusionString(string version);
     public abstract string OTelSource();
-    public abstract string IntegrationTestDbSetupMethod(string projectBaseName);
+    public abstract string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting);
     public abstract string IntegrationTestConnectionStringSetup();
     public abstract int Port();
     public abstract string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword);
@@ -28,8 +28,9 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         public override string OTelSource()
             => @$"Npgsql";
 
-        public override string IntegrationTestDbSetupMethod(string projectBaseName)
+        public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
         {
+            var testName = isIntegrationTesting ? "IntegrationTesting" : "FunctionalTesting";
             return $@"private static TestcontainerDatabase dbSetup()
     {{
         return new TestcontainersBuilder<PostgreSqlTestcontainer>()
@@ -39,7 +40,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
                 Username = ""postgres"",
                 Password = ""postgres""
             }})
-            .WithName($""IntegrationTesting_{projectBaseName}_{{Guid.NewGuid()}}"")
+            .WithName($""{testName}_{projectBaseName}_{{Guid.NewGuid()}}"")
             .WithImage(""postgres:latest"")
             .Build();
     }}";
@@ -67,8 +68,9 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         public override string OTelSource()
             => @$"Microsoft.EntityFrameworkCore.SqlServer";
 
-        public override string IntegrationTestDbSetupMethod(string projectBaseName)
+        public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
         {
+            var testName = isIntegrationTesting ? "IntegrationTesting" : "FunctionalTesting";
             return $@"private static TestcontainerDatabase dbSetup()
     {{
         var isMacOs = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
@@ -80,7 +82,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             {{
                 Password = ""#testingDockerPassword#"",
             }})
-            .WithName($""IntegrationTesting_{projectBaseName}_{Guid.NewGuid()}"");
+            .WithName($""{testName}_{projectBaseName}_{Guid.NewGuid()}"");
             
         if(isRunningOnMacOsArm64)
             baseDb.WithImage(""mcr.microsoft.com/azure-sql-edge:latest"");
@@ -108,7 +110,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => throw new Exception(Response);
         public override string OTelSource()
             => throw new Exception(Response);
-        public override string IntegrationTestDbSetupMethod(string projectBaseName)
+        public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
             => throw new Exception(Response);
         public override string IntegrationTestConnectionStringSetup()
             => throw new Exception(Response);

@@ -72,7 +72,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var clientAuth = isProtected ? @$"
 
         var user = await AddNewSuperAdmin();
-        _client.AddAuth(user.Identifier);" : "";
+        FactoryClient.AddAuth(user.Identifier);" : "";
 
         return $@"[Test]
     public async Task {testName}()
@@ -84,7 +84,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         // Act
         var route = ApiRoutes.{entity.Plural}.CreateBatch;
-        var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.BatchPropertyName.ToLower()}={{{fakeParentEntity}.Id}}"", {fakeEntityVariableName});
+        var result = await FactoryClient.PostJsonRequestAsync($""{{route}}?{feature.BatchPropertyName.ToLower()}={{{fakeParentEntity}.Id}}"", {fakeEntityVariableName});
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -101,7 +101,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         testName += isProtected ? "_and_valid_auth_credentials" : "";
         var clientAuth = isProtected ? @$"
 
-        _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
+        FactoryClient.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
         return $@"[Test]
     public async Task {testName}()
@@ -111,7 +111,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         // Act
         var route = ApiRoutes.{entity.Plural}.CreateBatch;
-        var result = await _client.PostJsonRequestAsync($""{{route}}?{feature.BatchPropertyName.ToLower()}={{Guid.NewGuid()}}"", {fakeEntityVariableName});
+        var result = await FactoryClient.PostJsonRequestAsync($""{{route}}?{feature.BatchPropertyName.ToLower()}={{Guid.NewGuid()}}"", {fakeEntityVariableName});
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -128,7 +128,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         testName += isProtected ? "_and_valid_auth_credentials" : "";
         var clientAuth = isProtected ? @$"
 
-        _client.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
+        FactoryClient.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
         return $@"[Test]
     public async Task {testName}()
@@ -137,7 +137,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
 
         // Act
-        var result = await _client.PostJsonRequestAsync(ApiRoutes.{entity.Plural}.CreateBatch, {fakeEntityVariableName});
+        var result = await FactoryClient.PostJsonRequestAsync(ApiRoutes.{entity.Plural}.CreateBatch, {fakeEntityVariableName});
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -160,7 +160,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         // Act
         var route = ApiRoutes.{entity.Plural}.CreateBatch;
-        var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
+        var result = await FactoryClient.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -178,13 +178,13 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     {{
         // Arrange
         var {fakeEntityVariableName} = new {fakeEntity} {{ }}.Generate();
-        _client.AddAuth();
+        FactoryClient.AddAuth();
 
         await InsertAsync({fakeEntityVariableName});
 
         // Act
         var route = ApiRoutes.{entity.Plural}.CreateBatch;
-        var result = await _client.PostJsonRequestAsync(route, {fakeEntityVariableName});
+        var result = await FactoryClient.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Forbidden);

@@ -368,7 +368,7 @@ public class TestFixture
 
     // MassTransit Methods -- Do Not Delete Comment
 
-    {provider.IntegrationTestDbSetupMethod(projectBaseName)}{equivalencyMethod}
+    {provider.TestingDbSetupMethod(projectBaseName, true)}{equivalencyMethod}
 
     [OneTimeTearDown]
     public async Task RunAfterAnyTests()

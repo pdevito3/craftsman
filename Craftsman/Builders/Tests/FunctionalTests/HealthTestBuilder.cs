@@ -47,7 +47,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // N/A
 
         // Act
-        var result = await _client.GetRequestAsync(ApiRoutes.Health);
+        var result = await FactoryClient.GetRequestAsync(ApiRoutes.Health);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);

@@ -36,6 +36,7 @@ public class FunctionalTestsCsProjBuilder
     <PackageReference Include=""AutoBogusLifesupport"" Version=""2.14.0"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""Docker.DotNet"" Version=""3.125.5"" />
+    <PackageReference Include=""DotNet.Testcontainers"" Version=""1.5.0"" />
     <PackageReference Include=""FluentAssertions"" Version=""6.6.0"" />
     <PackageReference Include=""MediatR"" Version=""10.0.1"" />
     <PackageReference Include=""Moq"" Version=""4.17.2"" />

@@ -73,16 +73,16 @@ using System.Threading.Tasks;
  
 public class TestBase
 {{
-    public static IServiceScopeFactory _scopeFactory;
-    public static WebApplicationFactory<Program> _factory;
-    public static HttpClient _client;
+    private static IServiceScopeFactory _scopeFactory;
+    private static WebApplicationFactory<Program> _factory;
+    protected static HttpClient FactoryClient  {{ get; private set; }}
 
     [SetUp]
     public async Task TestSetUp()
     {{
-        _factory = new {FileNames.GetWebHostFactoryName()}();
-        _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
-        _client = _factory.CreateClient(new WebApplicationFactoryClientOptions());{seedRootUser}
+        _factory = FunctionalTestFixture.Factory;
+        _scopeFactory = FunctionalTestFixture.ScopeFactory;
+        FactoryClient = _factory.CreateClient(new WebApplicationFactoryClientOptions());{seedRootUser}
     }}
 
     public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)

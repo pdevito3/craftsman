@@ -218,26 +218,18 @@ public sealed class {dbContextName} : DbContext
                     if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                     {
                         newText += @$"
-        if (env.IsEnvironment(Consts.Testing.FunctionalTestingEnvName))
+        var connectionString = Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"");
+        if(string.IsNullOrEmpty(connectionString))
         {{
-            services.AddDbContext<{dbContextName}>(options =>
-                options.UseInMemoryDatabase($""{dbName ?? dbContextName}""));
+            // this makes local migrations easier to manage. feel free to refactor if desired.
+            connectionString = env.IsDevelopment() 
+                ? ""{localDbConnection}""
+                : throw new Exception(""DB_CONNECTION_STRING environment variable is not set."");
         }}
-        else
-        {{
-            var connectionString = Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"");
-            if(string.IsNullOrEmpty(connectionString))
-            {{
-                // this makes local migrations easier to manage. feel free to refactor if desired.
-                connectionString = env.IsDevelopment() 
-                    ? ""{localDbConnection}""
-                    : throw new Exception(""DB_CONNECTION_STRING environment variable is not set."");
-            }}
 
-            services.AddDbContext<{dbContextName}>(options =>
-                options.{usingDbStatement}(connectionString,
-                    builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});
-        }}";
+        services.AddDbContext<{dbContextName}>(options =>
+            options.{usingDbStatement}(connectionString,
+                builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});";
                     }
 
                     output.WriteLine(newText);

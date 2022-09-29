@@ -59,7 +59,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var clientAuth = isProtected ? @$"
 
         var user = await AddNewSuperAdmin();
-        _client.AddAuth(user.Identifier);" : "";
+        FactoryClient.AddAuth(user.Identifier);" : "";
 
         return $@"[Test]
     public async Task {testName}()
@@ -68,7 +68,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         {clientAuth ?? "// N/A"}
 
         // Act
-        var result = await _client.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
+        var result = await FactoryClient.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -85,7 +85,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // N/A
 
         // Act
-        var result = await _client.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
+        var result = await FactoryClient.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -99,10 +99,10 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     public async Task get_{entity.Name.ToLower()}_list_returns_forbidden_without_proper_scope()
     {{
         // Arrange
-        _client.AddAuth();
+        FactoryClient.AddAuth();
 
         // Act
-        var result = await _client.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
+        var result = await FactoryClient.GetRequestAsync(ApiRoutes.{entity.Plural}.GetList);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Forbidden);

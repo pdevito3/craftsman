@@ -46,42 +46,15 @@ public static class FileNames
         return $"{messageName}";
     }
 
-    public static string MessageInterfaceName(string messageName)
-    {
-        return $"I{messageName}";
-    }
-
-    public static string EntityCreatedDomainMessage(string entityName)
-    {
-        return $"{entityName}Created";
-    }
-
-    public static string EntityUpdatedDomainMessage(string entityName)
-    {
-        return $"{entityName}Updated";
-    }
-
+    public static string MessageInterfaceName(string messageName) => $"I{messageName}";
+    public static string EntityCreatedDomainMessage(string entityName) => $"{entityName}Created";    
+    public static string EntityUpdatedDomainMessage(string entityName) => $"{entityName}Updated";    
     public static string UserRolesUpdateDomainMessage() => "UserRolesUpdated";
-
-    public static string GetApiRouteClass(string entityPlural)
-    {
-        return entityPlural;
-    }
-
-    public static string GetWebHostFactoryName()
-    {
-        return "TestingWebApplicationFactory";
-    }
-
-    public static string GetControllerName(string entityName)
-    {
-        return $"{entityName}Controller";
-    }
-
-    public static string GetDatabaseEntityConfigName(string entityName)
-    {
-        return $"{entityName}Configuration";
-    }
+    public static string GetApiRouteClass(string entityPlural) => entityPlural;    
+    public static string GetWebHostFactoryName() => "TestingWebApplicationFactory";    
+    public static string GetFunctionalFixtureName() => "FunctionalTestFixture";    
+    public static string GetControllerName(string entityName) => $"{entityName}Controller";    
+    public static string GetDatabaseEntityConfigName(string entityName) => $"{entityName}Configuration";    
     public static string GetSeederName(Entity entity) => $"{entity.Name}Seeder";
     public static string GetInfraRegistrationName() => "InfrastructureServiceExtension";
     public static string GetSwaggerServiceExtensionName() => "SwaggerServiceExtension";

@@ -375,9 +375,9 @@ public static class ClassPathHelper
         return new ClassPath(solutionDirectory, "", className);
     }
 
-    public static ClassPath FunctionalTestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
+    public static ClassPath FunctionalTestProjectRootClassPath(string testDirectory, string className, string projectBaseName)
     {
-        return new ClassPath(solutionDirectory, $"{projectBaseName}.{FunctionalTestProjectSuffix}", className);
+        return new ClassPath(testDirectory, $"{projectBaseName}.{FunctionalTestProjectSuffix}", className);
     }
 
     public static ClassPath SharedTestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)

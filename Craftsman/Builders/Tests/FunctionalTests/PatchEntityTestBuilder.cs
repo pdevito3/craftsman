@@ -74,7 +74,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var clientAuth = isProtected ? @$"
 
         var user = await AddNewSuperAdmin();
-        _client.AddAuth(user.Identifier);" : "";
+        FactoryClient.AddAuth(user.Identifier);" : "";
 
         // if no string properties, do one with an int
         if (myProp == null)
@@ -97,7 +97,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-        var result = await _client.PatchJsonRequestAsync(route, patchDoc);
+        var result = await FactoryClient.PatchJsonRequestAsync(route, patchDoc);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -127,7 +127,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-        var result = await _client.PatchJsonRequestAsync(route, patchDoc);
+        var result = await FactoryClient.PatchJsonRequestAsync(route, patchDoc);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -152,13 +152,13 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
         var patchDoc = new JsonPatchDocument<{updateDto}>();
         patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});
-        _client.AddAuth();
+        FactoryClient.AddAuth();
 
         await InsertAsync({fakeEntityVariableName});
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
-        var result = await _client.PatchJsonRequestAsync(route, patchDoc);
+        var result = await FactoryClient.PatchJsonRequestAsync(route, patchDoc);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
