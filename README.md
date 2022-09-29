@@ -29,7 +29,9 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 - ✅ New `Email` Value Object
 
-- 🚧 NextJS template (still a WIP, but you can find [the sandbox for things here](https://github.com/pdevito3/next-template-wrapt-sand))
+- ✅ Functional Tests use Docker DB and has other cleanup items
+
+- ✅ NextJS template (still a WIP, but you can find [the sandbox for things here](https://github.com/pdevito3/next-template-wrapt-sand))
 
   - ✅ OIDC Auth support
   - ✅ List View
@@ -39,9 +41,9 @@ Have a request for something you don't see below? Join [our discord](https://dis
   - ✅ Custom form components with [Mantine](https://mantine.dev) and [TailwindCSS](https://tailwindcss.com/)
   - ✅ Light/Dark Mode
   - ✅ Responsive
-  - 🚧 Entity Scaffolding with Craftsman
+  - ✅ Entity Scaffolding with Craftsman
 
-  - 🚧 Permissions Integration
+  - ✅ Permissions Integration
   
   - lots more...
 
