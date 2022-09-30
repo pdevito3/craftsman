@@ -79,6 +79,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Integration and unit tests have explicit property assertions
 * Query list uses `AsNoTracking`
 * No more fake read DTO
+* Allow custom schema id's on `AddSwaggerGen`
 
 ### Fixed
 

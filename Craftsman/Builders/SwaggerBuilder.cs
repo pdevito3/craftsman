@@ -114,6 +114,7 @@ public static class SwaggerServiceExtension
     {{
         services.AddSwaggerGen(config =>
         {{
+            config.CustomSchemaIds(type => type.ToString());
             config.MapType<DateOnly>(() => new OpenApiSchema
             {{
                 Type = ""string"",
