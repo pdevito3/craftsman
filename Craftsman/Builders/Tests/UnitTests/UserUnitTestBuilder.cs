@@ -30,7 +30,7 @@ public class UserUnitTestBuilder
     private static string CreateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
     {
         var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
-        var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
+        var emailClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Emails", projectBaseName);
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Users", projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", "Users", projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", "Users", projectBaseName);
@@ -39,7 +39,7 @@ public class UserUnitTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {domainEventsClassPath.ClassNamespace};
-using {domainPolicyClassPath.ClassNamespace};
+using {emailClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
@@ -68,7 +68,11 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var newUser = User.Create(toCreate);
         
         // Assert
-        newUser.Should().NotBeNull();
+        newUser.Identifier.Should().Be(toCreate.Identifier);
+        newUser.FirstName.Should().Be(toCreate.FirstName);
+        newUser.LastName.Should().Be(toCreate.LastName);
+        newUser.Email.Should().Be(new Email(toCreate.Email));
+        newUser.Username.Should().Be(toCreate.Username);
     }}
     
     [Test]
@@ -138,10 +142,11 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         fakeUser.Update(updatedUser);
 
         // Assert
-        fakeUser.Should().BeEquivalentTo(updatedUser, options =>
-            options.ExcludingMissingMembers()
-                .Excluding(x => x.Email));
+        fakeUser.Identifier.Should().Be(updatedUser.Identifier);
+        fakeUser.FirstName.Should().Be(updatedUser.FirstName);
+        fakeUser.LastName.Should().Be(updatedUser.LastName);
         fakeUser.Email.Value.Should().Be(updatedUser.Email);
+        fakeUser.Username.Should().Be(updatedUser.Username);
     }}
     
     [Test]
