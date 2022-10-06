@@ -182,6 +182,24 @@ public static class CoreExceptionBuilder
                 .ToDictionary(failureGroup => failureGroup.Key, failureGroup => failureGroup.ToArray());
         }}
 
+        public ValidationException(ValidationFailure failure)
+            : this()
+        {{
+            Errors = new Dictionary<string, string[]>
+            {{
+                [failure.PropertyName] = new[] {{ failure.ErrorMessage }}
+            }};
+        }}
+
+        public ValidationException(string errorPropertyName, string errorMessage)
+            : this()
+        {{
+            Errors = new Dictionary<string, string[]>
+            {{
+                [errorPropertyName] = new[] {{ errorMessage }}
+            }};
+        }}
+
         public IDictionary<string, string[]> Errors {{ get; }}
     }}
 }}";
