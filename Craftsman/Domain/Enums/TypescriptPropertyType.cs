@@ -367,8 +367,7 @@ public abstract class TypescriptPropertyType : SmartEnum<TypescriptPropertyType>
         }
             
         public override string YupValidation(string propName)
-            => _isNullable ? "unknown?" 
-                : @$"
+            => @$"
   // TODO possible validation for {propName}";
 
         public override string FormDefaultValue(string propName) 
