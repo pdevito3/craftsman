@@ -19,6 +19,6 @@ internal class DataValidationErrorException : Exception
             failString += $"{Environment.NewLine}{failure.PropertyName} failed validation with the following issue: {failure.ErrorMessage}{Environment.NewLine}";
         }
 
-        return $"The folowing data validation errors occured:{Environment.NewLine}{failString}";
+        return $"The following data validation errors occured:{Environment.NewLine}{failString}";
     }
 }
