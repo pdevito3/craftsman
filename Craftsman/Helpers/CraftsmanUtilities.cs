@@ -164,6 +164,8 @@ using {parentClassPath.ClassNamespace};";
             "number?" => TypescriptPropertyType.NullableNumberProperty,
             "int?" => TypescriptPropertyType.NullableNumberProperty,
             "string?" => TypescriptPropertyType.NullableStringProperty,
+            "date?" => TypescriptPropertyType.DateProperty,
+            "datetime?" => TypescriptPropertyType.DateProperty,
             "dateonly?" => TypescriptPropertyType.NullableDateProperty,
             "timeonly?" => TypescriptPropertyType.NullableDateProperty,
             "datetimeoffset?" => TypescriptPropertyType.NullableDateProperty,
