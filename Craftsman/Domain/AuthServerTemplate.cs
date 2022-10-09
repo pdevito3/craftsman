@@ -59,7 +59,7 @@ public class AuthServerTemplate
             {
                 if (!Enums.GrantType.TryFromName(value, true, out var parsed))
                 {
-                    GrantTypeEnum = Enums.GrantType.Code;
+                    parsed = Enums.GrantType.Code;
                 }
 
                 GrantTypeEnum = parsed;
