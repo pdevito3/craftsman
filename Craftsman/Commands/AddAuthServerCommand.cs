@@ -75,7 +75,7 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
                 pulumiYamlBuilder.CreateBaseFile(solutionDirectory, projectBaseName);
                 pulumiYamlBuilder.CreateDevConfig(solutionDirectory, projectBaseName, template.Port, template.Username, template.Password);
 
-                new ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, projectBaseName);
+                new Builders.AuthServer.ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, projectBaseName);
         
                 new UserExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName);
                 new ClientExtensionsBuilder(_utilities).Create(solutionDirectory, projectBaseName);
