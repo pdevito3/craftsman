@@ -27,6 +27,7 @@ public class CommandDeleteRecordBuilder
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
+        var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
         var entityNameLowercase = entity.Name.LowercaseFirstLetter();
         var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
@@ -58,9 +59,9 @@ public static class {className}
     {{
         public readonly {primaryKeyPropType} {primaryKeyPropName};
 
-        public {deleteCommandName}({primaryKeyPropType} {entityNameLowercase})
+        public {deleteCommandName}({primaryKeyPropType} {primaryKeyPropNameLowercase})
         {{
-            {primaryKeyPropName} = {entityNameLowercase};
+            {primaryKeyPropName} = {primaryKeyPropNameLowercase};
         }}
     }}
 

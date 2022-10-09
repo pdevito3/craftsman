@@ -30,6 +30,7 @@ public class CommandPatchRecordBuilder
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
+        var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
         var entityNameLowercase = entity.Name.LowercaseFirstLetter();
         var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
         var patchedEntityProp = $"{entityNameLowercase}ToPatch";
@@ -69,9 +70,9 @@ public static class {className}
         public readonly {primaryKeyPropType} {primaryKeyPropName};
         public readonly JsonPatchDocument<{updateDto}> PatchDoc;
 
-        public {patchCommandName}({primaryKeyPropType} {entityNameLowercase}, JsonPatchDocument<{updateDto}> patchDoc)
+        public {patchCommandName}({primaryKeyPropType} {primaryKeyPropNameLowercase}, JsonPatchDocument<{updateDto}> patchDoc)
         {{
-            {primaryKeyPropName} = {entityNameLowercase};
+            {primaryKeyPropName} = {primaryKeyPropNameLowercase};
             PatchDoc = patchDoc;
         }}
     }}

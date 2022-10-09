@@ -29,6 +29,7 @@ public class CommandUpdateRecordBuilder
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
+        var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
         var entityNameLowercase = entity.Name.LowercaseFirstLetter();
         var commandProp = $"{entity.Name}ToUpdate";
         var newEntityDataProp = $"new{entity.Name}Data";
@@ -38,7 +39,6 @@ public class CommandUpdateRecordBuilder
 
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var validatorsClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
@@ -57,7 +57,6 @@ public class CommandUpdateRecordBuilder
 
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {validatorsClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
@@ -71,9 +70,9 @@ public static class {className}
         public readonly {primaryKeyPropType} {primaryKeyPropName};
         public readonly {updateDto} {commandProp};
 
-        public {updateCommandName}({primaryKeyPropType} {entityNameLowercase}, {updateDto} {newEntityDataProp})
+        public {updateCommandName}({primaryKeyPropType} {primaryKeyPropNameLowercase}, {updateDto} {newEntityDataProp})
         {{
-            {primaryKeyPropName} = {entityNameLowercase};
+            {primaryKeyPropName} = {primaryKeyPropNameLowercase};
             {commandProp} = {newEntityDataProp};
         }}
     }}

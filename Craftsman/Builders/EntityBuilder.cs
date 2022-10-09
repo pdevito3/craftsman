@@ -36,7 +36,7 @@ public class EntityBuilder
         var creationValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation);
         var updateDtoName = FileNames.GetDtoName(entity.Name, Dto.Update);
         var updateValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Update);
-        var propString = EntityPropBuilder(entity.Properties);
+        var propString = EntityPropBuilder(entity.Properties, entity.Name);
         var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
         var tableAnnotation = EntityAnnotationBuilder(entity);
         var entityCreatedDomainMessage = FileNames.EntityCreatedDomainMessage(entity.Name);
@@ -180,7 +180,7 @@ public abstract class BaseEntity
         return entity.Schema != null ? @$"[Table(""{tableName}"", Schema=""{entity.Schema}"")]" : @$"[Table(""{tableName}"")]";
     }
 
-    public static string EntityPropBuilder(List<EntityProperty> props)
+    public static string EntityPropBuilder(List<EntityProperty> props, string entityName)
     {
         var propString = "";
         foreach (var property in props)
@@ -215,7 +215,7 @@ public abstract class BaseEntity
                 if (property.IsPrimitiveType || property.IsMany)
                     propString += $@"    public virtual {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
 
-                propString += GetForeignProp(property);
+                propString += GetForeignProp(property, entityName);
             }
         }
 
@@ -278,9 +278,13 @@ public abstract class BaseEntity
         return "";
     }
 
-    private static string GetForeignProp(EntityProperty prop)
+    private static string GetForeignProp(EntityProperty prop, string entityName)
     {
         var propName = !prop.IsPrimitiveType ? prop.Name : prop.ForeignEntityName;
+        
+        if (propName == entityName)
+            propName = $"Parent{propName}";
+        
         return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public virtual {prop.ForeignEntityName} {propName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
     }
 

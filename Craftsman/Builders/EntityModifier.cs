@@ -36,7 +36,7 @@ public class EntityModifier
                     var newText = $"{line}";
                     if (line.Contains($"add-on property marker"))
                     {
-                        newText += @$"{Environment.NewLine}{Environment.NewLine}{EntityBuilder.EntityPropBuilder(props)}";
+                        newText += @$"{Environment.NewLine}{Environment.NewLine}{EntityBuilder.EntityPropBuilder(props, entityName)}";
                     }
 
                     output.WriteLine(newText);
