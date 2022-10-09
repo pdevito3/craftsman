@@ -67,24 +67,25 @@ public class IntegrationTestFixtureBuilder
 using Npgsql;"
             : null;
 
-        var checkpoint = provider == DbProvider.Postgres
-            ? $@"_checkpoint = new Checkpoint
-        {{
-            TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
-            SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
-            DbAdapter = DbAdapter.Postgres
-        }};"
-            : $@"_checkpoint = new Checkpoint
-        {{
-            TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
-        }};";
+        var respawner = provider == DbProvider.Postgres
+            ? $@"var respawner = await Respawner.CreateAsync(connection, new RespawnerOptions
+            {{
+                TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
+                SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
+                DbAdapter = DbAdapter.Postgres
+            }});"
+            : $@"var respawner = await Respawner.CreateAsync(connection, new RespawnerOptions
+            {{
+                TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
+            }});";
 
         var resetString = provider == DbProvider.Postgres
-            ? $@"await using var conn = new NpgsqlConnection(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
-        await conn.OpenAsync();
+            ? $@"await using var connection = new NpgsqlConnection(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
+        await connection.OpenAsync();
         try
         {{
-            await _checkpoint.Reset(conn);
+            {respawner}
+            await respawner.ResetAsync(connection);
         }}
         catch (InvalidOperationException e)
         {{
@@ -92,7 +93,8 @@ using Npgsql;"
         }}"
             : $@"try
         {{
-            await _checkpoint.Reset(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
+            {respawner}
+            await respawner.ResetAsync(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
         }}
         catch (InvalidOperationException e)
         {{
@@ -132,7 +134,6 @@ using FluentAssertions.Extensions;
 public class TestFixture
 {{
     private static IServiceScopeFactory _scopeFactory;
-    private static Checkpoint _checkpoint;
     private static ServiceProvider _provider;
     private readonly TestcontainerDatabase _dbContainer = dbSetup();
 
@@ -161,7 +162,6 @@ public class TestFixture
 
         // MassTransit Start Setup -- Do Not Delete Comment
 
-        {checkpoint}
 {equivalencyCall}
         await EnsureDatabase();
         await ResetState();

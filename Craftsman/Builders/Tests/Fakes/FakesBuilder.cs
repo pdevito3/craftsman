@@ -128,7 +128,7 @@ public class Fake{objectToFakeClassName}
 
     public static {entity.Name} Generate()
     {{
-        return {entity.Name}.Create(new {fakeCreationDtoName}().Generate());
+        return Generate(new {fakeCreationDtoName}().Generate());
     }}
 }}";
     }

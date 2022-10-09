@@ -88,15 +88,15 @@ public class {classPath.ClassNameWithoutExt} : TestBase
             entityAssertions += entityProperty.Type switch
             {
                 "DateTime" or "DateTimeOffset" or "TimeOnly" =>
-                    $@"{Environment.NewLine}        updated{entityName}?.{entityProperty.Name}.Should().BeCloseTo(updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeCloseTo(updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
                 "DateTime?" =>
-                    $@"{Environment.NewLine}        updated{entityName}?.{entityProperty.Name}.Should().BeCloseTo((DateTime)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeCloseTo((DateTime)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
                 "DateTimeOffset?" =>
-                    $@"{Environment.NewLine}        updated{entityName}?.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
                 "TimeOnly?" =>
-                    $@"{Environment.NewLine}        updated{entityName}?.{entityProperty.Name}.Should().BeCloseTo((TimeOnly)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeCloseTo((TimeOnly)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
                 _ =>
-                    $@"{Environment.NewLine}        updated{entityName}?.{entityProperty.Name}.Should().Be(updated{entityName}Dto.{entityProperty.Name});"
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().Be(updated{entityName}Dto.{entityProperty.Name});"
             };
         }
 

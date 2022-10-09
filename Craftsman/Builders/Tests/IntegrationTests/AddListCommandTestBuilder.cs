@@ -99,34 +99,34 @@ public class {classPath.ClassNameWithoutExt} : TestBase
             switch (entityProperty.Type)
             {
                 case "DateTime" or "DateTimeOffset" or "TimeOnly":
-                    dtoAssertions += $@"{Environment.NewLine}        firstReturned?.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
-        secondReturned?.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
-                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord?.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
-        secondDbRecord?.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    dtoAssertions += $@"{Environment.NewLine}        firstReturned.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondReturned.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondDbRecord.{entityProperty.Name}.Should().BeCloseTo({fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
                     break;
                 case "DateTime?":
-                    dtoAssertions += $@"{Environment.NewLine}        firstReturned?.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
-        secondReturned?.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
-                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord?.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
-        secondDbRecord?.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    dtoAssertions += $@"{Environment.NewLine}        firstReturned.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondReturned.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondDbRecord.{entityProperty.Name}.Should().BeCloseTo((DateTime){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
                     break;
                 case "DateTimeOffset?":
-                    dtoAssertions += $@"{Environment.NewLine}        firstReturned?.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
-        secondReturned?.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
-                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord?.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
-        secondDbRecord?.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    dtoAssertions += $@"{Environment.NewLine}        firstReturned.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondReturned.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondDbRecord.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
                     break;
                 case "TimeOnly?":
-                    dtoAssertions += $@"{Environment.NewLine}        firstReturned?.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
-        secondReturned?.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
-                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord?.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
-        secondDbRecord?.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    dtoAssertions += $@"{Environment.NewLine}        firstReturned.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondReturned.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
+                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameOne}.{entityProperty.Name}, 1.Seconds());
+        secondDbRecord.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableNameTwo}.{entityProperty.Name}, 1.Seconds());";
                     break;
                 default:
-                    dtoAssertions += $@"{Environment.NewLine}        firstReturned?.{entityProperty.Name}.Should().Be({fakeEntityVariableNameOne}.{entityProperty.Name});
-        secondReturned?.{entityProperty.Name}.Should().Be({fakeEntityVariableNameTwo}.{entityProperty.Name});";
-                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord?.{entityProperty.Name}.Should().Be({fakeEntityVariableNameOne}.{entityProperty.Name});
-        secondDbRecord?.{entityProperty.Name}.Should().Be({fakeEntityVariableNameTwo}.{entityProperty.Name});";
+                    dtoAssertions += $@"{Environment.NewLine}        firstReturned.{entityProperty.Name}.Should().Be({fakeEntityVariableNameOne}.{entityProperty.Name});
+        secondReturned.{entityProperty.Name}.Should().Be({fakeEntityVariableNameTwo}.{entityProperty.Name});";
+                    entityAssertions += $@"{Environment.NewLine}        firstDbRecord.{entityProperty.Name}.Should().Be({fakeEntityVariableNameOne}.{entityProperty.Name});
+        secondDbRecord.{entityProperty.Name}.Should().Be({fakeEntityVariableNameTwo}.{entityProperty.Name});";
                     break;
             }
         }
