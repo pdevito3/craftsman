@@ -56,7 +56,7 @@ public {classAccessor}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanc
                 continue;
             if (props[eachProp].IsForeignKey && props[eachProp].IsMany)
                 continue;
-            if (!props[eachProp].IsPrimativeType)
+            if (!props[eachProp].IsPrimitiveType)
                 continue;
             var guidDefault = dto == Dto.Creation && props[eachProp].Type.IsGuidPropertyType()
                 ? " = Guid.NewGuid();"

@@ -58,9 +58,9 @@ using {classPath.ClassNamespace};";
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         var createEntityVar = $"new{entity.Name.UppercaseFirstLetter()}";
-        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimativeType).Select(property =>
+        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType).Select(property =>
             $"        {createEntityVar}.{property.Name} = {creationDtoName.LowercaseFirstLetter()}.{property.Name};"));
-        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimativeType).Select(property =>
+        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType).Select(property =>
             $"        {property.Name} = {updateDtoName.LowercaseFirstLetter()}.{property.Name};"));
         
         return @$"namespace {classNamespace};
@@ -212,7 +212,7 @@ public abstract class BaseEntity
                     ? Environment.NewLine
                     : $"{Environment.NewLine}{Environment.NewLine}";
 
-                if (property.IsPrimativeType || property.IsMany)
+                if (property.IsPrimitiveType || property.IsMany)
                     propString += $@"    public virtual {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
 
                 propString += GetForeignProp(property);
@@ -245,7 +245,7 @@ public abstract class BaseEntity
     [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
         }
     
-        if (entityProperty.IsMany || !entityProperty.IsPrimativeType)
+        if (entityProperty.IsMany || !entityProperty.IsPrimitiveType)
             attributeString += $@"    [JsonIgnore]
     [IgnoreDataMember]{Environment.NewLine}";
         if (entityProperty.CanFilter || entityProperty.CanSort)
@@ -280,7 +280,7 @@ public abstract class BaseEntity
 
     private static string GetForeignProp(EntityProperty prop)
     {
-        var propName = !prop.IsPrimativeType ? prop.Name : prop.ForeignEntityName;
+        var propName = !prop.IsPrimitiveType ? prop.Name : prop.ForeignEntityName;
         return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public virtual {prop.ForeignEntityName} {propName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
     }
 

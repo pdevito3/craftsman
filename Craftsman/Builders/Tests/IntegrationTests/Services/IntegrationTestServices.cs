@@ -12,7 +12,7 @@ public class IntegrationTestServices
         fakeParentIdRuleFor = "";
         foreach (var entityProperty in entity.Properties)
         {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
+            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType && entityProperty.IsPrimitiveType)
             {
                 var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
                 var fakeParentCreationDto =
@@ -47,7 +47,7 @@ public class IntegrationTestServices
         fakeParentIdRuleForTwo = "";
         foreach (var entityProperty in entity.Properties)
         {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
+            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType && entityProperty.IsPrimitiveType)
             {
                 var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
                 var fakeParentCreationDto =
@@ -75,7 +75,7 @@ public class IntegrationTestServices
         fakeParentIdRuleForThree = "";
         foreach (var entityProperty in entity.Properties)
         {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
+            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType && entityProperty.IsPrimitiveType)
             {
                 var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
                 var fakeParentCreationDto =

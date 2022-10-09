@@ -63,7 +63,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeParentIdRuleFor = "";
         foreach (var entityProperty in entity.Properties)
         {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimativeType)
+            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType)
             {
                 var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
                 var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
