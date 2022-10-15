@@ -33,6 +33,7 @@ public class SharedTestsCsProjBuilder
     <PackageReference Include=""Ardalis.SmartEnum"" Version=""2.1.0"" />
     <PackageReference Include=""AutoBogusLifesupport"" Version=""2.14.0"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
+    <PackageReference Include=""Moq"" Version=""4.17.2"" />
   </ItemGroup>
 
   <ItemGroup>
