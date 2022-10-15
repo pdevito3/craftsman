@@ -48,7 +48,7 @@ using static {testFixtureName};{foreignEntityUsings}
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
-    {GetDeleteTest(commandName, entity, featureName)}{GetDeleteWithoutKeyTest(commandName, entity, featureName)}{softDeleteTest}
+    {GetDeleteTest(commandName, entity, featureName)}{softDeleteTest}
 }}";
     }
 
@@ -80,27 +80,6 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         // Assert
         {dbResponseVariableName}.Should().Be(0);
-    }}";
-    }
-
-    private static string GetDeleteWithoutKeyTest(string commandName, Entity entity, string featureName)
-    {
-        var badId = IntegrationTestServices.GetRandomId(Entity.PrimaryKeyProperty.Type);
-
-        return badId == "" ? "" : $@"
-
-    [Test]
-    public async Task delete_{entity.Name.ToLower()}_throws_notfoundexception_when_record_does_not_exist()
-    {{
-        // Arrange
-        var badId = {badId};
-
-        // Act
-        var command = new {featureName}.{commandName}(badId);
-        Func<Task> act = () => SendAsync(command);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
     }}";
     }
 

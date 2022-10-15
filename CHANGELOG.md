@@ -81,6 +81,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * No more fake read DTO
 * Allow custom schema id's on `AddSwaggerGen`
 * Respawn to v6 with simplified `TestFixture` setup
+* Remove integration test for deleting an entity with a bad id
 
 ### Fixed
 
