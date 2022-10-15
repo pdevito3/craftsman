@@ -31,7 +31,7 @@ public class CommandUpdateRecordBuilder
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
         var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
         var entityNameLowercase = entity.Name.LowercaseFirstLetter();
-        var commandProp = $"updated{entity.Name}Data";
+        var commandProp = $"Updated{entity.Name}Data";
         var newEntityDataProp = $"updated{entity.Name}Data";
         var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
         var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
