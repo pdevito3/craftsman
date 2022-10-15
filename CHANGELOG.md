@@ -54,6 +54,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Functional tests use a docker db
 
+* Simple fake `Builder` scaffold for each entity
+
 
 ### Updated
 

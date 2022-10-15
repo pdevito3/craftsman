@@ -46,6 +46,7 @@ public static class FileNames
         return $"{messageName}";
     }
 
+    public static string FakeBuilderName(string entityName) => $"Fake{entityName}Builder";    
     public static string MessageInterfaceName(string messageName) => $"I{messageName}";
     public static string EntityCreatedDomainMessage(string entityName) => $"{entityName}Created";    
     public static string EntityUpdatedDomainMessage(string entityName) => $"{entityName}Updated";    

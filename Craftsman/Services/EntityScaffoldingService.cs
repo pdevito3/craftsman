@@ -74,6 +74,7 @@ public class EntityScaffoldingService
 
             // Shared Tests
             new FakesBuilder(_utilities).CreateFakes(srcDirectory, testDirectory, projectBaseName, entity);
+            new FakeEntityBuilderBuilder(_utilities).CreateFakeBuilder(srcDirectory, testDirectory, projectBaseName, entity);
             new CreateEntityUnitTestBuilder(_utilities)
                 .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, entity.Properties, projectBaseName);
             new UpdateEntityUnitTestBuilder(_utilities)
