@@ -89,12 +89,14 @@ public sealed class {dbContextName} : DbContext
 {{
     private readonly ICurrentUserService _currentUserService;
     private readonly IMediator _mediator;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
     public {dbContextName}(
-        DbContextOptions<{dbContextName}> options, ICurrentUserService currentUserService, IMediator mediator) : base(options)
+        DbContextOptions<{dbContextName}> options, ICurrentUserService currentUserService, IMediator mediator, IDateTimeProvider dateTimeProvider) : base(options)
     {{
         _currentUserService = currentUserService;
         _mediator = mediator;
+        _dateTimeProvider = dateTimeProvider;
     }}
 
     #region DbSet Region - Do Not Delete
@@ -142,7 +144,7 @@ public sealed class {dbContextName} : DbContext
         
     private void UpdateAuditFields()
     {{
-        var now = DateTime.UtcNow;
+        var now = _dateTimeProvider.DateTimeUtcNow;
         foreach (var entry in ChangeTracker.Entries<BaseEntity>())
         {{
             switch (entry.State)

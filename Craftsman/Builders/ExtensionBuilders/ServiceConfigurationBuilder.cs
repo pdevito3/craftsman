@@ -48,6 +48,7 @@ public static class {FileNames.WebAppServiceConfiguration()}
 {{
     public static void ConfigureServices(this WebApplicationBuilder builder)
     {{
+        builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
         builder.Services.AddSingleton(Log.Logger);
         // TODO update CORS for your env
         builder.Services.AddCorsService(""{corsName}"", builder.Environment);
