@@ -56,9 +56,11 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     [Test]
     public void can_create_valid_{entityName.LowercaseFirstLetter()}()
     {{
-        // Arrange + Act
+        // Arrange
         var {seedInfoVar} = new {fakeCreationDtoName}().Generate();
-        var {createdEntityVar} = Fake{entityName}.Generate({seedInfoVar});
+        
+        // Act
+        var {createdEntityVar} = {entityName}.Create({seedInfoVar});
 
         // Assert{GetAssertions(properties, createdEntityVar, seedInfoVar)}
     }}
