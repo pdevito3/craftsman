@@ -5,6 +5,7 @@ using Builders;
 using Builders.Auth;
 using Builders.Docker;
 using Builders.Endpoints;
+using Builders.Tests.Fakes;
 using Builders.Tests.FunctionalTests;
 using Builders.Tests.UnitTests;
 using Builders.Tests.Utilities;
@@ -160,6 +161,7 @@ public class ApiScaffoldingService
         new CurrentUserServiceTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         _mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
         _mediator.Send(new CommonValueObjectBuilder.Command(template.AddJwtAuthentication));
+        new FakesBuilder(_utilities).CreateAddressFakes(srcDirectory, testDirectory, projectBaseName);
         _mediator.Send(new ValueObjectDtoBuilder.ValueObjectDtoBuilderCommand());
         _mediator.Send(new ValueObjectMappingsBuilder.ValueObjectMappingsBuilderCommand(template.AddJwtAuthentication));
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());

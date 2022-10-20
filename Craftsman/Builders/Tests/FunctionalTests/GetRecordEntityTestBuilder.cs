@@ -100,8 +100,6 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // Arrange
         var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
 
-        await InsertAsync({fakeEntityVariableName});
-
         // Act
         var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
         var result = await FactoryClient.GetRequestAsync(route);
@@ -125,8 +123,6 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // Arrange
         var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
         FactoryClient.AddAuth();
-
-        await InsertAsync({fakeEntityVariableName});
 
         // Act
         var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());

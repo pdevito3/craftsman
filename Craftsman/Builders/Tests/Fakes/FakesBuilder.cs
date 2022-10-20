@@ -7,7 +7,7 @@ using Domain.Enums;
 using Helpers;
 using Services;
 
-public class FakesBuilder
+public sealed class FakesBuilder
 {
     private readonly ICraftsmanUtilities _utilities;
 
@@ -40,6 +40,22 @@ public class FakesBuilder
 
         CreateRolePermissionFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName);
         CreateRolePermissionFakerForCreationOrUpdateFile(srcDirectory, solutionDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName);
+    }
+
+    public void CreateAddressFakes(string srcDirectory, string testDirectory, string projectBaseName)
+    {
+        var entity = new Entity();
+        entity.Name = "Address";
+        entity.Plural = "Addresses";
+        var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"", entity.Name, projectBaseName);
+
+        if (!Directory.Exists(classPath.ClassDirectory))
+            Directory.CreateDirectory(classPath.ClassDirectory);
+
+        CreateAddressFakerForReadDtoFile(srcDirectory, testDirectory, projectBaseName);
+
+        CreateAddressFakerForCreationOrUpdateFile(srcDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Creation), entity, projectBaseName);
+        CreateAddressFakerForCreationOrUpdateFile(srcDirectory, testDirectory, FileNames.GetDtoName(entity.Name, Dto.Update), entity, projectBaseName);
     }
 
     public void CreateUserFakes(string srcDirectory, string solutionDirectory, string testDirectory, string projectBaseName, Entity entity)
@@ -87,7 +103,7 @@ using {entitiesClassPath.ClassNamespace};
 {usingStatement}
 
 // or replace 'AutoFaker' with 'Faker' along with your own rules if you don't want all fields to be auto faked
-public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
+public sealed class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
 {{
     public Fake{objectToFakeClassName}()
     {{
@@ -119,7 +135,7 @@ using AutoBogus;
 using {entitiesClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 
-public class Fake{objectToFakeClassName}
+public sealed class Fake{objectToFakeClassName}
 {{
     public static {entity.Name} Generate({creationDtoName} {creationDtoName.LowercaseFirstLetter()})
     {{
@@ -150,7 +166,7 @@ using {policyDomainClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 
-public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
+public sealed class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
 {{
     public Fake{objectToFakeClassName}()
     {{
@@ -179,11 +195,72 @@ using {policyDomainClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 
-public class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
+public sealed class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
 {{
     public Fake{objectToFakeClassName}()
     {{
         RuleFor(u => u.Email, f => f.Person.Email);
+    }}
+}}";
+
+        _utilities.CreateFile(classPath, fileText);
+    }
+    private void CreateAddressFakerForCreationOrUpdateFile(string srcDirectory, string testDirectory, string objectToFakeClassName, Entity entity, string projectBaseName)
+    {
+        var fakeFilename = $"Fake{objectToFakeClassName}.cs";
+        var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, entity.Name, projectBaseName);
+
+        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+
+        var fileText = @$"namespace {classPath.ClassNamespace};
+
+using AutoBogus;
+using {dtoClassPath.ClassNamespace};
+
+public sealed class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassName}>
+{{
+    public Fake{objectToFakeClassName}()
+    {{
+        RuleFor(u => u.Line1, f => f.Address.StreetAddress());
+        RuleFor(u => u.Line2, f => f.Address.SecondaryAddress());
+        RuleFor(u => u.City, f => f.Address.City());
+        RuleFor(u => u.State, f => f.Address.State());
+        RuleFor(u => u.PostalCode, f => f.Address.ZipCode());
+        RuleFor(u => u.Country, f => f.Address.Country());
+    }}
+}}";
+
+        _utilities.CreateFile(classPath, fileText);
+    }
+    
+    private void CreateAddressFakerForReadDtoFile(string srcDirectory, string testDirectory, string projectBaseName)
+    {
+        var fakeFilename = "FakeAddress.cs";
+        var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, fakeFilename, "Address", projectBaseName);
+
+        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", "Addresses", projectBaseName);
+        var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Addresses", projectBaseName);
+
+        var fileText = @$"namespace {classPath.ClassNamespace};
+
+using {dtoClassPath.ClassNamespace};
+using {entityClassPath.ClassNamespace};
+
+public class FakeAddress
+{{
+    public static Address Generate(AddressForCreationDto addressForCreationDto)
+    {{
+        return new Address(addressForCreationDto.Line1,
+            addressForCreationDto.Line2,
+            addressForCreationDto.City,
+            addressForCreationDto.State,
+            addressForCreationDto.PostalCode,
+            addressForCreationDto.Country);
+    }}
+
+    public static Address Generate()
+    {{
+        return Generate(new FakeAddressForCreationDto().Generate());
     }}
 }}";
 

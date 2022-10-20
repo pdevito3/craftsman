@@ -123,8 +123,6 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var patchDoc = new JsonPatchDocument<{updateDto}>();
         patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});
 
-        await InsertAsync({fakeEntityVariableName});
-
         // Act
         var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
         var result = await FactoryClient.PatchJsonRequestAsync(route, patchDoc);
@@ -153,8 +151,6 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var patchDoc = new JsonPatchDocument<{updateDto}>();
         patchDoc.Replace({entity.Lambda} => {entity.Lambda}.{myProp.Name}, {lookupVal});
         FactoryClient.AddAuth();
-
-        await InsertAsync({fakeEntityVariableName});
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Patch.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
