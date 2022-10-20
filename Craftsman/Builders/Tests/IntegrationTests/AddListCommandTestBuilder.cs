@@ -84,7 +84,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
             .Where(x => x.Id == firstReturned.Id || x.Id == secondReturned.Id)
             .ToListAsync());
         var firstDbRecord = {lowercaseEntityName}Db.FirstOrDefault(x => x.Id == firstReturned.Id);
-        var secondDbRecord = {lowercaseEntityName}Db.Skip(1).FirstOrDefault(x => x.Id == secondReturned.Id);
+        var secondDbRecord = {lowercaseEntityName}Db.FirstOrDefault(x => x.Id == secondReturned.Id);
 
         // Assert{GetAssertions(entity.Properties, fakeEntityVariableNameOne, fakeEntityVariableNameTwo)}
     }}";
