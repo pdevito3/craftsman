@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+* None yet!
+
+## [0.17.0] - 10/20/2022
+
 ### Added
 
 * Test Utility Mapper for Unit Tests
@@ -59,6 +63,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Add Date Time Provider
 
 * Fakers for `Address`
+
+* Various new commands for working with the [NextJS Template]((https://github.com/pdevito3/next-template-wrapt)), but it's still in progress so not documenting this much yet.
 
 
 ### Updated

@@ -17,13 +17,16 @@ Craftsman is the workhorse behind the [Wrapt](https://wrapt.dev) framework and p
 
 For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wrapt.dev).
 
-## Upcoming Features in v0.17
+## Upcoming Features
 
-The last few releases have brought a ton of new features and while the backend is progressing nicely, there are still a few features I want to add before getting to a stable v1. 
-
-I'm planning on doing some more heavy front end work for this upcoming release and then I'll probably do a heavy dog food project to find practical gaps. I have some of the upcoming items below for the next release and this is certainly not an exhaustive list of everything, but I want to be open about what's on the horizon. 🌅
+I'm currently working through a deep example project the really dogfood things and will be making updates around my finding from there. I also want to harden up the frontend work with NextJS soon as well and get that more widely available. If any React devs want to help with this definitely let me know!
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
+
+* 🚧 TBD Dogfooding results
+* 🚧 NextJS app + scaffolding stablization
+
+### Some 0.17 highlights
 
 - ✅ Users and Roles managed in each boundary (AuthN still separate)
 
@@ -31,7 +34,7 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 - ✅ Functional Tests use Docker DB and has other cleanup items
 
-- ✅ NextJS template (still a WIP, but you can find [the sandbox for things here](https://github.com/pdevito3/next-template-wrapt-sand))
+- ✅ NextJS template (still a WIP and not documented, but you can find [the sandbox for things here](https://github.com/pdevito3/next-template-wrapt-sand) and poke through the Craftsman code if you'd like. Can answer questions in out Discord as well.)
 
   - ✅ OIDC Auth support
   - ✅ List View
@@ -46,8 +49,6 @@ Have a request for something you don't see below? Join [our discord](https://dis
   - ✅ Permissions Integration
   
   - lots more...
-
-🚧 Json Schema or C# classes for easier file scaffolding
 
 
 
