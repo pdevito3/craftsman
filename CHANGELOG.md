@@ -32,7 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
     * As usual, this will use the `UserPolicyHandler` logic to check if a user meets the given criteria. The implementation of HeimGuard's `UserPolicyHandler`  in the scaffolding will still check the token to see who you are Authenticated as, but will get the user's roles based on the configuration for that authenticated user within the boundary using the new concepts and logic described below.
 
-  * Your auth server will still store users and their metadata that we want for AuthN and the new `User` entitiy will capture user metadata to be easily accessed in your app. Say you want to send back a list of recipes and show who created them, this gives you that info without having to reach out to your auth server
+  * Your auth server will still store users and their metadata that we want for AuthN and the new `User` entity will capture user metadata to be easily accessed in your app. Say you want to send back a list of recipes and show who created them, this gives you that info without having to reach out to your auth server
     * Users in your boundary will key to users in your auth server using the `Identifier` property, which should generally be populated with the `NameIdentifier` on your token.
     * Eventual consistancy TBD
     * Redis cache TBD?
@@ -42,7 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * When starting your api for the first time, you will not have any `User` or `UserRole` entries. To add an initial root user, you just need to authenticate (e.g. swagger) and hit a protected endpoint. This is because, by default, the `UserPolicyHandler` will now check if you have any users and, if not, add the requesting user as a root user with `Super Admin` access.
     * You are welcome to change this logic if you wish, it is just an easy default to start with.
 
-  * If you have multiple boundaries, you can make the call on how you manage things. By default each boundary will store it's own set of users and roles. This might be useful if say you want to manage users in your billing boundary separate from your inventory boundary, but you may want to combine them too. Feel free to consolidate this as you wish if desired.
+  * If you have multiple boundaries, you can make the call on how you manage things. By default each boundary will store its own set of users and roles. This might be useful if say you want to manage users in your billing boundary separate from your inventory boundary, but you may want to combine them too. Feel free to consolidate this as you wish if desired.
 
   * Users can be managed at the `/users` endpoints. This includes adding and removing their roles as user roles have no standalone meaning without a user.
 
@@ -90,7 +90,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Bump all non-breaking packages to latest
 * Include `Moq` package in shared test helper
 * Entity `Update` methods return entity instance
-* Deprecate `add bff` command
+* Deprecate `add bff` and `add bff entity` commands
 
 ### Fixed
 

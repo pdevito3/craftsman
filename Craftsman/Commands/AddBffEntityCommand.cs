@@ -38,6 +38,7 @@ public class AddBffEntityCommand : Command<AddBffEntityCommand.Settings>
 
     public override int Execute(CommandContext context, Settings settings)
     {
+        _consoleWriter.WriteWarning($"{Emoji.Known.Warning} The `add bff entity` command is deprecated and will be replaced with a more robust scaffolding solution in an upcoming release.");
         var potentialSolutionDir = _utilities.GetRootDir();
 
         _utilities.IsSolutionDirectoryGuard(potentialSolutionDir);
