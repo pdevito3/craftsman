@@ -86,7 +86,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Query list uses `AsNoTracking`
 * No more fake read DTO
 * Allow custom schema id's on `AddSwaggerGen`
-* Respawn to v6 with simplified `TestFixture` setup
+* Bump `Respawn` to v6 with simplified `TestFixture` setup
+* Bump all non-breaking packages to latest
 * Include `Moq` package in shared test helper
 * Entity `Update` methods return entity instance
 

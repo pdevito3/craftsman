@@ -76,8 +76,8 @@ public class AddBusCommand : Command<AddBusCommand.Settings>
     public void AddBus(Bus template, string srcDirectory, string testDirectory, string projectBaseName, string solutionDirectory)
     {
         var massTransitPackages = new Dictionary<string, string>{
-            { "MassTransit", "8.0.1" },
-            { "MassTransit.RabbitMQ", "8.0.1" }
+            { "MassTransit", "8.0.7" },
+            { "MassTransit.RabbitMQ", "8.0.7" }
         };
         var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
         _utilities.AddPackages(webApiClassPath, massTransitPackages);

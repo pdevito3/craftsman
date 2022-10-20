@@ -28,7 +28,7 @@ public class SharedKernelCsProjBuilder
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include=""FluentValidation"" Version=""10.4.0"" />
+    <PackageReference Include=""FluentValidation"" Version=""11.2.2"" />
   </ItemGroup>
 
 </Project>";
