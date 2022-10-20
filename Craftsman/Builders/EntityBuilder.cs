@@ -94,13 +94,14 @@ public class {entity.Name} : BaseEntity
         return {createEntityVar};
     }}
 
-    public void Update({updateDtoName} {updateDtoName.LowercaseFirstLetter()})
+    public {entity.Name} Update({updateDtoName} {updateDtoName.LowercaseFirstLetter()})
     {{
         new {updateValidatorName}().ValidateAndThrow({updateDtoName.LowercaseFirstLetter()});
 
 {updatePropsAssignment}
 
         QueueDomainEvent(new {entityUpdatedDomainMessage}(){{ Id = Id }});
+        return this;
     }}
     
     protected {entity.Name}() {{ }} // For EF + Mocking
@@ -353,7 +354,7 @@ public class User : BaseEntity
         return newUser;
     }}
 
-    public void Update(UserForUpdateDto userForUpdateDto)
+    public User Update(UserForUpdateDto userForUpdateDto)
     {{
         new UserForUpdateDtoValidator().ValidateAndThrow(userForUpdateDto);
 
@@ -364,6 +365,7 @@ public class User : BaseEntity
         Username = userForUpdateDto.Username;
 
         QueueDomainEvent(new UserUpdated(){{ Id = Id }});
+        return this;
     }}
 
     public UserRole AddRole(Role role)
@@ -487,7 +489,7 @@ public class RolePermission : BaseEntity
         return newRolePermission;
     }}
 
-    public void Update(RolePermissionForUpdateDto rolePermissionForUpdateDto)
+    public RolePermission Update(RolePermissionForUpdateDto rolePermissionForUpdateDto)
     {{
         new RolePermissionForUpdateDtoValidator().ValidateAndThrow(rolePermissionForUpdateDto);
 
@@ -495,6 +497,7 @@ public class RolePermission : BaseEntity
         Permission = rolePermissionForUpdateDto.Permission;
 
         QueueDomainEvent(new RolePermissionUpdated(){{ Id = Id }});
+        return this;
     }}
     
     protected RolePermission() {{ }} // For EF + Mocking

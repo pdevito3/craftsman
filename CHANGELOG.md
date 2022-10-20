@@ -88,6 +88,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Allow custom schema id's on `AddSwaggerGen`
 * Respawn to v6 with simplified `TestFixture` setup
 * Include `Moq` package in shared test helper
+* Entity `Update` methods return entity instance
 
 ### Fixed
 
