@@ -68,6 +68,7 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
 
     public void AddBff(BffTemplate template, string domainDirectory)
     {
+        _consoleWriter.WriteWarning($"{Emoji.Known.Warning} The `add bff` command is deprecated and will be replaced with a more robust scaffolding solution in an upcoming release.");
         _console.Status()
             .AutoRefresh(true)
             .Spinner(Spinner.Known.Dots2)
