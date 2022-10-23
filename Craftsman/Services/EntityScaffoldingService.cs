@@ -207,6 +207,7 @@ public class EntityScaffoldingService
         }
         new CommandAddUserRoleBuilder(_utilities).CreateCommand(srcDirectory, userEntity, projectBaseName);
         new CommandRemoveUserRoleBuilder(_utilities).CreateCommand(srcDirectory, userEntity, projectBaseName);
+        // new AddUserFeatureBuilder(_utilities).AddFeature(srcDirectory, projectBaseName);
         new AddUserFeatureOverrideModifier(_fileSystem).UpdateAddUserFeature(srcDirectory, projectBaseName);
 
         // extra testing

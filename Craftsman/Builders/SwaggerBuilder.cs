@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.IO.Abstractions;
 using Domain;
 using FluentAssertions.Common;
 using Helpers;
@@ -11,10 +12,12 @@ using Services;
 public class SwaggerBuilder
 {
     private readonly ICraftsmanUtilities _utilities;
+    private readonly IFileSystem _fileSystem;
 
-    public SwaggerBuilder(ICraftsmanUtilities utilities)
+    public SwaggerBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
     {
         _utilities = utilities;
+        _fileSystem = fileSystem;
     }
 
     public void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string projectBaseName)
@@ -157,14 +160,14 @@ public static class SwaggerServiceExtension
         return Uri.TryCreate(uri, UriKind.Absolute, out var outUri) && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps);
     }
 
-    public static void UpdateWebApiCsProjSwaggerSettings(string solutionDirectory, string projectBaseName)
+    public void UpdateWebApiCsProjSwaggerSettings(string solutionDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
 
-        if (!Directory.Exists(classPath.ClassDirectory))
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
 
-        if (!File.Exists(classPath.FullClassPath))
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
         var tempPath = $"{classPath.FullClassPath}temp";
@@ -191,7 +194,7 @@ public static class SwaggerServiceExtension
         }
 
         // delete the old file and set the name of the new one to the original name
-        File.Delete(classPath.FullClassPath);
-        File.Move(tempPath, classPath.FullClassPath);
+        _fileSystem.File.Delete(classPath.FullClassPath);
+        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 }
