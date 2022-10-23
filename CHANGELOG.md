@@ -11,6 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.17.1] - 10/23/2022
+
+### Fixes
+
+- typo on validation for exchange [#100](https://github.com/pdevito3/craftsman/pull/100) (thanks [@MeladKamari](https://github.com/MeladKamari))
+- potential process clashing resolution
+
 ## [0.17.0] - 10/20/2022
 
 ### Added
