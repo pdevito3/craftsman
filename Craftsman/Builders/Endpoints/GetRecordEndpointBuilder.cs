@@ -24,7 +24,7 @@ public class GetRecordEndpointBuilder
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetRecord(entity, addSwaggerComments, singleResponse, getRecordAuthorizations.Length > 0)}{getRecordAuthorizations}
     [Produces(""application/json"")]
     [HttpGet(""{{{lowercasePrimaryKey}:guid}}"", Name = ""{getRecordEndpointName}"")]
-    public async Task<ActionResult<{readDto}>> Get{entityName}({pkPropertyType} {lowercasePrimaryKey})
+    public async Task<ActionResult<{readDto}>> {getRecordEndpointName}({pkPropertyType} {lowercasePrimaryKey})
     {{
         var query = new {FileNames.GetEntityFeatureClassName(entity.Name)}.{queryRecordMethodName}({lowercasePrimaryKey});
         var queryResponse = await _mediator.Send(query);

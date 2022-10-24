@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.17.2] - 10/24/2022
+
+### Fixes
+
+- Resolves mismatch on name for GET record endpoint
+
 ## [0.17.1] - 10/23/2022
 
 ### Fixes
