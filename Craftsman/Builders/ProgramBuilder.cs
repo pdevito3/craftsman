@@ -24,7 +24,6 @@ public class ProgramBuilder
         var hostExtClassPath = ClassPathHelper.WebApiHostExtensionsClassPath(srcDirectory, $"", projectBaseName);
         var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
-        var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         var dbClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{FileNames.GetDatabaseHelperFileName()}.cs", projectBaseName);
         
         var appAuth = "";
@@ -41,7 +40,6 @@ app.UseAuthorization();";
 using {apiAppExtensionsClassPath.ClassNamespace};
 using {hostExtClassPath.ClassNamespace};
 using {configClassPath.ClassNamespace};
-using {resourcesClassPath.ClassNamespace};
 using {dbClassPath.ClassNamespace};
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,13 +59,10 @@ else
     app.UseHsts();
 }}
 
-if (builder.Environment.EnvironmentName != Consts.Testing.FunctionalTestingEnvName)
-{{
-    using var scope = app.Services.CreateScope();
-    var initializer = scope.ServiceProvider.GetRequiredService<DatabaseHelper>();
-    await initializer.MigrateAsync();
-    await initializer.SeedAsync();
-}}
+using var scope = app.Services.CreateScope();
+var initializer = scope.ServiceProvider.GetRequiredService<DatabaseHelper>();
+await initializer.MigrateAsync();
+await initializer.SeedAsync();
 
 // For elevated security, it is recommended to remove this middleware and set your server to only listen on https.
 // A slightly less secure option would be to redirect http to 400, 505, etc.
