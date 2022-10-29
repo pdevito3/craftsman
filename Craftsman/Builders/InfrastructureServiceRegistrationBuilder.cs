@@ -32,6 +32,8 @@ public static class ServiceRegistration
 {{
     public static void AddInfrastructure(this IServiceCollection services, IWebHostEnvironment env)
     {{
+        services.AddScoped<DatabaseHelper>();
+
         // DbContext -- Do Not Delete
 
         // Auth -- Do Not Delete

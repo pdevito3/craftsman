@@ -34,7 +34,7 @@ infrastructure depending on your configuration (e.g. RabbitMQ, Keycloak, Jaeger,
     2. Confirm your environment (`ASPNETCORE_ENVIRONMENT`) is set to `Development` using 
     `$Env:ASPNETCORE_ENVIRONMENT = ""Development""` for powershell or `export ASPNETCORE_ENVIRONMENT=Development` for bash.
     3. `cd` to the boundary project root (e.g. `cd RecipeManagement/src/RecipeManagement`)
-    4. Run `dotnet ef database update` to apply your migrations.
+    4. Run your project and your migrations should be applied automatically. Alternatively, you can run `dotnet ef database update` to apply your migrations manually.
 
     > You can also stay in the `sln` root and run something like `dotnet ef database update --project RecipeManagement/src/RecipeManagement`
 3. If using a Keycloak auth server, you'll need to configure it manually (new realm, client, etc) or use the scaffolded Pulumi setup.

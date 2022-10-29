@@ -9,7 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-* None yet!
+### Added
+
+* `DatabaseHelper` to automatically apply migrations when starting your project and apply any data seeding you may want
 
 ## [0.17.2] - 10/24/2022
 

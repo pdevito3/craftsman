@@ -24,6 +24,7 @@ public class ProgramBuilder
         var hostExtClassPath = ClassPathHelper.WebApiHostExtensionsClassPath(srcDirectory, $"", projectBaseName);
         var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
+        var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         
         var appAuth = "";
         var corsName = $"{projectBaseName}CorsPolicy";
@@ -39,6 +40,7 @@ app.UseAuthorization();";
 using {apiAppExtensionsClassPath.ClassNamespace};
 using {hostExtClassPath.ClassNamespace};
 using {configClassPath.ClassNamespace};
+using {resourcesClassPath.ClassNamespace};
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.AddLoggingConfiguration(builder.Environment);
@@ -55,6 +57,14 @@ else
     app.UseExceptionHandler(""/Error"");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}}
+
+if (builder.Environment.EnvironmentName != Consts.Testing.FunctionalTestingEnvName)
+{{
+    using var scope = app.Services.CreateScope();
+    var initializer = scope.ServiceProvider.GetRequiredService<DatabaseHelper>();
+    await initializer.MigrateAsync();
+    await initializer.SeedAsync();
 }}
 
 // For elevated security, it is recommended to remove this middleware and set your server to only listen on https.
