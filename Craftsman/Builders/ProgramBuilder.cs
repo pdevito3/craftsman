@@ -25,6 +25,7 @@ public class ProgramBuilder
         var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
         var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
+        var dbClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{FileNames.GetDatabaseHelperFileName()}.cs", projectBaseName);
         
         var appAuth = "";
         var corsName = $"{projectBaseName}CorsPolicy";
@@ -41,6 +42,7 @@ using {apiAppExtensionsClassPath.ClassNamespace};
 using {hostExtClassPath.ClassNamespace};
 using {configClassPath.ClassNamespace};
 using {resourcesClassPath.ClassNamespace};
+using {dbClassPath.ClassNamespace};
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.AddLoggingConfiguration(builder.Environment);
