@@ -276,12 +276,6 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", valueObjectEnum.Plural(), "Mappings"), $"{mappingName}.cs");
     }
 
-    public static ClassPath ValidationClassPath(string srcDirectory, string className, string entityPlural, string projectBaseName)
-    {
-        var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural, "Validators"), className);
-    }
-
     public static ClassPath DomainEventsClassPath(string srcDirectory, string className, string entityPlural, string projectBaseName)
     {
         return new ClassPath(srcDirectory, Path.Combine(projectBaseName, "Domain", entityPlural, "DomainEvents"), className);

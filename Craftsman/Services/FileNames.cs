@@ -164,22 +164,4 @@ public static class FileNames
             _ => throw new Exception($"The '{type.Name}' feature is not supported in bff api scaffolding.")
         };
     }
-
-    public static string ValidatorNameGenerator(string entityName, Validator validator)
-    {
-        switch (validator)
-        {
-            case Validator.Manipulation:
-                return $"{entityName}ForManipulationDtoValidator";
-
-            case Validator.Creation:
-                return $"{entityName}ForCreationDtoValidator";
-
-            case Validator.Update:
-                return $"{entityName}ForUpdateDtoValidator";
-
-            default:
-                throw new Exception($"Name generator not configured for {Enum.GetName(typeof(Validator), validator)}");
-        }
-    }
 }

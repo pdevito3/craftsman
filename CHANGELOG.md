@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Updates
 
+* Removed `Validators` and in favor of direct validation in entiy factories and methods.
 * Additional helper methods on `ValidationException`
 
 ### Fixes

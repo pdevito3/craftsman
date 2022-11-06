@@ -33,9 +33,7 @@ public class EntityBuilder
     public static string GetEntityFileText(string classNamespace, string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName)
     {
         var creationDtoName = FileNames.GetDtoName(entity.Name, Dto.Creation);
-        var creationValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Creation);
         var updateDtoName = FileNames.GetDtoName(entity.Name, Dto.Update);
-        var updateValidatorName = FileNames.ValidatorNameGenerator(entity.Name, Validator.Update);
         var propString = EntityPropBuilder(entity.Properties, entity.Name);
         var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
         var tableAnnotation = EntityAnnotationBuilder(entity);
@@ -54,7 +52,6 @@ using {classPath.ClassNamespace};";
         
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
-        var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         var createEntityVar = $"new{entity.Name.UppercaseFirstLetter()}";
@@ -67,7 +64,6 @@ using {classPath.ClassNamespace};";
 
 using {exceptionClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {validatorClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
 using FluentValidation;
 using System.Text.Json.Serialization;
@@ -83,8 +79,6 @@ public class {entity.Name} : BaseEntity
 
     public static {entity.Name} Create({creationDtoName} {creationDtoName.LowercaseFirstLetter()})
     {{
-        new {creationValidatorName}().ValidateAndThrow({creationDtoName.LowercaseFirstLetter()});
-
         var {createEntityVar} = new {entity.Name}();
 
 {createPropsAssignment}
@@ -96,8 +90,6 @@ public class {entity.Name} : BaseEntity
 
     public {entity.Name} Update({updateDtoName} {updateDtoName.LowercaseFirstLetter()})
     {{
-        new {updateValidatorName}().ValidateAndThrow({updateDtoName.LowercaseFirstLetter()});
-
 {updatePropsAssignment}
 
         QueueDomainEvent(new {entityUpdatedDomainMessage}(){{ Id = Id }});
@@ -299,18 +291,17 @@ public abstract class BaseEntity
     public static string GetUserEntityFileText(string classNamespace, string srcDirectory, Entity entity, string projectBaseName)
     {
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
-        var validatorClassPath = ClassPathHelper.ValidationClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var emailsClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", "Emails", projectBaseName);
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
 
         return @$"namespace {classNamespace};
 
+using {exceptionClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {validatorClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
 using {emailsClassPath.ClassNamespace};
 using Roles;
-using FluentValidation;
 using System.Text.Json.Serialization;
 using System.Runtime.Serialization;
 using Sieve.Attributes;
@@ -339,7 +330,8 @@ public class User : BaseEntity
 
     public static User Create(UserForCreationDto userForCreationDto)
     {{
-        new UserForCreationDtoValidator().ValidateAndThrow(userForCreationDto);
+        ValidationException.ThrowWhenNullOrWhitespace(userForCreationDto.Identifier, 
+            ""Please provide an identifier."");
 
         var newUser = new User();
 
@@ -356,7 +348,8 @@ public class User : BaseEntity
 
     public User Update(UserForUpdateDto userForUpdateDto)
     {{
-        new UserForUpdateDtoValidator().ValidateAndThrow(userForUpdateDto);
+        ValidationException.ThrowWhenNullOrWhitespace(userForUpdateDto.Identifier, 
+            ""Please provide an identifier."");
 
         Identifier = userForUpdateDto.Identifier;
         FirstName = userForUpdateDto.FirstName;
@@ -455,19 +448,20 @@ public class UserRole : BaseEntity
     public void CreateRolePermissionsEntity(string srcDirectory, Entity entity, string projectBaseName)
     {
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
-        var fileText = GetRolePermissionsEntityFileText(classPath.ClassNamespace);
+        var fileText = GetRolePermissionsEntityFileText(classPath.ClassNamespace, srcDirectory);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetRolePermissionsEntityFileText(string classNamespace)
+    public static string GetRolePermissionsEntityFileText(string classNamespace, string srcDirectory)
     {
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         return @$"namespace {classNamespace};
 
 using Dtos;
-using Validators;
 using DomainEvents;
-using FluentValidation;
 using Roles;
+using Domain;
+using {exceptionClassPath.ClassNamespace};
 
 public class RolePermission : BaseEntity
 {{
@@ -477,7 +471,8 @@ public class RolePermission : BaseEntity
 
     public static RolePermission Create(RolePermissionForCreationDto rolePermissionForCreationDto)
     {{
-        new RolePermissionForCreationDtoValidator().ValidateAndThrow(rolePermissionForCreationDto);
+        ValidationException.Must(BeAnExistingPermission(rolePermissionForCreationDto.Permission), 
+            ""Please use a valid permission."");
 
         var newRolePermission = new RolePermission();
 
@@ -491,13 +486,19 @@ public class RolePermission : BaseEntity
 
     public RolePermission Update(RolePermissionForUpdateDto rolePermissionForUpdateDto)
     {{
-        new RolePermissionForUpdateDtoValidator().ValidateAndThrow(rolePermissionForUpdateDto);
+        ValidationException.Must(BeAnExistingPermission(rolePermissionForUpdateDto.Permission), 
+            ""Please use a valid permission."");
 
         Role = new Role(rolePermissionForUpdateDto.Role);
         Permission = rolePermissionForUpdateDto.Permission;
 
         QueueDomainEvent(new RolePermissionUpdated(){{ Id = Id }});
         return this;
+    }}
+    
+    private static bool BeAnExistingPermission(string permission)
+    {{
+        return Permissions.List().Contains(permission, StringComparer.InvariantCultureIgnoreCase);
     }}
     
     protected RolePermission() {{ }} // For EF + Mocking

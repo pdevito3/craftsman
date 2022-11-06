@@ -47,6 +47,7 @@ using {rolesClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
+using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
 
 [Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
@@ -102,7 +103,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         }});
 
         // Act + Assert
-        rolePermission.Should().Throw<FluentValidation.ValidationException>();
+        rolePermission.Should().Throw<ValidationException>();
     }}
 }}";
     }
@@ -127,6 +128,7 @@ using {errorsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
+using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
@@ -196,7 +198,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         }});
 
         // Act + Assert
-        updateRolePermission.Should().Throw<FluentValidation.ValidationException>();
+        updateRolePermission.Should().Throw<ValidationException>();
     }}
 }}";
     }

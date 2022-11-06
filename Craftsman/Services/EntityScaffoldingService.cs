@@ -51,7 +51,6 @@ public class EntityScaffoldingService
             // not worrying about DTOs, profiles, validators, fakers - they are all added by default
             new EntityBuilder(_utilities).CreateEntity(solutionDirectory, srcDirectory, entity, projectBaseName);
             new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
-            new ValidatorBuilder(_utilities).CreateValidators(solutionDirectory, srcDirectory, projectBaseName, entity);
             new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity, projectBaseName);
             new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
@@ -124,9 +123,6 @@ public class EntityScaffoldingService
             entity.Name, 
             entity.Plural));
 
-        // custom validator
-        new ValidatorBuilder(_utilities).CreateRolePermissionValidators(solutionDirectory, srcDirectory, projectBaseName, entity);
-
         if (entity.Features.Count > 0)
             new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, true);
 
@@ -195,8 +191,6 @@ public class EntityScaffoldingService
         _mediator.Send(new UserEntityRepositoryBuilder.Command(dbContextName, 
             userEntity.Name, 
             userEntity.Plural));
-
-        new ValidatorBuilder(_utilities).CreateUserValidators(solutionDirectory, srcDirectory, projectBaseName, userEntity);
         
         new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, userEntity.Name, userEntity.Plural, projectBaseName, true);
         new ControllerModifier(_fileSystem).AddCustomUserEndpoint(srcDirectory, projectBaseName);

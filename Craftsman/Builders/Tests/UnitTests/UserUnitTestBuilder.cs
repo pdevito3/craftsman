@@ -35,6 +35,7 @@ public class UserUnitTestBuilder
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", "Users", projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", "Users", projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", "User", projectBaseName);
+        var errorsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -44,9 +45,11 @@ using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
+using {errorsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
+using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
 
 [Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
@@ -84,7 +87,19 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var newUser = () => User.Create(toCreate);
 
         // Act + Assert
-        newUser.Should().Throw<FluentValidation.ValidationException>();
+        newUser.Should().Throw<ValidationException>();
+    }}
+    
+    [Test]
+    public void can_NOT_create_user_with_whitespace_identifier()
+    {{
+        // Arrange
+        var toCreate = new FakeUserForCreationDto().Generate();
+        toCreate.Identifier = "" "";
+        var newUser = () => User.Create(toCreate);
+
+        // Act + Assert
+        newUser.Should().Throw<ValidationException>();
     }}
 
     [Test]
@@ -108,6 +123,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", "Users", projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", "Users", projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", "User", projectBaseName);
+        var errorsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -117,9 +133,11 @@ using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
+using {errorsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
+using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
 
 [Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
@@ -159,7 +177,20 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var newUser = () => fakeUser.Update(updatedUser);
 
         // Act + Assert
-        newUser.Should().Throw<FluentValidation.ValidationException>();
+        newUser.Should().Throw<ValidationException>();
+    }}
+    
+    [Test]
+    public void can_NOT_update_user_with_whitespace_identifier()
+    {{
+        // Arrange
+        var fakeUser = FakeUser.Generate();
+        var updatedUser = new FakeUserForUpdateDto().Generate();
+        updatedUser.Identifier = "" "";
+        var newUser = () => fakeUser.Update(updatedUser);
+
+        // Act + Assert
+        newUser.Should().Throw<ValidationException>();
     }}
     
     [Test]
