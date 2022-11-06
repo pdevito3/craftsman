@@ -13,12 +13,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * `DatabaseHelper` to automatically apply migrations when starting your project and apply any data seeding you may want
 
-## [0.17.2] - 10/24/2022
-
 ### Updates
 
 * Removed `Validators` and in favor of direct validation in entiy factories and methods.
 * Additional helper methods on `ValidationException`
+
+## [0.17.2] - 10/24/2022
 
 ### Fixes
 
