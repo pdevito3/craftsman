@@ -200,25 +200,46 @@ public static class CoreExceptionBuilder
             }};
         }}
 
-        public IDictionary<string, string[]> Errors {{ get; }}
-    }}
+        public ValidationException(string errorMessage)
+            : base(errorMessage)
+        {{
+            Errors = new Dictionary<string, string[]>
+            {{
+                [""Validation Exception""] = new[] {{ errorMessage }}
+            }};
+        }}
 
-    public static class Extensions
-    {{
-        public static void ThrowWhenNullOrEmpty(this ValidationException exception, string value)
+        public IDictionary<string, string[]> Errors {{ get; }}
+
+        public static void ThrowWhenNullOrEmpty(string value, string message)
         {{
             if (string.IsNullOrEmpty(value))
-                throw exception;
+                throw new ValidationException(message);
         }}
-        public static void ThrowWhenNullOrEmpty(this ValidationException exception, Guid? value)
+        public static void ThrowWhenNullOrWhitespace(string value, string message)
+        {{
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ValidationException(message);
+        }}
+        public static void ThrowWhenNullOrEmpty(Guid? value, string message)
         {{
             if (value == null || value == Guid.Empty)
-                throw exception;
+                throw new ValidationException(message);
         }}
-        public static void ThrowWhenNull(this ValidationException exception, object value)
+        public static void ThrowWhenNull(int? value, string message)
         {{
             if (value == null)
-                throw exception;
+                throw new ValidationException(message);
+        }}
+        public static void ThrowWhenNull(object value, string message)
+        {{
+            if (value == null)
+                throw new ValidationException(message);
+        }}
+        public static void Must(bool condition, string message)
+        {{
+            if(!condition)
+                throw new ValidationException(message);
         }}
     }}
 }}";

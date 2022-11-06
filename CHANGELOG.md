@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.17.2] - 10/24/2022
 
+### Updates
+
+* Additional helper methods on `ValidationException`
+
 ### Fixes
 
 - Resolves mismatch on name for GET record endpoint
