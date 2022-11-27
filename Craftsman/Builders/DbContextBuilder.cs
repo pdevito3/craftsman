@@ -41,12 +41,6 @@ public class DbContextBuilder
 
     public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string srcDirectory, bool useSoftDelete, string projectBaseName)
     {
-        var entitiesUsings = "";
-        foreach (var entity in entities)
-        {
-            var classPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-            entitiesUsings += $"{Environment.NewLine}using {classPath.ClassNamespace};";
-        }
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var baseEntityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", "", projectBaseName);
         var entityConfigClassPath = ClassPathHelper.DatabaseConfigClassPath(srcDirectory, $"", projectBaseName);
@@ -76,7 +70,7 @@ public class DbContextBuilder
 
 using {baseEntityClassPath.ClassNamespace};
 using {entityConfigClassPath.ClassNamespace};
-using {servicesClassPath.ClassNamespace};{entitiesUsings}
+using {servicesClassPath.ClassNamespace};
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
