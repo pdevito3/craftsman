@@ -19,6 +19,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Removed `Validators` and in favor of direct validation in entiy factories and methods.
 * Additional helper methods on `ValidationException`
 
+### Fixes
+
+* RMQ Password var
+
 ## [0.17.2] - 10/24/2022
 
 ### Fixes
