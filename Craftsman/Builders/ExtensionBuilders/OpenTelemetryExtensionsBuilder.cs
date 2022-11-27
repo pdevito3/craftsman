@@ -27,19 +27,46 @@ public class OpenTelemetryExtensionsBuilder
 
 using {envServiceClassPath.ClassNamespace};
 using OpenTelemetry;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 public static class OpenTelemetryServiceExtension
 {{
-    public static void OpenTelemetryRegistration(this IServiceCollection services, string serviceName)
+    public static void OpenTelemetryRegistration(this WebApplicationBuilder builder, string serviceName)
     {{
-        services.AddOpenTelemetryTracing(builder =>
+        var resourceBuilder = ResourceBuilder.CreateDefault().AddService(serviceName)
+            .AddTelemetrySdk()
+            .AddEnvironmentVariableDetector();
+        
+        builder.Logging.AddOpenTelemetry(o =>
         {{
-            builder.SetResourceBuilder(ResourceBuilder.CreateDefault()
-                    .AddService(serviceName)
-                    .AddTelemetrySdk()
-                    .AddEnvironmentVariableDetector())
+            // TODO: Setup an exporter here
+            o.SetResourceBuilder(resourceBuilder);
+        }});
+        
+        builder.Services.AddOpenTelemetryMetrics(metrics =>
+        {{
+            metrics.SetResourceBuilder(resourceBuilder)
+                .AddAspNetCoreInstrumentation()
+                .AddRuntimeInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddEventCountersInstrumentation(c =>
+                {{
+                    // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+                    c.AddEventSources(
+                        ""Microsoft.AspNetCore.Hosting"",
+                        ""Microsoft-AspNetCore-Server-Kestrel"",
+                        ""System.Net.Http"",
+                        ""System.Net.Sockets"",
+                        ""System.Net.NameResolution"",
+                        ""System.Net.Security"");
+                }});
+        }});
+
+        builder.Services.AddOpenTelemetryTracing(builder =>
+        {{
+            builder.SetResourceBuilder(resourceBuilder)
                 .AddSource(""MassTransit"")
                 .AddSource(""{dbProvider.OTelSource()}"")
                 // The following subscribes to activities from Activity Source
@@ -47,6 +74,7 @@ public static class OpenTelemetryServiceExtension
                 // .AddSource(""MyCompany.MyProduct.MyLibrary"")
                 .AddSqlClientInstrumentation(opt => opt.SetDbStatementForText = true)
                 .AddAspNetCoreInstrumentation()
+                .AddEntityFrameworkCoreInstrumentation()
                 .AddJaegerExporter(o =>
                 {{
                     o.AgentHost = EnvironmentService.JaegerHost;

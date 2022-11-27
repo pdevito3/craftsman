@@ -52,7 +52,7 @@ public static class {FileNames.WebAppServiceConfiguration()}
         builder.Services.AddSingleton(Log.Logger);
         // TODO update CORS for your env
         builder.Services.AddCorsService(""{corsName}"", builder.Environment);
-        builder.Services.OpenTelemetryRegistration(""{projectBaseName}"");
+        builder.OpenTelemetryRegistration(""{projectBaseName}"");
         builder.Services.AddInfrastructure(builder.Environment);
 
         builder.Services.AddControllers()
