@@ -16,14 +16,16 @@ public class OpenTelemetryExtensionsBuilder
     public void CreateOTelServiceExtension(string srcDirectory, string projectBaseName, DbProvider dbProvider, int otelAgentPort)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"OpenTelemetryServiceExtension.cs", projectBaseName);
-        var fileText = GetOtelText(classPath.ClassNamespace, dbProvider, otelAgentPort);
+        var fileText = GetOtelText(classPath.ClassNamespace, dbProvider, otelAgentPort, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetOtelText(string classNamespace, DbProvider dbProvider, int otelAgentPort)
+    public static string GetOtelText(string classNamespace, DbProvider dbProvider, int otelAgentPort, string srcDirectory, string projectBaseName)
     {
+        var envServiceClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         return @$"namespace {classNamespace};
 
+using {envServiceClassPath.ClassNamespace};
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -47,7 +49,7 @@ public static class OpenTelemetryServiceExtension
                 .AddAspNetCoreInstrumentation()
                 .AddJaegerExporter(o =>
                 {{
-                    o.AgentHost = Environment.GetEnvironmentVariable(""JAEGER_HOST"");
+                    o.AgentHost = EnvironmentService.JaegerHost;
                     o.AgentPort = {otelAgentPort};
                     o.MaxPayloadSizeInBytes = 4096;
                     o.ExportProcessorType = ExportProcessorType.Batch;

@@ -57,6 +57,8 @@ public static class FileNames
     public static string GetControllerName(string entityName) => $"{entityName}Controller";    
     public static string GetDatabaseEntityConfigName(string entityName) => $"{entityName}Configuration";    
     public static string GetDatabaseHelperFileName() => $"DatabaseHelper";    
+    public static string GetEnvironmentServiceFileName() => $"EnvironmentService";    
+    public static string GetEnvironmentServiceInterfaceFileName() => $"I{GetEnvironmentServiceFileName()}";
     public static string GetSeederName(Entity entity) => $"{entity.Name}Seeder";
     public static string GetInfraRegistrationName() => "InfrastructureServiceExtension";
     public static string GetSwaggerServiceExtensionName() => "SwaggerServiceExtension";

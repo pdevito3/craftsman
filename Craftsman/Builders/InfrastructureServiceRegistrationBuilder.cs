@@ -22,10 +22,12 @@ public class InfrastructureServiceRegistrationBuilder
     {
         var dbContextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
         var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
+        var envServiceClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         return @$"namespace {classNamespace};
 
 using {dbContextClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
+using {envServiceClassPath.ClassNamespace};
 using Microsoft.EntityFrameworkCore;
 
 public static class ServiceRegistration

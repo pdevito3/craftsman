@@ -27,6 +27,7 @@ public class IntegrationTestFixtureBuilder
         var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
+        var envServiceClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         
         var heimGuardMock = isProtected 
             ? $@"{Environment.NewLine}        services.ReplaceServiceWithSingletonMock<IHeimGuardClient>();" 
@@ -67,45 +68,14 @@ public class IntegrationTestFixtureBuilder
 using Npgsql;"
             : null;
 
-        var respawner = provider == DbProvider.Postgres
-            ? $@"var respawner = await Respawner.CreateAsync(connection, new RespawnerOptions
-            {{
-                TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
-                SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
-                DbAdapter = DbAdapter.Postgres
-            }});"
-            : $@"var respawner = await Respawner.CreateAsync(connection, new RespawnerOptions
-            {{
-                TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
-            }});";
-
-        var resetString = provider == DbProvider.Postgres
-            ? $@"await using var connection = new NpgsqlConnection(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
-        await connection.OpenAsync();
-        try
-        {{
-            {respawner}
-            await respawner.ResetAsync(connection);
-        }}
-        catch (InvalidOperationException e)
-        {{
-            throw new Exception($""There was an issue resetting your database state. You might need to add a migration to your project. You can add a migration with `dotnet ef migration add YourMigrationDescription`. More details on this error: {{e.Message}}"");
-        }}"
-            : $@"try
-        {{
-            {respawner}
-            await respawner.ResetAsync(Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING""));
-        }}
-        catch (InvalidOperationException e)
-        {{
-            throw new Exception($""There was an issue resetting your database state. You might need to add a migration to your project. You can add a migration with `dotnet ef migration add YourMigrationDescription`. More details on this error: {{e.Message}}"");
-        }}";
+        var resetString = provider.ResetString();
 
         return @$"namespace {classNamespace};
 
 using {configClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};
+using {envServiceClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};{heimGuardUsing}
 using MediatR;

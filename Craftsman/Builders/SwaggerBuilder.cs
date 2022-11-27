@@ -20,26 +20,28 @@ public class SwaggerBuilder
         _fileSystem = fileSystem;
     }
 
-    public void AddSwagger(string solutionDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string projectBaseName)
+    public void AddSwagger(string srcDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string projectBaseName)
     {
         if (swaggerConfig.IsSameOrEqualTo(new SwaggerConfig())) return;
 
-        AddSwaggerServiceExtension(solutionDirectory, projectBaseName, swaggerConfig, projectName, addJwtAuthentication, policyName);
-        new WebApiAppExtensionsBuilder(_utilities).CreateSwaggerWebApiAppExtension(solutionDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
-        UpdateWebApiCsProjSwaggerSettings(solutionDirectory, projectBaseName);
+        AddSwaggerServiceExtension(srcDirectory, projectBaseName, swaggerConfig, projectName, addJwtAuthentication, policyName);
+        new WebApiAppExtensionsBuilder(_utilities).CreateSwaggerWebApiAppExtension(srcDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
+        UpdateWebApiCsProjSwaggerSettings(srcDirectory, projectBaseName);
     }
 
     public void AddSwaggerServiceExtension(string srcDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetSwaggerServiceExtensionName()}.cs", projectBaseName);
-        var fileText = GetSwaggerServiceExtensionText(classPath.ClassNamespace, swaggerConfig, projectName, addJwtAuthentication, policyName);
+        var fileText = GetSwaggerServiceExtensionText(classPath.ClassNamespace, swaggerConfig, projectName, addJwtAuthentication, policyName, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetSwaggerServiceExtensionText(string classNamespace, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName)
+    public static string GetSwaggerServiceExtensionText(string classNamespace, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string srcDirectory, string projectBaseName)
     {
+        var envServiceClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         return @$"namespace {classNamespace};
 
+using {envServiceClassPath.ClassNamespace};
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -79,8 +81,8 @@ public static class SwaggerServiceExtension
                 {{
                     AuthorizationCode = new OpenApiOAuthFlow
                     {{
-                        AuthorizationUrl = new Uri(Environment.GetEnvironmentVariable(""AUTH_AUTHORIZATION_URL"")),
-                        TokenUrl = new Uri(Environment.GetEnvironmentVariable(""AUTH_TOKEN_URL"")),
+                        AuthorizationUrl = new Uri(EnvironmentService.AuthUrl),
+                        TokenUrl = new Uri(EnvironmentService.TokenUrl),
                         Scopes = new Dictionary<string, string>
                         {{
                             {{""{policyName}"", ""{projectName.Humanize()} access""}}

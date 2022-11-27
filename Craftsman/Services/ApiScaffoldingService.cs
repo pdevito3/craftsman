@@ -180,6 +180,7 @@ public class ApiScaffoldingService
         _mediator.Send(new UnitOfWorkBuilder.UnitOfWorkBuilderCommand(template.DbContext.ContextName));
         _mediator.Send(new IBoundaryServiceInterfaceBuilder.IBoundaryServiceInterfaceBuilderCommand());
         _mediator.Send(new GenericRepositoryBuilder.GenericRepositoryBuilderCommand(template.DbContext.ContextName));
+        _mediator.Send(new EnvironmentServiceBuilder.Command());
 
         new CurrentUserServiceBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);
         new DateTimeProviderBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);

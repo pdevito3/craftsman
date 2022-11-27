@@ -220,8 +220,8 @@ public sealed class {dbContextName} : DbContext
                     if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                     {
                         newText += @$"
-        var connectionString = Environment.GetEnvironmentVariable(""DB_CONNECTION_STRING"");
-        if(string.IsNullOrEmpty(connectionString))
+        var connectionString = EnvironmentService.DbConnectionString;
+        if(string.IsNullOrWhiteSpace(connectionString))
         {{
             // this makes local migrations easier to manage. feel free to refactor if desired.
             connectionString = env.IsDevelopment() 

@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 * `DatabaseHelper` to automatically apply migrations when starting your project and apply any data seeding you may want
+* New `EnvironmentService` for easy access to environment variables
 
 ### Updates
 

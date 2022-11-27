@@ -22,14 +22,15 @@ public class MassTransitExtensionsBuilder
     public static string GetMassTransitServiceExtensionText(string classNamespace, string solutionDirectory, string srcDirectory, string projectBaseName)
     {
         var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
-
+        var envServiceClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
 
         return @$"namespace {classNamespace};
 
 using {utilsClassPath.ClassNamespace};
-using MassTransit;
+using {envServiceClassPath.ClassNamespace};
 using {messagesClassPath.ClassNamespace};
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,13 +49,13 @@ public static class MassTransitServiceExtension
                 mt.AddConsumers(Assembly.GetExecutingAssembly());
                 mt.UsingRabbitMq((context, cfg) =>
                 {{
-                    cfg.Host(Environment.GetEnvironmentVariable(""RMQ_HOST""), 
-                        ushort.Parse(Environment.GetEnvironmentVariable(""RMQ_PORT"")), 
-                        Environment.GetEnvironmentVariable(""RMQ_VIRTUAL_HOST""), 
+                    cfg.Host(EnvironmentService.RmqHost, 
+                        ushort.Parse(EnvironmentService.RmqPort), 
+                        EnvironmentService.RmqVirtualHost, 
                         h =>
                         {{
-                            h.Username(Environment.GetEnvironmentVariable(""RMQ_USERNAME""));
-                            h.Password(Environment.GetEnvironmentVariable(""AUTH_PASSWORD""));
+                            h.Username(EnvironmentService.RmqUsername);
+                            h.Password(EnvironmentService.RmqPassword);
                         }});
 
                     // Producers -- Do Not Delete This Comment
