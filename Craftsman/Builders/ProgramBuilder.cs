@@ -48,9 +48,14 @@ builder.Host.AddLoggingConfiguration(builder.Environment);
 builder.ConfigureServices();
 var app = builder.Build();
 
+using var scope = app.Services.CreateScope();
+var dbInitializer = scope.ServiceProvider.GetRequiredService<DatabaseHelper>();
+await dbInitializer.MigrateAsync();
+
 if (builder.Environment.IsDevelopment())
 {{
     app.UseDeveloperExceptionPage();
+    await dbInitializer.SeedAsync();
 }}
 else
 {{
@@ -58,11 +63,6 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }}
-
-using var scope = app.Services.CreateScope();
-var initializer = scope.ServiceProvider.GetRequiredService<DatabaseHelper>();
-await initializer.MigrateAsync();
-await initializer.SeedAsync();
 
 // For elevated security, it is recommended to remove this middleware and set your server to only listen on https.
 // A slightly less secure option would be to redirect http to 400, 505, etc.
