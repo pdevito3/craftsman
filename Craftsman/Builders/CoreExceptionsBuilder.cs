@@ -221,6 +221,11 @@ public static class CoreExceptionBuilder
             if (string.IsNullOrWhiteSpace(value))
                 throw new ValidationException(message);
         }}
+        public static void ThrowWhenEmpty(Guid value, string message)
+        {{
+            if (value == Guid.Empty)
+                throw new ValidationException(message);
+        }}
         public static void ThrowWhenNullOrEmpty(Guid? value, string message)
         {{
             if (value == null || value == Guid.Empty)
