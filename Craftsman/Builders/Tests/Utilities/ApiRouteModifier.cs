@@ -94,13 +94,12 @@ public class ApiRouteModifier
 
         entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}    public static class {entity.Plural}
     {{
-        public const string {pkName} = ""{{{pkName.LowercaseFirstLetter()}}}"";
-        public const string GetList = $""{{Base}}/{lowercaseEntityPluralName}"";
-        public const string GetRecord = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
-        public const string Create = $""{{Base}}/{lowercaseEntityPluralName}"";
-        public const string Delete = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
-        public const string Put = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
-        public const string CreateBatch = $""{{Base}}/{lowercaseEntityPluralName}/batch"";
+        public static string GetList => $""{{Base}}/{lowercaseEntityPluralName}"";
+        public static string GetRecord(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Delete(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Put(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Create => $""{{Base}}/{lowercaseEntityPluralName}"";
+        public static string CreateBatch => $""{{Base}}/{lowercaseEntityPluralName}/batch"";
     }}";
 
         return entityRouteClasses;
@@ -115,15 +114,14 @@ public class ApiRouteModifier
 
         entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}    public static class Users
     {{
-        public const string {pkName} = ""{{{pkName.LowercaseFirstLetter()}}}"";
-        public const string GetList = $""{{Base}}/{lowercaseEntityPluralName}"";
-        public const string GetRecord = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
-        public const string Create = $""{{Base}}/{lowercaseEntityPluralName}"";
-        public const string Delete = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
-        public const string Put = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}"";
-        public const string CreateBatch = $""{{Base}}/{lowercaseEntityPluralName}/batch"";
-        public const string AddRole = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}/addRole"";
-        public const string RemoveRole = $""{{Base}}/{lowercaseEntityPluralName}/{{{pkName}}}/removeRole"";
+        public static string GetList => $""{{Base}}/{lowercaseEntityPluralName}"";
+        public static string GetRecord(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Delete(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Put(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Create => $""{{Base}}/{lowercaseEntityPluralName}"";
+        public static string CreateBatch => $""{{Base}}/{lowercaseEntityPluralName}/batch"";
+        public static string AddRole(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}/addRole"";
+        public static string RemoveRole(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}/removeRole"";
     }}";
 
         return entityRouteClasses;

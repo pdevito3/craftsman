@@ -78,7 +78,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableName});
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var route = ApiRoutes.{entity.Plural}.GetRecord({fakeEntityVariableName}.{pkName});
         var result = await FactoryClient.GetRequestAsync(route);
 
         // Assert
@@ -101,7 +101,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var route = ApiRoutes.{entity.Plural}.GetRecord({fakeEntityVariableName}.{pkName});
         var result = await FactoryClient.GetRequestAsync(route);
 
         // Assert
@@ -125,7 +125,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         FactoryClient.AddAuth();
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.GetRecord.Replace(ApiRoutes.{entity.Plural}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var route = ApiRoutes.{entity.Plural}.GetRecord({fakeEntityVariableName}.{pkName});
         var result = await FactoryClient.GetRequestAsync(route);
 
         // Assert

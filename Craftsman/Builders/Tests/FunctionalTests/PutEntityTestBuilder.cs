@@ -81,7 +81,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableName});
 
         // Act
-        var route = ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var route = ApiRoutes.{entity.Plural}.Put({fakeEntityVariableName}.{pkName});
         var result = await FactoryClient.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
         // Assert
@@ -107,7 +107,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeDtoVariableName} = new {fakeUpdateDto} {{ }}.Generate();
 
         // Act
-        var route = ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var route = ApiRoutes.{entity.Plural}.Put({fakeEntityVariableName}.{pkName});
         var result = await FactoryClient.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
         // Assert
@@ -134,7 +134,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         FactoryClient.AddAuth();
 
         // Act
-        var route = ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.Put.Replace(ApiRoutes.{FileNames.GetApiRouteClass(entity.Plural)}.{pkName}, {fakeEntityVariableName}.{pkName}.ToString());
+        var route = ApiRoutes.{entity.Plural}.Put({fakeEntityVariableName}.{pkName});
         var result = await FactoryClient.PutJsonRequestAsync(route, {fakeDtoVariableName});
 
         // Assert
