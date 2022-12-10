@@ -10,10 +10,12 @@ public static class DatabaseHelperBuilder
     public class Command : IRequest<bool>
     {
         public readonly string DbContext;
+        public readonly DbProvider DbProvider;
 
-        public Command(string dbContext)
+        public Command(string dbContext, DbProvider dbProvider)
         {
             DbContext = dbContext;
+            DbProvider = dbProvider;
         }
     }
 
@@ -34,16 +36,21 @@ public static class DatabaseHelperBuilder
             var classPath = ClassPathHelper.DbContextClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
                 $"{FileNames.GetDatabaseHelperFileName()}.cs",
                 _scaffoldingDirectoryStore.ProjectBaseName);
-            var fileText = GetFileText(classPath.ClassNamespace, request.DbContext);
+            var fileText = GetFileText(classPath.ClassNamespace, request.DbContext, request.DbProvider);
             _utilities.CreateFile(classPath, fileText);
             return Task.FromResult(true);
         }
-        private string GetFileText(string classNamespace, string dbContext)
+        private string GetFileText(string classNamespace, string dbContext, DbProvider dbProvider)
         {
+            var usingStatement = dbProvider == DbProvider.Postgres ? $@"
+using Npgsql;" : "";
+            var catchStatement = dbProvider == DbProvider.Postgres 
+                ? $@"catch (Exception ex) when (ex is SocketException or NpgsqlException)"
+                : $@"catch (Exception ex) when (ex is SocketException)";
             return @$"namespace {classNamespace};
 
-
 using Microsoft.EntityFrameworkCore;
+using System.Net.Sockets;{usingStatement}
 
 public sealed class {FileNames.GetDatabaseHelperFileName()}
 {{
@@ -61,6 +68,11 @@ public sealed class {FileNames.GetDatabaseHelperFileName()}
         try
         {{
             await _context.Database.MigrateAsync();
+        }}
+        {catchStatement}
+        {{
+            _logger.LogError(ex, ""Could not connect to the database. Please check the connection string and make sure the database is running."");
+            throw;
         }}
         catch (Exception ex)
         {{
