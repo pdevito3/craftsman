@@ -23,9 +23,8 @@ public class IntegrationTestBaseBuilder
     {
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
         
-        var protectedUsings = isProtected ? @$"{Environment.NewLine}
-    using HeimGuard;
-    using Moq;" : "";
+        var protectedUsings = isProtected ? @$"{Environment.NewLine}using HeimGuard;
+using Moq;" : "";
         var heimGuardMock = isProtected 
             ? $@"{Environment.NewLine}        var userPolicyHandler = GetService<IHeimGuardClient>();
         Mock.Get(userPolicyHandler)
