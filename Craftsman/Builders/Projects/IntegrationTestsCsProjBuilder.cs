@@ -47,7 +47,6 @@ public class IntegrationTestsCsProjBuilder
     <PackageReference Include=""NUnit"" Version=""3.13.3"" />
     <PackageReference Include=""NUnit3TestAdapter"" Version=""4.2.1"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.3.2"" />
-    <PackageReference Include=""Respawn"" Version=""6.0.0"" />
   </ItemGroup>
 
   <ItemGroup>

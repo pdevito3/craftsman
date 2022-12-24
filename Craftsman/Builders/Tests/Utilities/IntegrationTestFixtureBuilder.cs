@@ -62,13 +62,6 @@ public class IntegrationTestFixtureBuilder
         }});
     }}"
             : null;
-        
-        var dbUsingStatement = provider == DbProvider.Postgres
-            ? $@"
-using Npgsql;"
-            : null;
-
-        var resetString = provider.ResetString();
 
         return @$"namespace {classNamespace};
 
@@ -77,45 +70,47 @@ using {contextClassPath.ClassNamespace};
 using {apiClassPath.ClassNamespace};
 using {envServiceClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
-using {servicesClassPath.ClassNamespace};{heimGuardUsing}
-using MediatR;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Moq;{dbUsingStatement}
-using NUnit.Framework;
-using Respawn;
-using Respawn.Graph;
-using System.IO;{sqlServerInteropUsing}
-using System.Security.Claims;
-using System.Threading.Tasks;
+using {servicesClassPath.ClassNamespace};
 using DotNet.Testcontainers.Containers.Builders;
 using DotNet.Testcontainers.Containers.Configurations.Databases;
+using DotNet.Testcontainers.Containers.Modules;
 using DotNet.Testcontainers.Containers.Modules.Abstractions;
 using DotNet.Testcontainers.Containers.Modules.Databases;
+using Extensions.Services;
 using FluentAssertions;
-using FluentAssertions.Extensions;
+using FluentAssertions.Extensions;{heimGuardUsing}
+using Moq;{sqlServerInteropUsing}
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework;
 
 [SetUpFixture]
 public class TestFixture
 {{
-    private static IServiceScopeFactory _scopeFactory;
-    private static ServiceProvider _provider;
-    private readonly TestcontainerDatabase _dbContainer = dbSetup();
+    public static IServiceScopeFactory BaseScopeFactory;
+    private readonly TestcontainerDatabase _dbContainer = DbSetup();
+    private readonly RmqConfig _rmqContainer = RmqSetup();
 
     [OneTimeSetUp]
     public async Task RunBeforeAnyTests()
     {{
         await _dbContainer.StartAsync();
         {provider.IntegrationTestConnectionStringSetup()}
-        
-        var builder = WebApplication.CreateBuilder(new WebApplicationOptions()
+        await RunMigration();
+
+        await _rmqContainer.Container.StartAsync();
+        Environment.SetEnvironmentVariable(EnvironmentService.RmqPortKey, _rmqContainer.Port.ToString());
+        Environment.SetEnvironmentVariable(EnvironmentService.RmqHostKey, ""localhost"");
+        Environment.SetEnvironmentVariable(EnvironmentService.RmqUsernameKey, ""guest"");
+        Environment.SetEnvironmentVariable(EnvironmentService.RmqPasswordKey, ""guest"");
+        Environment.SetEnvironmentVariable(EnvironmentService.RmqVirtualHostKey, ""/"");
+
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {{
-            EnvironmentName = Consts.Testing.IntegrationTestingEnvName,
+            EnvironmentName = Consts.Testing.IntegrationTestingEnvName
         }});
         builder.Configuration.AddEnvironmentVariables();
 
@@ -123,220 +118,44 @@ public class TestFixture
         var services = builder.Services;
 
         // add any mock services here
-        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();{heimGuardMock}
+        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();
+        services.ReplaceServiceWithSingletonMock<IHeimGuardClient>();
 
-        // MassTransit Harness Setup -- Do Not Delete Comment
-
-        _provider = services.BuildServiceProvider();
-        _scopeFactory = _provider.GetService<IServiceScopeFactory>();
-
-        // MassTransit Start Setup -- Do Not Delete Comment
-
-{equivalencyCall}
-        await EnsureDatabase();
-        await ResetState();
+        var provider = services.BuildServiceProvider();
+        BaseScopeFactory = provider.GetService<IServiceScopeFactory>();{equivalencyCall}
     }}
 
-    private static async Task EnsureDatabase()
+    private static async Task RunMigration()
     {{
-        using var scope = _scopeFactory.CreateScope();
-
-        var context = scope.ServiceProvider.GetService<{dbContextName}>();
-
+        var options = new DbContextOptionsBuilder<{dbContextName}>()
+            .{provider.DbRegistrationStatement()}(EnvironmentService.DbConnectionString)
+            .Options;
+        var context = new {dbContextName}(options, null, null, null);
         await context?.Database?.MigrateAsync();
     }}
 
-    public static TScopedService GetService<TScopedService>()
+    {provider.TestingDbSetupMethod(projectBaseName, true)}
+
+    private class RmqConfig
     {{
-        var scope = _scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetService<TScopedService>();
-        return service;
+        public TestcontainersContainer Container {{ get; set; }}
+        public int Port {{ get; set; }}
     }}
 
-
-    public static void SetUserRole(string role, string sub = null)
+    private static RmqConfig RmqSetup()
     {{
-        sub ??= Guid.NewGuid().ToString();
-        var claims = new List<Claim>
+        // var freePort = DockerUtilities.GetFreePort();
+        var freePort = 7741;
+        return new RmqConfig
         {{
-            new Claim(ClaimTypes.Role, role),
-            new Claim(ClaimTypes.Name, sub)
+            Container = new TestcontainersBuilder<TestcontainersContainer>()
+                .WithImage(""masstransit/rabbitmq"")
+                .WithPortBinding(freePort, 4566)
+                .WithName($""IntegrationTesting_RMQ_{{Guid.NewGuid()}}"")
+                .Build(),
+            Port = freePort
         }};
-
-        var identity = new ClaimsIdentity(claims);
-        var claimsPrincipal = new ClaimsPrincipal(identity);
-
-        var httpContext = Mock.Of<HttpContext>(c => c.User == claimsPrincipal);
-
-        var httpContextAccessor = GetService<IHttpContextAccessor>();
-        httpContextAccessor.HttpContext = httpContext;
     }}
-
-    public static void SetUserRoles(string[] roles, string sub = null)
-    {{
-        sub ??= Guid.NewGuid().ToString();
-        var claims = new List<Claim>();
-        foreach (var role in roles)
-        {{
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }}
-        claims.Add(new Claim(ClaimTypes.Name, sub));
-
-        var identity = new ClaimsIdentity(claims);
-        var claimsPrincipal = new ClaimsPrincipal(identity);
-
-        var httpContext = Mock.Of<HttpContext>(c => c.User == claimsPrincipal);
-
-        var httpContextAccessor = GetService<IHttpContextAccessor>();
-        httpContextAccessor.HttpContext = httpContext;
-    }}
-    
-    public static void SetMachineRole(string role, string clientId = null)
-    {{
-        clientId ??= Guid.NewGuid().ToString();
-        var claims = new List<Claim>
-        {{
-            new Claim(""client_role"", role),
-            new Claim(""client_id"", clientId)
-        }};
-
-        var identity = new ClaimsIdentity(claims);
-        var claimsPrincipal = new ClaimsPrincipal(identity);
-
-        var httpContext = Mock.Of<HttpContext>(c => c.User == claimsPrincipal);
-
-        var httpContextAccessor = GetService<IHttpContextAccessor>();
-        httpContextAccessor.HttpContext = httpContext;
-    }}
-
-    public static void SetMachineRoles(string[] roles, string clientId = null)
-    {{
-        clientId ??= Guid.NewGuid().ToString();
-        var claims = new List<Claim>();
-        foreach (var role in roles)
-        {{
-            claims.Add(new Claim(""client_role"", role));
-        }}
-        claims.Add(new Claim(""client_id"", clientId));
-
-        var identity = new ClaimsIdentity(claims);
-        var claimsPrincipal = new ClaimsPrincipal(identity);
-
-        var httpContext = Mock.Of<HttpContext>(c => c.User == claimsPrincipal);
-
-        var httpContextAccessor = GetService<IHttpContextAccessor>();
-        httpContextAccessor.HttpContext = httpContext;
-    }}
-
-    public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
-    {{
-        using var scope = _scopeFactory.CreateScope();
-
-        var mediator = scope.ServiceProvider.GetService<ISender>();
-
-        return await mediator.Send(request);
-    }}
-
-    public static async Task ResetState()
-    {{
-        {resetString}
-    }}
-
-    public static async Task<TEntity> FindAsync<TEntity>(params object[] keyValues)
-        where TEntity : class
-    {{
-        using var scope = _scopeFactory.CreateScope();
-
-        var context = scope.ServiceProvider.GetService<{dbContextName}>();
-
-        return await context.FindAsync<TEntity>(keyValues);
-    }}
-
-    public static async Task AddAsync<TEntity>(TEntity entity)
-        where TEntity : class
-    {{
-        using var scope = _scopeFactory.CreateScope();
-
-        var context = scope.ServiceProvider.GetService<{dbContextName}>();
-
-        context.Add(entity);
-
-        await context.SaveChangesAsync();
-    }}
-
-    public static async Task ExecuteScopeAsync(Func<IServiceProvider, Task> action)
-    {{
-        using var scope = _scopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<{dbContextName}>();
-
-        try
-        {{
-            //await dbContext.BeginTransactionAsync();
-
-            await action(scope.ServiceProvider);
-
-            //await dbContext.CommitTransactionAsync();
-        }}
-        catch (Exception)
-        {{
-            //dbContext.RollbackTransaction();
-            throw;
-        }}
-    }}
-
-    public static async Task<T> ExecuteScopeAsync<T>(Func<IServiceProvider, Task<T>> action)
-    {{
-        using var scope = _scopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<{dbContextName}>();
-
-        try
-        {{
-            //await dbContext.BeginTransactionAsync();
-
-            var result = await action(scope.ServiceProvider);
-
-            //await dbContext.CommitTransactionAsync();
-
-            return result;
-        }}
-        catch (Exception)
-        {{
-            //dbContext.RollbackTransaction();
-            throw;
-        }}
-    }}
-
-    public static Task ExecuteDbContextAsync(Func<{dbContextName}, Task> action)
-        => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>()));
-
-    public static Task ExecuteDbContextAsync(Func<{dbContextName}, ValueTask> action)
-        => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>()).AsTask());
-
-    public static Task ExecuteDbContextAsync(Func<{dbContextName}, IMediator, Task> action)
-        => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>(), sp.GetService<IMediator>()));
-
-    public static Task<T> ExecuteDbContextAsync<T>(Func<{dbContextName}, Task<T>> action)
-        => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>()));
-
-    public static Task<T> ExecuteDbContextAsync<T>(Func<{dbContextName}, ValueTask<T>> action)
-        => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>()).AsTask());
-
-    public static Task<T> ExecuteDbContextAsync<T>(Func<{dbContextName}, IMediator, Task<T>> action)
-        => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>(), sp.GetService<IMediator>()));
-
-    public static Task<int> InsertAsync<T>(params T[] entities) where T : class
-    {{
-        return ExecuteDbContextAsync(db =>
-        {{
-            foreach (var entity in entities)
-            {{
-                db.Set<T>().Add(entity);
-            }}
-            return db.SaveChangesAsync();
-        }});
-    }}
-
-    // MassTransit Methods -- Do Not Delete Comment
 
     {provider.TestingDbSetupMethod(projectBaseName, true)}{equivalencyMethod}
 
@@ -344,21 +163,7 @@ public class TestFixture
     public async Task RunAfterAnyTests()
     {{
         await _dbContainer.DisposeAsync();
-        
-        // MassTransit Teardown -- Do Not Delete Comment
-    }}
-}}
-
-
-
-public static class ServiceCollectionServiceExtensions
-{{
-    public static IServiceCollection ReplaceServiceWithSingletonMock<TService>(this IServiceCollection services)
-        where TService : class
-    {{
-        services.RemoveAll(typeof(TService));
-        services.AddSingleton(_ => Mock.Of<TService>());
-        return services;
+        await _rmqContainer.Container.DisposeAsync();
     }}
 }}
 ";
