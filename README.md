@@ -26,31 +26,23 @@ Have a request for something you don't see below? Join [our discord](https://dis
 * 🚧 TBD Dogfooding results
 * 🚧 NextJS app + scaffolding stablization
 
+### Some 0.18 highlights
+
+✅ Environment Service
+
+✅ Built in Migrations
+
+✅ Various testing and other improvements
+
 ### Some 0.17 highlights
 
-- ✅ Users and Roles managed in each boundary (AuthN still separate)
+✅ Users and Roles managed in each boundary (AuthN still separate)
 
-- ✅ New `Email` Value Object
+✅ New `Email` Value Object
 
-- ✅ Functional Tests use Docker DB and has other cleanup items
+✅ Functional Tests use Docker DB and has other cleanup items
 
-- ✅ NextJS template (still a WIP and not documented, but you can find [the sandbox for things here](https://github.com/pdevito3/next-template-wrapt-sand) and poke through the Craftsman code if you'd like. Can answer questions in out Discord as well.)
-
-  - ✅ OIDC Auth support
-  - ✅ List View
-  - ✅ Add entity form
-  - ✅ Edit entity form
-  - ✅ Delete entity
-  - ✅ Custom form components with [Mantine](https://mantine.dev) and [TailwindCSS](https://tailwindcss.com/)
-  - ✅ Light/Dark Mode
-  - ✅ Responsive
-  - ✅ Entity Scaffolding with Craftsman
-
-  - ✅ Permissions Integration
-  
-  - lots more...
-
-
+✅ NextJS template (still a WIP and not documented, but you can find [the sandbox for things here](https://github.com/pdevito3/next-template-wrapt-sand) and poke through the Craftsman code if you'd like. Can answer questions in out Discord as well.)
 
 ### Some v0.16 highlights
 

@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+* None yet!
+
+## [0.18.0] - 01/07/2023
+
 ### Added
 
 * New `MigrationHostedService` to automatically apply migrations when starting your project
