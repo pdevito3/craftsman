@@ -233,14 +233,12 @@ public abstract class BaseEntity
             attributeString += @$"    [Required]{Environment.NewLine}";
         if (entityProperty.IsPrimativeForeignKey)
         {
-            attributeString += @$"    [JsonIgnore]
-    [IgnoreDataMember]
+            attributeString += @$"    [JsonIgnore, IgnoreDataMember]
     [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
         }
     
         if (entityProperty.IsMany || !entityProperty.IsPrimitiveType)
-            attributeString += $@"    [JsonIgnore]
-    [IgnoreDataMember]{Environment.NewLine}";
+            attributeString += $@"    [JsonIgnore, IgnoreDataMember]{Environment.NewLine}";
         if (entityProperty.CanFilter || entityProperty.CanSort)
             attributeString += @$"    [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
 
