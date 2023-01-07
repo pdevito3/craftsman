@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Bump HeimGuard
 * Update `UserPolicyHandler` to include a `HasPermission()` implementation
 * Json attribute refactor
+* Simplify swagger comments
 
 ### Fixes
 

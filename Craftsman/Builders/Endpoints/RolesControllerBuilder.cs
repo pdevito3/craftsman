@@ -46,10 +46,8 @@ public sealed class RolesController: ControllerBase
     /// <summary>
     /// Gets a list of all available roles.
     /// </summary>
-    /// <response code=""200"">List retrieved.</response>
-    /// <response code=""500"">There was an error getting the list of roles.</response>
-    [HttpGet(Name = ""GetRoles"")]
     [Authorize]
+    [HttpGet(Name = ""GetRoles"")]
     public List<string> GetRoles()
     {{
         _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanGetRoles);
