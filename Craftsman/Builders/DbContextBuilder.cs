@@ -225,7 +225,9 @@ public sealed class {dbContextName} : DbContext
 
         services.AddDbContext<{dbContextName}>(options =>
             options.{usingDbStatement}(connectionString,
-                builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});";
+                builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});
+
+        services.AddHostedService<MigrationHostedService<{dbContextName}>>();";
                     }
 
                     output.WriteLine(newText);

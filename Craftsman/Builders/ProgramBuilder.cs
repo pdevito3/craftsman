@@ -24,7 +24,7 @@ public class ProgramBuilder
         var hostExtClassPath = ClassPathHelper.WebApiHostExtensionsClassPath(srcDirectory, $"", projectBaseName);
         var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
-        var dbClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{FileNames.GetDatabaseHelperFileName()}.cs", projectBaseName);
+        var dbClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{FileNames.GetMigrationHostedServiceFileName()}.cs", projectBaseName);
         
         var appAuth = "";
         var corsName = $"{projectBaseName}CorsPolicy";
@@ -49,13 +49,10 @@ builder.ConfigureServices();
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
-var dbInitializer = scope.ServiceProvider.GetRequiredService<DatabaseHelper>();
-await dbInitializer.MigrateAsync();
 
 if (builder.Environment.IsDevelopment())
 {{
     app.UseDeveloperExceptionPage();
-    await dbInitializer.SeedAsync();
 }}
 else
 {{

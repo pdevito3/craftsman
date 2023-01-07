@@ -5,16 +5,14 @@ using Helpers;
 using MediatR;
 using Services;
 
-public static class DatabaseHelperBuilder
+public static class DbMigrationsHostedServiceBuilder
 {
     public class Command : IRequest<bool>
     {
-        public readonly string DbContext;
         public readonly DbProvider DbProvider;
 
-        public Command(string dbContext, DbProvider dbProvider)
+        public Command(DbProvider dbProvider)
         {
-            DbContext = dbContext;
             DbProvider = dbProvider;
         }
     }
@@ -34,13 +32,13 @@ public static class DatabaseHelperBuilder
         public Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {
             var classPath = ClassPathHelper.DbContextClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"{FileNames.GetDatabaseHelperFileName()}.cs",
+                $"{FileNames.GetMigrationHostedServiceFileName()}.cs",
                 _scaffoldingDirectoryStore.ProjectBaseName);
-            var fileText = GetFileText(classPath.ClassNamespace, request.DbContext, request.DbProvider);
+            var fileText = GetFileText(classPath.ClassNamespace, request.DbProvider);
             _utilities.CreateFile(classPath, fileText);
             return Task.FromResult(true);
         }
-        private string GetFileText(string classNamespace, string dbContext, DbProvider dbProvider)
+        private string GetFileText(string classNamespace, DbProvider dbProvider)
         {
             var usingStatement = dbProvider == DbProvider.Postgres ? $@"
 using Npgsql;" : "";
@@ -49,25 +47,37 @@ using Npgsql;" : "";
                 : $@"catch (Exception ex) when (ex is SocketException)";
             return @$"namespace {classNamespace};
 
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Sockets;{usingStatement}
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;{usingStatement}
 
-public sealed class {FileNames.GetDatabaseHelperFileName()}
+public class {FileNames.GetMigrationHostedServiceFileName()}<TDbContext> : IHostedService
+    where TDbContext : DbContext
 {{
-    private readonly ILogger<{FileNames.GetDatabaseHelperFileName()}> _logger;
-    private readonly {dbContext} _context;
+    private readonly ILogger<{FileNames.GetMigrationHostedServiceFileName()}<TDbContext>> _logger;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public {FileNames.GetDatabaseHelperFileName()}(ILogger<DatabaseHelper> logger, {dbContext} context)
+    public {FileNames.GetMigrationHostedServiceFileName()}(IServiceScopeFactory scopeFactory, ILogger<{FileNames.GetMigrationHostedServiceFileName()}<TDbContext>> logger)
     {{
+        _scopeFactory = scopeFactory;
         _logger = logger;
-        _context = context;
     }}
 
-    public async Task MigrateAsync()
+    public async Task StartAsync(CancellationToken cancellationToken)
     {{
         try
         {{
-            await _context.Database.MigrateAsync();
+            _logger.LogInformation(""Applying migrations for {{DbContext}}"", typeof(TDbContext).Name);
+
+            await using var scope = _scopeFactory.CreateAsyncScope();
+            var context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+            await context.Database.MigrateAsync(cancellationToken);
+
+            _logger.LogInformation(""Migrations complete for {{DbContext}}"", typeof(TDbContext).Name);
         }}
         {catchStatement}
         {{
@@ -81,22 +91,9 @@ public sealed class {FileNames.GetDatabaseHelperFileName()}
         }}
     }}
 
-    public async Task SeedAsync()
+    public Task StopAsync(CancellationToken cancellationToken)
     {{
-        try
-        {{
-            await TrySeedAsync();
-        }}
-        catch (Exception ex)
-        {{
-            _logger.LogError(ex, ""An error occurred while seeding the database."");
-            throw;
-        }}
-    }}
-
-    public async Task TrySeedAsync()
-    {{
-        // Seed base data, if you want
+        return Task.CompletedTask;
     }}
 }}";
         }
