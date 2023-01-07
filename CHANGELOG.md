@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Additional helper methods on `ValidationException`
 * Additional OTel config
 * Cleaner functional test helpers
+* Bump HeimGuard
+* Update `UserPolicyHandler` to include a `HasPermission()` implementation
 
 ### Fixes
 

@@ -55,6 +55,37 @@ public sealed class UserPolicyHandler : IUserPolicyHandler
     
     public async Task<IEnumerable<string>> GetUserPermissions()
     {{
+        var roles = await GetRoles();
+
+        // super admins can do everything
+        if(roles.Contains(Role.SuperAdmin().Value))
+            return Permissions.List();
+
+        var permissions = await _rolePermissionRepository.Query()
+            .Where(rp => roles.Contains(rp.Role))
+            .Select(rp => rp.Permission)
+            .Distinct()
+            .ToArrayAsync();
+
+        return await Task.FromResult(permissions);
+    }}
+    
+    public async Task<bool> HasPermission(string permission)
+    {{
+        var roles = await GetRoles();
+    
+        // super admins can do everything
+        if (roles.Contains(Role.SuperAdmin().Value))
+            return true;
+        
+        return await _rolePermissionRepository.Query()
+            .Where(rp => roles.Contains(rp.Role))
+            .Select(rp => rp.Permission)
+            .AnyAsync(x => x == permission);
+    }}
+
+    private async Task<string[]> GetRoles()
+    {{
         var claimsPrincipal = _currentUserService.User;
         if (claimsPrincipal == null) throw new ArgumentNullException(nameof(claimsPrincipal));
         
@@ -69,17 +100,7 @@ public sealed class UserPolicyHandler : IUserPolicyHandler
         if (roles.Length == 0)
             throw new NoRolesAssignedException();
 
-        // super admins can do everything
-        if(roles.Contains(Role.SuperAdmin().Value))
-            return Permissions.List();
-
-        var permissions = await _rolePermissionRepository.Query()
-            .Where(rp => roles.Contains(rp.Role))
-            .Select(rp => rp.Permission)
-            .Distinct()
-            .ToArrayAsync();
-
-        return await Task.FromResult(permissions);
+        return roles;
     }}
 
     private async Task SeedRootUser(string userId)

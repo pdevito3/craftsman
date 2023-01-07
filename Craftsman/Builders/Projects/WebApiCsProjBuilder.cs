@@ -43,7 +43,7 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""6.0.0"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""11.2.2"" />
-    <PackageReference Include=""HeimGuard"" Version=""0.2.1"" />
+    <PackageReference Include=""HeimGuard"" Version=""0.3.0"" />
     <PackageReference Include=""Mapster"" Version=""7.3.0"" />
     <PackageReference Include=""Mapster.DependencyInjection"" Version=""1.0.0"" />
     <PackageReference Include=""Mapster.EFCore"" Version=""5.1.0"" />
