@@ -12,47 +12,19 @@ public class IntegrationTestBaseBuilder
         _utilities = utilities;
     }
 
-    public void CreateBase(string solutionDirectory, string projectBaseName, string dbContextName, bool isProtected)
+    public void CreateBase(string solutionDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestBase.cs", projectBaseName);
-        var fileText = GetBaseText(classPath.ClassNamespace, dbContextName, isProtected, solutionDirectory, projectBaseName);
+        var fileText = GetBaseText(classPath.ClassNamespace);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetBaseText(string classNamespace, string dbContextName, bool isProtected, string solutionDirectory, string projectBaseName)
+    public static string GetBaseText(string classNamespace)
     {
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, projectBaseName);
-        var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-        
-        var protectedUsings = isProtected ? @$"{Environment.NewLine}using HeimGuard;
-using Moq;" : "";
-        var userDoesNotHavePermission = isProtected 
-            ? $@"
-
-    public void SetUserNotPermitted(string permission)
-    {{
-        var userPolicyHandler = GetService<IHeimGuardClient>();
-        Mock.Get(userPolicyHandler)
-            .Setup(x => x.MustHavePermission<ForbiddenAccessException>(permission))
-            .ThrowsAsync(new ForbiddenAccessException());
-        Mock.Get(userPolicyHandler)
-            .Setup(x => x.HasPermissionAsync(permission))
-            .ReturnsAsync(false);
-    }}"
-            : null;
-
         return @$"namespace {classNamespace};
 
 using NUnit.Framework;
-using System.Threading.Tasks;
 using AutoBogus;
-using Databases;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Moq;
-using {exceptionsClassPath.ClassNamespace};{protectedUsings}
-using static {testFixtureName};
 
 [Parallelizable]
 public class TestBase
@@ -69,93 +41,6 @@ public class TestBase
                 .WithRepeatCount(1);
         }});        
         return Task.CompletedTask;
-    }}
-}}
-
-
-
-public class {FileNames.TestingServiceScope()} 
-{{
-    private readonly IServiceScope _scope;
-
-    public {FileNames.TestingServiceScope()}()
-    {{
-        _scope = BaseScopeFactory.CreateScope();
-        // SetUserToMachine();
-    }}
-    public TScopedService GetService<TScopedService>()
-    {{
-        var service = _scope.ServiceProvider.GetService<TScopedService>();
-        return service;
-    }}
-
-    public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
-    {{
-        var mediator = _scope.ServiceProvider.GetService<ISender>();
-        return await mediator.Send(request);
-    }}
-
-    public async Task<TEntity> FindAsync<TEntity>(params object[] keyValues)
-        where TEntity : class
-    {{
-        var context = _scope.ServiceProvider.GetService<{dbContextName}>();
-        return await context.FindAsync<TEntity>(keyValues);
-    }}
-
-    public async Task AddAsync<TEntity>(TEntity entity)
-        where TEntity : class
-    {{
-        var context = _scope.ServiceProvider.GetService<{dbContextName}>();
-        context.Add(entity);
-
-        await context.SaveChangesAsync();
-    }}
-
-    public async Task<T> ExecuteScopeAsync<T>(Func<IServiceProvider, Task<T>> action)
-    {{
-        var dbContext = _scope.ServiceProvider.GetRequiredService<{dbContextName}>();
-
-        try
-        {{
-            //await dbContext.BeginTransactionAsync();
-
-            var result = await action(_scope.ServiceProvider);
-
-            //await dbContext.CommitTransactionAsync();
-
-            return result;
-        }}
-        catch (Exception)
-        {{
-            //dbContext.RollbackTransaction();
-            throw;
-        }}
-    }}
-
-    public Task<T> ExecuteDbContextAsync<T>(Func<{dbContextName}, Task<T>> action)
-        => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>()));
-    
-    public Task<int> InsertAsync<T>(params T[] entities) where T : class
-    {{
-        return ExecuteDbContextAsync(db =>
-        {{
-            foreach (var entity in entities)
-            {{
-                db.Set<T>().Add(entity);
-            }}
-            return db.SaveChangesAsync();
-        }});
-    }}{userDoesNotHavePermission}
-}}
-
-public static class ServiceCollectionServiceExtensions
-{{
-    public static IServiceCollection ReplaceServiceWithSingletonMock<TService>(this IServiceCollection services)
-        where TService : class
-    {{
-        services.RemoveAll(typeof(TService));
-        services.AddSingleton(_ => Mock.Of<TService>());
-        return services;
     }}
 }}";
     }
