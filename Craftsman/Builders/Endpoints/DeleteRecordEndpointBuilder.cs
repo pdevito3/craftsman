@@ -16,7 +16,6 @@ public class DeleteRecordEndpointBuilder
         var deleteRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_DeleteRecord(entity, addSwaggerComments, deleteRecordAuthorizations.Length > 0)}{deleteRecordAuthorizations}
-    [Produces(""application/json"")]
     [HttpDelete(""{{{lowercasePrimaryKey}:guid}}"", Name = ""Delete{entityName}"")]
     public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercasePrimaryKey})
     {{

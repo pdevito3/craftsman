@@ -19,7 +19,6 @@ public class PutRecordEndpointBuilder
         var updateRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_PutRecord(entity, addSwaggerComments, updateRecordAuthorizations.Length > 0)}{updateRecordAuthorizations}
-    [Produces(""application/json"")]
     [HttpPut(""{{{lowercasePrimaryKey}:guid}}"", Name = ""Update{entityName}"")]
     public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercasePrimaryKey}, {updateDto} {lowercaseEntityVariable})
     {{

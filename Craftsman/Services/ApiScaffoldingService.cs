@@ -104,7 +104,7 @@ public class ApiScaffoldingService
             projectBaseName
         );
         new ApiRoutesBuilder(_utilities).CreateClass(testDirectory, projectBaseName);
-        _mediator.Send(new DatabaseHelperBuilder.Command(template.DbContext.ContextName, template.DbContext.ProviderEnum));
+        _mediator.Send(new DbMigrationsHostedServiceBuilder.Command(template.DbContext.ProviderEnum));
 
         if (template.AddJwtAuthentication)
         {

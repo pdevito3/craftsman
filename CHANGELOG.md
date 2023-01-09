@@ -9,9 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+* None yet!
+
+## [0.18.0] - 01/07/2023
+
 ### Added
 
-* `DatabaseHelper` to automatically apply migrations when starting your project and apply any data seeding you may want
+* New `MigrationHostedService` to automatically apply migrations when starting your project
 * New `EnvironmentService` for easy access to environment variables
 
 ### Updates
@@ -23,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Bump HeimGuard
 * Update `UserPolicyHandler` to include a `HasPermission()` implementation
 * Json attribute refactor
+* Simplify swagger comments
 
 ### Fixes
 

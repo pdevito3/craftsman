@@ -22,7 +22,6 @@ public class GetRecordEndpointBuilder
 
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_GetRecord(entity, addSwaggerComments, singleResponse, getRecordAuthorizations.Length > 0)}{getRecordAuthorizations}
-    [Produces(""application/json"")]
     [HttpGet(""{{{lowercasePrimaryKey}:guid}}"", Name = ""{getRecordEndpointName}"")]
     public async Task<ActionResult<{readDto}>> {getRecordEndpointName}({pkPropertyType} {lowercasePrimaryKey})
     {{

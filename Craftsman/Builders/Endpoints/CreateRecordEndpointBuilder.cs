@@ -20,8 +20,6 @@ public class CreateRecordEndpointBuilder
         var creationPropName = $"{lowercaseEntityVariable}ForCreation";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_CreateRecord(entity, addSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0)}{addRecordAuthorizations}
-    [Consumes(""application/json"")]
-    [Produces(""application/json"")]
     [HttpPost(Name = ""Add{entityName}"")]
     public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {creationPropName})
     {{
@@ -47,8 +45,6 @@ public class CreateRecordEndpointBuilder
         var creationPropName = $"{lowercaseEntityVariable}ForCreation";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_CreateList(entity, addSwaggerComments, responseObj, addRecordAuthorizations.Length > 0)}{addRecordAuthorizations}
-    [Consumes(""application/json"")]
-    [Produces(""application/json"")]
     [HttpPost(""batch"", Name = ""Add{entityName}List"")]
     public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {creationPropName},
         [FromQuery(Name = ""{batchPropNameLower}""), BindRequired] {feature.BatchPropertyType} {batchPropNameLower})
