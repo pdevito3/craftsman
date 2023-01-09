@@ -36,6 +36,7 @@ public class AddBoundedContextCommand : Command<AddBoundedContextCommand.Setting
     public class Settings : CommandSettings
     {
         [CommandArgument(0, "<Filepath>")] public string Filepath { get; set; }
+         [CommandArgument(1, "<Overwrite>")] public bool Overwrite { get; set; }
     }
 
     public override int Execute(CommandContext context, Settings settings)
@@ -51,7 +52,7 @@ public class AddBoundedContextCommand : Command<AddBoundedContextCommand.Setting
 
         foreach (var template in boundedContexts.BoundedContexts)
             new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem, _mediator, _fileParsingHelper)
-                .ScaffoldApi(potentialSolutionDir, template);
+                .ScaffoldApi(potentialSolutionDir, template, settings.Overwrite);
 
         _consoleWriter.WriteHelpHeader(
             $"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");

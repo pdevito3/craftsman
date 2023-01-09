@@ -15,14 +15,14 @@ public class ApiRouteModifier
         _fileSystem = fileSystem;
     }
 
-    public void AddRoutes(string testDirectory, Entity entity, string projectBaseName)
+    public void AddRoutes(string testDirectory, Entity entity, string projectBaseName, bool overwrite = false)
     {
         var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "ApiRoutes.cs");
 
-        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory) && !overwrite )
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        if (!_fileSystem.File.Exists(classPath.FullClassPath) && !overwrite)
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
         var entityRouteClasses = CreateApiRouteClasses(entity);
@@ -50,14 +50,14 @@ public class ApiRouteModifier
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 
-    public void AddRoutesForUser(string testDirectory, string projectBaseName)
+    public void AddRoutesForUser(string testDirectory, string projectBaseName, bool  overwrite = false)
     {
         var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "ApiRoutes.cs");
 
-        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory) && !overwrite)
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        if (!_fileSystem.File.Exists(classPath.FullClassPath)  && !overwrite)
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
         var entityRouteClasses = CreateApiRouteClassesForUser();

@@ -13,11 +13,11 @@ public class EmptyFeatureBuilder
         _utilities = utilities;
     }
 
-    public void CreateCommand(string srcDirectory, string contextName, string projectBaseName, Feature newFeature)
+    public void CreateCommand(string srcDirectory, string contextName, string projectBaseName, Feature newFeature, bool overwrite = false)
     {
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{newFeature.Name}.cs", newFeature.EntityPlural, projectBaseName);
         var fileText = GetCommandFileText(classPath.ClassNamespace, contextName, srcDirectory, projectBaseName, newFeature);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     public static string GetCommandFileText(string classNamespace, string contextName, string srcDirectory,

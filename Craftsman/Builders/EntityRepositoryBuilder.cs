@@ -12,11 +12,15 @@ public static class EntityRepositoryBuilder
         public readonly string EntityName;
         public readonly string EntityPlural;
 
-        public Command(string dbContextName, string entityName, string entityPlural)
+         public readonly bool Overwrite;
+
+
+        public Command(string dbContextName, string entityName, string entityPlural, bool overwrite)
         {
             DbContextName = dbContextName;
             EntityPlural = entityPlural;
             EntityName = entityName;
+            Overwrite = overwrite;
         }
     }
 
@@ -39,7 +43,7 @@ public static class EntityRepositoryBuilder
                 request.EntityPlural, 
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var fileText = GetFileText(classPath.ClassNamespace, request.EntityName, request.EntityPlural, request.DbContextName);
-            _utilities.CreateFile(classPath, fileText);
+            _utilities.CreateFile(classPath, fileText, request.Overwrite);
             return Task.FromResult(true);
         }
 

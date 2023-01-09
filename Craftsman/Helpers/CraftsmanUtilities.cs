@@ -18,7 +18,7 @@ public interface ICraftsmanUtilities
     bool ExecuteProcess(string command, string args, string directory, Dictionary<string, string> envVariables, int killInterval = 15000, string processKilledMessage = "Process Killed.");
     void ExecuteProcess(string command, string args, string directory);
     void AddProjectReference(IClassPath classPath, string relativeProjectPath);
-    void CreateFile(IClassPath classPath, string fileText);
+    void CreateFile(IClassPath classPath, string fileText, bool overwrite = false);
     string GetDbContext(string srcDirectory, string projectBaseName);
     void IsSolutionDirectoryGuard(string proposedDirectory, bool slnIsInParent = false);
     void IsNextJsRootDir(string proposedDirectory);
@@ -80,12 +80,12 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         throw new NextConfigNotFoundException();
     }
 
-    public void CreateFile(IClassPath classPath, string fileText)
+    public void CreateFile(IClassPath classPath, string fileText, bool overwrite = false)
     {
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-        if (_fileSystem.File.Exists(classPath.FullClassPath))
+        if (_fileSystem.File.Exists(classPath.FullClassPath) && overwrite == false)
             throw new FileAlreadyExistsException(classPath.FullClassPath);
 
         using var fs = _fileSystem.File.Create(classPath.FullClassPath);

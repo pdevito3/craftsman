@@ -38,7 +38,7 @@ public class ApiScaffoldingService
         _fileParsingHelper = fileParsingHelper;
     }
 
-    public void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template)
+    public void ScaffoldApi(string buildSolutionDirectory, ApiTemplate template, bool overwrite)
     {
         var projectName = template.ProjectName;
         _console.Status()
@@ -68,12 +68,12 @@ public class ApiScaffoldingService
 
                 // add all files based on the given template config
                 ctx.Status($"[bold blue]Scaffolding Files for {projectName} [/]");
-                RunTemplateBuilders(_scaffoldingDirectoryStore.BoundedContextDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory, template);
+                RunTemplateBuilders(_scaffoldingDirectoryStore.BoundedContextDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory, template, overwrite);
                 _consoleWriter.WriteLogMessage($"File scaffolding for {template.ProjectName} was successful");
             });
     }
 
-    private void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template)
+    private void RunTemplateBuilders(string boundedContextDirectory, string srcDirectory, string testDirectory, ApiTemplate template,  bool overwrite)
     {
         var projectBaseName = template.ProjectName;
 
@@ -138,7 +138,9 @@ public class ApiScaffoldingService
             template.Entities,
             template.DbContext.ContextName,
             template.SwaggerConfig.AddSwaggerComments,
-            template.UseSoftDelete);
+            template.UseSoftDelete,
+            overwrite
+            );
 
         // config
         new AppSettingsBuilder(_utilities).CreateWebApiAppSettings(srcDirectory, template.DbContext.DatabaseName, projectBaseName);
@@ -162,7 +164,7 @@ public class ApiScaffoldingService
         new CurrentUserServiceTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         _mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
         _mediator.Send(new CommonValueObjectBuilder.Command(template.AddJwtAuthentication));
-        new FakesBuilder(_utilities).CreateAddressFakes(srcDirectory, testDirectory, projectBaseName);
+        new FakesBuilder(_utilities).CreateAddressFakes(srcDirectory, testDirectory, projectBaseName, overwrite);
         _mediator.Send(new ValueObjectDtoBuilder.ValueObjectDtoBuilderCommand());
         _mediator.Send(new ValueObjectMappingsBuilder.ValueObjectMappingsBuilderCommand(template.AddJwtAuthentication));
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());

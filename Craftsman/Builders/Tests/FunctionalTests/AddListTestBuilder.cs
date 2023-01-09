@@ -16,11 +16,11 @@ public class AddListTestBuilder
         _utilities = utilities;
     }
 
-    public void CreateTests(string solutionDirectory, string testDirectory, Entity entity, Feature feature, string projectBaseName)
+    public void CreateTests(string solutionDirectory, string testDirectory, Entity entity, Feature feature, string projectBaseName, bool overwrite = false)
     {
         var classPath = ClassPathHelper.FunctionalTestClassPath(testDirectory, $"{feature.Name}Tests.cs", entity.Plural, projectBaseName);
         var fileText = WriteTestFileText(solutionDirectory, testDirectory, classPath, entity, feature.IsProtected, feature, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     private static string WriteTestFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, Entity entity, bool isProtected, Feature feature, string projectBaseName)

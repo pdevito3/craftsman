@@ -15,11 +15,11 @@ public class DeleteCommandTestBuilder
         _utilities = utilities;
     }
 
-    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName, bool useSoftDelete)
+    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName, bool useSoftDelete, bool overwrite = false)
     {
         var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Delete{entity.Name}CommandTests.cs", entity.Plural, projectBaseName);
         var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName, useSoftDelete);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName, bool useSoftDelete)

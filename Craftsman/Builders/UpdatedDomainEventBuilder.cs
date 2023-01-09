@@ -10,11 +10,13 @@ public static class UpdatedDomainEventBuilder
     {
         public string EntityName { get; set; }
         public string EntityPlural { get; set; }
+        public bool Overwrite {get;set;}
 
-        public UpdatedDomainEventBuilderCommand(string entityName, string entityPlural)
+        public UpdatedDomainEventBuilderCommand(string entityName, string entityPlural, bool overwrite)
         {
             EntityName = entityName;
             EntityPlural = entityPlural;
+            Overwrite = overwrite;
         }
     }
 

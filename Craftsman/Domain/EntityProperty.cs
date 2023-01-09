@@ -8,6 +8,7 @@ public class EntityProperty
     private bool _canManipulate = true;
     private string _type = "string";
     private string _name;
+    private int? _maxLength;
 
     /// <summary>
     /// Name of the property
@@ -26,6 +27,16 @@ public class EntityProperty
         get => _type;
         set => _type = CraftsmanUtilities.PropTypeCleanupDotNet(value);
     }
+
+    /// <summary>
+    /// Type of property (e.g. string, int, DateTime?, etc.)
+    /// </summary>
+    public int? MaxLength
+    {
+        get => _maxLength;
+        set => _maxLength = value;
+    }
+    
 
     /// <summary>
     /// Determines if the property will be filterable by the API

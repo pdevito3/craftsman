@@ -12,14 +12,14 @@ public class PermissionsModifier
         _fileSystem = fileSystem;
     }
 
-    public void AddPermission(string srcDirectory, string permission, string projectBaseName)
+    public void AddPermission(string srcDirectory, string permission, string projectBaseName, bool overwrite = false)
     {
         var classPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, $"Permissions.cs", projectBaseName);
 
-        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory) ||  overwrite)
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        if (!_fileSystem.File.Exists(classPath.FullClassPath) && !overwrite)
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
         var fileText = _fileSystem.File.ReadAllText(classPath.FullClassPath);

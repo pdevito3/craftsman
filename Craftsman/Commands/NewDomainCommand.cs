@@ -46,6 +46,8 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
     {
         [CommandArgument(0, "<Filepath>")]
         public string Filepath { get; set; }
+         [CommandArgument(1, "<Overwrite>")]
+        public bool Overwrite { get; set; }
     }
 
     public override int Execute(CommandContext context, Settings settings)
@@ -58,7 +60,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 
         _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
-        CreateNewDomainProject(domainProject);
+        CreateNewDomainProject(domainProject,settings.Overwrite);
 
         _console.MarkupLine($"{Environment.NewLine}[bold yellow1]Your domain project is ready! Build something amazing. [/]");
 
@@ -66,7 +68,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         return 0;
     }
 
-    public void CreateNewDomainProject(DomainProject domainProject)
+    public void CreateNewDomainProject(DomainProject domainProject, bool overwrite)
     {
         var solutionDirectory = _scaffoldingDirectoryStore.SolutionDirectory;
         _fileSystem.Directory.CreateDirectory(solutionDirectory);
@@ -84,7 +86,7 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         foreach (var bc in domainProject.BoundedContexts)
         {
             bc.DockerConfig.OTelAgentPort = otelAgentPort;
-            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem, _mediator, _fileParsingHelper).ScaffoldApi(solutionDirectory, bc);
+            new ApiScaffoldingService(_console, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileSystem, _mediator, _fileParsingHelper).ScaffoldApi(solutionDirectory, bc, overwrite);
         }
 
         // auth server

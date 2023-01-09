@@ -36,6 +36,10 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
     {
         [CommandArgument(0, "<Filepath>")]
         public string Filepath { get; set; }
+
+         [CommandArgument(1, "<Overwrite>")]
+        public bool Overwrite { get; set; }
+
     }
 
     public override int Execute(CommandContext context, Settings settings)
@@ -57,13 +61,13 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
 
         FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
 
-        RunEntityBuilders(solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory, template);
+        RunEntityBuilders(solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory, template, settings.Overwrite);
 
         _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
         return 0;
     }
 
-    private void RunEntityBuilders(string solutionDirectory, string srcDirectory, string testDirectory, AddEntityTemplate template)
+    private void RunEntityBuilders(string solutionDirectory, string srcDirectory, string testDirectory, AddEntityTemplate template, bool overwrite)
     {
         template = GetDbContext(_scaffoldingDirectoryStore.SrcDirectory, template, _scaffoldingDirectoryStore.ProjectBaseName);
         template.SolutionName = _scaffoldingDirectoryStore.ProjectBaseName;
@@ -77,7 +81,7 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
             template.Entities,
             template.DbContextName,
             template.AddSwaggerComments,
-            useSoftDelete);
+            useSoftDelete, overwrite);
     }
 
     private AddEntityTemplate GetDbContext(string srcDirectory, AddEntityTemplate template, string projectBaseName)

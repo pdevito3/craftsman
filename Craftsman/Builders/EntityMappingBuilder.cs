@@ -14,11 +14,11 @@ public class EntityMappingBuilder
         _utilities = utilities;
     }
 
-    public void CreateMapping(string srcDirectory, Entity entity, string projectBaseName)
-    {
+    public void CreateMapping(string srcDirectory, Entity entity, string projectBaseName, bool overwrite = false)
+     {
         var classPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, $"{FileNames.GetMappingName(entity.Name)}.cs", entity.Plural, projectBaseName);
         var fileText = GetMappingFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     public static string GetMappingFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName)
@@ -45,11 +45,11 @@ public sealed class {FileNames.GetMappingName(entity.Name)} : IRegister
 }}";
     }
 
-    public void CreateUserMapping(string srcDirectory, string projectBaseName)
+    public void CreateUserMapping(string srcDirectory, string projectBaseName, bool overwrite = false)
     {
         var classPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, $"{FileNames.GetMappingName("User")}.cs", "Users", projectBaseName);
         var fileText = GetUserMappings(classPath.ClassNamespace, srcDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     public static string GetUserMappings(string classNamespace, string srcDirectory, string projectBaseName)

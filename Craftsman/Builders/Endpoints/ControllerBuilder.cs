@@ -13,11 +13,11 @@ public class ControllerBuilder
         _utilities = utilities;
     }
 
-    public void CreateController(string solutionDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName, bool isProtected)
+    public void CreateController(string solutionDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName, bool isProtected, bool overwrite = false)
     {
         var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{FileNames.GetControllerName(entityPlural)}.cs", projectBaseName, "v1");
         var fileText = GetControllerFileText(classPath.ClassNamespace, entityPlural, solutionDirectory, srcDirectory, projectBaseName, isProtected);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     public static string GetControllerFileText(string classNamespace, string entityPlural, string solutionDirectory, string srcDirectory, string projectBaseName, bool usesJwtAuth)

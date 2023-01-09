@@ -16,11 +16,11 @@ public class EntityBuilder
         _utilities = utilities;
     }
 
-    public void CreateEntity(string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateEntity(string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName, bool overwrite )
     {
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
         var fileText = GetEntityFileText(classPath.ClassNamespace, solutionDirectory, srcDirectory, entity, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     public void CreateBaseEntity(string srcDirectory, string projectBaseName, bool useSoftDelete)
@@ -241,6 +241,9 @@ public abstract class BaseEntity
             attributeString += $@"    [JsonIgnore, IgnoreDataMember]{Environment.NewLine}";
         if (entityProperty.CanFilter || entityProperty.CanSort)
             attributeString += @$"    [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
+        if (  entityProperty.MaxLength != null ){
+             attributeString += $@"    [MaxLength({entityProperty.MaxLength})]";
+        }
 
         attributeString += ColumnAttributeBuilder(entityProperty);
 
@@ -279,11 +282,11 @@ public abstract class BaseEntity
         return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public virtual {prop.ForeignEntityName} {propName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
     }
 
-    public void CreateUserEntity(string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateUserEntity(string srcDirectory, Entity entity, string projectBaseName, bool overwrite = false)
     {
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
         var fileText = GetUserEntityFileText(classPath.ClassNamespace, srcDirectory, entity, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     public static string GetUserEntityFileText(string classNamespace, string srcDirectory, Entity entity, string projectBaseName)
@@ -394,12 +397,12 @@ public class User : BaseEntity
     }
     
 
-    public void CreateUserRoleEntity(string srcDirectory, string projectBaseName)
+    public void CreateUserRoleEntity(string srcDirectory, string projectBaseName, bool overwrite = false)
     {
         var entityName = "UserRole";
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entityName}.cs", "Users", projectBaseName);
         var fileText = GetUserRoleEntityFileText(classPath.ClassNamespace, srcDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     public static string GetUserRoleEntityFileText(string classNamespace, string srcDirectory, string projectBaseName)
@@ -443,11 +446,11 @@ public class UserRole : BaseEntity
     }
     
 
-    public void CreateRolePermissionsEntity(string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateRolePermissionsEntity(string srcDirectory, Entity entity, string projectBaseName, bool overwrite)
     {
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
         var fileText = GetRolePermissionsEntityFileText(classPath.ClassNamespace, srcDirectory);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     public static string GetRolePermissionsEntityFileText(string classNamespace, string srcDirectory)

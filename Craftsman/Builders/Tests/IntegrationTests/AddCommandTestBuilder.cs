@@ -15,11 +15,11 @@ public class AddCommandTestBuilder
         _utilities = utilities;
     }
 
-    public void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName, bool  overwrite = false)
     {
         var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Add{entity.Name}CommandTests.cs", entity.Plural, projectBaseName);
         var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)

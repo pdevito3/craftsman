@@ -16,7 +16,7 @@ public class FakeEntityBuilderBuilder
         _utilities = utilities;
     }
 
-    public void CreateFakeBuilder(string srcDirectory, string testDirectory, string projectBaseName, Entity entity)
+    public void CreateFakeBuilder(string srcDirectory, string testDirectory, string projectBaseName, Entity entity, bool overwrite = true)
     {
         // ****this class path will have an invalid FullClassPath. just need the directory
         var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"", entity.Name, projectBaseName);
@@ -27,11 +27,11 @@ public class FakeEntityBuilderBuilder
         CreateFakeBuilderFile(srcDirectory, testDirectory, entity, projectBaseName);
     }
 
-    private void CreateFakeBuilderFile(string srcDirectory, string testDirectory, Entity entity, string projectBaseName)
+    private void CreateFakeBuilderFile(string srcDirectory, string testDirectory, Entity entity, string projectBaseName, bool overwrite = true)
     {
         var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"{FileNames.FakeBuilderName(entity.Name)}.cs", entity.Name, projectBaseName);
         var fileText = GetCreateFakeBuilderFileText(classPath.ClassNamespace, entity, srcDirectory, testDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     private static string GetCreateFakeBuilderFileText(string classNamespace, Entity entity, string srcDirectory, string testDirectory, string projectBaseName)

@@ -11,10 +11,13 @@ public static class CreatedDomainEventBuilder
         public string EntityName { get; set; }
         public string EntityPlural { get; set; }
 
-        public CreatedDomainEventBuilderCommand(string entityName, string entityPlural)
+        public bool Overwrite { get; set; }
+
+        public CreatedDomainEventBuilderCommand(string entityName, string entityPlural, bool overwrite)
         {
             EntityName = entityName;
             EntityPlural = entityPlural;
+            Overwrite = overwrite;
         }
     }
 
@@ -37,7 +40,7 @@ public static class CreatedDomainEventBuilder
                 request.EntityPlural,
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var fileText = GetFileText(classPath.ClassNamespace, request.EntityName);
-            _utilities.CreateFile(classPath, fileText);
+            _utilities.CreateFile(classPath, fileText, request.Overwrite);
             return Task.FromResult(true);
         }
 

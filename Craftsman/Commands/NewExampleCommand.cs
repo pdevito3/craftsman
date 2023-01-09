@@ -38,6 +38,8 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
     {
         [CommandArgument(0, "[ProjectName]")]
         public string ProjectName { get; set; }
+        [CommandArgument(1, "[Overwrite]")]
+        public bool Overwrite { get; set; }
     }
 
     public override int Execute(CommandContext context, Settings settings)
@@ -55,7 +57,7 @@ public class NewExampleCommand : Command<NewExampleCommand.Settings>
 
         _scaffoldingDirectoryStore.SetSolutionDirectory(rootDir, domainProject.DomainName);
         var domainCommand = new NewDomainCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _dbMigrator, _gitService, _fileParsingHelper, _mediator);
-        domainCommand.CreateNewDomainProject(domainProject);
+        domainCommand.CreateNewDomainProject(domainProject, settings.Overwrite);
 
         new ExampleTemplateBuilder(_utilities).CreateYamlFile(_scaffoldingDirectoryStore.SolutionDirectory,
             templateString);

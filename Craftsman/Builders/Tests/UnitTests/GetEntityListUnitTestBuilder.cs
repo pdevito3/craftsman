@@ -24,11 +24,13 @@ public class GetEntityListUnitTestBuilder
         string entityLambda,
         List<EntityProperty> entityProperties,
         string projectBaseName, 
-        bool isProtected)
+        bool isProtected,
+        bool overwrite = false
+        )
     {
         var classPath = ClassPathHelper.UnitTestEntityFeaturesTestsClassPath(testDirectory, $"{FileNames.GetEntityListUnitTestName(entityName)}.cs", entityPlural, projectBaseName);
         var fileText = WriteTestFileText(solutionDirectory, srcDirectory, classPath, entityName, entityPlural, entityLambda, entityProperties, projectBaseName, isProtected);
-        _utilities.CreateFile(classPath, fileText);
+        _utilities.CreateFile(classPath, fileText, overwrite);
     }
 
     private static string WriteTestFileText(string solutionDirectory, 
