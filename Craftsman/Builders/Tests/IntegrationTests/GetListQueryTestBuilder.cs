@@ -44,8 +44,7 @@ using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using NUnit.Framework;
-using System.Threading.Tasks;
-using static {testFixtureName};{foreignEntityUsings}
+using System.Threading.Tasks;{foreignEntityUsings}
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
@@ -69,15 +68,16 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     public async Task can_get_{entity.Name.ToLower()}_list()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForOne}.Generate());
         var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForTwo}.Generate());
         var queryParameters = new {entityParams}();
 
-        await InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
+        await testingServiceScope.InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});
 
         // Act
         var query = new {FileNames.GetEntityListFeatureClassName(entity.Name)}.{queryName}(queryParameters);
-        var {lowercaseEntityPluralName} = await SendAsync(query);
+        var {lowercaseEntityPluralName} = await testingServiceScope.SendAsync(query);
 
         // Assert
         {lowercaseEntityPluralName}.Count.Should().BeGreaterThanOrEqualTo(2);

@@ -37,7 +37,6 @@ using {messagesClassPath.ClassNamespace};
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using {producerClassPath.ClassNamespace};
-using static {testFixtureName};
 
 public class {producer.ProducerName}Tests : TestBase
 {{
@@ -53,10 +52,11 @@ public class {producer.ProducerName}Tests : TestBase
     public async Task can_produce_{producer.MessageName}_message()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         var command = new {producer.ProducerName}.{producer.ProducerName}Command();
 
         // Act
-        await SendAsync(command);
+        await testingServiceScope.SendAsync(command);
 
         // Assert
         (await IsPublished<{messageName}>()).Should().BeTrue();

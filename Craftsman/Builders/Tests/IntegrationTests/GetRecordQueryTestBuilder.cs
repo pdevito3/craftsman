@@ -42,8 +42,7 @@ using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using {exceptionsClassPath.ClassNamespace};
-using System.Threading.Tasks;
-using static {testFixtureName};{foreignEntityUsings}
+using System.Threading.Tasks;{foreignEntityUsings}
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
@@ -65,12 +64,13 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     public async Task can_get_existing_{entity.Name.ToLower()}_with_accurate_props()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
-        await InsertAsync({fakeEntityVariableName});
+        await testingServiceScope.InsertAsync({fakeEntityVariableName});
 
         // Act
         var query = new {featureName}.{queryName}({fakeEntityVariableName}.{pkName});
-        var {lowercaseEntityName} = await SendAsync(query);
+        var {lowercaseEntityName} = await testingServiceScope.SendAsync(query);
 
         // Assert{GetAssertions(entity.Properties, lowercaseEntityName, fakeEntityVariableName)}
     }}";
@@ -86,11 +86,12 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     public async Task get_{entity.Name.ToLower()}_throws_notfound_exception_when_record_does_not_exist()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         var badId = {badId};
 
         // Act
         var query = new {featureName}.{queryName}(badId);
-        Func<Task> act = () => SendAsync(query);
+        Func<Task> act = () => testingServiceScope.SendAsync(query);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();

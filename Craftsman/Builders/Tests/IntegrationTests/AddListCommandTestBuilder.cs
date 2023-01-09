@@ -46,8 +46,7 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using System.Threading.Tasks;
-using static {testFixtureName};{foreignEntityUsings}
+using System.Threading.Tasks;{foreignEntityUsings}
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
@@ -69,18 +68,19 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         var {fakeParentEntity} = Fake{feature.ParentEntity}.Generate(new {fakeParentCreationDto}().Generate());
-        await InsertAsync({fakeParentEntity});
+        await testingServiceScope.InsertAsync({fakeParentEntity});
         var {fakeEntityVariableNameOne} = new {fakeCreationDto}().Generate();
         var {fakeEntityVariableNameTwo} = new {fakeCreationDto}().Generate();
 
         // Act
         var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}}}, {fakeParentEntity}.Id);
-        var {lowercaseEntityName}Returned = await SendAsync(command);
+        var {lowercaseEntityName}Returned = await testingServiceScope.SendAsync(command);
         var firstReturned = {lowercaseEntityName}Returned.FirstOrDefault();
         var secondReturned = {lowercaseEntityName}Returned.Skip(1).FirstOrDefault();
 
-        var {lowercaseEntityName}Db = await ExecuteDbContextAsync(db => db.{entity.Plural}
+        var {lowercaseEntityName}Db = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .Where(x => x.Id == firstReturned.Id || x.Id == secondReturned.Id)
             .ToListAsync());
         var firstDbRecord = {lowercaseEntityName}Db.FirstOrDefault(x => x.Id == firstReturned.Id);

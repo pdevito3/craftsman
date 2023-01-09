@@ -2,10 +2,10 @@
 
 using System;
 using System.IO;
+using Craftsman.Services;
 using Domain;
 using Domain.Enums;
 using Helpers;
-using Services;
 
 public class CreateEntityTestBuilder
 {

@@ -37,7 +37,6 @@ using {messagesClassPath.ClassNamespace};
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using {consumerClassPath.ClassNamespace};
-using static {testFixtureName};
 
 public class {consumer.ConsumerName}Tests : TestBase
 {{
@@ -53,6 +52,7 @@ public class {consumer.ConsumerName}Tests : TestBase
     public async Task can_consume_{consumer.MessageName}_message()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         var message = new Mock<{messageName}>();
 
         // Act

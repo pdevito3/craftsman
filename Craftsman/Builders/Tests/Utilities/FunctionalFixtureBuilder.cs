@@ -40,7 +40,7 @@ public class FunctionalTestFixture
 {{
     public static IServiceScopeFactory ScopeFactory {{ get; private set; }}
     public static WebApplicationFactory<Program> Factory  {{ get; private set; }}
-    private readonly TestcontainerDatabase _dbContainer = dbSetup();
+    private readonly TestcontainerDatabase _dbContainer = DbSetup();
 
     [OneTimeSetUp]
     public async Task OneTimeSetUp()

@@ -57,13 +57,9 @@ using static {testFixtureName};
 [Parallelizable]
 public class TestBase
 {{
-    private static IServiceScopeFactory _scopeFactory;
-
     [SetUp]
     public Task TestSetUp()
     {{
-        _scopeFactory = BaseScopeFactory;
-
         AutoFaker.Configure(builder =>
         {{
             // configure global autobogus settings here
@@ -74,49 +70,56 @@ public class TestBase
         }});        
         return Task.CompletedTask;
     }}
+}}
 
-    public static TScopedService GetService<TScopedService>()
+
+
+public class {FileNames.TestingServiceScope()} 
+{{
+    private readonly IServiceScope _scope;
+
+    public {FileNames.TestingServiceScope()}()
     {{
-        var scope = _scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetService<TScopedService>();
+        _scope = BaseScopeFactory.CreateScope();
+        // SetUserToMachine();
+    }}
+    public TScopedService GetService<TScopedService>()
+    {{
+        var service = _scope.ServiceProvider.GetService<TScopedService>();
         return service;
     }}
 
-    public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
+    public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
     {{
-        using var scope = _scopeFactory.CreateScope();
-        var mediator = scope.ServiceProvider.GetService<ISender>();
+        var mediator = _scope.ServiceProvider.GetService<ISender>();
         return await mediator.Send(request);
     }}
 
-    public static async Task<TEntity> FindAsync<TEntity>(params object[] keyValues)
+    public async Task<TEntity> FindAsync<TEntity>(params object[] keyValues)
         where TEntity : class
     {{
-        using var scope = _scopeFactory.CreateScope();
-        var context = scope.ServiceProvider.GetService<{dbContextName}>();
+        var context = _scope.ServiceProvider.GetService<{dbContextName}>();
         return await context.FindAsync<TEntity>(keyValues);
     }}
 
-    public static async Task AddAsync<TEntity>(TEntity entity)
+    public async Task AddAsync<TEntity>(TEntity entity)
         where TEntity : class
     {{
-        using var scope = _scopeFactory.CreateScope();
-        var context = scope.ServiceProvider.GetService<{dbContextName}>();
+        var context = _scope.ServiceProvider.GetService<{dbContextName}>();
         context.Add(entity);
 
         await context.SaveChangesAsync();
     }}
 
-    public static async Task<T> ExecuteScopeAsync<T>(Func<IServiceProvider, Task<T>> action)
+    public async Task<T> ExecuteScopeAsync<T>(Func<IServiceProvider, Task<T>> action)
     {{
-        using var scope = _scopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<{dbContextName}>();
+        var dbContext = _scope.ServiceProvider.GetRequiredService<{dbContextName}>();
 
         try
         {{
             //await dbContext.BeginTransactionAsync();
 
-            var result = await action(scope.ServiceProvider);
+            var result = await action(_scope.ServiceProvider);
 
             //await dbContext.CommitTransactionAsync();
 
@@ -129,10 +132,10 @@ public class TestBase
         }}
     }}
 
-    public static Task<T> ExecuteDbContextAsync<T>(Func<{dbContextName}, Task<T>> action)
+    public Task<T> ExecuteDbContextAsync<T>(Func<{dbContextName}, Task<T>> action)
         => ExecuteScopeAsync(sp => action(sp.GetService<{dbContextName}>()));
     
-    public static Task<int> InsertAsync<T>(params T[] entities) where T : class
+    public Task<int> InsertAsync<T>(params T[] entities) where T : class
     {{
         return ExecuteDbContextAsync(db =>
         {{

@@ -61,7 +61,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeEntityVariableName = $"fake{entity.Name}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+        var fakeParent = FunctionalTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
 
         var testName = $"get_{entity.Name.ToLower()}_returns_success_when_entity_exists";
         testName += isProtected ? "_using_valid_auth_credentials" : "";

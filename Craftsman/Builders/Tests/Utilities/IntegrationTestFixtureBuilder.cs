@@ -155,9 +155,7 @@ public class TestFixture
                 .Build(),
             Port = freePort
         }};
-    }}
-
-    {provider.TestingDbSetupMethod(projectBaseName, true)}{equivalencyMethod}
+    }}{equivalencyMethod}
 
     [OneTimeTearDown]
     public async Task RunAfterAnyTests()

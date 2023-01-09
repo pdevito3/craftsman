@@ -43,8 +43,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using {exceptionsClassPath.ClassNamespace};
-using System.Threading.Tasks;
-using static {testFixtureName};{foreignEntityUsings}
+using System.Threading.Tasks;{foreignEntityUsings}
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
@@ -68,15 +67,16 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     public async Task can_delete_{entity.Name.ToLower()}_from_db()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
-        await InsertAsync({fakeEntityVariableName});
-        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}
+        await testingServiceScope.InsertAsync({fakeEntityVariableName});
+        var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
 
         // Act
         var command = new {featureName}.{commandName}({lowercaseEntityName}.{pkName});
-        await SendAsync(command);
-        var {dbResponseVariableName} = await ExecuteDbContextAsync(db => db.{entity.Plural}.CountAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}.{pkName}));
+        await testingServiceScope.SendAsync(command);
+        var {dbResponseVariableName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}.CountAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}.{pkName}));
 
         // Assert
         {dbResponseVariableName}.Should().Be(0);
@@ -93,11 +93,12 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     public async Task delete_{entity.Name.ToLower()}_throws_notfoundexception_when_record_does_not_exist()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         var badId = {badId};
 
         // Act
         var command = new {featureName}.{commandName}(badId);
-        Func<Task> act = () => SendAsync(command);
+        Func<Task> act = () => testingServiceScope.SendAsync(command);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
@@ -121,15 +122,16 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     public async Task can_softdelete_{entity.Name.ToLower()}_from_db()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
-        await InsertAsync({fakeEntityVariableName});
-        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}
+        await testingServiceScope.InsertAsync({fakeEntityVariableName});
+        var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
 
         // Act
         var command = new {featureName}.{commandName}({lowercaseEntityName}.{pkName});
-        await SendAsync(command);
-        var deleted{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}
+        await testingServiceScope.SendAsync(command);
+        var deleted{entity.Name} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == {lowercaseEntityName}.{pkName}));
 
