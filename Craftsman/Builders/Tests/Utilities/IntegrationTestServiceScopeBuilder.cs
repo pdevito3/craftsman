@@ -26,7 +26,7 @@ public class IntegrationTestServiceScopeBuilder
 
         var protectedUsings = isProtected ? @$"{Environment.NewLine}using HeimGuard;
 using Moq;" : "";
-        var userDoesNotHavePermission = isProtected 
+        var userPermissionMethods = isProtected 
             ? $@"
 
     public void SetUserNotPermitted(string permission)
@@ -38,8 +38,20 @@ using Moq;" : "";
         Mock.Get(userPolicyHandler)
             .Setup(x => x.HasPermissionAsync(permission))
             .ReturnsAsync(false);
+    }}
+
+    public void SetUserIsPermitted()
+    {{
+        var userPolicyHandler = GetService<IHeimGuardClient>();
+        Mock.Get(userPolicyHandler)
+            .Setup(x => x.MustHavePermission<ForbiddenAccessException>(It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+        Mock.Get(userPolicyHandler)
+            .Setup(x => x.HasPermissionAsync(It.IsAny<string>()))
+            .ReturnsAsync(true);
     }}"
             : null;
+        var userPermissionSetter = isProtected ? $@"{Environment.NewLine}        SetUserIsPermitted();" : null;
 
         return @$"namespace {classNamespace};
 
@@ -58,7 +70,7 @@ public class {FileNames.TestingServiceScope()}
 
     public {FileNames.TestingServiceScope()}()
     {{
-        _scope = BaseScopeFactory.CreateScope();
+        _scope = BaseScopeFactory.CreateScope();{userPermissionSetter}
     }}
 
     public TScopedService GetService<TScopedService>()
@@ -123,7 +135,7 @@ public class {FileNames.TestingServiceScope()}
             }}
             return db.SaveChangesAsync();
         }});
-    }}{userDoesNotHavePermission}
+    }}{userPermissionMethods}
 }}";
     }
 }

@@ -44,11 +44,12 @@ using Domain;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;
 using {featuresClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{foreignEntityUsings}
 
+[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetAddCommandTest(commandName, entity, featureName)}{permissionTest}
@@ -79,7 +80,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
             }
         }
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task can_add_new_{entity.Name.ToLower()}_to_db()
     {{
         // Arrange
@@ -103,7 +104,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         return $@"
 
-    [Test]
+    [Fact]
     public async Task must_be_permitted()
     {{
         // Arrange

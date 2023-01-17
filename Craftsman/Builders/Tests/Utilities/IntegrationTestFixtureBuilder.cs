@@ -85,17 +85,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Xunit;
 
-[SetUpFixture]
-public class TestFixture
+[CollectionDefinition(nameof(TestFixture))]
+public class TestFixtureCollection : ICollectionFixture<TestFixture> {{}}
+
+public class TestFixture : IAsyncLifetime
 {{
     public static IServiceScopeFactory BaseScopeFactory;
     private readonly TestcontainerDatabase _dbContainer = DbSetup();
     private readonly RmqConfig _rmqContainer = RmqSetup();
 
-    [OneTimeSetUp]
-    public async Task RunBeforeAnyTests()
+    public async Task InitializeAsync()
     {{
         await _dbContainer.StartAsync();
         {provider.IntegrationTestConnectionStringSetup()}
@@ -157,22 +159,21 @@ public class TestFixture
         }};
     }}{equivalencyMethod}
 
-    [OneTimeTearDown]
-    public async Task RunAfterAnyTests()
+    public async Task DisposeAsync()
     {{
         await _dbContainer.DisposeAsync();
         await _rmqContainer.Container.DisposeAsync();
     }}
+}}
 
-    public static class ServiceCollectionServiceExtensions
+public static class ServiceCollectionServiceExtensions
+{{
+    public static IServiceCollection ReplaceServiceWithSingletonMock<TService>(this IServiceCollection services)
+        where TService : class
     {{
-        public static IServiceCollection ReplaceServiceWithSingletonMock<TService>(this IServiceCollection services)
-            where TService : class
-        {{
-            services.RemoveAll(typeof(TService));
-            services.AddSingleton(_ => Mock.Of<TService>());
-            return services;
-        }}
+        services.RemoveAll(typeof(TService));
+        services.AddSingleton(_ => Mock.Of<TService>());
+        return services;
     }}
 }}
 ";

@@ -46,9 +46,10 @@ using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Domain;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;{foreignEntityUsings}
 
+[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetEntitiesTest(entity)}{permissionTest}
@@ -67,7 +68,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
         return @$"
-    [Test]
+    [Fact]
     public async Task can_get_{entity.Name.ToLower()}_list()
     {{
         // Arrange
@@ -94,7 +95,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         
         return $@"
 
-    [Test]
+    [Fact]
     public async Task must_be_permitted()
     {{
         // Arrange

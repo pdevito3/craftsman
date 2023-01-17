@@ -52,12 +52,13 @@ using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;{foreignEntityUsings}
 
+[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
-    [Test]
+    [Fact]
     public async Task can_update_existing_{entity.Name.ToLower()}_in_db()
     {{
         // Arrange

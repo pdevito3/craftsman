@@ -23,14 +23,12 @@ public class IntegrationTestBaseBuilder
     {
         return @$"namespace {classNamespace};
 
-using NUnit.Framework;
 using AutoBogus;
+using Xunit;
 
-[Parallelizable]
-public class TestBase
+public class TestBase : IDisposable
 {{
-    [SetUp]
-    public Task TestSetUp()
+    public TestBase()
     {{
         AutoFaker.Configure(builder =>
         {{
@@ -39,8 +37,11 @@ public class TestBase
                 .WithRecursiveDepth(3)
                 .WithTreeDepth(1)
                 .WithRepeatCount(1);
-        }});        
-        return Task.CompletedTask;
+        }});
+    }}
+    
+    public void Dispose()
+    {{
     }}
 }}";
     }

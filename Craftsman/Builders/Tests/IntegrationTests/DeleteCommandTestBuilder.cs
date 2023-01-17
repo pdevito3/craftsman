@@ -45,11 +45,12 @@ using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
+using Xunit;
 using Domain;
 using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;{foreignEntityUsings}
 
+[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetDeleteTest(commandName, entity, featureName)}{GetDeleteWithoutKeyTest(commandName, entity, featureName)}{softDeleteTest}{permissionTest}
@@ -67,7 +68,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task can_delete_{entity.Name.ToLower()}_from_db()
     {{
         // Arrange
@@ -93,7 +94,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         return badId == "" ? "" : $@"
 
-    [Test]
+    [Fact]
     public async Task delete_{entity.Name.ToLower()}_throws_notfoundexception_when_record_does_not_exist()
     {{
         // Arrange
@@ -122,7 +123,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         return $@"
 
-    [Test]
+    [Fact]
     public async Task can_softdelete_{entity.Name.ToLower()}_from_db()
     {{
         // Arrange
@@ -148,7 +149,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {
         return $@"
 
-    [Test]
+    [Fact]
     public async Task must_be_permitted()
     {{
         // Arrange

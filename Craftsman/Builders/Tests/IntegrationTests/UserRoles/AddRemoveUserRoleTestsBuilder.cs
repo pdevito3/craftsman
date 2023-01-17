@@ -37,12 +37,13 @@ using {featuresClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;
 
+[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{    
-    [Test]
+    [Fact]
     public async Task can_add_and_remove_role()
     {{
         // Arrange
