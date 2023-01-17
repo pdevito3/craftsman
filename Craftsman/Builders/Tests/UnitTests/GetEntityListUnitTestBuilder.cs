@@ -103,7 +103,7 @@ using Moq;
 using Sieve.Models;
 using Sieve.Services;
 using TestHelpers;
-using NUnit.Framework;
+using Xunit;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
@@ -119,7 +119,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         _sieveProcessor = new SieveProcessor(sieveOptions);{heimGuardMockSetup}
     }}
     
-    [Test]
+    [Fact]
     public async Task can_get_paged_list_of_{entityName.LowercaseFirstLetter()}()
     {{
         //Arrange
@@ -191,7 +191,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
             return "";
         }
 
-        return $@"    [Test]
+        return $@"    [Fact]
     public async Task can_get_sorted_list_of_{entityName.ToLower()}_by_{propToTest.Name}()
     {{
         //Arrange
@@ -281,7 +281,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
             return "";
         }
 
-        return $@"    [Test]
+        return $@"    [Fact]
     public async Task can_filter_{entityName.ToLower()}_list_using_{propToTest.Name}()
     {{
         //Arrange

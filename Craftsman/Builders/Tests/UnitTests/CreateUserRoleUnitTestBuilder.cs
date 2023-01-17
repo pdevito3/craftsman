@@ -38,9 +38,8 @@ using {roleClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 
-[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
     private readonly Faker _faker;
@@ -50,7 +49,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         _faker = new Faker();
     }}
     
-    [Test]
+    [Fact]
     public void can_create_valid_userRole()
     {{
         // Arrange
@@ -65,7 +64,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         fakeUserRole.Role.Should().Be(new Role(role));
     }}
 
-    [Test]
+    [Fact]
     public void queue_domain_event_on_create()
     {{
         // Arrange
