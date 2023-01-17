@@ -95,7 +95,9 @@ public sealed class UserPolicyHandler : IUserPolicyHandler
         if (!usersExist)
             await SeedRootUser(nameIdentifier);
 
-        var roles = GetRoles(nameIdentifier);
+        var roles = !string.IsNullOrEmpty(nameIdentifier) 
+            ? _userRepository.GetRolesByUserIdentifier(nameIdentifier).ToArray() 
+            : Array.Empty<string>();
 
         if (roles.Length == 0)
             throw new NoRolesAssignedException();
@@ -120,14 +122,6 @@ public sealed class UserPolicyHandler : IUserPolicyHandler
         var roleCommand = new AddUserRole.Command(createdUser.Id, Role.SuperAdmin().Value, true);
         await _mediator.Send(roleCommand);
         
-    }}
-
-    private string[] GetRoles(string nameIdentifier)
-    {{
-        if(!string.IsNullOrEmpty(nameIdentifier))
-            return _userRepository.GetRolesByUserIdentifier(nameIdentifier).ToArray();
-
-        return Array.Empty<string>();
     }}
 }}";
     }
