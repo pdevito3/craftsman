@@ -163,6 +163,17 @@ public class TestFixture
         await _dbContainer.DisposeAsync();
         await _rmqContainer.Container.DisposeAsync();
     }}
+
+    public static class ServiceCollectionServiceExtensions
+    {{
+        public static IServiceCollection ReplaceServiceWithSingletonMock<TService>(this IServiceCollection services)
+            where TService : class
+        {{
+            services.RemoveAll(typeof(TService));
+            services.AddSingleton(_ => Mock.Of<TService>());
+            return services;
+        }}
+    }}
 }}
 ";
     }

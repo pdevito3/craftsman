@@ -15,14 +15,16 @@ public class AddCommandTestBuilder
         _utilities = utilities;
     }
 
-    public void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName,
+        string permission, bool featureIsProtected)
     {
         var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Add{entity.Name}CommandTests.cs", entity.Plural, projectBaseName);
-        var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
+        var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName, permission, featureIsProtected);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+    private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath,
+        Entity entity, string projectBaseName, string permission, bool featureIsProtected)
     {
         var featureName = FileNames.AddEntityFeatureClassName(entity.Name);
         var commandName = FileNames.CommandAddName();
@@ -33,9 +35,12 @@ public class AddCommandTestBuilder
 
         var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
+        var permissionTest = !featureIsProtected ? null : GetPermissionTest(commandName, entity, featureName, permission);
+
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
+using Domain;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +51,7 @@ using {exceptionsClassPath.ClassNamespace};{foreignEntityUsings}
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
-    {GetAddCommandTest(commandName, entity, featureName)}
+    {GetAddCommandTest(commandName, entity, featureName)}{permissionTest}
 }}";
     }
 
@@ -88,6 +93,30 @@ public class {classPath.ClassNameWithoutExt} : TestBase
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}Returned.Id));
 
         // Assert{GetAssertions(entity.Properties, lowercaseEntityName, fakeEntityVariableName)}
+    }}";
+    }
+
+    private static string GetPermissionTest(string commandName, Entity entity, string featureName, string permission)
+    {
+        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
+        var fakeEntityVariableName = $"fake{entity.Name}One";
+
+        return $@"
+
+    [Test]
+    public async Task must_be_permitted()
+    {{
+        // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
+        testingServiceScope.SetUserNotPermitted(Permissions.{permission});
+        var {fakeEntityVariableName} = new {fakeCreationDto}();
+
+        // Act
+        var command = new {featureName}.{commandName}({fakeEntityVariableName});
+        var act = () => testingServiceScope.SendAsync(command);
+
+        // Assert
+        await act.Should().ThrowAsync<ForbiddenAccessException>();
     }}";
     }
 

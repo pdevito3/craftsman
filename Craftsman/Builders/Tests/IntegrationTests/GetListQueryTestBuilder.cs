@@ -17,17 +17,19 @@ public class GetListQueryTestBuilder
         _utilities = utilities;
     }
 
-    public void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName,
+        string permission, bool featureIsProtected)
     {
         var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{entity.Name}ListQueryTests.cs", entity.Plural, projectBaseName);
-        var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
+        var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName, permission, featureIsProtected);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+    private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath,
+        Entity entity, string projectBaseName, string permission, bool featureIsProtected)
     {
         var featureName = FileNames.GetEntityListFeatureClassName(entity.Name);
-        var testFixtureName = FileNames.GetIntegrationTestFixtureName();
+        var permissionTest = !featureIsProtected ? null : GetPermissionTest(entity.Name, featureName, permission);
 
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
@@ -43,12 +45,13 @@ using {fakerClassPath.ClassNamespace};
 using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
+using Domain;
 using NUnit.Framework;
 using System.Threading.Tasks;{foreignEntityUsings}
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
-    {GetEntitiesTest(entity)}
+    {GetEntitiesTest(entity)}{permissionTest}
 }}";
     }
 
@@ -81,6 +84,30 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         // Assert
         {lowercaseEntityPluralName}.Count.Should().BeGreaterThanOrEqualTo(2);
+    }}";
+    }
+    
+    private static string GetPermissionTest(string entityName, string featureName, string permission)
+    {
+        var queryName = FileNames.QueryListName();
+        var entityParams = FileNames.GetDtoName(entityName, Dto.ReadParamaters);
+        
+        return $@"
+
+    [Test]
+    public async Task must_be_permitted()
+    {{
+        // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
+        testingServiceScope.SetUserNotPermitted(Permissions.{permission});
+        var queryParameters = new {entityParams}();
+
+        // Act
+        var command = new {featureName}.{queryName}(queryParameters);
+        Func<Task> act = () => testingServiceScope.SendAsync(command);
+
+        // Assert
+        await act.Should().ThrowAsync<ForbiddenAccessException>();
     }}";
     }
 }
