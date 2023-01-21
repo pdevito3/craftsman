@@ -46,6 +46,7 @@ public static class FileNames
         return $"{messageName}";
     }
 
+    public static string TestingServiceScope() => "TestingServiceScope";
     public static string FakeBuilderName(string entityName) => $"Fake{entityName}Builder";    
     public static string MessageInterfaceName(string messageName) => $"I{messageName}";
     public static string EntityCreatedDomainMessage(string entityName) => $"{entityName}Created";    

@@ -46,10 +46,9 @@ using {dtoClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
 
-[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
     private readonly Faker _faker;
@@ -59,7 +58,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         _faker = new Faker();
     }}
     
-    [Test]
+    [Fact]
     public void can_create_valid_rolepermission()
     {{
         // Arrange
@@ -78,7 +77,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         newRolePermission.Role.Value.Should().Be(role);
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_create_rolepermission_with_invalid_role()
     {{
         // Arrange
@@ -92,7 +91,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         rolePermission.Should().Throw<InvalidSmartEnumPropertyName>();
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_create_rolepermission_with_invalid_permission()
     {{
         // Arrange
@@ -127,7 +126,7 @@ using {rolesClassPath.ClassNamespace};
 using {errorsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
@@ -139,7 +138,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         _faker = new Faker();
     }}
     
-    [Test]
+    [Fact]
     public void can_update_rolepermission()
     {{
         // Arrange
@@ -163,7 +162,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         rolePermission.Role.Value.Should().Be(role);
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_update_rolepermission_with_invalid_role()
     {{
         // Arrange
@@ -182,7 +181,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         updateRolePermission.Should().Throw<InvalidSmartEnumPropertyName>();
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_update_rolepermission_with_invalid_permission()
     {{
         // Arrange

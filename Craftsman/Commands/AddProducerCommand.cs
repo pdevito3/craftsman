@@ -79,8 +79,6 @@ public class AddProducerCommand : Command<AddProducerCommand.Settings>
             new ProducerBuilder(_utilities).CreateProducerFeature(solutionDirectory, srcDirectory, producer, projectBaseName);
             new ProducerRegistrationBuilder(_utilities).CreateProducerRegistration(solutionDirectory, srcDirectory, producer, projectBaseName);
             new MassTransitModifier(_fileSystem).AddProducerRegistration(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
-
-            new ProducerTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, producer, projectBaseName);
         });
     }
 }

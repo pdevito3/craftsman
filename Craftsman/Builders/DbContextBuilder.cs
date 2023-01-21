@@ -192,8 +192,6 @@ public sealed class {dbContextName} : DbContext
 
         if (!_fileSystem.File.Exists(classPath.FullClassPath))
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
-
-        var usingDbStatement = GetDbUsingStatement(dbProvider);
         InstallDbProviderNugetPackages(dbProvider, srcDirectory);
 
         //TODO test for class and another for anything else
@@ -224,7 +222,7 @@ public sealed class {dbContextName} : DbContext
         }}
 
         services.AddDbContext<{dbContextName}>(options =>
-            options.{usingDbStatement}(connectionString,
+            options.{dbProvider.DbRegistrationStatement()}(connectionString,
                 builder => builder.MigrationsAssembly(typeof({dbContextName}).Assembly.FullName)){namingConvention});
 
         services.AddHostedService<MigrationHostedService<{dbContextName}>>();";
@@ -265,15 +263,5 @@ public sealed class {dbContextName} : DbContext
 
         process.Start();
         process.WaitForExit();
-    }
-
-    private static object GetDbUsingStatement(DbProvider provider)
-    {
-        if (DbProvider.Postgres == provider)
-            return "UseNpgsql";
-        //else if (Enum.GetName(typeof(DbProvider), DbProvider.MySql) == provider)
-        //    return "UseMySql";
-
-        return "UseSqlServer";
     }
 }

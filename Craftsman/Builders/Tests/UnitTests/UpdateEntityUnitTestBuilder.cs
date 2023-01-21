@@ -38,9 +38,8 @@ using {domainEventsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
 using FluentAssertions.Extensions;
-using NUnit.Framework;
+using Xunit;
 
-[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
     private readonly Faker _faker;
@@ -50,7 +49,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         _faker = new Faker();
     }}
     
-    [Test]
+    [Fact]
     public void can_update_{entityName.LowercaseFirstLetter()}()
     {{
         // Arrange
@@ -63,7 +62,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         // Assert{GetAssertions(properties, entityName)}
     }}
     
-    [Test]
+    [Fact]
     public void queue_domain_event_on_update()
     {{
         // Arrange

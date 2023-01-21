@@ -46,8 +46,8 @@ public class UnitTestsCsProjBuilder
     <PackageReference Include=""MockQueryable.Moq"" Version=""6.0.1"" />
     <PackageReference Include=""Moq"" Version=""4.18.2"" />
     <PackageReference Include=""NSubstitute"" Version=""4.4.0"" />
-    <PackageReference Include=""NUnit"" Version=""3.13.3"" />
-    <PackageReference Include=""NUnit3TestAdapter"" Version=""4.2.1"" />
+    <PackageReference Include=""xunit"" Version=""2.4.2"" />
+    <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.4.5"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.3.2"" />
   </ItemGroup>
 

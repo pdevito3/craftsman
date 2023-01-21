@@ -1,10 +1,10 @@
-namespace Craftsman.Builders.Tests.IntegrationTests.Services;
+namespace Craftsman.Builders.Tests.FunctionalTests;
 
+using Craftsman.Domain;
+using Craftsman.Domain.Enums;
 using Craftsman.Services;
-using Domain;
-using Domain.Enums;
 
-public static class IntegrationTestServices
+public static class FunctionalTestServices
 {
     public static string FakeParentTestHelpers(Entity entity, out string fakeParentIdRuleFor)
     {
@@ -22,7 +22,7 @@ public static class IntegrationTestServices
                     FileNames.FakerName(FileNames.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
                 fakeParent +=
                     @$"var fake{baseVarName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
-        await testingServiceScope.InsertAsync(fake{baseVarName}One);{Environment.NewLine}{Environment.NewLine}        ";
+        await InsertAsync(fake{baseVarName}One);{Environment.NewLine}{Environment.NewLine}        ";
                 fakeParentIdRuleFor +=
                     $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{baseVarName}One.Id)";
             }
@@ -61,7 +61,7 @@ public static class IntegrationTestServices
                 fakeParent +=
                     @$"var fake{baseVarName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
         var fake{baseVarName}Two = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
-        await testingServiceScope.InsertAsync(fake{baseVarName}One, fake{baseVarName}Two);{Environment.NewLine}{Environment.NewLine}        ";
+        await InsertAsync(fake{baseVarName}One, fake{baseVarName}Two);{Environment.NewLine}{Environment.NewLine}        ";
                 fakeParentIdRuleForOne +=
                     $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{baseVarName}One.Id)";
                 fakeParentIdRuleForTwo +=
@@ -93,7 +93,7 @@ public static class IntegrationTestServices
                     @$"var fake{baseVarName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
         var fake{baseVarName}Two = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
         var fake{baseVarName}Three = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
-        await testingServiceScope.InsertAsync(fake{baseVarName}One, fake{baseVarName}Two, fake{baseVarName}Three);{Environment.NewLine}{Environment.NewLine}        ";
+        await InsertAsync(fake{baseVarName}One, fake{baseVarName}Two, fake{baseVarName}Three);{Environment.NewLine}{Environment.NewLine}        ";
                 fakeParentIdRuleForOne +=
                     $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{baseVarName}One.Id)";
                 fakeParentIdRuleForTwo +=

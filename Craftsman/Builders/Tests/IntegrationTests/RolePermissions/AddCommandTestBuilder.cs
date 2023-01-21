@@ -39,12 +39,12 @@ public class AddCommandTestBuilder
 using {fakerClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;
 using {featuresClassPath.ClassNamespace};
-using static {testFixtureName};
 using {exceptionsClassPath.ClassNamespace};{foreignEntityUsings}
 
+[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetAddCommandTest(commandName, entity, featureName)}
@@ -66,22 +66,23 @@ public class {classPath.ClassNameWithoutExt} : TestBase
                 var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
                 var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
                 fakeParent += @$"var fake{entityProperty.ForeignEntityName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
-        await InsertAsync(fake{entityProperty.ForeignEntityName}One);{Environment.NewLine}{Environment.NewLine}        ";
+        await testingServiceScope.InsertAsync(fake{entityProperty.ForeignEntityName}One);{Environment.NewLine}{Environment.NewLine}        ";
                 fakeParentIdRuleFor +=
                     $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}One.Id){Environment.NewLine}            ";
             }
         }
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task can_add_new_{entity.Name.ToLower()}_to_db()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         {fakeParent}var {fakeEntityVariableName} = new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate();
 
         // Act
         var command = new {featureName}.{commandName}({fakeEntityVariableName});
-        var {lowercaseEntityName}Returned = await SendAsync(command);
-        var {lowercaseEntityName}Created = await ExecuteDbContextAsync(db => db.{entity.Plural}
+        var {lowercaseEntityName}Returned = await testingServiceScope.SendAsync(command);
+        var {lowercaseEntityName}Created = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}Returned.Id));
 
         // Assert

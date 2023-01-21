@@ -58,20 +58,20 @@ public interface {interfaceName} : {FileNames.BoundaryServiceInterface(projectBa
 
 public sealed class {serviceName} : {interfaceName}
 {{
-    private const string EnvKey = ""ASPNETCORE_ENVIRONMENT"";
-    private const string AudienceKey = ""AUTH_AUDIENCE"";
-    private const string AuthorityKey = ""AUTH_AUTHORITY"";
-    private const string AuthUrlKey = ""AUTH_AUTHORIZATION_URL"";
-    private const string TokenUrlKey = ""AUTH_TOKEN_URL"";
-    private const string ClientIdKey = ""AUTH_CLIENT_ID"";
-    private const string ClientSecretKey = ""AUTH_CLIENT_SECRET"";
-    private const string DbConnectionStringKey = ""DB_CONNECTION_STRING"";
-    private const string RmqHostKey = ""RMQ_HOST"";
-    private const string RmqVirtualHostKey = ""RMQ_VIRTUAL_HOST"";
-    private const string RmqUsernameKey = ""RMQ_USERNAME"";
-    private const string RmqPasswordKey = ""RMQ_PASSWORD"";
-    private const string RmqPortKey = ""RMQ_PORT"";
-    private const string JaegerHostKey = ""JAEGER_HOST"";
+    public const string EnvKey = ""ASPNETCORE_ENVIRONMENT"";
+    public const string AudienceKey = ""AUTH_AUDIENCE"";
+    public const string AuthorityKey = ""AUTH_AUTHORITY"";
+    public const string AuthUrlKey = ""AUTH_AUTHORIZATION_URL"";
+    public const string TokenUrlKey = ""AUTH_TOKEN_URL"";
+    public const string ClientIdKey = ""AUTH_CLIENT_ID"";
+    public const string ClientSecretKey = ""AUTH_CLIENT_SECRET"";
+    public const string DbConnectionStringKey = ""DB_CONNECTION_STRING"";
+    public const string RmqHostKey = ""RMQ_HOST"";
+    public const string RmqVirtualHostKey = ""RMQ_VIRTUAL_HOST"";
+    public const string RmqUsernameKey = ""RMQ_USERNAME"";
+    public const string RmqPasswordKey = ""RMQ_PASSWORD"";
+    public const string RmqPortKey = ""RMQ_PORT"";
+    public const string JaegerHostKey = ""JAEGER_HOST"";
 
     public static string Env => GetEnvVar(EnvKey, false);
     public static string Audience => GetEnvVar(AudienceKey, false);

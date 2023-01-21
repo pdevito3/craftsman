@@ -77,7 +77,6 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
             new MassTransitModifier(_fileSystem).AddConsumerRegistation(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
 
             new IntegrationTestFixtureModifier(_fileSystem).AddMasstransitConsumer(testDirectory, consumer.ConsumerName, consumer.DomainDirectory, projectBaseName, srcDirectory);
-            new ConsumerTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, consumer, projectBaseName);
         });
     }
 }
