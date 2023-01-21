@@ -177,6 +177,7 @@ public class ApiScaffoldingService
 
         //services
         _mediator.Send(new UnitTestUtilsBuilder.Command());
+        _mediator.Send(new SharedTestUtilsBuilder.Command());
         _mediator.Send(new UnitOfWorkBuilder.UnitOfWorkBuilderCommand(template.DbContext.ContextName));
         _mediator.Send(new IBoundaryServiceInterfaceBuilder.IBoundaryServiceInterfaceBuilderCommand());
         _mediator.Send(new GenericRepositoryBuilder.GenericRepositoryBuilderCommand(template.DbContext.ContextName));
