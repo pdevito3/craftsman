@@ -15,14 +15,15 @@ public class GetRecordQueryTestBuilder
         _utilities = utilities;
     }
 
-    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName, string permission, bool featureIsProtected)
     {
         var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"{entity.Name}QueryTests.cs", entity.Plural, projectBaseName);
-        var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName);
+        var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName, permission, featureIsProtected);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+    private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory,
+        ClassPath classPath, Entity entity, string projectBaseName, string permission, bool featureIsProtected)
     {
         var featureName = FileNames.GetEntityFeatureClassName(entity.Name);
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
@@ -32,22 +33,24 @@ public class GetRecordQueryTestBuilder
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
         var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
+        var permissionTest = !featureIsProtected ? null : GetPermissionTest(featureName, permission);
 
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
+using {exceptionsClassPath.ClassNamespace};
+using Domain;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;{foreignEntityUsings}
 
 [Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
-    {GetTest(queryName, entity, featureName)}{GetWithoutKeyTest(queryName, entity, featureName)}
+    {GetTest(queryName, entity, featureName)}{GetWithoutKeyTest(queryName, entity, featureName)}{permissionTest}
 }}";
     }
 
@@ -120,5 +123,27 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         }
 
         return entityAssertions;
+    }
+    
+    private static string GetPermissionTest(string featureName, string permission)
+    {
+        var queryName = FileNames.QueryListName();
+        
+        return $@"
+
+    [Fact]
+    public async Task must_be_permitted()
+    {{
+        // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
+        testingServiceScope.SetUserNotPermitted(Permissions.{permission});
+
+        // Act
+        var command = new {featureName}.{queryName}(Guid.NewGuid());
+        Func<Task> act = () => testingServiceScope.SendAsync(command);
+
+        // Assert
+        await act.Should().ThrowAsync<ForbiddenAccessException>();
+    }}";
     }
 }

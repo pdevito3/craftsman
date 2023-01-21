@@ -23,7 +23,7 @@ public class WebAppFactoryBuilder
 
     private static string GetWebAppFactoryFileText(ClassPath classPath, string testDirectory, string projectBaseName, DbProvider provider, bool addJwtAuthentication)
     {
-        var webApiClassPath = ClassPathHelper.WebApiProjectRootClassPath(testDirectory, "", projectBaseName);
+        var sharedUtilsClassPath = ClassPathHelper.SharedTestUtilitiesClassPath(testDirectory, "", projectBaseName);
         var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(testDirectory, "", projectBaseName);
 
         var authUsing = addJwtAuthentication ? $@"
@@ -40,8 +40,8 @@ using WebMotions.Fake.Authentication.JwtBearer;" : "";
 
         return @$"namespace {classPath.ClassNamespace};
 
-using {utilsClassPath.ClassNamespace};{authUsing}
-using WebMotions.Fake.Authentication.JwtBearer;
+using {utilsClassPath.ClassNamespace};
+using {sharedUtilsClassPath.ClassNamespace};{authUsing}
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Testing;

@@ -16,11 +16,11 @@ public class IntegrationTestFixtureBuilder
     public void CreateFixture(string testDirectory, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider, bool isProtected)
     {
         var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
-        var fileText = GetFixtureText(classPath.ClassNamespace, srcDirectory, projectBaseName, dbContextName, provider, isProtected);
+        var fileText = GetFixtureText(classPath.ClassNamespace, srcDirectory, testDirectory, projectBaseName, dbContextName, provider, isProtected);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetFixtureText(string classNamespace, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider, bool isProtected)
+    public static string GetFixtureText(string classNamespace, string srcDirectory, string testDirectory, string projectBaseName, string dbContextName, DbProvider provider, bool isProtected)
     {
         var apiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
         var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
@@ -28,6 +28,7 @@ public class IntegrationTestFixtureBuilder
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
         var envServiceClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
+        var sharedUtilsClassPath = ClassPathHelper.SharedTestUtilitiesClassPath(testDirectory, "", projectBaseName);
         
         var heimGuardMock = isProtected 
             ? $@"{Environment.NewLine}        services.ReplaceServiceWithSingletonMock<IHeimGuardClient>();" 
@@ -67,10 +68,9 @@ public class IntegrationTestFixtureBuilder
 
 using {configClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
-using {apiClassPath.ClassNamespace};
 using {envServiceClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
-using {servicesClassPath.ClassNamespace};
+using {sharedUtilsClassPath.ClassNamespace};
 using DotNet.Testcontainers.Containers.Builders;
 using DotNet.Testcontainers.Containers.Configurations.Databases;
 using DotNet.Testcontainers.Containers.Modules;
