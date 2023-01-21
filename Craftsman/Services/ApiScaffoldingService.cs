@@ -154,8 +154,7 @@ public class ApiScaffoldingService
             template.AddJwtAuthentication);
         new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName);
         new IntegrationTestServiceScopeBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
-        new WebAppFactoryBuilder(_utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.AddJwtAuthentication);
-        new FunctionalFixtureBuilder(_utilities).CreateFixture(testDirectory, projectBaseName, template.DbContext.ContextName, template.DbContext.ProviderEnum);
+        new WebAppFactoryBuilder(_utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ProviderEnum, template.AddJwtAuthentication);
         new FunctionalTestBaseBuilder(_utilities).CreateBase(srcDirectory, testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
         new HealthTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         new HttpClientExtensionsBuilder(_utilities).Create(testDirectory, projectBaseName);

@@ -45,7 +45,7 @@ public class DeleteEntityTestBuilder
 using {fakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};{permissionsUsing}{foreignEntityUsings}
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -70,7 +70,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var user = await AddNewSuperAdmin();
         FactoryClient.AddAuth(user.Identifier);" : "";
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task {testName}()
     {{
         // Arrange
@@ -94,7 +94,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
         return $@"
-    [Test]
+    [Fact]
     public async Task delete_{entity.Name.ToLower()}_returns_unauthorized_without_valid_token()
     {{
         // Arrange
@@ -117,7 +117,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
         return $@"
-    [Test]
+    [Fact]
     public async Task delete_{entity.Name.ToLower()}_returns_forbidden_without_proper_scope()
     {{
         // Arrange

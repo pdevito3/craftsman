@@ -120,8 +120,7 @@ public class TestFixture : IAsyncLifetime
         var services = builder.Services;
 
         // add any mock services here
-        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();
-        services.ReplaceServiceWithSingletonMock<IHeimGuardClient>();
+        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();{heimGuardMock}
 
         var provider = services.BuildServiceProvider();
         BaseScopeFactory = provider.GetService<IServiceScopeFactory>();{equivalencyCall}
@@ -157,13 +156,13 @@ public class TestFixture : IAsyncLifetime
                 .Build(),
             Port = freePort
         }};
-    }}{equivalencyMethod}
+    }}
 
     public async Task DisposeAsync()
     {{
         await _dbContainer.DisposeAsync();
         await _rmqContainer.Container.DisposeAsync();
-    }}
+    }}{equivalencyMethod}
 }}
 
 public static class ServiceCollectionServiceExtensions
