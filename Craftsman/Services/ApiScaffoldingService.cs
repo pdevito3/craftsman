@@ -152,9 +152,9 @@ public class ApiScaffoldingService
             template.DbContext.ContextName,
             template.DbContext.ProviderEnum,
             template.AddJwtAuthentication);
-        new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.AddJwtAuthentication);
-        new WebAppFactoryBuilder(_utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.AddJwtAuthentication);
-        new FunctionalFixtureBuilder(_utilities).CreateFixture(testDirectory, projectBaseName, template.DbContext.ContextName, template.DbContext.ProviderEnum);
+        new IntegrationTestBaseBuilder(_utilities).CreateBase(testDirectory, projectBaseName);
+        new IntegrationTestServiceScopeBuilder(_utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
+        new WebAppFactoryBuilder(_utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ProviderEnum, template.AddJwtAuthentication);
         new FunctionalTestBaseBuilder(_utilities).CreateBase(srcDirectory, testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
         new HealthTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         new HttpClientExtensionsBuilder(_utilities).Create(testDirectory, projectBaseName);
@@ -177,6 +177,7 @@ public class ApiScaffoldingService
 
         //services
         _mediator.Send(new UnitTestUtilsBuilder.Command());
+        _mediator.Send(new SharedTestUtilsBuilder.Command());
         _mediator.Send(new UnitOfWorkBuilder.UnitOfWorkBuilderCommand(template.DbContext.ContextName));
         _mediator.Send(new IBoundaryServiceInterfaceBuilder.IBoundaryServiceInterfaceBuilderCommand());
         _mediator.Send(new GenericRepositoryBuilder.GenericRepositoryBuilderCommand(template.DbContext.ContextName));

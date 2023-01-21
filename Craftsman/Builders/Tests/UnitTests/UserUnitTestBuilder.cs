@@ -48,10 +48,9 @@ using {fakerClassPath.ClassNamespace};
 using {errorsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
 
-[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
     private readonly Faker _faker;
@@ -61,7 +60,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         _faker = new Faker();
     }}
     
-    [Test]
+    [Fact]
     public void can_create_valid_user()
     {{
         // Arrange
@@ -78,7 +77,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         newUser.Username.Should().Be(toCreate.Username);
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_create_user_without_identifier()
     {{
         // Arrange
@@ -90,7 +89,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         newUser.Should().Throw<ValidationException>();
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_create_user_with_whitespace_identifier()
     {{
         // Arrange
@@ -102,7 +101,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         newUser.Should().Throw<ValidationException>();
     }}
 
-    [Test]
+    [Fact]
     public void queue_domain_event_on_create()
     {{
         // Arrange + Act
@@ -136,10 +135,9 @@ using {fakerClassPath.ClassNamespace};
 using {errorsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
 
-[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
     private readonly Faker _faker;
@@ -149,7 +147,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         _faker = new Faker();
     }}
     
-    [Test]
+    [Fact]
     public void can_update_user()
     {{
         // Arrange
@@ -167,7 +165,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         fakeUser.Username.Should().Be(updatedUser.Username);
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_update_user_without_identifier()
     {{
         // Arrange
@@ -180,7 +178,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         newUser.Should().Throw<ValidationException>();
     }}
     
-    [Test]
+    [Fact]
     public void can_NOT_update_user_with_whitespace_identifier()
     {{
         // Arrange
@@ -193,7 +191,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         newUser.Should().Throw<ValidationException>();
     }}
     
-    [Test]
+    [Fact]
     public void queue_domain_event_on_update()
     {{
         // Arrange

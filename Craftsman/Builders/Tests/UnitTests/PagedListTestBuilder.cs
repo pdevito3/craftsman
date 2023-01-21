@@ -28,12 +28,11 @@ public class PagedListTestBuilder
 
 using {wrapperClassPath.ClassNamespace};
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 
-[Parallelizable]
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
-    [Test]
+    [Fact]
     public void pagedlist_returns_accurate_data_for_standard_pagination()
     {{
         var pageNumber = 2;
@@ -50,7 +49,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         list.TotalPages.Should().Be(3);
     }}
 
-    [Test]
+    [Fact]
     public void pagedlist_returns_accurate_data_with_last_record()
     {{
         var pageNumber = 3;

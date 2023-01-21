@@ -56,11 +56,11 @@ using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
+using Xunit;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.JsonPatch;
-using static {testFixtureName};{foreignEntityUsings}
+using Microsoft.AspNetCore.JsonPatch;{foreignEntityUsings}
 
+[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetAddCommandTest(commandName, entity, featureName, lookupVal, myProp)}
@@ -80,13 +80,14 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
 
-        return $@"[Test]
+        return $@"[Fact]
     public async Task can_patch_existing_{entity.Name.ToLower()}_in_db()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
-        await InsertAsync({fakeEntityVariableName});
-        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}
+        await testingServiceScope.InsertAsync({fakeEntityVariableName});
+        var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
         var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
@@ -96,8 +97,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         // Act
         var command = new {featureName}.{commandName}({lowercaseEntityPk}, patchDoc);
-        await SendAsync(command);
-        var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
+        await testingServiceScope.SendAsync(command);
+        var updated{entity.Name} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
 
         // Assert
         updated{entity.Name}?.{prop.Name}.Should().Be(newValue);
@@ -110,10 +111,11 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         return randomId == "" ? "" : $@"
 
-    [Test]
+    [Fact]
     public async Task passing_null_patchdoc_throws_validationexception()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         var randomId = {randomId};
 
         // Act
@@ -131,10 +133,11 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
 
         return badId == "" ? "" : $@"
-    [Test]
+    [Fact]
     public async Task patch_{entity.Name.ToLower()}_throws_notfound_exception_when_record_does_not_exist()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         var badId = {badId};
         var patchDoc = new JsonPatchDocument<{updateDto}>();
 

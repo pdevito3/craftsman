@@ -16,7 +16,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     public abstract string OTelSource();
     public abstract string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting);
     public abstract string IntegrationTestConnectionStringSetup();
-    public abstract string ResetString();
+    public abstract string DbRegistrationStatement();
     public abstract int Port();
     public abstract string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword);
     public abstract string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword);
@@ -28,11 +28,12 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => @$"<PackageReference Include=""Npgsql.EntityFrameworkCore.PostgreSQL"" Version=""{version}"" />";
         public override string OTelSource()
             => @$"Npgsql";
+        public override string DbRegistrationStatement() => @$"UseNpgsql";
 
         public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
         {
             var testName = isIntegrationTesting ? "IntegrationTesting" : "FunctionalTesting";
-            return $@"private static TestcontainerDatabase dbSetup()
+            return $@"private static TestcontainerDatabase DbSetup()
     {{
         return new TestcontainersBuilder<PostgreSqlTestcontainer>()
             .WithDatabase(new PostgreSqlTestcontainerConfiguration
@@ -48,30 +49,9 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         }
 
         public override string IntegrationTestConnectionStringSetup() 
-            => $@"Environment.SetEnvironmentVariable(""DB_CONNECTION_STRING"", _dbContainer.ConnectionString);";
+            => $@"Environment.SetEnvironmentVariable(EnvironmentService.DbConnectionStringKey, _dbContainer.ConnectionString);";
 
-        public override string ResetString()
-        {
-            return $@"await using var connection = new NpgsqlConnection(EnvironmentService.DbConnectionString);
-        await connection.OpenAsync();
-        try
-        {{
-            var respawner = await Respawner.CreateAsync(connection, new RespawnerOptions
-            {{
-                TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
-                SchemasToExclude = new[] {{ ""information_schema"", ""pg_subscription"", ""pg_catalog"", ""pg_toast"" }},
-                DbAdapter = DbAdapter.Postgres
-            }});
-            await respawner.ResetAsync(connection);
-        }}
-        catch (InvalidOperationException e)
-        {{
-            throw new Exception($""There was an issue resetting your database state. You might need to add a migration to your project. You can add a migration with `dotnet ef migration add YourMigrationDescription`. More details on this error: {{e.Message}}"");
-        }}";
-        }
-
-        public override int Port()
-            => 5432;
+        public override int Port() => 5432;
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser,
             string dbPassword)
             => $"Host={dbHostName};Port={5432};Database={dbName};Username={dbUser};Password={dbPassword}";
@@ -87,12 +67,13 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     <PackageReference Include = ""Microsoft.EntityFrameworkCore.Tools"" Version = ""{version}"" /> ";
         
         public override string OTelSource()
-            => @$"Microsoft.EntityFrameworkCore.SqlServer";
+            => @$"Microsoft.EntityFrameworkCore.SqlServer";        
+        public override string DbRegistrationStatement() => @$"UseSqlServer";
 
         public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
         {
             var testName = isIntegrationTesting ? "IntegrationTesting" : "FunctionalTesting";
-            return $@"private static TestcontainerDatabase dbSetup()
+            return $@"private static TestcontainerDatabase DbSetup()
     {{
         var isMacOs = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
         var cpuArch = RuntimeInformation.ProcessArchitecture;
@@ -113,23 +94,8 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         }
 
         public override string IntegrationTestConnectionStringSetup() 
-            => $@"Environment.SetEnvironmentVariable(""DB_CONNECTION_STRING"", $""{{_dbContainer.ConnectionString}}TrustServerCertificate=true;"");";
-        public override string ResetString()
-            => $@"try
-        {{
-            var respawner = await Respawner.CreateAsync(connection, new RespawnerOptions
-            {{
-                TablesToIgnore = new Table[] {{ ""__EFMigrationsHistory"" }},
-            }});
-            await respawner.ResetAsync(EnvironmentService.DbConnectionString);
-        }}
-        catch (InvalidOperationException e)
-        {{
-            throw new Exception($""There was an issue resetting your database state. You might need to add a migration to your project. You can add a migration with `dotnet ef migration add YourMigrationDescription`. More details on this error: {{e.Message}}"");
-        }}";
-
-        public override int Port()
-            => 1433;
+            => $@"Environment.SetEnvironmentVariable(EnvironmentService.DbConnectionStringKey, $""{{_dbContainer.ConnectionString}}TrustServerCertificate=true;"");";
+        public override int Port() => 1433;
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword)
             => $"Data Source={dbHostName},{1433};Integrated Security=False;Database={dbName};User ID={dbUser};Password={dbPassword}";
         public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)
@@ -144,11 +110,11 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => throw new Exception(Response);
         public override string OTelSource()
             => throw new Exception(Response);
+        public override string DbRegistrationStatement()
+            => throw new Exception(Response);
         public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
             => throw new Exception(Response);
         public override string IntegrationTestConnectionStringSetup()
-            => throw new Exception(Response);
-        public override string ResetString() 
             => throw new Exception(Response);
         public override int Port()
             => throw new Exception(Response);

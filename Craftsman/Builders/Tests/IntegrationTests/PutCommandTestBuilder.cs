@@ -15,17 +15,18 @@ public class PutCommandTestBuilder
         _utilities = utilities;
     }
 
-    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity,
+        string projectBaseName, bool featureIsProtected, string permission)
     {
         var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Update{entity.Name}CommandTests.cs", entity.Plural, projectBaseName);
-        var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName);
+        var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, projectBaseName, featureIsProtected, permission);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)
+    private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory,
+        ClassPath classPath, Entity entity, string projectBaseName, bool featureIsProtected, string permission)
     {
         var featureName = FileNames.UpdateEntityFeatureClassName(entity.Name);
-        var testFixtureName = FileNames.GetIntegrationTestFixtureName();
         var commandName = FileNames.CommandUpdateName();
         var fakeEntity = FileNames.FakerName(entity.Name);
         var fakeUpdateDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
@@ -42,6 +43,7 @@ public class PutCommandTestBuilder
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
         var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
+        var permissionTest = !featureIsProtected ? null : GetPermissionTest(commandName, entity, featureName, permission);
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -49,35 +51,61 @@ using {fakerClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
+using Domain;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using System.Threading.Tasks;
-using static {testFixtureName};{foreignEntityUsings}
+using Xunit;
+using System.Threading.Tasks;{foreignEntityUsings}
 
+[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
-    [Test]
+    [Fact]
     public async Task can_update_existing_{entity.Name.ToLower()}_in_db()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
         var updated{entity.Name}Dto = new {fakeUpdateDto}(){fakeParentIdRuleFor}.Generate();
-        await InsertAsync({fakeEntityVariableName});
+        await testingServiceScope.InsertAsync({fakeEntityVariableName});
 
-        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}
+        var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
         var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
         // Act
         var command = new {featureName}.{commandName}({lowercaseEntityPk}, updated{entity.Name}Dto);
-        await SendAsync(command);
-        var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
+        await testingServiceScope.SendAsync(command);
+        var updated{entity.Name} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
 
         // Assert{GetAssertions(entity.Properties, entity.Name)}
-    }}
+    }}{permissionTest}
 }}";
+    }
+
+    private static string GetPermissionTest(string commandName, Entity entity, string featureName, string permission)
+    {
+        var fakeUpdateDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
+        var fakeEntityVariableName = $"fake{entity.Name}One";
+
+        return $@"
+
+    [Fact]
+    public async Task must_be_permitted()
+    {{
+        // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
+        testingServiceScope.SetUserNotPermitted(Permissions.{permission});
+        var {fakeEntityVariableName} = new {fakeUpdateDto}();
+
+        // Act
+        var command = new {featureName}.{commandName}(Guid.NewGuid(), {fakeEntityVariableName});
+        var act = () => testingServiceScope.SendAsync(command);
+
+        // Assert
+        await act.Should().ThrowAsync<ForbiddenAccessException>();
+    }}";
     }
 
     private static string GetAssertions(List<EntityProperty> properties, string entityName)

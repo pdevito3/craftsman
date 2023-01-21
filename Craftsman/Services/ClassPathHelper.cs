@@ -236,6 +236,11 @@ public static class ClassPathHelper
         return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{SharedTestProjectSuffix}", "Fakes", entityName), className);
     }
 
+    public static ClassPath SharedTestUtilitiesClassPath(string solutionDirectory, string className, string projectBaseName)
+    {
+        return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{SharedTestProjectSuffix}", "Utilities"), className);
+    }
+
     public static ClassPath EntityClassPath(string srcDirectory, string className, string entityPlural, string projectBaseName)
     {
         var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";

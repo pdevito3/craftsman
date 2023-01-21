@@ -51,28 +51,29 @@ using {exceptionsClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using System.Threading.Tasks;
-using static {testFixtureName};{foreignEntityUsings}
+using Xunit;
+using System.Threading.Tasks;{foreignEntityUsings}
 
+[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
-    [Test]
+    [Fact]
     public async Task can_update_existing_{entity.Name.ToLower()}_in_db()
     {{
         // Arrange
+        var testingServiceScope = new {FileNames.TestingServiceScope()}();
         {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
         var updated{entity.Name}Dto = new {fakeUpdateDto}(){fakeParentIdRuleFor}.Generate();
-        await InsertAsync({fakeEntityVariableName});
+        await testingServiceScope.InsertAsync({fakeEntityVariableName});
 
-        var {lowercaseEntityName} = await ExecuteDbContextAsync(db => db.{entity.Plural}
+        var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
         var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
         // Act
         var command = new {featureName}.{commandName}({lowercaseEntityPk}, updated{entity.Name}Dto);
-        await SendAsync(command);
-        var updated{entity.Name} = await ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
+        await testingServiceScope.SendAsync(command);
+        var updated{entity.Name} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
 
         // Assert
         updatedUser?.FirstName.Should().Be(updatedUserDto.FirstName);
