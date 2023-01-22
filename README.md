@@ -23,8 +23,13 @@ I'm currently working through a deep example project the really dogfood things a
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
+### Coming in 0.19
+
+* ✅ Test projects updated to use XUnit
+* ✅ Integration tests have better service collection scoping and now have a service collection per test. This makes service mocking possible without clashing with other tests
+* 🚧 .NET 7
+* 🚧 Options Pattern setup
 * 🚧 TBD Dogfooding results
-* 🚧 NextJS app + scaffolding stablization
 
 ### Some 0.18 highlights
 

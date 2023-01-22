@@ -9,7 +9,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-* None yet!
+### Added
+
+* None
+
+### Updates
+
+* Test projects updated to use XUnit
+* Integration tests have better service collection scoping and now have a service collection per test. This makes service mocking possible without clashing with other tests
+* RMQ container setup for integration and functional tests
+* `UserPolicyHandler` refactor
+
+### Removed
+
+* No more event handler test scaffolding
 
 ## [0.18.0] - 01/07/2023
 
