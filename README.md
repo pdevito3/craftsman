@@ -28,7 +28,7 @@ Have a request for something you don't see below? Join [our discord](https://dis
 * ✅ Test projects updated to use XUnit
 * ✅ Integration tests have better service collection scoping and now have a service collection per test. This makes service mocking possible without clashing with other tests
 * 🚧 .NET 7
-* 🚧 Options Pattern setup
+* 🚧 Options Pattern Configuration
 * 🚧 TBD Dogfooding results
 
 ### Some 0.18 highlights
