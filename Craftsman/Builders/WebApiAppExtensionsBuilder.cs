@@ -28,8 +28,10 @@ public class WebApiAppExtensionsBuilder
 
 using {webApiClassPath.ClassNamespace};
 using {envServiceClassPath.ClassNamespace};
+using Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Resources;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 public static class SwaggerAppExtension
@@ -41,18 +43,22 @@ public static class SwaggerAppExtension
     private static string GetSwaggerAppExtensionText(SwaggerConfig swaggerConfig, bool addJwtAuthentication)
     {
         var swaggerAuth = addJwtAuthentication ? $@"
-            config.OAuthClientId(EnvironmentService.ClientId);
-            config.OAuthClientSecret(EnvironmentService.ClientSecret);
+            var authOptions = configuration.GetAuthOptions();
+            config.OAuthClientId(authOptions.ClientId);
+            config.OAuthClientSecret(authOptions.ClientSecret);
             config.OAuthUsePkce();" : "";
 
-        var swaggerText = $@"public static void UseSwaggerExtension(this IApplicationBuilder app)
+        var swaggerText = $@"public static void UseSwaggerExtension(this IApplicationBuilder app, IConfiguration configuration, IWebHostEnvironment env)
     {{
-        app.UseSwagger();
-        app.UseSwaggerUI(config =>
+        if (!env.IsEnvironment(Consts.Testing.FunctionalTestingEnvName))
         {{
-            config.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");
-            config.DocExpansion(DocExpansion.None);{swaggerAuth}
-        }});
+            app.UseSwagger();
+            app.UseSwaggerUI(config =>
+            {{
+                config.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");
+                config.DocExpansion(DocExpansion.None);{swaggerAuth}
+            }});
+        }}
     }}";
 
         return swaggerText;

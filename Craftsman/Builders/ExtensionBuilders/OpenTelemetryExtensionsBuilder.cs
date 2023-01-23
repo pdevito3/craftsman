@@ -26,6 +26,7 @@ public class OpenTelemetryExtensionsBuilder
         return @$"namespace {classNamespace};
 
 using {envServiceClassPath.ClassNamespace};
+using Configurations;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -33,7 +34,7 @@ using OpenTelemetry.Trace;
 
 public static class OpenTelemetryServiceExtension
 {{
-    public static void OpenTelemetryRegistration(this WebApplicationBuilder builder, string serviceName)
+    public static void OpenTelemetryRegistration(this WebApplicationBuilder builder, IConfiguration configuration, string serviceName)
     {{
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(serviceName)
             .AddTelemetrySdk()
@@ -77,7 +78,7 @@ public static class OpenTelemetryServiceExtension
                 .AddEntityFrameworkCoreInstrumentation()
                 .AddJaegerExporter(o =>
                 {{
-                    o.AgentHost = EnvironmentService.JaegerHost;
+                    o.AgentHost = configuration.GetJaegerHostValue();
                     o.AgentPort = {otelAgentPort};
                     o.MaxPayloadSizeInBytes = 4096;
                     o.ExportProcessorType = ExportProcessorType.Batch;

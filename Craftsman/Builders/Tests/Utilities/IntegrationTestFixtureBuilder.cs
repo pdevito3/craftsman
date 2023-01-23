@@ -71,6 +71,7 @@ using {contextClassPath.ClassNamespace};
 using {envServiceClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
 using {sharedUtilsClassPath.ClassNamespace};
+using Configurations;
 using DotNet.Testcontainers.Containers.Builders;
 using DotNet.Testcontainers.Containers.Configurations.Databases;
 using DotNet.Testcontainers.Containers.Modules;
@@ -99,22 +100,21 @@ public class TestFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {{
-        await _dbContainer.StartAsync();
-        {provider.IntegrationTestConnectionStringSetup()}
-        await RunMigration();
-
-        await _rmqContainer.Container.StartAsync();
-        Environment.SetEnvironmentVariable(EnvironmentService.RmqPortKey, _rmqContainer.Port.ToString());
-        Environment.SetEnvironmentVariable(EnvironmentService.RmqHostKey, ""localhost"");
-        Environment.SetEnvironmentVariable(EnvironmentService.RmqUsernameKey, ""guest"");
-        Environment.SetEnvironmentVariable(EnvironmentService.RmqPasswordKey, ""guest"");
-        Environment.SetEnvironmentVariable(EnvironmentService.RmqVirtualHostKey, ""/"");
-
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {{
             EnvironmentName = Consts.Testing.IntegrationTestingEnvName
         }});
-        builder.Configuration.AddEnvironmentVariables();
+
+        await _dbContainer.StartAsync();
+        {provider.IntegrationTestConnectionStringSetup(FileNames.ConnectionStringOptionKey(projectBaseName))}
+        await RunMigration(_dbContainer.ConnectionString);
+
+        await _rmqContainer.Container.StartAsync();
+        builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.HostKey] = ""localhost"";
+        builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.VirtualHostKey] = ""/"";
+        builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.UsernameKey] = ""guest"";
+        builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.PasswordKey] = ""guest"";
+        builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.PortKey] = _rmqContainer.Port.ToString();
 
         builder.ConfigureServices();
         var services = builder.Services;
@@ -126,10 +126,10 @@ public class TestFixture : IAsyncLifetime
         BaseScopeFactory = provider.GetService<IServiceScopeFactory>();{equivalencyCall}
     }}
 
-    private static async Task RunMigration()
+    private static async Task RunMigration(string connectionString)
     {{
         var options = new DbContextOptionsBuilder<{dbContextName}>()
-            .{provider.DbRegistrationStatement()}(EnvironmentService.DbConnectionString)
+            .{provider.DbRegistrationStatement()}(connectionString)
             .Options;
         var context = new {dbContextName}(options, null, null, null);
         await context?.Database?.MigrateAsync();

@@ -33,7 +33,7 @@ public class ProgramModifier
             {
                 var newText = $"{line}";
                 if (line.Contains($"builder.Services.AddInfrastructure"))
-                    newText += @$"{Environment.NewLine}        builder.Services.AddMassTransitServices(builder.Environment);";
+                    newText += @$"{Environment.NewLine}        builder.Services.AddMassTransitServices(builder.Environment, builder.Configuration);";
 
                 //if (line.Contains($@"{infraClassPath.ClassNamespace};"))
                 //    newText += @$"{ Environment.NewLine}    using { serviceRegistrationsClassPath.ClassNamespace}; ";

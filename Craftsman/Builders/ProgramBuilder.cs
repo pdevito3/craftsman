@@ -76,7 +76,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 }});
 
-app.UseSwaggerExtension();
+app.UseSwaggerExtension(builder.Configuration, builder.Environment);
 
 try
 {{

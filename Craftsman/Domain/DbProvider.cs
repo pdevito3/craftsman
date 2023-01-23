@@ -15,7 +15,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     public abstract string PackageInclusionString(string version);
     public abstract string OTelSource();
     public abstract string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting);
-    public abstract string IntegrationTestConnectionStringSetup();
+    public abstract string IntegrationTestConnectionStringSetup(string configKeyName);
     public abstract string DbRegistrationStatement();
     public abstract int Port();
     public abstract string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword);
@@ -48,8 +48,8 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     }}";
         }
 
-        public override string IntegrationTestConnectionStringSetup() 
-            => $@"Environment.SetEnvironmentVariable(EnvironmentService.DbConnectionStringKey, _dbContainer.ConnectionString);";
+        public override string IntegrationTestConnectionStringSetup(string configKeyName) 
+            => $@"builder.Configuration.GetSection(ConnectionStringOptions.SectionName)[ConnectionStringOptions.{configKeyName}] = _dbContainer.ConnectionString;";
 
         public override int Port() => 5432;
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser,
@@ -93,8 +93,8 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     }}";
         }
 
-        public override string IntegrationTestConnectionStringSetup() 
-            => $@"Environment.SetEnvironmentVariable(EnvironmentService.DbConnectionStringKey, $""{{_dbContainer.ConnectionString}}TrustServerCertificate=true;"");";
+        public override string IntegrationTestConnectionStringSetup(string configKeyName) 
+            => $@"builder.Configuration.GetSection(ConnectionStringOptions.SectionName)[ConnectionStringOptions.{configKeyName}] = $""{{_dbContainer.ConnectionString}}TrustServerCertificate=true;"");";
         public override int Port() => 1433;
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword)
             => $"Data Source={dbHostName},{1433};Integrated Security=False;Database={dbName};User ID={dbUser};Password={dbPassword}";
@@ -114,7 +114,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => throw new Exception(Response);
         public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
             => throw new Exception(Response);
-        public override string IntegrationTestConnectionStringSetup()
+        public override string IntegrationTestConnectionStringSetup(string configKeyName)
             => throw new Exception(Response);
         public override int Port()
             => throw new Exception(Response);

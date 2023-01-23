@@ -42,10 +42,12 @@ using WebMotions.Fake.Authentication.JwtBearer;" : "";
 
 using {utilsClassPath.ClassNamespace};
 using {sharedUtilsClassPath.ClassNamespace};{authUsing}
+using Configurations;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using DotNet.Testcontainers.Containers.Builders;
@@ -72,6 +74,15 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsy
         {{
             logging.ClearProviders();
         }});
+        
+        builder.ConfigureAppConfiguration(configurationBuilder =>
+        {{
+            var functionalConfig = new ConfigurationBuilder()
+                .AddJsonFile(""appsettings.json"")
+                .AddEnvironmentVariables()
+                .Build();
+            configurationBuilder.AddConfiguration(functionalConfig);
+        }});
 
         builder.ConfigureServices(services =>
         {{{authRegistration}
@@ -85,15 +96,15 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsy
     public async Task InitializeAsync()
     {{
         await _dbContainer.StartAsync();
-        Environment.SetEnvironmentVariable(EnvironmentService.DbConnectionStringKey, _dbContainer.ConnectionString);
+        Environment.SetEnvironmentVariable($""{{ConnectionStringOptions.SectionName}}__{{ConnectionStringOptions.{FileNames.ConnectionStringOptionKey(projectBaseName)}}}"", _dbContainer.ConnectionString);
         // migrations applied in MigrationHostedService
 
         await _rmqContainer.Container.StartAsync();
-        Environment.SetEnvironmentVariable(EnvironmentService.RmqPortKey, _rmqContainer.Port.ToString());
-        Environment.SetEnvironmentVariable(EnvironmentService.RmqHostKey, ""localhost"");
-        Environment.SetEnvironmentVariable(EnvironmentService.RmqUsernameKey, ""guest"");
-        Environment.SetEnvironmentVariable(EnvironmentService.RmqPasswordKey, ""guest"");
-        Environment.SetEnvironmentVariable(EnvironmentService.RmqVirtualHostKey, ""/"");
+        Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.HostKey}}"", ""localhost"");
+        Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.VirtualHostKey}}"", ""/"");
+        Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.UsernameKey}}"", ""guest"");
+        Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.PasswordKey}}"", ""guest"");
+        Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.PortKey}}"", _rmqContainer.Port.ToString());
     }}
 
     public new async Task DisposeAsync() 

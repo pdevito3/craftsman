@@ -42,6 +42,7 @@ public class SwaggerBuilder
         return @$"namespace {classNamespace};
 
 using {envServiceClassPath.ClassNamespace};
+using Configurations;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -81,8 +82,8 @@ public static class SwaggerServiceExtension
                 {{
                     AuthorizationCode = new OpenApiOAuthFlow
                     {{
-                        AuthorizationUrl = new Uri(EnvironmentService.AuthUrl),
-                        TokenUrl = new Uri(EnvironmentService.TokenUrl),
+                        AuthorizationUrl = new Uri(authOptions.AuthorizationUrl),
+                        TokenUrl = new Uri(authOptions.TokenUrl),
                         Scopes = new Dictionary<string, string>
                         {{
                             {{""{policyName}"", ""{projectName.Humanize()} access""}}
@@ -115,8 +116,9 @@ public static class SwaggerServiceExtension
 
             config.IncludeXmlComments(string.Format(@$""{{AppDomain.CurrentDomain.BaseDirectory}}{{Path.DirectorySeparatorChar}}{projectName}.WebApi.xml""));";
 
-        var swaggerText = $@"public static void AddSwaggerExtension(this IServiceCollection services)
+        var swaggerText = $@"public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
     {{
+        var authOptions = configuration.GetAuthOptions();
         services.AddSwaggerGen(config =>
         {{
             config.CustomSchemaIds(type => type.ToString());

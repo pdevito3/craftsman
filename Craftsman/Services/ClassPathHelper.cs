@@ -331,6 +331,11 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Resources"), className);
     }
 
+    public static ClassPath WebApiConfigurationsClassPath(string srcDirectory, string className, string projectBaseName)
+    {
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Configurations"), className);
+    }
+
     public static ClassPath WebApiServicesClassPath(string srcDirectory, string className, string projectBaseName)
     {
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Services"), className);

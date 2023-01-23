@@ -71,6 +71,7 @@ public class DbContextBuilder
 using {baseEntityClassPath.ClassNamespace};
 using {entityConfigClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
+using Configurations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -212,13 +213,13 @@ public sealed class {dbContextName} : DbContext
                     if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                     {
                         newText += @$"
-        var connectionString = EnvironmentService.DbConnectionString;
+        var connectionString = configuration.GetConnectionStringOptions().{projectBaseName};
         if(string.IsNullOrWhiteSpace(connectionString))
         {{
             // this makes local migrations easier to manage. feel free to refactor if desired.
             connectionString = env.IsDevelopment() 
                 ? ""{localDbConnection}""
-                : throw new Exception(""DB_CONNECTION_STRING environment variable is not set."");
+                : throw new Exception(""The database connection string is not set."");
         }}
 
         services.AddDbContext<{dbContextName}>(options =>

@@ -14,7 +14,7 @@ public class WebApiLaunchSettingsModifier
         _fileSystem = fileSystem;
     }
 
-    public void AddProfile(string srcDirectory, ApiEnvironment env, int port, DockerConfig dockerConfig, string projectBaseName)
+    public void AddProfile(string srcDirectory, ApiEnvironment env, int port, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchSettings.json", projectBaseName); // hard coding webapi here not great
 
@@ -35,7 +35,7 @@ public class WebApiLaunchSettingsModifier
                     var newText = $"{line}";
                     if (line.Contains(@$"""profiles"""))
                     {
-                        newText += GetProfileText(env, port, dockerConfig);
+                        newText += GetProfileText(env, port);
                     }
 
                     output.WriteLine(newText);
@@ -48,7 +48,7 @@ public class WebApiLaunchSettingsModifier
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 
-    private static string GetProfileText(ApiEnvironment env, int port, DockerConfig dockerConfig)
+    private static string GetProfileText(ApiEnvironment env, int port)
     {
         return $@"
     ""{env.ProfileName ?? env.EnvironmentName}"": {{
@@ -56,20 +56,7 @@ public class WebApiLaunchSettingsModifier
       ""launchBrowser"": true,
       ""launchUrl"": ""swagger"",
       ""environmentVariables"": {{
-        ""ASPNETCORE_ENVIRONMENT"": ""{env.EnvironmentName}"",
-        ""AUTH_AUDIENCE"": ""{env.AuthSettings.Audience}"",
-        ""AUTH_AUTHORITY"": ""{env.AuthSettings.Authority}"",
-        ""AUTH_AUTHORIZATION_URL"": ""{env.AuthSettings.AuthorizationUrl}"",
-        ""AUTH_TOKEN_URL"": ""{env.AuthSettings.TokenUrl}"",
-        ""AUTH_CLIENT_ID"": ""{env.AuthSettings.ClientId}"",
-        ""AUTH_CLIENT_SECRET"": ""{env.AuthSettings.ClientSecret}"",
-        ""DB_CONNECTION_STRING"": ""{dockerConfig.DbConnectionString}"",
-        ""RMQ_HOST"": ""{env.BrokerSettings.Host}"",
-        ""RMQ_VIRTUAL_HOST"": ""{env.BrokerSettings.VirtualHost}"",
-        ""RMQ_USERNAME"": ""{env.BrokerSettings.Username}"",
-        ""RMQ_PASSWORD"": ""{env.BrokerSettings.Password}"",
-        ""RMQ_PORT"": ""{env.BrokerSettings.BrokerPort}"",
-        ""JAEGER_HOST"": ""localhost""
+        ""ASPNETCORE_ENVIRONMENT"": ""{env.EnvironmentName}""
       }},
       ""applicationUrl"": ""https://localhost:{port}""
     }}";

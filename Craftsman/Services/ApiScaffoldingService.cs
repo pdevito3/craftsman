@@ -3,6 +3,7 @@ namespace Craftsman.Services;
 using System.IO.Abstractions;
 using Builders;
 using Builders.Auth;
+using Builders.Configurations;
 using Builders.Docker;
 using Builders.Endpoints;
 using Builders.Tests.Fakes;
@@ -142,7 +143,8 @@ public class ApiScaffoldingService
 
         // config
         new AppSettingsBuilder(_utilities).CreateWebApiAppSettings(srcDirectory, template.DbContext.DatabaseName, projectBaseName);
-        new WebApiLaunchSettingsModifier(_fileSystem).AddProfile(srcDirectory, template.Environment, template.Port, template.DockerConfig, projectBaseName);
+        new AppSettingsDevelopmentBuilder(_utilities).CreateWebApiAppSettings(srcDirectory, template.Environment, template.DockerConfig, projectBaseName);
+        new WebApiLaunchSettingsModifier(_fileSystem).AddProfile(srcDirectory, template.Environment, template.Port, projectBaseName);
         
         // unit tests, test utils, and one offs
         new PagedListTestBuilder(_utilities).CreateTests(srcDirectory, testDirectory, projectBaseName);
@@ -181,7 +183,10 @@ public class ApiScaffoldingService
         _mediator.Send(new UnitOfWorkBuilder.UnitOfWorkBuilderCommand(template.DbContext.ContextName));
         _mediator.Send(new IBoundaryServiceInterfaceBuilder.IBoundaryServiceInterfaceBuilderCommand());
         _mediator.Send(new GenericRepositoryBuilder.GenericRepositoryBuilderCommand(template.DbContext.ContextName));
-        _mediator.Send(new EnvironmentServiceBuilder.Command());
+        new AuthConfigurationsBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
+        new RabbitMqConfigurationsBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
+        new ConnectionStringConfigurationsBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
+        new RootConfigurationsExtensionBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
 
         new CurrentUserServiceBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);
         new DateTimeProviderBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);
@@ -218,7 +223,6 @@ public class ApiScaffoldingService
         string projectBaseName,
         DockerConfig dockerConfig)
     {
-        new AppSettingsBuilder(_utilities).CreateWebApiAppSettings(srcDirectory, dbName, projectBaseName);
-        new WebApiLaunchSettingsModifier(_fileSystem).AddProfile(srcDirectory, environment, port, dockerConfig, projectBaseName);
+        new WebApiLaunchSettingsModifier(_fileSystem).AddProfile(srcDirectory, environment, port, projectBaseName);
     }
 }

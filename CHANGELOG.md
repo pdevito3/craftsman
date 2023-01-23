@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Test projects updated to use XUnit
 * Integration tests have better service collection scoping and now have a service collection per test. This makes service mocking possible without clashing with other tests
 * RMQ container setup for integration and functional tests
+* Use `IConfiguration` instead of custom `EnvironmentService` 
+* Move parameters from `launchsetting`  to `appsettings`
 * `UserPolicyHandler` refactor
 
 ### Removed

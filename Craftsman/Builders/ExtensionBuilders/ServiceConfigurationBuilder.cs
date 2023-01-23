@@ -31,6 +31,7 @@ public class ServiceConfigurationBuilder
 
 using {middlewareClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
+using Configurations;
 using System.Text.Json.Serialization;
 using Serilog;
 using FluentValidation.AspNetCore;
@@ -52,8 +53,8 @@ public static class {FileNames.WebAppServiceConfiguration()}
         builder.Services.AddSingleton(Log.Logger);
         // TODO update CORS for your env
         builder.Services.AddCorsService(""{corsName}"", builder.Environment);
-        builder.OpenTelemetryRegistration(""{projectBaseName}"");
-        builder.Services.AddInfrastructure(builder.Environment);
+        builder.OpenTelemetryRegistration(builder.Configuration, ""{projectBaseName}"");
+        builder.Services.AddInfrastructure(builder.Environment, builder.Configuration);
 
         builder.Services.AddControllers()
             .AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -79,7 +80,7 @@ public static class {FileNames.WebAppServiceConfiguration()}
         }}
 
         builder.Services.AddHealthChecks();
-        builder.Services.AddSwaggerExtension();
+        builder.Services.AddSwaggerExtension(builder.Configuration);
     }}
 
     /// <summary>
