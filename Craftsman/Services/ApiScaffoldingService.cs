@@ -173,6 +173,7 @@ public class ApiScaffoldingService
             ValueObjectEnum.Email.Name,
             ValueObjectEnum.Email.Plural(),
             projectBaseName);
+        new AllEndpointsProtectedUnitTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         
         if(template.AddJwtAuthentication)
             new UserPolicyHandlerUnitTests(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);

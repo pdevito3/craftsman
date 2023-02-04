@@ -21,6 +21,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Use `IConfiguration` instead of custom `EnvironmentService` 
 * Move parameters from `launchsetting`  to `appsettings`
 * `UserPolicyHandler` refactor
+* Unit tests no longer have redundant directory
+* Added optional unit test to check protection of all endpoints
+* Tweaked unit test assembly helper utility
 
 ### Removed
 

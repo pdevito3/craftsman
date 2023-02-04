@@ -32,32 +32,37 @@ public static class ClassPathHelper
 
     public static ClassPath UnitTestClassPath(string solutionDirectory, string className, string projectBaseName)
     {
-        return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests"), className);
+        return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}"), className);
     }
 
     public static ClassPath UnitTestEntityTestsClassPath(string testDirectory, string className, string entityPlural, string projectBaseName)
     {
-        return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Domain", entityPlural), className);
+        return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "Domain", entityPlural), className);
     }
 
     public static ClassPath UnitTestHelpersClassPath(string testDirectory, string className, string projectBaseName)
     {
-        return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "TestHelpers"), className);
+        return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "TestHelpers"), className);
     }
 
     public static ClassPath UnitTestServiceTestsClassPath(string testDirectory, string className, string projectBaseName)
     {
-        return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "ServiceTests"), className);
+        return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "ServiceTests"), className);
     }
 
     public static ClassPath UnitTestEntityFeaturesTestsClassPath(string testDirectory, string className, string entityPlural, string projectBaseName)
     {
-        return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Domain", entityPlural, "Features"), className);
+        return new ClassPath(testDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "Domain", entityPlural, "Features"), className);
     }
 
     public static ClassPath UnitTestWrapperTestsClassPath(string solutionDirectory, string className, string projectBaseName)
     {
-        return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "UnitTests", "Wrappers"), className);
+        return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "Wrappers"), className);
+    }
+
+    public static ClassPath UnitTestProjectGuardsTestsClassPath(string solutionDirectory, string className, string projectBaseName)
+    {
+        return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "ProjectGuards"), className);
     }
 
     public static ClassPath WebApiHostExtensionsClassPath(string projectDirectory, string className, string projectBaseName)
