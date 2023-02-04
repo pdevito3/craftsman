@@ -120,11 +120,12 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsy
 
     private static RmqConfig RmqSetup()
     {{
+        var freePort = DockerUtilities.GetFreePort();
         return new RmqConfig
         {{
             Container = new ContainerBuilder()
                 .WithImage(""masstransit/rabbitmq"")
-                .WithPortBinding(5672, true)
+                .WithPortBinding(freePort, 5672)
                 .WithName($""FunctionalTesting_RMQ_{{Guid.NewGuid()}}"")
                 .Build(),
             Port = freePort

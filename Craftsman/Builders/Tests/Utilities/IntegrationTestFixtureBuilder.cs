@@ -140,11 +140,12 @@ public class TestFixture : IAsyncLifetime
 
     private static RmqConfig RmqSetup()
     {{
+        var freePort = DockerUtilities.GetFreePort();
         return new RmqConfig
         {{
             Container = new ContainerBuilder()
                 .WithImage(""masstransit/rabbitmq"")
-                .WithPortBinding(5672, true)
+                .WithPortBinding(freePort, 5672)
                 .WithName($""IntegrationTesting_RMQ_{{Guid.NewGuid()}}"")
                 .Build(),
             Port = freePort
