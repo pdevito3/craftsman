@@ -1,8 +1,8 @@
 ﻿namespace Craftsman.Builders;
 
+using System.Text.Json;
 using Domain;
 using Helpers;
-using RestSharp.Serialization.Json;
 using Services;
 
 public class ExampleTemplateBuilder
@@ -17,7 +17,7 @@ public class ExampleTemplateBuilder
     public void CreateFile(string solutionDirectory, DomainProject domainProject)
     {
         var classPath = ClassPathHelper.ExampleYamlRootClassPath(solutionDirectory, "exampleTemplate.json");
-        var fileText = GetTemplateText(domainProject);
+        var fileText = JsonSerializer.Serialize(domainProject);
         _utilities.CreateFile(classPath, fileText);
     }
 
@@ -25,13 +25,5 @@ public class ExampleTemplateBuilder
     {
         var classPath = ClassPathHelper.ExampleYamlRootClassPath(solutionDirectory, "exampleTemplate.yaml");
         _utilities.CreateFile(classPath, domainProject);
-    }
-
-    public static string GetTemplateText(DomainProject domainProject)
-    {
-        var serializer = new JsonSerializer();
-        var templateFromDomain = serializer.Serialize(domainProject);
-
-        return templateFromDomain;
     }
 }

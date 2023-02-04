@@ -184,6 +184,6 @@ catch (Exception e)
 }
 finally
 {
-    VersionChecker.CheckForLatestVersion();
+    await VersionChecker.CheckForLatestVersion();
 }
 

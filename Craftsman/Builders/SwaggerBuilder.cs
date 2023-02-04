@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using Domain;
-using FluentAssertions.Common;
 using Helpers;
 using Humanizer;
 using Services;
@@ -22,7 +21,7 @@ public class SwaggerBuilder
 
     public void AddSwagger(string srcDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string projectBaseName)
     {
-        if (swaggerConfig.IsSameOrEqualTo(new SwaggerConfig())) return;
+        if (swaggerConfig.Equals(new SwaggerConfig())) return;
 
         AddSwaggerServiceExtension(srcDirectory, projectBaseName, swaggerConfig, projectName, addJwtAuthentication, policyName);
         new WebApiAppExtensionsBuilder(_utilities).CreateSwaggerWebApiAppExtension(srcDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
