@@ -43,6 +43,9 @@ using WebMotions.Fake.Authentication.JwtBearer;" : "";
 using {utilsClassPath.ClassNamespace};
 using {sharedUtilsClassPath.ClassNamespace};{authUsing}
 using Configurations;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Configurations;
+using DotNet.Testcontainers.Containers;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -50,13 +53,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using DotNet.Testcontainers.Containers.Builders;
-using DotNet.Testcontainers.Containers.Configurations.Databases;
-using DotNet.Testcontainers.Containers.Modules;
-using DotNet.Testcontainers.Containers.Modules.Abstractions;
-using DotNet.Testcontainers.Containers.Modules.Databases;
 using Microsoft.Extensions.Logging;
-using Services;
 using Xunit;
 
 [CollectionDefinition(nameof(TestBase))]
@@ -117,18 +114,17 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsy
 
     private class RmqConfig
     {{
-        public TestcontainersContainer Container {{ get; set; }}
+        public IContainer Container {{ get; set; }}
         public int Port {{ get; set; }}
     }}
 
     private static RmqConfig RmqSetup()
     {{
-        var freePort = DockerUtilities.GetFreePort();
         return new RmqConfig
         {{
-            Container = new TestcontainersBuilder<TestcontainersContainer>()
+            Container = new ContainerBuilder()
                 .WithImage(""masstransit/rabbitmq"")
-                .WithPortBinding(freePort, 5672)
+                .WithPortBinding(5672, true)
                 .WithName($""FunctionalTesting_RMQ_{{Guid.NewGuid()}}"")
                 .Build(),
             Port = freePort

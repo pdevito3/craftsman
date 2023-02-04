@@ -68,23 +68,18 @@ public class IntegrationTestFixtureBuilder
 
 using {configClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
-using {envServiceClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
 using {sharedUtilsClassPath.ClassNamespace};
 using Configurations;
-using DotNet.Testcontainers.Containers.Builders;
-using DotNet.Testcontainers.Containers.Configurations.Databases;
-using DotNet.Testcontainers.Containers.Modules;
-using DotNet.Testcontainers.Containers.Modules.Abstractions;
-using DotNet.Testcontainers.Containers.Modules.Databases;
-using Extensions.Services;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Configurations;
+using DotNet.Testcontainers.Containers;
 using FluentAssertions;
 using FluentAssertions.Extensions;{heimGuardUsing}
 using Moq;{sqlServerInteropUsing}
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
@@ -139,18 +134,17 @@ public class TestFixture : IAsyncLifetime
 
     private class RmqConfig
     {{
-        public TestcontainersContainer Container {{ get; set; }}
+        public IContainer Container {{ get; set; }}
         public int Port {{ get; set; }}
     }}
 
     private static RmqConfig RmqSetup()
     {{
-        var freePort = DockerUtilities.GetFreePort();
         return new RmqConfig
         {{
-            Container = new TestcontainersBuilder<TestcontainersContainer>()
+            Container = new ContainerBuilder()
                 .WithImage(""masstransit/rabbitmq"")
-                .WithPortBinding(freePort, 5672)
+                .WithPortBinding(5672, true)
                 .WithName($""IntegrationTesting_RMQ_{{Guid.NewGuid()}}"")
                 .Build(),
             Port = freePort
