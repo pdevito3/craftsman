@@ -9,9 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+* None yet!
+
+## [0.19.0] - 02/04/2023
+
 ### Updates
 
-* Can run tool with .net 6 or 7
+* Crafstman uses .NET 7
 * Scaffolding uses .NET 7
 * Test projects updated to use XUnit
 * Integration tests have better service collection scoping and now have a service collection per test. This makes service mocking possible without clashing with other tests
