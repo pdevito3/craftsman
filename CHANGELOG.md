@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.19.1] - 02/04/2023
+
+### Updates
+
+* Removed custom dateonly and timeonly json converters in facor of built in .net 7 options
+
 ## [0.19.0] - 02/04/2023
 
 ### Updates

@@ -58,14 +58,12 @@ public static class HttpClientExtensions
     public static async Task<HttpResponseMessage> PostJsonRequestAsync(this HttpClient client, string url, object value)
     {{
         var options = new JsonSerializerOptions();
-        options.AddDateOnlyConverters();
         return await client.PostAsJsonAsync(url, value, options).ConfigureAwait(false);
     }}
 
     public static async Task<HttpResponseMessage> PutJsonRequestAsync(this HttpClient client, string url, object value)
     {{
         var options = new JsonSerializerOptions();
-        options.AddDateOnlyConverters();
         return await client.PutAsJsonAsync(url, value, options).ConfigureAwait(false);
     }}
 }}";
