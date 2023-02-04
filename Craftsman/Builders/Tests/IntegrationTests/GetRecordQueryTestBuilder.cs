@@ -47,7 +47,6 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 using System.Threading.Tasks;{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetTest(queryName, entity, featureName)}{GetWithoutKeyTest(queryName, entity, featureName)}{permissionTest}

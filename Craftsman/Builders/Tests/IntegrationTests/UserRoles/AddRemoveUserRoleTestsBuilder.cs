@@ -40,7 +40,6 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 using System.Threading.Tasks;
 
-[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{    
     [Fact]

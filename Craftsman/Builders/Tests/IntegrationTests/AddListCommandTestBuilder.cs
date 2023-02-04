@@ -53,7 +53,6 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 using System.Threading.Tasks;{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetAddListCommandTest(entity, feature)}{permissionTest}

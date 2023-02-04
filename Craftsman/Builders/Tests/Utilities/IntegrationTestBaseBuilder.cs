@@ -26,6 +26,7 @@ public class IntegrationTestBaseBuilder
 using AutoBogus;
 using Xunit;
 
+[Collection(nameof(TestFixture))]
 public class TestBase : IDisposable
 {{
     public TestBase()

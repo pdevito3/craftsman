@@ -60,7 +60,6 @@ using Xunit;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetAddCommandTest(commandName, entity, featureName, lookupVal, myProp)}

@@ -50,7 +50,6 @@ using Domain;
 using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetDeleteTest(commandName, entity, featureName)}{GetDeleteWithoutKeyTest(commandName, entity, featureName)}{softDeleteTest}{permissionTest}

@@ -44,7 +44,6 @@ using System.Threading.Tasks;
 using {featuresClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{foreignEntityUsings}
 
-[Collection(nameof(TestFixture))]
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
     {GetAddCommandTest(commandName, entity, featureName)}
