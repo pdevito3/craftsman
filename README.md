@@ -23,13 +23,19 @@ I'm currently working through a deep example project the really dogfood things a
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-### Coming in 0.19
+### Coming in 0.20
 
-* ✅ Test projects updated to use XUnit
-* ✅ Integration tests have better service collection scoping and now have a service collection per test. This makes service mocking possible without clashing with other tests
-* ✅ Options Pattern Configuration
-* 🚧 .NET 7
-* 🚧 TBD Dogfooding results
+* TBD
+
+### Some 0.19 highlights
+
+✅ Test projects updated to use XUnit
+
+✅ .NET 7
+
+✅ Integration tests have better service collection scoping and now have a service collection per test. This makes service mocking possible without clashing with other tests
+
+✅ Options Pattern Configuration
 
 ### Some 0.18 highlights
 
