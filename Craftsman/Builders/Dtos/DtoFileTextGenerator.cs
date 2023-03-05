@@ -42,7 +42,8 @@ public sealed class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationPar
 
 public {classAccessor}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanceString}
 {{
-{propString}}}
+{propString}
+}}
 ";
     }
 

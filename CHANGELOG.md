@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.19.3] - 03/05/2023
+
+### Fixed
+
+* Fix bracket on DTOs 
+
 ## [0.19.2] - 03/05/2023
 
 ### Fixed
