@@ -93,8 +93,7 @@ public static class {className}
 
             await _unitOfWork.CommitChanges(cancellationToken);
 
-            var {entityNameLowercase}Added = await _{repoInterfaceProp}.GetById({entityNameLowercase}.Id, cancellationToken: cancellationToken);
-            return _mapper.Map<{readDto}>({entityNameLowercase}Added);
+            return _mapper.Map<{readDto}>({entityNameLowercase});
         }}
     }}
 }}";
