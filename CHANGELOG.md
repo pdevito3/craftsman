@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.19.2] - 03/05/2023
+
+### Fixed
+
+* DTO indentations
+
 ## [0.19.1] - 02/04/2023
 
 ### Updates

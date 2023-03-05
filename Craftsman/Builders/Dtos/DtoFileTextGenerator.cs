@@ -27,7 +27,7 @@ public sealed class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationPar
 
     public static string GetDtoText(IClassPath dtoClassPath, Entity entity, Dto dto)
     {
-        var propString = dto is Dto.Read ? $@"        public Guid Id {{ get; set; }}{Environment.NewLine}" : "";
+        var propString = dto is Dto.Read ? $"    public Guid Id {{ get; set; }}{Environment.NewLine}" : "";
         propString += DtoPropBuilder(entity.Properties, dto);
         if (dto is Dto.Update or Dto.Creation)
             propString = "";
@@ -42,8 +42,7 @@ public sealed class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationPar
 
 public {classAccessor}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanceString}
 {{
-{propString}
-}}
+{propString}}}
 ";
     }
 
@@ -63,7 +62,7 @@ public {classAccessor}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanc
                 : "";
 
             string newLine = eachProp == props.Count - 1 ? "" : Environment.NewLine;
-            propString += $@"        public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{guidDefault}{newLine}";
+            propString += $@"    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{guidDefault}{newLine}";
         }
 
         return propString;
