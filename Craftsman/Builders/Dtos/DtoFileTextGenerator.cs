@@ -29,18 +29,10 @@ public sealed class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationPar
     {
         var propString = dto is Dto.Read ? $"    public Guid Id {{ get; set; }}{Environment.NewLine}" : "";
         propString += DtoPropBuilder(entity.Properties, dto);
-        if (dto is Dto.Update or Dto.Creation)
-            propString = "";
-
-        var classAccessor = dto == Dto.Manipulation ? $"abstract " : "sealed ";
-
-        var inheritanceString = "";
-        if (dto is Dto.Creation or Dto.Update)
-            inheritanceString = $": {FileNames.GetDtoName(entity.Name, Dto.Manipulation)}";
 
         return @$"namespace {dtoClassPath.ClassNamespace};
 
-public {classAccessor}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanceString}
+public sealed class {FileNames.GetDtoName(entity.Name, dto)}
 {{
 {propString}
 }}
@@ -52,7 +44,7 @@ public {classAccessor}class {FileNames.GetDtoName(entity.Name, dto)} {inheritanc
         var propString = "";
         for (var eachProp = 0; eachProp < props.Count; eachProp++)
         {
-            if (!props[eachProp].CanManipulate && dto == Dto.Manipulation)
+            if (!props[eachProp].CanManipulate && (dto is Dto.Creation or Dto.Update))
                 continue;
             if (props[eachProp].IsForeignKey && props[eachProp].IsMany)
                 continue;

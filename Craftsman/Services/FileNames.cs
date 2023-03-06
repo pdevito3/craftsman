@@ -146,7 +146,6 @@ public static class FileNames
     {
         return dto switch
         {
-            Dto.Manipulation => $"{entityName}ForManipulationDto",
             Dto.Creation => $"{entityName}ForCreationDto",
             Dto.Update => $"{entityName}ForUpdateDto",
             Dto.Read => $"{entityName}Dto",

@@ -29,7 +29,6 @@ public class DynamicFeatureTypesBuilder
         var readDtoName = FileNames.GetDtoName(entityName, Dto.Read);
         var dtoForCreationName = FileNames.GetDtoName(entityName, Dto.Creation);
         var dtoForUpdateName = FileNames.GetDtoName(entityName, Dto.Update);
-        var dtoForManipulationName = FileNames.GetDtoName(entityName, Dto.Manipulation);
 
         var propList = TypePropsBuilder(props);
 
@@ -44,12 +43,10 @@ export interface {readDtoName} {{
   id: string;{propList}
 }}
 
-export interface {dtoForManipulationName} {{
-  id: string;{propList}
+export interface {dtoForCreationName} {{{propList}
 }}
-
-export interface {dtoForCreationName} extends {dtoForManipulationName} {{ }}
-export interface {dtoForUpdateName} extends {dtoForManipulationName} {{ }}
+export interface {dtoForUpdateName} {{{propList}
+}}
 
 // need a string enum list?
 // const StatusList = ['Status1', 'Status2', null] as const;
