@@ -27,6 +27,7 @@ public class CommandAddRecordBuilder
         var addCommandName = FileNames.CommandAddName();
         var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
         var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
+        var creationModelName = EntityModel.Creation.GetClassName(entity.Name);
 
         var entityName = entity.Name;
         var entityNameLowercase = entity.Name.LowercaseFirstLetter();
@@ -34,12 +35,14 @@ public class CommandAddRecordBuilder
         var newEntityProp = $"{entityNameLowercase}ToAdd";
         var repoInterface = FileNames.EntityRepositoryInterface(entityName);
         var repoInterfaceProp = $"{entityName.LowercaseFirstLetter()}Repository";
+        var modelToCreateVariableName = $"{entityName.LowercaseFirstLetter()}ToAdd";
 
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entity.Name, entity.Plural, null, projectBaseName);
         
         FeatureBuilderHelpers.GetPermissionValuesForHandlers(srcDirectory, 
             projectBaseName, 
@@ -56,6 +59,7 @@ public class CommandAddRecordBuilder
 using {entityServicesClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
+using {modelClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
 using MapsterMapper;
@@ -88,7 +92,8 @@ public static class {className}
 
         public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            var {entityNameLowercase} = {entityName}.Create(request.{commandProp});
+            var {modelToCreateVariableName} = _mapper.Map<{EntityModel.Creation.GetClassName(entity.Name)}>(request.{commandProp});
+            var {entityNameLowercase} = {entityName}.Create({modelToCreateVariableName});
             await _{repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
 
             await _unitOfWork.CommitChanges(cancellationToken);

@@ -38,12 +38,14 @@ public class AddUserFeatureOverrideModifier
         var newEntityProp = $"{entityNameLowercase}ToAdd";
         var repoInterface = FileNames.EntityRepositoryInterface(entityName);
         var repoInterfaceProp = $"{entityName.LowercaseFirstLetter()}Repository";
+        var modelToCreateVariableName = $"{entityName.LowercaseFirstLetter()}ToAdd";
 
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entityName, entityPlural, null, projectBaseName);
         
         FeatureBuilderHelpers.GetPermissionValuesForHandlers(srcDirectory, 
             projectBaseName, 
@@ -63,6 +65,7 @@ public class AddUserFeatureOverrideModifier
 using {entityServicesClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
+using {modelClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
 using MapsterMapper;
@@ -100,7 +103,8 @@ public static class {className}
             if(!request.SkipPermissions)
                 await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.{permissionName});
 
-            var {entityNameLowercase} = {entityName}.Create(request.{commandProp});
+            var {modelToCreateVariableName} = _mapper.Map<{EntityModel.Creation.GetClassName(entityName)}>(request.{commandProp});
+            var {entityNameLowercase} = {entityName}.Create({modelToCreateVariableName});
             await _{repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
 
             await _unitOfWork.CommitChanges(cancellationToken);

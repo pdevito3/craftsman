@@ -12,6 +12,7 @@ using Builders.Bff.Features.Dynamic.Types;
 using Builders.Bff.Src;
 using Builders.Dtos;
 using Builders.Endpoints;
+using Builders.EntityModels;
 using Builders.Features;
 using Builders.Tests.Fakes;
 using Builders.Tests.FunctionalTests;
@@ -51,6 +52,7 @@ public class EntityScaffoldingService
             // not worrying about DTOs, profiles, validators, fakers - they are all added by default
             new EntityBuilder(_utilities).CreateEntity(solutionDirectory, srcDirectory, entity, projectBaseName);
             new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
+            new EntityModelBuilder(_utilities, _fileSystem).CreateEntityModels(srcDirectory, entity, projectBaseName);
             new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity, projectBaseName);
             new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
@@ -115,6 +117,7 @@ public class EntityScaffoldingService
 
         new EntityBuilder(_utilities).CreateRolePermissionsEntity(srcDirectory, entity, projectBaseName);
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
+        new EntityModelBuilder(_utilities, _fileSystem).CreateEntityModels(srcDirectory, entity, projectBaseName);
         new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName);
         _mediator.Send(new DatabaseEntityConfigRolePermissionBuilder.Command());
@@ -183,6 +186,7 @@ public class EntityScaffoldingService
         // TODO custom dto for roles
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, userEntity, projectBaseName);
         
+        new EntityModelBuilder(_utilities, _fileSystem).CreateEntityModels(srcDirectory, userEntity, projectBaseName);
         new EntityMappingBuilder(_utilities).CreateUserMapping(srcDirectory, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutesForUser(testDirectory, projectBaseName);
         _mediator.Send(new DatabaseEntityConfigUserBuilder.Command());

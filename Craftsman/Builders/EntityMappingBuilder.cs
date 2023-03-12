@@ -25,11 +25,13 @@ public class EntityMappingBuilder
     {
         var entitiesClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
+        var entityModelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entity.Name, entity.Plural, null, projectBaseName);
 
         return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
 using {entitiesClassPath.ClassNamespace};
+using {entityModelClassPath.ClassNamespace};
 using Mapster;
 
 public sealed class {FileNames.GetMappingName(entity.Name)} : IRegister
@@ -40,6 +42,10 @@ public sealed class {FileNames.GetMappingName(entity.Name)} : IRegister
         config.NewConfig<{FileNames.GetDtoName(entity.Name, Dto.Creation)}, {entity.Name}>()
             .TwoWays();
         config.NewConfig<{FileNames.GetDtoName(entity.Name, Dto.Update)}, {entity.Name}>()
+            .TwoWays();
+        config.NewConfig<{EntityModel.Creation.GetClassName(entity.Name)}, {entity.Name}>()
+            .TwoWays();
+        config.NewConfig<{EntityModel.Update.GetClassName(entity.Name)}, {entity.Name}>()
             .TwoWays();
     }}
 }}";

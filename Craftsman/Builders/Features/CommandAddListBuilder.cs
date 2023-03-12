@@ -42,6 +42,7 @@ public class CommandAddListBuilder
         var repoInterfaceProp = $"{entityName.LowercaseFirstLetter()}Repository";
         var repoInterfaceBatchFk = FileNames.EntityRepositoryInterface(feature.ParentEntity);
         var repoInterfacePropBatchFk = $"{feature.ParentEntity.LowercaseFirstLetter()}Repository";
+        var modelToCreateVariableName = $"{entityName.LowercaseFirstLetter()}ToAdd";
 
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
@@ -49,6 +50,7 @@ public class CommandAddListBuilder
         var entityServicesClassPathBatchFk = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", feature.ParentEntityPlural, projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entity.Name, entity.Plural, null, projectBaseName);
         
         FeatureBuilderHelpers.GetPermissionValuesForHandlers(srcDirectory, 
             projectBaseName, 
@@ -83,6 +85,7 @@ using {entityServicesClassPath.ClassNamespace};{batchFkUsingRepo}
 using {servicesClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
+using {modelClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
 using MapsterMapper;
 using MediatR;
@@ -120,8 +123,12 @@ public static class {className}
                 .Select({entity.Lambda} => {{ {entity.Lambda}.{feature.BatchPropertyName} = request.{feature.BatchPropertyName}; return {entity.Lambda}; }})
                 .ToList();
             var {entityNameLowercaseListVar} = new List<{entityName}>();
-            {entityNameLowercaseListVar}ToAdd.ForEach({entityNameLowercase} => {entityNameLowercaseListVar}.Add({entityName}.Create({entityNameLowercase})));
-            
+            foreach (var {entityNameLowercase} in {entityNameLowercaseListVar}ToAdd)
+            {{
+                var {entityNameLowercase}ToAdd = _mapper.Map<{EntityModel.Creation.GetClassName(entity.Name)}>({entityNameLowercase});
+                {entityNameLowercaseListVar}.Add({entityName}.Create({entityNameLowercase}ToAdd));
+            }}
+
             // if you have large datasets to add in bulk and have performance concerns, there 
             // are additional methods that could be leveraged in your repository instead (e.g. SqlBulkCopy)
             // https://timdeschryver.dev/blog/faster-sql-bulk-inserts-with-csharp#table-valued-parameter 
