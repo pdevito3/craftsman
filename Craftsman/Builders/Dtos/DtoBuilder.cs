@@ -26,7 +26,6 @@ public class DtoBuilder
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
         CreateDtoFile(srcDirectory, entity, Dto.Read, projectBaseName);
-        CreateDtoFile(srcDirectory, entity, Dto.Manipulation, projectBaseName);
         CreateDtoFile(srcDirectory, entity, Dto.Creation, projectBaseName);
         CreateDtoFile(srcDirectory, entity, Dto.Update, projectBaseName);
         CreateDtoFile(srcDirectory, entity, Dto.ReadParamaters, projectBaseName);
