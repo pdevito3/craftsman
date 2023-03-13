@@ -133,10 +133,8 @@ public static class FileNames
     }
 
     public static string FakerName(string objectToFakeName)
-    {
-        return $"Fake{objectToFakeName}";
-    }
-    
+        => $"Fake{objectToFakeName}";
+
     public static string UnitTestUtilsName()
     {
         return $"UnitTestUtils";

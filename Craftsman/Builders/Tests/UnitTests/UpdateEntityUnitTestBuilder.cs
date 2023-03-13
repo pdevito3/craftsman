@@ -27,8 +27,9 @@ public class UpdateEntityUnitTestBuilder
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entityPlural, projectBaseName);
-        var updateDto = FileNames.GetDtoName(entityName, Dto.Update);
-        var fakeEntityForUpdate = $"Fake{updateDto}";
+        
+        var updateModelName = EntityModel.Update.GetClassName(entityName);
+        var fakeUpdateModelName = FileNames.FakerName(updateModelName);
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -54,7 +55,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{
         // Arrange
         var fake{entityName} = Fake{entityName}.Generate();
-        var updated{entityName} = new {fakeEntityForUpdate}().Generate();
+        var updated{entityName} = new {fakeUpdateModelName}().Generate();
         
         // Act
         fake{entityName}.Update(updated{entityName});
@@ -67,7 +68,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{
         // Arrange
         var fake{entityName} = Fake{entityName}.Generate();
-        var updated{entityName} = new {fakeEntityForUpdate}().Generate();
+        var updated{entityName} = new {fakeUpdateModelName}().Generate();
         fake{entityName}.DomainEvents.Clear();
         
         // Act

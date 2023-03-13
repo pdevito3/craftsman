@@ -37,22 +37,22 @@ public class FakeEntityBuilderBuilder
     private static string GetCreateFakeBuilderFileText(string classNamespace, Entity entity, string srcDirectory, string testDirectory, string projectBaseName)
     {
         var entitiesClassPath = ClassPathHelper.EntityClassPath(testDirectory, "", entity.Plural, projectBaseName);
-        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var creationDtoName = FileNames.GetDtoName(entity.Name, Dto.Creation);
-        var fakeCreationDtoName = $"Fake{creationDtoName}";
+        var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entity.Name, entity.Plural, null, projectBaseName);
+        var creationModelName = EntityModel.Creation.GetClassName(entity.Name);
+        var fakeCreationModelName = FileNames.FakerName(creationModelName);
 
         return @$"namespace {classNamespace};
 
 using {entitiesClassPath.ClassNamespace};
-using {dtoClassPath.ClassNamespace};
+using {modelClassPath.ClassNamespace};
 
 public class {FileNames.FakeBuilderName(entity.Name)}
 {{
-    private {creationDtoName} _creationData = new {fakeCreationDtoName}().Generate();
+    private {creationModelName} _creationData = new {fakeCreationModelName}().Generate();
 
-    public {FileNames.FakeBuilderName(entity.Name)} WithDto({creationDtoName} dto)
+    public {FileNames.FakeBuilderName(entity.Name)} WithModel({creationModelName} model)
     {{
-        _creationData = dto;
+        _creationData = model;
         return this;
     }}
     

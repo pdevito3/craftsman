@@ -32,10 +32,10 @@ public class UserUnitTestBuilder
         var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
         var emailClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Emails", projectBaseName);
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Users", projectBaseName);
-        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", "Users", projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", "Users", projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", "User", projectBaseName);
         var errorsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "User", "Users", null, projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -43,7 +43,7 @@ using {domainEventsClassPath.ClassNamespace};
 using {emailClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
-using {dtoClassPath.ClassNamespace};
+using {modelClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using {errorsClassPath.ClassNamespace};
 using Bogus;
@@ -64,7 +64,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_create_valid_user()
     {{
         // Arrange
-        var toCreate = new FakeUserForCreationDto().Generate();
+        var toCreate = new FakeUserForCreation().Generate();
 
         // Act
         var newUser = User.Create(toCreate);
@@ -81,7 +81,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_NOT_create_user_without_identifier()
     {{
         // Arrange
-        var toCreate = new FakeUserForCreationDto().Generate();
+        var toCreate = new FakeUserForCreation().Generate();
         toCreate.Identifier = null;
         var newUser = () => User.Create(toCreate);
 
@@ -93,7 +93,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_NOT_create_user_with_whitespace_identifier()
     {{
         // Arrange
-        var toCreate = new FakeUserForCreationDto().Generate();
+        var toCreate = new FakeUserForCreation().Generate();
         toCreate.Identifier = "" "";
         var newUser = () => User.Create(toCreate);
 
@@ -119,7 +119,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
         var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Users", projectBaseName);
-        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", "Users", projectBaseName);
+        var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "User", "Users", null, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", "Users", projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", "User", projectBaseName);
         var errorsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
@@ -130,7 +130,7 @@ using {domainEventsClassPath.ClassNamespace};
 using {domainPolicyClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
-using {dtoClassPath.ClassNamespace};
+using {modelClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using {errorsClassPath.ClassNamespace};
 using Bogus;
@@ -152,7 +152,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{
         // Arrange
         var fakeUser = FakeUser.Generate();
-        var updatedUser = new FakeUserForUpdateDto().Generate();
+        var updatedUser = new FakeUserForUpdate().Generate();
         
         // Act
         fakeUser.Update(updatedUser);
@@ -170,7 +170,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{
         // Arrange
         var fakeUser = FakeUser.Generate();
-        var updatedUser = new FakeUserForUpdateDto().Generate();
+        var updatedUser = new FakeUserForUpdate().Generate();
         updatedUser.Identifier = null;
         var newUser = () => fakeUser.Update(updatedUser);
 
@@ -183,7 +183,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{
         // Arrange
         var fakeUser = FakeUser.Generate();
-        var updatedUser = new FakeUserForUpdateDto().Generate();
+        var updatedUser = new FakeUserForUpdate().Generate();
         updatedUser.Identifier = "" "";
         var newUser = () => fakeUser.Update(updatedUser);
 
@@ -196,7 +196,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     {{
         // Arrange
         var fakeUser = FakeUser.Generate();
-        var updatedUser = new FakeUserForUpdateDto().Generate();
+        var updatedUser = new FakeUserForUpdate().Generate();
         fakeUser.DomainEvents.Clear();
         
         // Act

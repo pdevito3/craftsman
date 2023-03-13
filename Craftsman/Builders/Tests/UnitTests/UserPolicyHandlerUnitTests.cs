@@ -25,11 +25,11 @@ public class UserPolicyHandlerUnitTests
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
         var policyDomainClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
-        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
         var rolesClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Roles", projectBaseName);
         var userClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Users", projectBaseName);
         var userServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", "Users", projectBaseName);
         var fakeUsersClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", "User", projectBaseName);
+        var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "RolePermission", "RolePermissions", null, projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -40,7 +40,7 @@ using {servicesClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {policyDomainClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
-using {dtoClassPath.ClassNamespace};
+using {modelClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions;
@@ -142,7 +142,7 @@ public class UserPolicyHandlerTests
         userRepo.UsersExist();
         userRepo.SetRole(nonSuperAdminRole);
     
-        var rolePermission = RolePermission.Create(new RolePermissionForCreationDto()
+        var rolePermission = RolePermission.Create(new RolePermissionForCreation()
         {{
             Role = nonSuperAdminRole,
             Permission = permissionToAssign
@@ -179,7 +179,7 @@ public class UserPolicyHandlerTests
         userRepo.UsersExist();
         userRepo.SetRole(nonSuperAdminRole);
     
-        var rolePermission = RolePermission.Create(new RolePermissionForCreationDto()
+        var rolePermission = RolePermission.Create(new RolePermissionForCreation()
         {{
             Role = nonSuperAdminRole,
             Permission = permissionToAssign
