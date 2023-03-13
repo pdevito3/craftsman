@@ -66,13 +66,15 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var pkName = Entity.PrimaryKeyProperty.Name;
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+        if (fakeParentIdRuleFor != "")
+            fakeParentIdRuleFor += $"{Environment.NewLine}            ";
 
         return $@"[Fact]
     public async Task can_delete_{entity.Name.ToLower()}_from_db()
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
+        {fakeParent}var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleFor}.Build();
         await testingServiceScope.InsertAsync({fakeEntityVariableName});
         var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
@@ -119,6 +121,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+        if (fakeParentIdRuleFor != "")
+            fakeParentIdRuleFor += $"{Environment.NewLine}            ";
 
         return $@"
 
@@ -127,7 +131,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
+        {fakeParent}var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleFor}.Build();
         await testingServiceScope.InsertAsync({fakeEntityVariableName});
         var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));

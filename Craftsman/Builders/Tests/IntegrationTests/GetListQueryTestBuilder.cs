@@ -58,22 +58,25 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     private static string GetEntitiesTest(Entity entity)
     {
         var queryName = FileNames.QueryListName();
-        var fakeEntity = FileNames.FakerName(entity.Name);
         var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
         var fakeEntityVariableNameOne = $"fake{entity.Name}One";
         var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
         var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
-        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
         var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
+        if (fakeParentIdRuleForOne != "")
+            fakeParentIdRuleForOne += $"{Environment.NewLine}            ";
+        if (fakeParentIdRuleForTwo != "")
+            fakeParentIdRuleForTwo += $"{Environment.NewLine}            ";
+        
         return @$"
     [Fact]
     public async Task can_get_{entity.Name.ToLower()}_list()
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableNameOne} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForOne}.Generate());
-        var {fakeEntityVariableNameTwo} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleForTwo}.Generate());
+        {fakeParent}var {fakeEntityVariableNameOne} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleForOne}.Build();
+        var {fakeEntityVariableNameTwo} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleForTwo}.Build();
         var queryParameters = new {entityParams}();
 
         await testingServiceScope.InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});

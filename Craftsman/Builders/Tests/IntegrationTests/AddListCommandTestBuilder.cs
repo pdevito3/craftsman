@@ -61,8 +61,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
     private static string GetAddListCommandTest(Entity entity, Feature feature)
     {
-        var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
-        var fakeCreationDto = $"Fake{createDto}";
+        var createModel = FileNames.FakerName(EntityModel.Creation.GetClassName(entity.Name));
+        var fakeCreationDto = $"Fake{createModel}";
         var fakeEntityVariableNameOne = $"fake{entity.Name}One";
         var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
@@ -74,13 +74,13 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        var {fakeParentEntity} = Fake{feature.ParentEntity}.Generate(new {fakeParentCreationDto}().Generate());
+        var {fakeParentEntity} = new {FileNames.FakeBuilderName(feature.ParentEntity)}().Build();
         await testingServiceScope.InsertAsync({fakeParentEntity});
         var {fakeEntityVariableNameOne} = new {fakeCreationDto}().Generate();
         var {fakeEntityVariableNameTwo} = new {fakeCreationDto}().Generate();
 
         // Act
-        var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}}}, {fakeParentEntity}.Id);
+        var command = new {feature.Name}.{feature.Command}(new List<{createModel}>() {{{fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}}}, {fakeParentEntity}.Id);
         var {lowercaseEntityName}Returned = await testingServiceScope.SendAsync(command);
         var firstReturned = {lowercaseEntityName}Returned.FirstOrDefault();
         var secondReturned = {lowercaseEntityName}Returned.Skip(1).FirstOrDefault();
