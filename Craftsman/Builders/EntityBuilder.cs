@@ -126,19 +126,19 @@ public abstract class BaseEntity
 {{
     [Key]
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual Guid Id {{ get; private set; }} = Guid.NewGuid();
+    public Guid Id {{ get; private set; }} = Guid.NewGuid();
     
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual DateTime CreatedOn {{ get; private set; }}
+    public DateTime CreatedOn {{ get; private set; }}
     
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual string CreatedBy {{ get; private set; }}
+    public string CreatedBy {{ get; private set; }}
     
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual DateTime? LastModifiedOn {{ get; private set; }}
+    public DateTime? LastModifiedOn {{ get; private set; }}
     
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual string LastModifiedBy {{ get; private set; }}{isDeletedProp}
+    public string LastModifiedBy {{ get; private set; }}{isDeletedProp}
     
     [NotMapped]
     public List<DomainEvent> DomainEvents {{ get; }} = new List<DomainEvent>();
@@ -183,7 +183,7 @@ public abstract class BaseEntity
             if (property.IsSmartEnum())
             {
                 propString += $@"    private {property.SmartEnumPropName} _{property.Name.LowercaseFirstLetter()};
-{attributes}    public virtual string {property.Name}
+{attributes}    public string {property.Name}
     {{
         get => _{property.Name.LowercaseFirstLetter()}.Name;
         private set
@@ -206,7 +206,7 @@ public abstract class BaseEntity
                     : $"{Environment.NewLine}{Environment.NewLine}";
 
                 if (property.IsPrimitiveType || property.IsMany)
-                    propString += $@"    public virtual {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+                    propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
 
                 propString += GetForeignProp(property, entityName);
             }
@@ -276,7 +276,7 @@ public abstract class BaseEntity
         if (propName == entityName)
             propName = $"Parent{propName}";
         
-        return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public virtual {prop.ForeignEntityName} {propName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
+        return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public {prop.ForeignEntityName} {propName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
     }
 
     public void CreateUserEntity(string srcDirectory, Entity entity, string projectBaseName)
@@ -309,23 +309,23 @@ using Sieve.Attributes;
 public class User : BaseEntity
 {{
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual string Identifier {{ get; private set; }}
+    public string Identifier {{ get; private set; }}
 
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual string FirstName {{ get; private set; }}
+    public string FirstName {{ get; private set; }}
 
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual string LastName {{ get; private set; }}
+    public string LastName {{ get; private set; }}
 
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual Email Email {{ get; private set; }}
+    public Email Email {{ get; private set; }}
 
     [Sieve(CanFilter = true, CanSort = true)]
-    public virtual string Username {{ get; private set; }}
+    public string Username {{ get; private set; }}
 
     [JsonIgnore]
     [IgnoreDataMember]
-    public virtual ICollection<UserRole> Roles {{ get; private set; }} = new List<UserRole>();
+    public ICollection<UserRole> Roles {{ get; private set; }} = new List<UserRole>();
 
 
     public static User Create(UserForCreation userForCreation)
@@ -421,10 +421,10 @@ public class UserRole : BaseEntity
     [JsonIgnore]
     [IgnoreDataMember]
     [ForeignKey(""User"")]
-    public virtual Guid UserId {{ get; private set; }}
-    public virtual User User {{ get; private set; }}
+    public Guid UserId {{ get; private set; }}
+    public User User {{ get; private set; }}
 
-    public virtual Role Role {{ get; private set; }}
+    public Role Role {{ get; private set; }}
     
 
     public static UserRole Create(Guid userId, Role role)
@@ -467,8 +467,8 @@ using {modelClassPath.ClassNamespace};
 
 public class RolePermission : BaseEntity
 {{
-    public virtual Role Role {{ get; private set; }}
-    public virtual string Permission {{ get; private set; }}
+    public Role Role {{ get; private set; }}
+    public string Permission {{ get; private set; }}
 
 
     public static RolePermission Create(RolePermissionForCreation rolePermissionForCreation)
