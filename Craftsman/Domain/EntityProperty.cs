@@ -104,6 +104,7 @@ public class EntityProperty
                || Type.StartsWith("Hashset<")
                || Type.StartsWith("Dictionary<")
                || Type.StartsWith("IDictionary<")
+               || Type.EndsWith("[]")
                || Type.StartsWith("List<");
     }
 
