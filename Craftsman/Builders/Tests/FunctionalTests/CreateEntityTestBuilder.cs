@@ -65,12 +65,14 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         {
             if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType)
             {
-                var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
-                var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
-                fakeParent += @$"var fake{entityProperty.ForeignEntityName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
-        await InsertAsync(fake{entityProperty.ForeignEntityName}One);{Environment.NewLine}{Environment.NewLine}        ";
+                var baseVarName = entityProperty.ForeignEntityName != entity.Name
+                    ? $"{entityProperty.ForeignEntityName}"
+                    : $"{entityProperty.ForeignEntityName}Parent";
+                var fakeParentBuilder = FileNames.FakeBuilderName(entityProperty.ForeignEntityName);
+                fakeParent += @$"var fake{baseVarName}One = new {fakeParentBuilder}().Build();
+        await InsertAsync(fake{baseVarName}One);{Environment.NewLine}{Environment.NewLine}        ";
                 fakeParentIdRuleFor +=
-                    $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}One.Id){Environment.NewLine}            ";
+                    $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{baseVarName}One.Id)";
             }
         }
 

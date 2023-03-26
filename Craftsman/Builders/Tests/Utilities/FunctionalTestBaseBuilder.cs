@@ -37,7 +37,7 @@ using {fakeUserEntityClassPath.ClassNamespace};" : null;
 
     public static async Task<User> AddNewSuperAdmin()
     {{
-        var user = FakeUser.Generate();
+        var user = new FakeUserBuilder().Build();
         user.AddRole(Role.SuperAdmin());
         await InsertAsync(user);
         return user;
@@ -45,7 +45,7 @@ using {fakeUserEntityClassPath.ClassNamespace};" : null;
 
     public static async Task<User> AddNewUser(List<Role> roles)
     {{
-        var user = FakeUser.Generate();
+        var user = new FakeUserBuilder().Build();
         foreach (var role in roles)
             user.AddRole(role);
         
