@@ -99,6 +99,7 @@ public static class {className}
 
             var {modelToUpdateVariableName} = _mapper.Map<{EntityModel.Update.GetClassName(entity.Name)}>(request.{commandProp});
             {updatedEntityProp}.Update({modelToUpdateVariableName});
+
             _{repoInterfaceProp}.Update({updatedEntityProp});
             return await _unitOfWork.CommitChanges(cancellationToken) >= 1;
         }}

@@ -94,8 +94,8 @@ public static class {className}
         {{{permissionCheck}
             var {modelToCreateVariableName} = _mapper.Map<{EntityModel.Creation.GetClassName(entity.Name)}>(request.{commandProp});
             var {entityNameLowercase} = {entityName}.Create({modelToCreateVariableName});
-            await _{repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
 
+            await _{repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
             await _unitOfWork.CommitChanges(cancellationToken);
 
             return _mapper.Map<{readDto}>({entityNameLowercase});
