@@ -50,12 +50,9 @@ public sealed class {FileNames.GetDtoName(entity.Name, dto)}
                 continue;
             if (!props[eachProp].IsPrimitiveType)
                 continue;
-            var guidDefault = dto == Dto.Creation && props[eachProp].Type.IsGuidPropertyType()
-                ? " = Guid.NewGuid();"
-                : "";
 
             string newLine = eachProp == props.Count - 1 ? "" : Environment.NewLine;
-            propString += $@"    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{guidDefault}{newLine}";
+            propString += $@"    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
         }
 
         return propString;
