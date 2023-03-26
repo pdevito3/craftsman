@@ -77,7 +77,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var lowercaseEntityPk = pkName.LowercaseFirstLetter();
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
 
         return $@"[Fact]
     public async Task can_patch_existing_{entity.Name.ToLower()}_in_db()

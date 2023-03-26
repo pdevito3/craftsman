@@ -34,6 +34,7 @@ public class CommandUpdateRecordBuilder
         var commandProp = $"Updated{entity.Name}Data";
         var newEntityDataProp = $"updated{entity.Name}Data";
         var updatedEntityProp = $"{entityNameLowercase}ToUpdate";
+        var modelToUpdateVariableName = $"{entity.Name.LowercaseFirstLetter()}ToAdd";
         var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
 
@@ -42,6 +43,7 @@ public class CommandUpdateRecordBuilder
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entity.Name, entity.Plural, null, projectBaseName);
         
         FeatureBuilderHelpers.GetPermissionValuesForHandlers(srcDirectory, 
             projectBaseName, 
@@ -59,6 +61,7 @@ using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
+using {modelClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
 using MapsterMapper;
 using MediatR;
@@ -80,19 +83,23 @@ public static class {className}
     public sealed class Handler : IRequestHandler<{updateCommandName}, bool>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly IUnitOfWork _unitOfWork;{heimGuardField}
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
+        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper{heimGuardCtor})
         {{
             _{repoInterfaceProp} = {repoInterfaceProp};
-            _unitOfWork = unitOfWork;{heimGuardSetter}
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;{heimGuardSetter}
         }}
 
         public async Task<bool> Handle({updateCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
             var {updatedEntityProp} = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
 
-            {updatedEntityProp}.Update(request.{commandProp});
+            var {modelToUpdateVariableName} = _mapper.Map<{EntityModel.Update.GetClassName(entity.Name)}>(request.{commandProp});
+            {updatedEntityProp}.Update({modelToUpdateVariableName});
+
             _{repoInterfaceProp}.Update({updatedEntityProp});
             return await _unitOfWork.CommitChanges(cancellationToken) >= 1;
         }}

@@ -12,6 +12,7 @@ using Builders.Bff.Features.Dynamic.Types;
 using Builders.Bff.Src;
 using Builders.Dtos;
 using Builders.Endpoints;
+using Builders.EntityModels;
 using Builders.Features;
 using Builders.Tests.Fakes;
 using Builders.Tests.FunctionalTests;
@@ -51,6 +52,7 @@ public class EntityScaffoldingService
             // not worrying about DTOs, profiles, validators, fakers - they are all added by default
             new EntityBuilder(_utilities).CreateEntity(solutionDirectory, srcDirectory, entity, projectBaseName);
             new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
+            new EntityModelBuilder(_utilities, _fileSystem).CreateEntityModels(srcDirectory, entity, projectBaseName);
             new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity, projectBaseName);
             new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
@@ -115,6 +117,7 @@ public class EntityScaffoldingService
 
         new EntityBuilder(_utilities).CreateRolePermissionsEntity(srcDirectory, entity, projectBaseName);
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
+        new EntityModelBuilder(_utilities, _fileSystem).CreateEntityModels(srcDirectory, entity, projectBaseName);
         new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName);
         _mediator.Send(new DatabaseEntityConfigRolePermissionBuilder.Command());
@@ -136,7 +139,8 @@ public class EntityScaffoldingService
         new FakesBuilder(_utilities).CreateRolePermissionFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, entity);
         new RolePermissionsUnitTestBuilder(_utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new RolePermissionsUnitTestBuilder(_utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-
+        new FakeEntityBuilderBuilder(_utilities).CreateFakeBuilder(srcDirectory, testDirectory, projectBaseName, entity);
+        
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { entity }, dbContextName, projectBaseName);
 
@@ -183,6 +187,7 @@ public class EntityScaffoldingService
         // TODO custom dto for roles
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, userEntity, projectBaseName);
         
+        new EntityModelBuilder(_utilities, _fileSystem).CreateEntityModels(srcDirectory, userEntity, projectBaseName);
         new EntityMappingBuilder(_utilities).CreateUserMapping(srcDirectory, projectBaseName);
         new ApiRouteModifier(_fileSystem).AddRoutesForUser(testDirectory, projectBaseName);
         _mediator.Send(new DatabaseEntityConfigUserBuilder.Command());
@@ -210,6 +215,7 @@ public class EntityScaffoldingService
         new AddRemoveUserRoleTestsBuilder(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
         new UserUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new UserUnitTestBuilder(_utilities).UpdateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        new FakeEntityBuilderBuilder(_utilities).CreateFakeBuilder(srcDirectory, testDirectory, projectBaseName, userEntity);
         
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { userEntity }, dbContextName, projectBaseName);
@@ -272,8 +278,6 @@ public class EntityScaffoldingService
             new GetEntityListTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments,
                 feature, projectBaseName);
-            new GetEntityListUnitTestBuilder(_utilities)
-                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, entity.Lambda, entity.Properties, projectBaseName, feature.IsProtected);
         }
 
         if (feature.Type == FeatureType.DeleteRecord.Name)

@@ -79,7 +79,6 @@ public static class {className}
         public async Task<bool> Handle({deleteCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
             var recordToDelete = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
-
             _{repoInterfaceProp}.Remove(recordToDelete);
             return await _unitOfWork.CommitChanges(cancellationToken) >= 1;
         }}

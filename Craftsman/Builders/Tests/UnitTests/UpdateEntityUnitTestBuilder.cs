@@ -27,8 +27,9 @@ public class UpdateEntityUnitTestBuilder
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entityPlural, projectBaseName);
-        var updateDto = FileNames.GetDtoName(entityName, Dto.Update);
-        var fakeEntityForUpdate = $"Fake{updateDto}";
+        
+        var updateModelName = EntityModel.Update.GetClassName(entityName);
+        var fakeUpdateModelName = FileNames.FakerName(updateModelName);
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -53,8 +54,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_update_{entityName.LowercaseFirstLetter()}()
     {{
         // Arrange
-        var fake{entityName} = Fake{entityName}.Generate();
-        var updated{entityName} = new {fakeEntityForUpdate}().Generate();
+        var fake{entityName} = new {FileNames.FakeBuilderName(entityName)}().Build();
+        var updated{entityName} = new {fakeUpdateModelName}().Generate();
         
         // Act
         fake{entityName}.Update(updated{entityName});
@@ -66,8 +67,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void queue_domain_event_on_update()
     {{
         // Arrange
-        var fake{entityName} = Fake{entityName}.Generate();
-        var updated{entityName} = new {fakeEntityForUpdate}().Generate();
+        var fake{entityName} = new {FileNames.FakeBuilderName(entityName)}().Build();
+        var updated{entityName} = new {fakeUpdateModelName}().Generate();
         fake{entityName}.DomainEvents.Clear();
         
         // Act

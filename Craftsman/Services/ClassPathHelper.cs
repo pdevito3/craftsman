@@ -280,6 +280,12 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", valueObjectEnum.Plural(), "Dtos"), $"{dtoName}.cs");
     }
 
+    public static ClassPath EntityModelClassPath(string srcDirectory, string entityName, string entityPlural, EntityModel entityModel, string projectBaseName)
+    {
+        var modelName = entityModel?.GetClassName(entityName);
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", entityPlural, "Models"), $"{modelName}.cs");
+    }
+
     public static ClassPath WebApiValueObjectMappingsClassPath(string srcDirectory, ValueObjectEnum valueObjectEnum, string projectBaseName)
     {
         var mappingName = FileNames.GetMappingName(valueObjectEnum.Name);

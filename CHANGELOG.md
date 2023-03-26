@@ -12,7 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updates
 
 * No more manipulation DTO
-* No default new guid on DTO
+* Tests use builder methods
+* No more autofaker for domain entity, only a builder
 
 ## [0.19.4] - 03/05/2023
 

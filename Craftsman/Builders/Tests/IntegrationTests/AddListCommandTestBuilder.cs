@@ -62,7 +62,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     private static string GetAddListCommandTest(Entity entity, Feature feature)
     {
         var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
-        var fakeCreationDto = $"Fake{createDto}";
+        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
         var fakeEntityVariableNameOne = $"fake{entity.Name}One";
         var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
@@ -74,7 +74,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        var {fakeParentEntity} = Fake{feature.ParentEntity}.Generate(new {fakeParentCreationDto}().Generate());
+        var {fakeParentEntity} = new {FileNames.FakeBuilderName(feature.ParentEntity)}().Build();
         await testingServiceScope.InsertAsync({fakeParentEntity});
         var {fakeEntityVariableNameOne} = new {fakeCreationDto}().Generate();
         var {fakeEntityVariableNameTwo} = new {fakeCreationDto}().Generate();

@@ -29,8 +29,8 @@ public class CreateEntityUnitTestBuilder
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entityPlural, projectBaseName);
 
         var seedInfoVar = $"{entityName.LowercaseFirstLetter()}ToCreate";
-        var creationDtoName = FileNames.GetDtoName(entityName, Dto.Creation);
-        var fakeCreationDtoName = $"Fake{creationDtoName}";
+        var creationModelName = EntityModel.Creation.GetClassName(entityName);
+        var fakeCreationModelName = FileNames.FakerName(creationModelName);
         var createdEntityVar = $"fake{entityName}";
         
         return @$"namespace {classPath.ClassNamespace};
@@ -56,7 +56,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_create_valid_{entityName.LowercaseFirstLetter()}()
     {{
         // Arrange
-        var {seedInfoVar} = new {fakeCreationDtoName}().Generate();
+        var {seedInfoVar} = new {fakeCreationModelName}().Generate();
         
         // Act
         var {createdEntityVar} = {entityName}.Create({seedInfoVar});
@@ -67,8 +67,11 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     [Fact]
     public void queue_domain_event_on_create()
     {{
-        // Arrange + Act
-        var fake{entityName} = Fake{entityName}.Generate();
+        // Arrange
+        var {seedInfoVar} = new {fakeCreationModelName}().Generate();
+        
+        // Act
+        var {createdEntityVar} = {entityName}.Create({seedInfoVar});
 
         // Assert
         fake{entityName}.DomainEvents.Count.Should().Be(1);

@@ -6,7 +6,30 @@ using Craftsman.Services;
 
 public static class FunctionalTestServices
 {
-    public static string FakeParentTestHelpers(Entity entity, out string fakeParentIdRuleFor)
+    public static string FakeParentTestHelpersForBuilders(Entity entity, out string fakeParentIdRuleFor)
+    {
+        var fakeParent = "";
+        fakeParentIdRuleFor = "";
+        foreach (var entityProperty in entity.Properties)
+        {
+            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType)
+            {
+                var baseVarName = entityProperty.ForeignEntityName != entity.Name
+                    ? $"{entityProperty.ForeignEntityName}"
+                    : $"{entityProperty.ForeignEntityName}Parent";
+                var fakeParentBuilder = FileNames.FakeBuilderName(entityProperty.ForeignEntityName);
+                fakeParent +=
+                    @$"var fake{baseVarName}One = new {fakeParentBuilder}().Build();
+        await InsertAsync(fake{baseVarName}One);{Environment.NewLine}{Environment.NewLine}        ";
+                fakeParentIdRuleFor +=
+                    $"{Environment.NewLine}            .With{entityProperty.Name}(fake{baseVarName}One.Id)";
+            }
+        }
+
+        return fakeParent;
+    }
+    
+    public static string FakeParentTestHelpersForUpdateDto(Entity entity, out string fakeParentIdRuleFor)
     {
         var fakeParent = "";
         fakeParentIdRuleFor = "";
