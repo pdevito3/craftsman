@@ -51,20 +51,18 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
     private static string GetTest(string queryName, Entity entity, string featureName)
     {
-        var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
         var fakeEntityVariableName = $"fake{entity.Name}One";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var pkName = Entity.PrimaryKeyProperty.Name;
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
 
         return $@"[Fact]
     public async Task can_get_existing_{entity.Name.ToLower()}_with_accurate_props()
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
+        {fakeParent}var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleFor}.Build();
         await testingServiceScope.InsertAsync({fakeEntityVariableName});
 
         // Act

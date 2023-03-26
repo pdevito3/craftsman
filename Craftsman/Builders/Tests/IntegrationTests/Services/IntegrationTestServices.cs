@@ -6,23 +6,48 @@ using Domain.Enums;
 
 public static class IntegrationTestServices
 {
-    public static string FakeParentTestHelpers(Entity entity, out string fakeParentIdRuleFor)
+    public static string FakeParentTestHelpersForBuilders(Entity entity, out string fakeParentIdRuleFor)
     {
         var fakeParent = "";
         fakeParentIdRuleFor = "";
         foreach (var entityProperty in entity.Properties)
         {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType && entityProperty.IsPrimitiveType)
+            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType)
             {
                 var baseVarName = entityProperty.ForeignEntityName != entity.Name
                     ? $"{entityProperty.ForeignEntityName}"
                     : $"{entityProperty.ForeignEntityName}Parent";
-                var fakeParentBuilder = FileNames.FakeBuilderName(entity.Name);
+                var fakeParentBuilder = FileNames.FakeBuilderName(entityProperty.ForeignEntityName);
                 fakeParent +=
                     @$"var fake{baseVarName}One = new {fakeParentBuilder}().Build();
         await testingServiceScope.InsertAsync(fake{baseVarName}One);{Environment.NewLine}{Environment.NewLine}        ";
                 fakeParentIdRuleFor +=
                     $"{Environment.NewLine}            .With{entityProperty.Name}(fake{baseVarName}One.Id)";
+            }
+        }
+
+        return fakeParent;
+    }
+    
+    public static string FakeParentTestHelpersForUpdateDto(Entity entity, out string fakeParentIdRuleFor)
+    {
+        var fakeParent = "";
+        fakeParentIdRuleFor = "";
+        foreach (var entityProperty in entity.Properties)
+        {
+            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType)
+            {
+                var baseVarName = entityProperty.ForeignEntityName != entity.Name
+                    ? $"{entityProperty.ForeignEntityName}"
+                    : $"{entityProperty.ForeignEntityName}Parent";
+                var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
+                var fakeParentCreationDto =
+                    FileNames.FakerName(FileNames.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
+                fakeParent +=
+                    @$"var fake{baseVarName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
+        await testingServiceScope.InsertAsync(fake{baseVarName}One);{Environment.NewLine}{Environment.NewLine}        ";
+                fakeParentIdRuleFor +=
+                    $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{baseVarName}One.Id)";
             }
         }
 
@@ -53,7 +78,7 @@ public static class IntegrationTestServices
                 var baseVarName = entityProperty.ForeignEntityName != entity.Name
                     ? $"{entityProperty.ForeignEntityName}"
                     : $"{entityProperty.ForeignEntityName}Parent";
-                var fakeParentBuilder = FileNames.FakeBuilderName(entity.Name);
+                var fakeParentBuilder = FileNames.FakeBuilderName(entityProperty.ForeignEntityName);
                 fakeParent +=
                     @$"var fake{baseVarName}One = new {fakeParentBuilder}().Build();
         var fake{baseVarName}Two = new {fakeParentBuilder}().Build();

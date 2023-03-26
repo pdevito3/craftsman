@@ -48,7 +48,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
         var faker = new Faker();
-        var fakeUserOne = FakeUser.Generate(new FakeUserForCreationDto().Generate());
+        var fakeUserOne = new FakeUserBuilder().Build();
         await testingServiceScope.InsertAsync(fakeUserOne);
 
         var user = await testingServiceScope.ExecuteDbContextAsync(db => db.Users

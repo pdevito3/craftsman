@@ -139,7 +139,8 @@ public class EntityScaffoldingService
         new FakesBuilder(_utilities).CreateRolePermissionFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, entity);
         new RolePermissionsUnitTestBuilder(_utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new RolePermissionsUnitTestBuilder(_utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-
+        new FakeEntityBuilderBuilder(_utilities).CreateFakeBuilder(srcDirectory, testDirectory, projectBaseName, entity);
+        
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { entity }, dbContextName, projectBaseName);
 
@@ -214,6 +215,7 @@ public class EntityScaffoldingService
         new AddRemoveUserRoleTestsBuilder(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
         new UserUnitTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new UserUnitTestBuilder(_utilities).UpdateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        new FakeEntityBuilderBuilder(_utilities).CreateFakeBuilder(srcDirectory, testDirectory, projectBaseName, userEntity);
         
         // need to do db modifier
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { userEntity }, dbContextName, projectBaseName);
@@ -276,8 +278,6 @@ public class EntityScaffoldingService
             new GetEntityListTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
             new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments,
                 feature, projectBaseName);
-            new GetEntityListUnitTestBuilder(_utilities)
-                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, entity.Lambda, entity.Properties, projectBaseName, feature.IsProtected);
         }
 
         if (feature.Type == FeatureType.DeleteRecord.Name)

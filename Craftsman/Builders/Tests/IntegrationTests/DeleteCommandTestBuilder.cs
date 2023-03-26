@@ -65,7 +65,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var dbResponseVariableName = $"{lowercaseEntityName}Response";
         var pkName = Entity.PrimaryKeyProperty.Name;
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
         if (fakeParentIdRuleFor != "")
             fakeParentIdRuleFor += $"{Environment.NewLine}            ";
 
@@ -120,7 +120,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var pkName = Entity.PrimaryKeyProperty.Name;
         var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
         if (fakeParentIdRuleFor != "")
             fakeParentIdRuleFor += $"{Environment.NewLine}            ";
 

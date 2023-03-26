@@ -25,7 +25,7 @@ public sealed class {model.GetClassName(entity.Name)}
 
     public static string EntityModelPropBuilder(List<EntityProperty> props, EntityModel model)
     {
-        var propString = "";
+        var propString = string.Empty;
         for (var eachProp = 0; eachProp < props.Count; eachProp++)
         {
             if (!props[eachProp].CanManipulate && (model == EntityModel.Creation || model == EntityModel.Update))

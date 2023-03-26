@@ -70,7 +70,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
                 var baseVarName = entityProperty.ForeignEntityName != entity.Name
                     ? $"{entityProperty.ForeignEntityName}"
                     : $"{entityProperty.ForeignEntityName}Parent";
-                var fakeParentBuilder = FileNames.FakeBuilderName(entity.Name);
+                var fakeParentBuilder = FileNames.FakeBuilderName(entityProperty.ForeignEntityName);
                 fakeParent += @$"var fake{baseVarName}One = new {fakeParentBuilder}().Build();
         await testingServiceScope.InsertAsync(fake{baseVarName}One);{Environment.NewLine}{Environment.NewLine}        ";
                 fakeParentIdRuleFor +=

@@ -41,10 +41,13 @@ public class PutCommandTestBuilder
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, projectBaseName);
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
         if (fakeParentIdRuleFor != "")
             fakeParentIdRuleFor += $"{Environment.NewLine}            ";
-        
+        IntegrationTestServices.FakeParentTestHelpersForUpdateDto(entity, out var fakeParentForUpdateDtoIdRuleFor);
+        if (fakeParentForUpdateDtoIdRuleFor != "")
+            fakeParentForUpdateDtoIdRuleFor += $"{Environment.NewLine}            ";
+
         var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
         var permissionTest = !featureIsProtected ? null : GetPermissionTest(commandName, entity, featureName, permission);
 
@@ -69,7 +72,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
         {fakeParent}var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleFor}.Build();
-        var updated{entity.Name}Dto = new {fakeUpdateDto}(){fakeParentIdRuleFor}.Generate();
+        var updated{entity.Name}Dto = new {fakeUpdateDto}(){fakeParentForUpdateDtoIdRuleFor}.Generate();
         await testingServiceScope.InsertAsync({fakeEntityVariableName});
 
         var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}

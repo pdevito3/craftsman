@@ -55,13 +55,11 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
     private static string GetTest(string queryName, Entity entity, string featureName)
     {
-        var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
         var fakeEntityVariableName = $"fake{entity.Name}One";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var pkName = Entity.PrimaryKeyProperty.Name;
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpers(entity, out var fakeParentIdRuleFor);
+        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
         if (fakeParentIdRuleFor != "")
             fakeParentIdRuleFor += $"{Environment.NewLine}            ";
 
