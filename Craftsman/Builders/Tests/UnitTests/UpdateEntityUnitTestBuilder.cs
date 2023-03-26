@@ -54,7 +54,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_update_{entityName.LowercaseFirstLetter()}()
     {{
         // Arrange
-        var fake{entityName} = Fake{entityName}.Generate();
+        var fake{entityName} = new {FileNames.FakeBuilderName(entityName)}().Build();
         var updated{entityName} = new {fakeUpdateModelName}().Generate();
         
         // Act
@@ -67,7 +67,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void queue_domain_event_on_update()
     {{
         // Arrange
-        var fake{entityName} = Fake{entityName}.Generate();
+        var fake{entityName} = new {FileNames.FakeBuilderName(entityName)}().Build();
         var updated{entityName} = new {fakeUpdateModelName}().Generate();
         fake{entityName}.DomainEvents.Clear();
         

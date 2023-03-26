@@ -67,8 +67,11 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     [Fact]
     public void queue_domain_event_on_create()
     {{
-        // Arrange + Act
-        var fake{entityName} = Fake{entityName}.Generate();
+        // Arrange
+        var {seedInfoVar} = new {fakeCreationModelName}().Generate();
+        
+        // Act
+        var {createdEntityVar} = {entityName}.Create({seedInfoVar});
 
         // Assert
         fake{entityName}.DomainEvents.Count.Should().Be(1);

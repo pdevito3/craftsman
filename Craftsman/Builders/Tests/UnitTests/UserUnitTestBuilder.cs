@@ -104,12 +104,15 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     [Fact]
     public void queue_domain_event_on_create()
     {{
-        // Arrange + Act
-        var fakeRecipe = FakeUser.Generate();
+        // Arrange
+        var toCreate = new FakeUserForCreation().Generate();
+
+        // Act
+        var newUser = User.Create(toCreate);
 
         // Assert
-        fakeRecipe.DomainEvents.Count.Should().Be(1);
-        fakeRecipe.DomainEvents.FirstOrDefault().Should().BeOfType(typeof(UserCreated));
+        newUser.DomainEvents.Count.Should().Be(1);
+        newUser.DomainEvents.FirstOrDefault().Should().BeOfType(typeof(UserCreated));
     }}
 }}";
     }
@@ -151,7 +154,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_update_user()
     {{
         // Arrange
-        var fakeUser = FakeUser.Generate();
+        var fakeUser = new FakeUserBuilder().Build();
         var updatedUser = new FakeUserForUpdate().Generate();
         
         // Act
@@ -169,7 +172,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_NOT_update_user_without_identifier()
     {{
         // Arrange
-        var fakeUser = FakeUser.Generate();
+        var fakeUser = new FakeUserBuilder().Build();
         var updatedUser = new FakeUserForUpdate().Generate();
         updatedUser.Identifier = null;
         var newUser = () => fakeUser.Update(updatedUser);
@@ -182,7 +185,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_NOT_update_user_with_whitespace_identifier()
     {{
         // Arrange
-        var fakeUser = FakeUser.Generate();
+        var fakeUser = new FakeUserBuilder().Build();
         var updatedUser = new FakeUserForUpdate().Generate();
         updatedUser.Identifier = "" "";
         var newUser = () => fakeUser.Update(updatedUser);
@@ -195,7 +198,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void queue_domain_event_on_update()
     {{
         // Arrange
-        var fakeUser = FakeUser.Generate();
+        var fakeUser = new FakeUserBuilder().Build();
         var updatedUser = new FakeUserForUpdate().Generate();
         fakeUser.DomainEvents.Clear();
         

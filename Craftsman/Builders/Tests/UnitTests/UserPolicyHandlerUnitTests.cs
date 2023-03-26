@@ -212,7 +212,7 @@ public static class UserExtensions
 
     public static void UsersExist(this Mock<IUserRepository> repo)
     {{
-        var user = FakeUser.Generate();
+        var user = new FakeUserBuilder().Build();
         var users = new List<User>() {{user}};
         var mockData = users.AsQueryable().BuildMock();
         
