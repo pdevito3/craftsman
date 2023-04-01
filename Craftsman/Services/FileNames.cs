@@ -7,45 +7,21 @@ using Helpers;
 public static class FileNames
 {
     public static string BoundaryServiceInterface(string projectBaseName)
-    {
-        return $"I{projectBaseName}Service";
-    }
-    
-    public static string EntityRepository(string entityName)
-    {
-        return $"{entityName.UppercaseFirstLetter()}Repository";
-    }
-    
-    public static string EntityRepositoryInterface(string entityName)
-    {
-        return $"I{EntityRepository(entityName)}";
-    }
-    
-    public static string GenericRepository()
-    {
-        return $"GenericRepository";
-    }
-    
-    public static string GenericRepositoryInterface()
-    {
-        return $"I{GenericRepository()}";
-    }
-    
-    public static string WebAppServiceConfiguration()
-    {
-        return $"WebAppServiceConfiguration";
-    }
-    
-    public static string GetMassTransitRegistrationName()
-    {
-        return "MassTransitServiceExtension";
-    }
-
-    public static string MessageClassName(string messageName)
-    {
-        return $"{messageName}";
-    }
-
+        => $"I{projectBaseName}ScopedService";
+    public static string EntityRepository(string entityName) 
+        => $"{entityName.UppercaseFirstLetter()}Repository";    
+    public static string EntityRepositoryInterface(string entityName) 
+        => $"I{EntityRepository(entityName)}";    
+    public static string GenericRepository() 
+        => $"GenericRepository";    
+    public static string GenericRepositoryInterface() 
+        => $"I{GenericRepository()}";    
+    public static string WebAppServiceConfiguration() 
+        => $"WebAppServiceConfiguration";    
+    public static string GetMassTransitRegistrationName() 
+        => "MassTransitServiceExtension";
+    public static string MessageClassName(string messageName) 
+        => $"{messageName}";
     public static string ConnectionStringOptionKey(string projectBaseName) => $"{projectBaseName}Key";
     public static string TestingServiceScope() => "TestingServiceScope";
     public static string AuthOptions() => "AuthOptions";

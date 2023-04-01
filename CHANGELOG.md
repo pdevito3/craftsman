@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Tests use builder methods
 * No more autofaker for domain entity, only a builder
 * Entity properties not virtualized anymore
+* `IProjectService` renamed to `IProjectScopedService`
 
 ## [0.19.4] - 03/05/2023
 
