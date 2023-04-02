@@ -39,6 +39,8 @@ public class WebApiCsProjBuilder
 
   <ItemGroup>
     <PackageReference Include=""Ardalis.SmartEnum"" Version=""7.0.0"" />
+    <PackageReference Include=""Ardalis.Specification"" Version=""6.1.0"" />
+    <PackageReference Include=""Ardalis.Specification.EntityFrameworkCore"" Version=""6.1.0"" />
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""7.0.2"" />
