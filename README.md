@@ -40,7 +40,11 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ### Coming in 0.20
 
-* TBD
+✅ Intermediate model to not pass DTOs to domain
+
+✅ Specification support
+
+🚧 No more queryable exposed in repositories
 
 ### Some 0.19 highlights
 
