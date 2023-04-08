@@ -38,13 +38,19 @@ I'm currently working through a deep example project the really dogfood things a
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-### Coming in 0.20
+### Coming in 0.21
+
+🚧 No more queryable exposed in repositories
+
+🚧 Update `GetList` feature to `GetPagedList` and create a distinct `GetList
+
+🚧 New error handler middleware
+
+### Some 0.20 highlights
 
 ✅ Intermediate model to not pass DTOs to domain
 
 ✅ Specification support
-
-🚧 No more queryable exposed in repositories
 
 ### Some 0.19 highlights
 
