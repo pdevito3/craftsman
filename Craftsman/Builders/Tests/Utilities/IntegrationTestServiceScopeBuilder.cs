@@ -85,6 +85,13 @@ public class {FileNames.TestingServiceScope()}
         return await mediator.Send(request);
     }}
 
+    public async Task SendAsync<TRequest>(TRequest request)
+        where TRequest : IRequest
+    {{
+        var mediator = _scope.ServiceProvider.GetService<ISender>();
+        await mediator.Send(request);
+    }}
+
     public async Task<TEntity> FindAsync<TEntity>(params object[] keyValues)
         where TEntity : class
     {{

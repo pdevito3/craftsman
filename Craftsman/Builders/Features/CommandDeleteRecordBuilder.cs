@@ -27,8 +27,7 @@ public class CommandDeleteRecordBuilder
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
-        var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
-        var entityNameLowercase = entity.Name.LowercaseFirstLetter();
+        var primaryKeyPropNameLowercase = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
         var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
 
@@ -55,7 +54,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed class {deleteCommandName} : IRequest<bool>
+    public sealed class {deleteCommandName} : IRequest
     {{
         public readonly {primaryKeyPropType} {primaryKeyPropName};
 
@@ -65,7 +64,7 @@ public static class {className}
         }}
     }}
 
-    public sealed class Handler : IRequestHandler<{deleteCommandName}, bool>
+    public sealed class Handler : IRequestHandler<{deleteCommandName}>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly IUnitOfWork _unitOfWork;{heimGuardField}
@@ -76,11 +75,11 @@ public static class {className}
             _unitOfWork = unitOfWork;{heimGuardSetter}
         }}
 
-        public async Task<bool> Handle({deleteCommandName} request, CancellationToken cancellationToken)
+        public async Task Handle({deleteCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
             var recordToDelete = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
             _{repoInterfaceProp}.Remove(recordToDelete);
-            return await _unitOfWork.CommitChanges(cancellationToken) >= 1;
+            await _unitOfWork.CommitChanges(cancellationToken);
         }}
     }}
 }}";

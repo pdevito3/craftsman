@@ -34,7 +34,6 @@ public class PutCommandTestBuilder
         var fakeEntityVariableName = $"fake{entity.Name}One";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var pkName = Entity.PrimaryKeyProperty.Name;
-        var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
@@ -77,12 +76,11 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
-        var {lowercaseEntityPk} = {lowercaseEntityName}.{pkName};
 
         // Act
-        var command = new {featureName}.{commandName}({lowercaseEntityPk}, updated{entity.Name}Dto);
+        var command = new {featureName}.{commandName}({lowercaseEntityName}.{pkName}, updated{entity.Name}Dto);
         await testingServiceScope.SendAsync(command);
-        var updated{entity.Name} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityPk}));
+        var updated{entity.Name} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}.FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.{pkName} == {lowercaseEntityName}.{pkName}));
 
         // Assert{GetAssertions(entity.Properties, entity.Name)}
     }}{permissionTest}

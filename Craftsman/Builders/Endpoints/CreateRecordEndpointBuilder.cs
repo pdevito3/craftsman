@@ -51,7 +51,6 @@ public class CreateRecordEndpointBuilder
     {{
         var command = new {feature.Name}.{feature.Command}({creationPropName}, {batchPropNameLower});
         var commandResponse = await _mediator.Send(command);
-
         return Created(""Get{entityName}"", commandResponse);
     }}";
     }

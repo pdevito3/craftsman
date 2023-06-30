@@ -24,7 +24,6 @@ public class PutRecordEndpointBuilder
     {{
         var command = new {FileNames.UpdateEntityFeatureClassName(entity.Name)}.{updateRecordCommandMethodName}({lowercasePrimaryKey}, {lowercaseEntityVariable});
         await _mediator.Send(command);
-
         return NoContent();
     }}";
     }

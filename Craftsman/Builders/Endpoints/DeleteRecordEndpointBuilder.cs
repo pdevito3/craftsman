@@ -21,7 +21,6 @@ public class DeleteRecordEndpointBuilder
     {{
         var command = new {FileNames.DeleteEntityFeatureClassName(entity.Name)}.{deleteRecordCommandMethodName}({lowercasePrimaryKey});
         await _mediator.Send(command);
-
         return NoContent();
     }}";
     }

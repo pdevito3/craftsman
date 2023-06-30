@@ -36,7 +36,7 @@ public class FunctionalTestsCsProjBuilder
     <PackageReference Include=""AutoBogusLifesupport"" Version=""2.14.0"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""FluentAssertions"" Version=""6.9.0"" />
-    <PackageReference Include=""MediatR"" Version=""11.1.0"" />
+    <PackageReference Include=""MediatR"" Version=""12.0.1"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.Relational"" Version=""7.0.2"" />
     <PackageReference Include=""Moq"" Version=""4.18.4"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""7.0.2"" />

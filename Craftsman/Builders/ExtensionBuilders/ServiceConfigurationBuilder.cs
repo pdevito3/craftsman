@@ -61,7 +61,7 @@ public static class {FileNames.WebAppServiceConfiguration()}
         builder.Services.AddApiVersioningExtension();
 
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         builder.Services.AddScoped<SieveProcessor>();
 
         // registers all services that inherit from your base service interface - {boundaryServiceName}

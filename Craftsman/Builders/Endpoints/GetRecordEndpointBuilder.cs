@@ -27,7 +27,6 @@ public class GetRecordEndpointBuilder
     {{
         var query = new {FileNames.GetEntityFeatureClassName(entity.Name)}.{queryRecordMethodName}({lowercasePrimaryKey});
         var queryResponse = await _mediator.Send(query);
-
         return Ok(queryResponse);
     }}";
     }

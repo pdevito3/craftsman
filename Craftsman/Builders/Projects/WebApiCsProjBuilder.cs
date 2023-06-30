@@ -49,7 +49,7 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""Mapster"" Version=""7.3.0"" />
     <PackageReference Include=""Mapster.DependencyInjection"" Version=""1.0.0"" />
     <PackageReference Include=""Mapster.EFCore"" Version=""5.1.0"" />
-    <PackageReference Include=""MediatR"" Version=""11.1.0"" />
+    <PackageReference Include=""MediatR"" Version=""12.0.1"" />
     <PackageReference Include=""MediatR.Extensions.Microsoft.DependencyInjection"" Version=""11.0.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""7.0.2"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.0.0"" />

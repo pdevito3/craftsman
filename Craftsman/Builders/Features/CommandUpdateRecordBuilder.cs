@@ -68,7 +68,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed class {updateCommandName} : IRequest<bool>
+    public sealed class {updateCommandName} : IRequest
     {{
         public readonly {primaryKeyPropType} {primaryKeyPropName};
         public readonly {updateDto} {commandProp};
@@ -80,7 +80,7 @@ public static class {className}
         }}
     }}
 
-    public sealed class Handler : IRequestHandler<{updateCommandName}, bool>
+    public sealed class Handler : IRequestHandler<{updateCommandName}>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
         private readonly IUnitOfWork _unitOfWork;
@@ -93,7 +93,7 @@ public static class {className}
             _mapper = mapper;{heimGuardSetter}
         }}
 
-        public async Task<bool> Handle({updateCommandName} request, CancellationToken cancellationToken)
+        public async Task Handle({updateCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
             var {updatedEntityProp} = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
 
@@ -101,7 +101,7 @@ public static class {className}
             {updatedEntityProp}.Update({modelToUpdateVariableName});
 
             _{repoInterfaceProp}.Update({updatedEntityProp});
-            return await _unitOfWork.CommitChanges(cancellationToken) >= 1;
+            await _unitOfWork.CommitChanges(cancellationToken);
         }}
     }}
 }}";
