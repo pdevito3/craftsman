@@ -46,6 +46,8 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 🚧 New error handler middleware
 
+🚧 Remove shared kernel
+
 ### Some 0.20 highlights
 
 ✅ Intermediate model to not pass DTOs to domain
