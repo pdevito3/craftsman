@@ -46,7 +46,7 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 🚧 New error handler middleware
 
-🚧 Remove shared kernel
+🚧 Limit shared kernel to messages
 
 ### Some 0.20 highlights
 
