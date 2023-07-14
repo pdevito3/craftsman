@@ -28,8 +28,15 @@ public static class FileNames
     public static string RabbitMqOptions() => "RabbitMqOptions";
     public static string ConnectionStringOptions() => "ConnectionStringOptions";
     public static string RootConfigurationExtensions() => "RootConfigurationExtensions";
-    public static string FakeBuilderName(string entityName) => $"Fake{entityName}Builder";    
-    public static string MessageInterfaceName(string messageName) => $"I{messageName}";
+    public static string FakeBuilderName(string entityName) => $"Fake{entityName}Builder";
+    public static string MessageInterfaceName(string messageName)
+    {
+        var nameWithI = $"I{messageName}";
+        if (nameWithI.StartsWith("II") && nameWithI.Length > 2 && char.IsUpper(nameWithI[2]))
+            nameWithI = nameWithI.Remove(1, 1);
+        
+        return nameWithI;
+    }
     public static string EntityCreatedDomainMessage(string entityName) => $"{entityName}Created";    
     public static string EntityUpdatedDomainMessage(string entityName) => $"{entityName}Updated";    
     public static string UserRolesUpdateDomainMessage() => "UserRolesUpdated";

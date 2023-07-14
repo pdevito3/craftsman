@@ -12,7 +12,14 @@ public class Message
     /// </summary>
     public string Name
     {
-        get => _name ?? Name.UppercaseFirstLetter();
+        get
+        {
+            var baseName = _name ?? Name.UppercaseFirstLetter();
+            if (baseName.StartsWith("I") && baseName.Length > 1 && char.IsUpper(baseName[1]))
+                baseName = baseName.Remove(0, 1);
+
+            return baseName;
+        }
         set => _name = value;
     }
 

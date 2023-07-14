@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Major MediatR update to 12.x
 * Features returning bool will now have no return value
 
+### Fixed
+
+* Can better handle unneccessary `I` on messages 
+
 ## [0.20.0] - 04/08/2023
 
 ### Added

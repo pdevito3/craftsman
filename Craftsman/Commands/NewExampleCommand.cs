@@ -340,7 +340,7 @@ BoundedContexts:
     DomainDirectory: Recipes
     ExchangeType: fanout
 Messages:
-- Name: RecipeAdded
+- Name: IRecipeAdded
   Properties:
   - Name: RecipeId
     Type: guid
