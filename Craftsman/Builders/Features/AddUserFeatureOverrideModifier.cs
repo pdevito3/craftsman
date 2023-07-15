@@ -68,7 +68,7 @@ using {dtoClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using MapsterMapper;
+using Mappings;
 using MediatR;
 
 public static class {className}
@@ -88,12 +88,10 @@ public static class {className}
     public sealed class Handler : IRequestHandler<{addCommandName}, {readDto}>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;{heimGuardField}
+        private readonly IUnitOfWork _unitOfWork;{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper{heimGuardCtor})
+        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
         {{
-            _mapper = mapper;
             _{repoInterfaceProp} = {repoInterfaceProp};
             _unitOfWork = unitOfWork;{heimGuardSetter}
         }}
@@ -103,14 +101,14 @@ public static class {className}
             if(!request.SkipPermissions)
                 await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.{permissionName});
 
-            var {modelToCreateVariableName} = _mapper.Map<{EntityModel.Creation.GetClassName(entityName)}>(request.{commandProp});
+            var {modelToCreateVariableName} = request.{commandProp}.To{EntityModel.Creation.GetClassName(entityName)}();
             var {entityNameLowercase} = {entityName}.Create({modelToCreateVariableName});
             await _{repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
 
             await _unitOfWork.CommitChanges(cancellationToken);
 
             var {entityNameLowercase}Added = await _{repoInterfaceProp}.GetById({entityNameLowercase}.Id, cancellationToken: cancellationToken);
-            return _mapper.Map<{readDto}>({entityNameLowercase}Added);
+            return {entityNameLowercase}Added.To{readDto}();
         }}
     }}
 }}");

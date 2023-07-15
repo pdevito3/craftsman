@@ -62,7 +62,7 @@ using {dtoClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using MapsterMapper;
+using Mappings;
 using MediatR;
 
 public static class {className}
@@ -80,25 +80,23 @@ public static class {className}
     public sealed class Handler : IRequestHandler<{addCommandName}, {readDto}>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;{heimGuardField}
+        private readonly IUnitOfWork _unitOfWork;{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper{heimGuardCtor})
+        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
         {{
-            _mapper = mapper;
             _{repoInterfaceProp} = {repoInterfaceProp};
             _unitOfWork = unitOfWork;{heimGuardSetter}
         }}
 
         public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            var {modelToCreateVariableName} = _mapper.Map<{EntityModel.Creation.GetClassName(entity.Name)}>(request.{commandProp});
+            var {modelToCreateVariableName} = request.{commandProp}.To{EntityModel.Creation.GetClassName(entity.Name)}();
             var {entityNameLowercase} = {entityName}.Create({modelToCreateVariableName});
 
             await _{repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
             await _unitOfWork.CommitChanges(cancellationToken);
 
-            return _mapper.Map<{readDto}>({entityNameLowercase});
+            return {entityNameLowercase}.To{readDto}();
         }}
     }}
 }}";

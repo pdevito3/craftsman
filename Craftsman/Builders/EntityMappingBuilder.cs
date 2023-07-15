@@ -14,66 +14,31 @@ public class EntityMappingBuilder
         _utilities = utilities;
     }
 
-    public void CreateMapping(string srcDirectory, Entity entity, string projectBaseName)
+    public void CreateMapping(string srcDirectory, string entityName, string entityPlural, string projectBaseName)
     {
-        var classPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, $"{FileNames.GetMappingName(entity.Name)}.cs", entity.Plural, projectBaseName);
-        var fileText = GetMappingFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName);
+        var classPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, $"{FileNames.GetMappingName(entityName)}.cs", entityPlural, projectBaseName);
+        var fileText = GetMappingFileText(classPath.ClassNamespace, entityName, entityPlural, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetMappingFileText(string classNamespace, Entity entity, string srcDirectory, string projectBaseName)
+    public static string GetMappingFileText(string classNamespace, string entityName, string entityPlural, string srcDirectory, string projectBaseName)
     {
-        var entitiesClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var entityModelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entity.Name, entity.Plural, null, projectBaseName);
+        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entityPlural, projectBaseName);
+        var entityModelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entityName, entityPlural, null, projectBaseName);
 
         return @$"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
-using {entitiesClassPath.ClassNamespace};
 using {entityModelClassPath.ClassNamespace};
-using Mapster;
+using Riok.Mapperly.Abstractions;
 
-public sealed class {FileNames.GetMappingName(entity.Name)} : IRegister
+[Mapper]
+public static partial class {FileNames.GetMappingName(entityName)}
 {{
-    public void Register(TypeAdapterConfig config)
-    {{
-        config.NewConfig<{entity.Name}, {FileNames.GetDtoName(entity.Name, Dto.Read)}>();
-        config.NewConfig<{FileNames.GetDtoName(entity.Name, Dto.Creation)}, {EntityModel.Creation.GetClassName(entity.Name)}>();
-        config.NewConfig<{FileNames.GetDtoName(entity.Name, Dto.Update)}, {EntityModel.Update.GetClassName(entity.Name)}>();
-    }}
-}}";
-    }
-
-    public void CreateUserMapping(string srcDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, $"{FileNames.GetMappingName("User")}.cs", "Users", projectBaseName);
-        var fileText = GetUserMappings(classPath.ClassNamespace, srcDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
-    }
-
-    public static string GetUserMappings(string classNamespace, string srcDirectory, string projectBaseName)
-    {
-        var entitiesClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Users", projectBaseName);
-        var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", "Users", projectBaseName);
-
-        return @$"namespace {classNamespace};
-
-using {dtoClassPath.ClassNamespace};
-using {entitiesClassPath.ClassNamespace};
-using Mapster;
-
-public sealed class UserMappings : IRegister
-{{
-    public void Register(TypeAdapterConfig config)
-    {{
-        config.NewConfig<User, UserDto>()
-            .Map(x => x.Email, y => y.Email.Value);
-        config.NewConfig<UserForCreationDto, User>()
-            .TwoWays();
-        config.NewConfig<UserForUpdateDto, User>()
-            .TwoWays();
-    }}
+    public static partial {EntityModel.Creation.GetClassName(entityName)} To{EntityModel.Creation.GetClassName(entityName)}(this {FileNames.GetDtoName(entityName, Dto.Creation)} {FileNames.GetDtoName(entityName, Dto.Creation).LowercaseFirstLetter()});
+    public static partial {EntityModel.Update.GetClassName(entityName)} To{EntityModel.Update.GetClassName(entityName)}(this {FileNames.GetDtoName(entityName, Dto.Update)} {FileNames.GetDtoName(entityName, Dto.Update).LowercaseFirstLetter()});
+    public static partial {FileNames.GetDtoName(entityName, Dto.Read)} To{FileNames.GetDtoName(entityName, Dto.Read)}(this {entityName} {entityName.LowercaseFirstLetter()});
+    public static partial IQueryable<{FileNames.GetDtoName(entityName, Dto.Read)}> To{FileNames.GetDtoName(entityName, Dto.Read)}Queryable(this IQueryable<{entityName}> {entityName.LowercaseFirstLetter()});
 }}";
     }
 }

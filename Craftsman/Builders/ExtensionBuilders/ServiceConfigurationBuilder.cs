@@ -53,8 +53,6 @@ using Configurations;
 using System.Text.Json.Serialization;
 using Serilog;
 using FluentValidation.AspNetCore;{hellangErrorUsings}
-using Mapster;
-using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Resources;
@@ -87,14 +85,6 @@ public static class {FileNames.WebAppServiceConfiguration()}
         builder.Services.AddBoundaryServices(Assembly.GetExecutingAssembly());
 
         builder.Services.AddMvc({customErrorHandlerRegistration});
-
-        if(builder.Environment.EnvironmentName != Consts.Testing.FunctionalTestingEnvName)
-        {{
-            var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
-            typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
-            var mapperConfig = new Mapper(typeAdapterConfig);
-            builder.Services.AddSingleton<IMapper>(mapperConfig);
-        }}
 
         builder.Services.AddHealthChecks();
         builder.Services.AddSwaggerExtension(builder.Configuration);

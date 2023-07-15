@@ -58,7 +58,6 @@ using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using MapsterMapper;
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
@@ -80,12 +79,10 @@ public static class {className}
     public sealed class Handler : IRequestHandler<{patchCommandName}, bool>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;{heimGuardField}
+        private readonly IUnitOfWork _unitOfWork;{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper{heimGuardCtor})
+        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
         {{
-            _mapper = mapper;
             _{repoInterfaceProp} = {repoInterfaceProp};
             _unitOfWork = unitOfWork;{heimGuardSetter}
         }}
@@ -101,7 +98,7 @@ public static class {className}
 
             var {updatedEntityProp} = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
 
-            var {patchedEntityProp} = _mapper.Map<{updateDto}>({updatedEntityProp});
+            var {patchedEntityProp} = {updatedEntityProp}.To{updateDto}();
             request.PatchDoc.ApplyTo({patchedEntityProp});
 
             {updatedEntityProp}.Update({patchedEntityProp});

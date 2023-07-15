@@ -27,7 +27,7 @@ public class CommandAddListBuilder
         var className = feature.Name;
         var addCommandName = feature.Command;
         var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
-        readDto = $"List<{readDto}>";
+        var readDtoAsList = $"List<{readDto}>";
         var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
         createDto = $"IEnumerable<{createDto}>";
         var featurePropNameLowerFirst = feature.BatchPropertyName.LowercaseFirstLetter();
@@ -87,12 +87,12 @@ using {entityClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using MapsterMapper;
+using Mappings;
 using MediatR;
 
 public static class {className}
 {{
-    public sealed class {addCommandName} : IRequest<{readDto}>
+    public sealed class {addCommandName} : IRequest<{readDtoAsList}>
     {{
         public readonly {createDto} {commandProp};
         public readonly {feature.BatchPropertyType} {feature.BatchPropertyName};
@@ -104,20 +104,18 @@ public static class {className}
         }}
     }}
 
-    public sealed class Handler : IRequestHandler<{addCommandName}, {readDto}>
+    public sealed class Handler : IRequestHandler<{addCommandName}, {readDtoAsList}>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};{batchFkDiReadonly}
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;{heimGuardField}
+        private readonly IUnitOfWork _unitOfWork;{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork, IMapper mapper{batchFkDiProp}{heimGuardCtor})
+        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{batchFkDiProp}{heimGuardCtor})
         {{
-            _mapper = mapper;
             _{repoInterfaceProp} = {repoInterfaceProp};
             _unitOfWork = unitOfWork;{batchFkDiPropSetter}{heimGuardSetter}
         }}
 
-        public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
+        public async Task<{readDtoAsList}> Handle({addCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
             {batchFkCheck}var {entityNameLowercaseListVar}ToAdd = request.{commandProp}
                 .Select({entity.Lambda} => {{ {entity.Lambda}.{feature.BatchPropertyName} = request.{feature.BatchPropertyName}; return {entity.Lambda}; }})
@@ -125,7 +123,7 @@ public static class {className}
             var {entityNameLowercaseListVar} = new List<{entityName}>();
             foreach (var {entityNameLowercase} in {entityNameLowercaseListVar}ToAdd)
             {{
-                var {entityNameLowercase}ToAdd = _mapper.Map<{EntityModel.Creation.GetClassName(entity.Name)}>({entityNameLowercase});
+                var {entityNameLowercase}ToAdd = {entityNameLowercase}.To{EntityModel.Creation.GetClassName(entity.Name)}();
                 {entityNameLowercaseListVar}.Add({entityName}.Create({entityNameLowercase}ToAdd));
             }}
 
@@ -135,7 +133,9 @@ public static class {className}
             await _{repoInterfaceProp}.AddRange({entityNameLowercaseListVar}, cancellationToken);
             await _unitOfWork.CommitChanges(cancellationToken);
 
-            return _mapper.Map<{readDto}>({entityNameLowercaseListVar});
+            return {entityNameLowercaseListVar}
+                .Select({entity.Lambda} => {entity.Lambda}.To{readDto}())
+                .ToList();
         }}
     }}
 }}";

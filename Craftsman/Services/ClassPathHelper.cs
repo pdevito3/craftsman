@@ -122,6 +122,12 @@ public static class ClassPathHelper
         return new ClassPath(solutionDirectory, $"{projectBaseName}{withSuffix}", className);
     }
 
+    public static ClassPath WebApiEditorConfigClassPath(string solutionDirectory, string projectBaseName)
+    {
+        var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
+        return new ClassPath(solutionDirectory, $"{projectBaseName}{withSuffix}", ".editorconfig");
+    }
+
     public static ClassPath BffProjectRootClassPath(string projectDirectory, string className)
     {
         return new ClassPath(projectDirectory, "", className);

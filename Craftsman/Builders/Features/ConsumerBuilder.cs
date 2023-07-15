@@ -26,7 +26,7 @@ public class ConsumerBuilder
         var context = _utilities.GetDbContext(srcDirectory, projectBaseName);
         var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
         var dbReadOnly = consumer.UsesDb ? @$"{Environment.NewLine}    private readonly {context} _db;" : "";
-        var dbProp = consumer.UsesDb ? @$"{context} db, " : "";
+        var dbProp = consumer.UsesDb ? @$"{context} db" : "";
         var assignDb = consumer.UsesDb ? @$"{Environment.NewLine}        _db = db;" : "";
         var contextUsing = consumer.UsesDb ? $@"
 using {contextClassPath.ClassNamespace};" : "";
@@ -34,18 +34,15 @@ using {contextClassPath.ClassNamespace};" : "";
         var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
         return @$"namespace {classNamespace};
 
-using MapsterMapper;
 using MassTransit;
 using {messagesClassPath.ClassNamespace};
 using System.Threading.Tasks;{contextUsing}
 
 public sealed class {consumer.ConsumerName} : IConsumer<{FileNames.MessageInterfaceName(consumer.MessageName)}>
-{{
-    private readonly IMapper _mapper;{dbReadOnly}
+{{{dbReadOnly}
 
-    public {consumer.ConsumerName}({dbProp}IMapper mapper)
-    {{
-        _mapper = mapper;{assignDb}
+    public {consumer.ConsumerName}({dbProp})
+    {{{assignDb}
     }}
 
     public Task Consume(ConsumeContext<{FileNames.MessageInterfaceName(consumer.MessageName)}> context)

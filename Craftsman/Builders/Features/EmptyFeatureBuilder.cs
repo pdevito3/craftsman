@@ -44,7 +44,6 @@ public class EmptyFeatureBuilder
 
 using {exceptionsClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
-using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;

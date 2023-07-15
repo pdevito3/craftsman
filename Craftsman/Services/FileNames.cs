@@ -63,7 +63,7 @@ public static class FileNames
     public static string NextJsEntityFeatureFormName(string entityName) => $"{entityName}Form";
     public static string NextJsEntityValidationName(string entityName) => $"{entityName.LowercaseFirstLetter()}ValidationSchema";
     public static string NextJsApiKeysExport(string entityName) => $"{entityName.UppercaseFirstLetter()}Keys";
-    public static string GetMappingName(string entityName) => $"{entityName}Mappings";
+    public static string GetMappingName(string entityName) => $"{entityName}Mapper";
     public static string GetIntegrationTestFixtureName() => $"TestFixture";
 
     public static string CreateEntityUnitTestName(string entityName) => $"Create{entityName}Tests";

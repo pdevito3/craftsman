@@ -37,12 +37,13 @@ using {dtoClassPath.ClassNamespace};
 using {servicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using HeimGuard;
+using Mappings;
 using MediatR;
 using Roles;
 
 public static class {FileNames.AddUserRoleFeatureClassName()}
 {{
-    public sealed class Command : IRequest<bool>
+    public sealed class Command : IRequest
     {{
         public readonly Guid UserId;
         public readonly string Role;
@@ -56,7 +57,7 @@ public static class {FileNames.AddUserRoleFeatureClassName()}
         }}
     }}
 
-    public sealed class Handler : IRequestHandler<Command, bool>
+    public sealed class Handler : IRequestHandler<Command>
     {{
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -69,7 +70,7 @@ public static class {FileNames.AddUserRoleFeatureClassName()}
             _heimGuard = heimGuard;
         }}
 
-        public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
+        public async Task Handle(Command request, CancellationToken cancellationToken)
         {{
             if(!request.SkipPermissions)
                 await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanAddUserRoles);
@@ -79,8 +80,6 @@ public static class {FileNames.AddUserRoleFeatureClassName()}
             var roleToAdd = user.AddRole(new Role(request.Role));
             await _userRepository.AddRole(roleToAdd, cancellationToken);
             await _unitOfWork.CommitChanges(cancellationToken);
-
-            return true;
         }}
     }}
 }}";

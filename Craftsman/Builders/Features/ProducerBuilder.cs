@@ -39,7 +39,6 @@ using {contextClassPath.ClassNamespace};" : "";
         return @$"namespace {classNamespace};
 
 using {messagesClassPath.ClassNamespace};
-using MapsterMapper;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -57,20 +56,18 @@ public static class {producer.ProducerName}
 
     public sealed class Handler : IRequestHandler<{commandName}, {propTypeToReturn}>
     {{
-        private readonly IPublishEndpoint _publishEndpoint;
-        private readonly IMapper _mapper;{dbReadOnly}
+        private readonly IPublishEndpoint _publishEndpoint;{dbReadOnly}
 
-        public Handler({dbProp}IMapper mapper, IPublishEndpoint publishEndpoint)
+        public Handler({dbProp}IPublishEndpoint publishEndpoint)
         {{
-            _publishEndpoint = publishEndpoint;
-            _mapper = mapper;{assignDb}
+            _publishEndpoint = publishEndpoint;{assignDb}
         }}
 
         public async Task<{propTypeToReturn}> Handle({commandName} request, CancellationToken cancellationToken)
         {{
             var message = new {FileNames.MessageClassName(producer.MessageName)}
             {{
-                // map content to message here or with mapster
+                // map content to message here or with mapperly
             }};
             await _publishEndpoint.Publish<{FileNames.MessageInterfaceName(producer.MessageName)}>(message, cancellationToken);
 

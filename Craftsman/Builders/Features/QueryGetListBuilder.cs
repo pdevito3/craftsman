@@ -52,9 +52,8 @@ using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
+using Mappings;
 using Microsoft.EntityFrameworkCore;
-using MapsterMapper;
-using Mapster;
 using MediatR;
 using Sieve.Models;
 using Sieve.Services;
@@ -74,12 +73,10 @@ public static class {className}
     public sealed class Handler : IRequestHandler<{queryListName}, PagedList<{readDto}>>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly SieveProcessor _sieveProcessor;
-        private readonly IMapper _mapper;{heimGuardField}
+        private readonly SieveProcessor _sieveProcessor;{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IMapper mapper, SieveProcessor sieveProcessor{heimGuardCtor})
+        public Handler({repoInterface} {repoInterfaceProp}, SieveProcessor sieveProcessor{heimGuardCtor})
         {{
-            _mapper = mapper;
             _{repoInterfaceProp} = {repoInterfaceProp};
             _sieveProcessor = sieveProcessor;{heimGuardSetter}
         }}
@@ -95,8 +92,7 @@ public static class {className}
             }};
 
             var appliedCollection = _sieveProcessor.Apply(sieveModel, collection);
-            var dtoCollection = appliedCollection
-                .ProjectToType<{readDto}>();
+            var dtoCollection = appliedCollection.To{readDto}Queryable();
 
             return await PagedList<{readDto}>.CreateAsync(dtoCollection,
                 request.QueryParameters.PageNumber,

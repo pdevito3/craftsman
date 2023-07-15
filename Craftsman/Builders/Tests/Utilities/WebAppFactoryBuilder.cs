@@ -46,8 +46,6 @@ using Configurations;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
-using Mapster;
-using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -83,10 +81,6 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsy
 
         builder.ConfigureServices(services =>
         {{{authRegistration}
-            var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
-            typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
-            var mapperConfig = new Mapper(typeAdapterConfig);
-            services.AddSingleton<IMapper>(mapperConfig);
         }});
     }}
 

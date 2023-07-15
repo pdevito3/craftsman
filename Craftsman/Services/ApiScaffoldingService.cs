@@ -143,6 +143,7 @@ public class ApiScaffoldingService
             template.UseSoftDelete);
 
         // config
+        new EditorConfigBuilder(_utilities).CreateEditorConfig(srcDirectory, projectBaseName);
         new AppSettingsBuilder(_utilities).CreateWebApiAppSettings(srcDirectory, template.DbContext.DatabaseName, projectBaseName);
         new AppSettingsDevelopmentBuilder(_utilities).CreateWebApiAppSettings(srcDirectory, template.Environment, template.DockerConfig, projectBaseName);
         new WebApiLaunchSettingsModifier(_fileSystem).AddProfile(srcDirectory, template.Environment, template.Port, projectBaseName);
@@ -167,7 +168,6 @@ public class ApiScaffoldingService
         _mediator.Send(new CommonValueObjectBuilder.Command(template.AddJwtAuthentication));
         new FakesBuilder(_utilities).CreateAddressFakes(srcDirectory, testDirectory, projectBaseName);
         _mediator.Send(new ValueObjectDtoBuilder.ValueObjectDtoBuilderCommand());
-        _mediator.Send(new ValueObjectMappingsBuilder.ValueObjectMappingsBuilderCommand(template.AddJwtAuthentication));
         _mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());
         new EmailUnitTestBuilder(_utilities).CreateTests(testDirectory,
             srcDirectory,

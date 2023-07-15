@@ -52,7 +52,7 @@ public class QueryGetRecordBuilder
 using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
-using MapsterMapper;
+using Mappings;
 using MediatR;
 
 public static class {className}
@@ -69,19 +69,17 @@ public static class {className}
 
     public sealed class Handler : IRequestHandler<{queryRecordName}, {readDto}>
     {{
-        private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly IMapper _mapper;{heimGuardField}
+        private readonly {repoInterface} _{repoInterfaceProp};{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, IMapper mapper{heimGuardCtor})
+        public Handler({repoInterface} {repoInterfaceProp}{heimGuardCtor})
         {{
-            _mapper = mapper;
             _{repoInterfaceProp} = {repoInterfaceProp};{heimGuardSetter}
         }}
 
         public async Task<{readDto}> Handle({queryRecordName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
             var result = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
-            return _mapper.Map<{readDto}>(result);
+            return result.To{readDto}();
         }}
     }}
 }}";
