@@ -39,14 +39,8 @@ public sealed class {FileNames.GetMappingName(entity.Name)} : IRegister
     public void Register(TypeAdapterConfig config)
     {{
         config.NewConfig<{entity.Name}, {FileNames.GetDtoName(entity.Name, Dto.Read)}>();
-        config.NewConfig<{FileNames.GetDtoName(entity.Name, Dto.Creation)}, {entity.Name}>()
-            .TwoWays();
-        config.NewConfig<{FileNames.GetDtoName(entity.Name, Dto.Update)}, {entity.Name}>()
-            .TwoWays();
-        config.NewConfig<{EntityModel.Creation.GetClassName(entity.Name)}, {entity.Name}>()
-            .TwoWays();
-        config.NewConfig<{EntityModel.Update.GetClassName(entity.Name)}, {entity.Name}>()
-            .TwoWays();
+        config.NewConfig<{FileNames.GetDtoName(entity.Name, Dto.Creation)}, {EntityModel.Creation.GetClassName(entity.Name)}>();
+        config.NewConfig<{FileNames.GetDtoName(entity.Name, Dto.Update)}, {EntityModel.Update.GetClassName(entity.Name)}>();
     }}
 }}";
     }
