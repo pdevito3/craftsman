@@ -40,11 +40,11 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ### Coming in 0.21
 
+✅ New default error handler middleware (existing still optional)
+
 🚧 No more queryable exposed in repositories
 
 🚧 Update `GetList` feature to `GetPagedList` and create a distinct `GetList
-
-🚧 New error handler middleware
 
 🚧 Limit shared kernel to messages
 

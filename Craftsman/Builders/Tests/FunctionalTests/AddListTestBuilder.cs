@@ -55,7 +55,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 {{
     {CreateEntityTest(entity, feature, isProtected)}
     {NotFoundCreationTest(entity, feature, isProtected)}
-    {InvalidCreationTest(entity, feature, isProtected)}{authOnlyTests}
+    {InvalidCreationTest(entity, isProtected)}{authOnlyTests}
 }}";
     }
 
@@ -74,7 +74,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var user = await AddNewSuperAdmin();
         FactoryClient.AddAuth(user.Identifier);" : "";
 
-        return $@"[Fact]
+        return $@"
+    [Fact]
     public async Task {testName}()
     {{
         // Arrange
@@ -103,7 +104,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
 
         FactoryClient.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
-        return $@"[Fact]
+        return $@"
+    [Fact]
     public async Task {testName}()
     {{
         // Arrange
@@ -118,19 +120,20 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     }}";
     }
 
-    private static string InvalidCreationTest(Entity entity, Feature feature, bool isProtected)
+    private static string InvalidCreationTest(Entity entity, bool isProtected)
     {
         var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
         var fakeEntityForCreation = $"Fake{createDto}";
         var fakeEntityVariableName = $"fake{entity.Name}List";
 
-        var testName = $"create_{entity.Name.ToLower()}_list_returns_badrequest_when_no_fk_param";
+        var testName = $"create_{entity.Name.ToLower()}_list_returns_4xx_when_no_fk_param";
         testName += isProtected ? "_and_valid_auth_credentials" : "";
         var clientAuth = isProtected ? @$"
 
         FactoryClient.AddAuth(new[] {{Roles.SuperAdmin}});" : "";
 
-        return $@"[Fact]
+        return $@"
+    [Fact]
     public async Task {testName}()
     {{
         // Arrange
@@ -140,7 +143,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var result = await FactoryClient.PostJsonRequestAsync(ApiRoutes.{entity.Plural}.CreateBatch, {fakeEntityVariableName});
 
         // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        result.StatusCode.Should()
+            .BeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.UnprocessableEntity);
     }}";
     }
 

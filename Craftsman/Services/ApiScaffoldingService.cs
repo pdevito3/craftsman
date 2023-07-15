@@ -65,7 +65,8 @@ public class ApiScaffoldingService
                         template.DbContext.ProviderEnum,
                         projectName, 
                         template.AddJwtAuthentication, 
-                        template.DockerConfig.OTelAgentPort);
+                        template.DockerConfig.OTelAgentPort,
+                        template.UseCustomErrorHandler);
 
                 // add all files based on the given template config
                 ctx.Status($"[bold blue]Scaffolding Files for {projectName} [/]");

@@ -81,4 +81,5 @@ public class ApiTemplate
     public bool UseSoftDelete { get; set; } = true;
 
     public DockerConfig DockerConfig { get; set; } = new DockerConfig();
+    public bool UseCustomErrorHandler { get; set; } = false;
 }

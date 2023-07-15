@@ -12,31 +12,27 @@ public class ProgramBuilder
         _utilities = utilities;
     }
 
-    public void CreateWebApiProgram(string srcDirectory, bool useJwtAuth, string projectBaseName)
+    public void CreateWebApiProgram(string srcDirectory, bool useJwtAuth, string projectBaseName, bool useCustomErrorHandler)
     {
         var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Program.cs", projectBaseName);
-        var fileText = GetWebApiProgramText(srcDirectory, useJwtAuth, projectBaseName);
+        var fileText = GetWebApiProgramText(srcDirectory, useJwtAuth, projectBaseName, useCustomErrorHandler);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetWebApiProgramText(string srcDirectory, bool useJwtAuth, string projectBaseName)
+    public static string GetWebApiProgramText(string srcDirectory, bool useJwtAuth, string projectBaseName, bool useCustomErrorHandler)
     {
         var hostExtClassPath = ClassPathHelper.WebApiHostExtensionsClassPath(srcDirectory, $"", projectBaseName);
         var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
         var dbClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{FileNames.GetMigrationHostedServiceFileName()}.cs", projectBaseName);
         
-        var appAuth = "";
+        var errorUsingStatement = !useCustomErrorHandler ? $@"{Environment.NewLine}using Hellang.Middleware.ProblemDetails;" : ""; 
+        var errorRegistration = !useCustomErrorHandler ? $"{Environment.NewLine}app.UseProblemDetails();" : "";
+        var appAuth = useJwtAuth ? $@"{Environment.NewLine}{Environment.NewLine}app.UseAuthentication();
+app.UseAuthorization();" : "";
         var corsName = $"{projectBaseName}CorsPolicy";
-        if (useJwtAuth)
-        {
-            appAuth = $@"
 
-app.UseAuthentication();
-app.UseAuthorization();";
-        }
-
-        return @$"using Serilog;
+        return @$"using Serilog;{errorUsingStatement}
 using {apiAppExtensionsClassPath.ClassNamespace};
 using {hostExtClassPath.ClassNamespace};
 using {configClassPath.ClassNamespace};
@@ -49,7 +45,6 @@ builder.ConfigureServices();
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
-
 if (builder.Environment.IsDevelopment())
 {{
     app.UseDeveloperExceptionPage();
@@ -59,7 +54,7 @@ else
     app.UseExceptionHandler(""/Error"");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-}}
+}}{errorRegistration}
 
 // For elevated security, it is recommended to remove this middleware and set your server to only listen on https.
 // A slightly less secure option would be to redirect http to 400, 505, etc.

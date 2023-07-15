@@ -30,22 +30,22 @@ public class SolutionBuilder
         BuildSharedKernelProject(solutionDirectory);
     }
 
-    public void AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, DbProvider dbProvider, string projectBaseName, bool addJwtAuth, int otelAgentPort)
+    public void AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, DbProvider dbProvider, string projectBaseName, bool addJwtAuth, int otelAgentPort, bool useCustomErrorHandler)
     {
         // add webapi first so it is default project
-        BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, otelAgentPort);
+        BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, otelAgentPort, useCustomErrorHandler);
         BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName);
         BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName);
         BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName);
         BuildUnitTestProject(solutionDirectory, testDirectory, projectBaseName);
     }
 
-    private void BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, DbProvider dbProvider, int otelAgentPort)
+    private void BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, DbProvider dbProvider, int otelAgentPort, bool useCustomErrorHandler)
     {
         var solutionFolder = srcDirectory.GetSolutionFolder(solutionDirectory);
         var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
 
-        new WebApiCsProjBuilder(_utilities).CreateWebApiCsProj(srcDirectory, projectBaseName, dbProvider);
+        new WebApiCsProjBuilder(_utilities).CreateWebApiCsProj(srcDirectory, projectBaseName, dbProvider, useCustomErrorHandler);
         _utilities.ExecuteProcess("dotnet", $@"sln add ""{webApiProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
 
         // base folders
@@ -62,13 +62,21 @@ public class SolutionBuilder
         new ApiVersioningExtensionsBuilder(_utilities).CreateApiVersioningServiceExtension(srcDirectory, projectBaseName);
         new CorsExtensionsBuilder(_utilities).CreateCorsServiceExtension(srcDirectory, projectBaseName);
         new OpenTelemetryExtensionsBuilder(_utilities).CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider, otelAgentPort);
-        new ErrorHandlerFilterAttributeBuilder(_utilities).CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName);
         new WebApiLaunchSettingsBuilder(_utilities).CreateLaunchSettings(srcDirectory, projectBaseName);
-        new ProgramBuilder(_utilities).CreateWebApiProgram(srcDirectory, useJwtAuth, projectBaseName);
-        new ServiceConfigurationBuilder(_utilities).CreateWebAppServiceConfiguration(srcDirectory, projectBaseName);
+        new ProgramBuilder(_utilities).CreateWebApiProgram(srcDirectory, useJwtAuth, projectBaseName, useCustomErrorHandler);
+        new ServiceConfigurationBuilder(_utilities).CreateWebAppServiceConfiguration(srcDirectory, projectBaseName, useCustomErrorHandler);
         new ConstsResourceBuilder(_utilities).CreateLocalConfig(srcDirectory, projectBaseName);
         new LoggingConfigurationBuilder(_utilities).CreateWebApiConfigFile(srcDirectory, projectBaseName);
         new InfrastructureServiceRegistrationBuilder(_utilities).CreateInfrastructureServiceExtension(srcDirectory, projectBaseName);
+
+        if (useCustomErrorHandler)
+        {
+            new ErrorHandlerFilterAttributeBuilder(_utilities).CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName);
+        }
+        else
+        {
+            new ErrorHandlerWithHellang(_utilities).CreateErrorHandler(srcDirectory, projectBaseName);
+        }
 
         new BasePaginationParametersBuilder(_utilities).CreateBasePaginationParameters(solutionDirectory);
         new PagedListBuilder(_utilities).CreatePagedList(srcDirectory, projectBaseName);
