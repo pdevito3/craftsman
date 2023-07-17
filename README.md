@@ -38,17 +38,19 @@ I'm currently working through a deep example project the really dogfood things a
 
 Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-### Coming in 0.21
-
-✅ New default error handler middleware (existing still optional)
-
-✅ Mapster -> Mapperly
+### Coming in 0.22
 
 🚧 No more queryable exposed in repositories
 
 🚧 Update `GetList` feature to `GetPagedList` and create a distinct `GetList
 
 🚧 Limit shared kernel to messages
+
+### Some 0.21 highlights
+
+✅ New default error handler middleware (existing still optional)
+
+✅ Mapster -> Mapperly
 
 ### Some 0.20 highlights
 
