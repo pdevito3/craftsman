@@ -30,11 +30,13 @@ public class EntityScaffoldingService
     private readonly IFileSystem _fileSystem;
     private readonly ICraftsmanUtilities _utilities;
     private readonly IMediator _mediator;
+    private readonly IConsoleWriter _consoleWriter;
 
-    public EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem fileSystem, IMediator mediator)
+    public EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem fileSystem, IMediator mediator, IConsoleWriter consoleWriter)
     {
         _fileSystem = fileSystem;
         _mediator = mediator;
+        _consoleWriter = consoleWriter;
         _utilities = utilities;
     }
 
@@ -54,7 +56,7 @@ public class EntityScaffoldingService
             new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
             new EntityModelBuilder(_utilities, _fileSystem).CreateEntityModels(srcDirectory, entity, projectBaseName);
             new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity.Name, entity.Plural, projectBaseName);
-            new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
+            new ApiRouteModifier(_fileSystem, _consoleWriter).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
             _mediator.Send(new DatabaseEntityConfigBuilder.Command(entity.Name, entity.Plural));
             _mediator.Send(new EntityRepositoryBuilder.Command(dbContextName, 
@@ -119,7 +121,7 @@ public class EntityScaffoldingService
         new DtoBuilder(_utilities, _fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
         new EntityModelBuilder(_utilities, _fileSystem).CreateEntityModels(srcDirectory, entity, projectBaseName);
         new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity.Name, entity.Plural, projectBaseName);
-        new ApiRouteModifier(_fileSystem).AddRoutes(testDirectory, entity, projectBaseName);
+        new ApiRouteModifier(_fileSystem, _consoleWriter).AddRoutes(testDirectory, entity, projectBaseName);
         _mediator.Send(new DatabaseEntityConfigRolePermissionBuilder.Command());
         
         _mediator.Send(new EntityRepositoryBuilder.Command(dbContextName, 
@@ -189,7 +191,7 @@ public class EntityScaffoldingService
         
         new EntityModelBuilder(_utilities, _fileSystem).CreateEntityModels(srcDirectory, userEntity, projectBaseName);
         new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, "User", "Users", projectBaseName);
-        new ApiRouteModifier(_fileSystem).AddRoutesForUser(testDirectory, projectBaseName);
+        new ApiRouteModifier(_fileSystem, _consoleWriter).AddRoutesForUser(testDirectory, projectBaseName);
         _mediator.Send(new DatabaseEntityConfigUserBuilder.Command());
         _mediator.Send(new DatabaseEntityConfigUserRoleBuilder.Command());
         

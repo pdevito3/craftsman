@@ -9,10 +9,12 @@ using Services;
 public class ApiRouteModifier
 {
     private readonly IFileSystem _fileSystem;
+    private readonly IConsoleWriter _consoleWriter;
 
-    public ApiRouteModifier(IFileSystem fileSystem)
+    public ApiRouteModifier(IFileSystem fileSystem, IConsoleWriter consoleWriter)
     {
         _fileSystem = fileSystem;
+        _consoleWriter = consoleWriter;
     }
 
     public void AddRoutes(string testDirectory, Entity entity, string projectBaseName)
@@ -23,7 +25,10 @@ public class ApiRouteModifier
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
         if (!_fileSystem.File.Exists(classPath.FullClassPath))
-            throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
+        {
+            _consoleWriter.WriteInfo($"The `{classPath.FullClassPath}` file could not be found.");
+            return;
+        }
 
         var entityRouteClasses = CreateApiRouteClasses(entity);
         var tempPath = $"{classPath.FullClassPath}temp";

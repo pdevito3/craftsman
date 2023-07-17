@@ -70,7 +70,7 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
         var useSoftDelete = _utilities.ProjectUsesSoftDelete(srcDirectory, _scaffoldingDirectoryStore.ProjectBaseName);
 
         //entities
-        new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldEntities(solutionDirectory,
+        new EntityScaffoldingService(_utilities, _fileSystem, _mediator, _consoleWriter).ScaffoldEntities(solutionDirectory,
             srcDirectory,
             testDirectory,
             _scaffoldingDirectoryStore.ProjectBaseName,

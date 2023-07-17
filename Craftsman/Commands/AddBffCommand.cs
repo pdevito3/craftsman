@@ -130,7 +130,7 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
                 new HomeFeatureRoutesBuilder(_utilities).CreateHomeFeatureRoutes(spaDirectory);
                 new HomeFeatureBuilder(_utilities).CreateHomeFeatureIndex(spaDirectory);
 
-                new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldBffEntities(template.Entities, spaDirectory);
+                new EntityScaffoldingService(_utilities, _fileSystem, _mediator, _consoleWriter).ScaffoldBffEntities(template.Entities, spaDirectory);
 
                 // Docker
                 // new BffDockerfileBuilder(_utilities).CreateBffDotNetDockerfile(projectDirectory, projectName);

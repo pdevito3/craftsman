@@ -113,7 +113,7 @@ public class ApiScaffoldingService
             new PermissionsBuilder(_utilities).GetPermissions(srcDirectory, projectBaseName, template.AddJwtAuthentication); // <-- needs to run before entity features
             new UserPolicyHandlerBuilder(_utilities).CreatePolicyBuilder(solutionDirectory, srcDirectory, projectBaseName);
             new InfrastructureServiceRegistrationModifier(_fileSystem).InitializeAuthServices(srcDirectory, projectBaseName);
-            new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldRolePermissions(solutionDirectory,
+            new EntityScaffoldingService(_utilities, _fileSystem, _mediator, _consoleWriter).ScaffoldRolePermissions(solutionDirectory,
                 srcDirectory,
                 testDirectory,
                 projectBaseName,
@@ -121,7 +121,7 @@ public class ApiScaffoldingService
                 template.SwaggerConfig.AddSwaggerComments,
                 template.UseSoftDelete);
 
-            new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldUser(solutionDirectory,
+            new EntityScaffoldingService(_utilities, _fileSystem, _mediator, _consoleWriter).ScaffoldUser(solutionDirectory,
                 srcDirectory,
                 testDirectory,
                 projectBaseName,
@@ -133,7 +133,7 @@ public class ApiScaffoldingService
         }
 
         //entities
-        new EntityScaffoldingService(_utilities, _fileSystem, _mediator).ScaffoldEntities(solutionDirectory,
+        new EntityScaffoldingService(_utilities, _fileSystem, _mediator, _consoleWriter).ScaffoldEntities(solutionDirectory,
             srcDirectory,
             testDirectory,
             projectBaseName,

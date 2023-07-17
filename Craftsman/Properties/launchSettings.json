@@ -2,7 +2,7 @@
   "profiles": {
     "Craftsman Dev": {
       "commandName": "Project",
-      "commandLineArgs": "new example startingmodels",
+      "commandLineArgs": "add entity /Users/paul/Documents/simpelentity.yml",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Dev"
       }

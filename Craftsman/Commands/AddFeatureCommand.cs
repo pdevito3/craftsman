@@ -52,7 +52,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
         var feature = RunPrompt();
 
         var useSoftDelete = _utilities.ProjectUsesSoftDelete(_scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.ProjectBaseName);
-        new EntityScaffoldingService(_utilities, _fileSystem, _mediator).AddFeatureToProject(
+        new EntityScaffoldingService(_utilities, _fileSystem, _mediator, _consoleWriter).AddFeatureToProject(
             solutionDirectory,
             _scaffoldingDirectoryStore.SrcDirectory,
             _scaffoldingDirectoryStore.TestDirectory,
