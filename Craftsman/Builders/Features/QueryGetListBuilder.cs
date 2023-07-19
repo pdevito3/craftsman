@@ -35,6 +35,7 @@ public class QueryGetListBuilder
         var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         
         FeatureBuilderHelpers.GetPermissionValuesForHandlers(srcDirectory, 
             projectBaseName, 
@@ -51,12 +52,13 @@ public class QueryGetListBuilder
 using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};{permissionsUsing}
+using {exceptionsClassPath.ClassNamespace};
+using {resourcesClassPath.ClassNamespace};{permissionsUsing}
 using Mappings;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
-using Sieve.Models;
-using Sieve.Services;
+using QueryKit;
+using QueryKit.Configuration;
 
 public static class {className}
 {{
@@ -72,26 +74,25 @@ public static class {className}
 
     public sealed class Handler : IRequestHandler<{queryListName}, PagedList<{readDto}>>
     {{
-        private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly SieveProcessor _sieveProcessor;{heimGuardField}
+        private readonly {repoInterface} _{repoInterfaceProp};{heimGuardField}
 
-        public Handler({repoInterface} {repoInterfaceProp}, SieveProcessor sieveProcessor{heimGuardCtor})
+        public Handler({repoInterface} {repoInterfaceProp}{heimGuardCtor})
         {{
-            _{repoInterfaceProp} = {repoInterfaceProp};
-            _sieveProcessor = sieveProcessor;{heimGuardSetter}
+            _{repoInterfaceProp} = {repoInterfaceProp};{heimGuardSetter}
         }}
 
         public async Task<PagedList<{readDto}>> Handle({queryListName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
             var collection = _{repoInterfaceProp}.Query().AsNoTracking();
 
-            var sieveModel = new SieveModel
+            var queryKitConfig = new CustomQueryKitConfiguration();
+            var queryKitData = new QueryKitData()
             {{
-                Sorts = request.QueryParameters.SortOrder ?? ""-CreatedOn"",
-                Filters = request.QueryParameters.Filters
+                Filters = request.QueryParameters.Filters,
+                SortOrder = request.QueryParameters.SortOrder,
+                Configuration = queryKitConfig
             }};
-
-            var appliedCollection = _sieveProcessor.Apply(sieveModel, collection);
+            var appliedCollection = collection.ApplyQueryKit(queryKitData);
             var dtoCollection = appliedCollection.To{readDto}Queryable();
 
             return await PagedList<{readDto}>.CreateAsync(dtoCollection,

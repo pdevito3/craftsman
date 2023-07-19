@@ -9,7 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-* None yet!
+### Updated
+
+* Removed `Sieve` in favor of `QueryKit`
+* Removed `CanFilter` and `CanSort` properties. These can still be set in your code, but will no longer pollute your entities.
+* **TODO update querykit to non-prerelease**
 
 ## [0.21.0] - 07/16/2023
 

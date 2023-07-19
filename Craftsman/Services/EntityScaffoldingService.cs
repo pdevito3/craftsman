@@ -112,8 +112,8 @@ public class EntityScaffoldingService
                 },
             Properties = new List<EntityProperty>()
                 {
-                    new() { Name = "Role", Type = "string", CanFilter = true, CanSort = true },
-                    new() { Name = "Permission", Type = "string", CanFilter = true, CanSort = true }
+                    new() { Name = "Role", Type = "string" },
+                    new() { Name = "Permission", Type = "string" }
                 }
         };
 
@@ -173,12 +173,12 @@ public class EntityScaffoldingService
                 },
             Properties = new List<EntityProperty>()
                 {
-                    new() { Name = "Identifier", Type = "string", CanFilter = false, CanSort = false },
-                    new() { Name = "FirstName", Type = "string", CanFilter = false, CanSort = false },
-                    new() { Name = "LastName", Type = "string", CanFilter = false, CanSort = false },
-                    new() { Name = "Email", Type = "string", CanFilter = false, CanSort = false },
-                    new() { Name = "Username", Type = "string", CanFilter = false, CanSort = false },
-                    new() { Name = "UserRoles", Type = "ICollection<UserRole>", ForeignEntityPlural = "UserRoles", CanFilter = false, CanSort = false },
+                    new() { Name = "Identifier", Type = "string" },
+                    new() { Name = "FirstName", Type = "string" },
+                    new() { Name = "LastName", Type = "string" },
+                    new() { Name = "Email", Type = "string" },
+                    new() { Name = "Username", Type = "string" },
+                    new() { Name = "UserRoles", Type = "ICollection<UserRole>", ForeignEntityPlural = "UserRoles" },
                 }
         };
 

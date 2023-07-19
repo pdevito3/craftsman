@@ -35,7 +35,6 @@ public class EntityBuilder
         var creationClassName = EntityModel.Creation.GetClassName(entity.Name);
         var updateClassName = EntityModel.Update.GetClassName(entity.Name);
         var propString = EntityPropBuilder(entity.Properties, entity.Name);
-        var usingSieve = entity.Properties.Where(e => e.CanFilter || e.CanSort).ToList().Count > 0 ? @$"{Environment.NewLine}using Sieve.Attributes;" : "";
         var tableAnnotation = EntityAnnotationBuilder(entity);
         var entityCreatedDomainMessage = FileNames.EntityCreatedDomainMessage(entity.Name);
         var entityUpdatedDomainMessage = FileNames.EntityUpdatedDomainMessage(entity.Name);
@@ -69,7 +68,7 @@ using FluentValidation;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;{usingSieve}{foreignEntityUsings}
+using System.Runtime.Serialization;{foreignEntityUsings}
 
 {tableAnnotation}
 public class {entity.Name} : BaseEntity
@@ -118,26 +117,20 @@ public class {entity.Name} : BaseEntity
 
         return @$"namespace {classNamespace};
 
-using Sieve.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 public abstract class BaseEntity
 {{
     [Key]
-    [Sieve(CanFilter = true, CanSort = true)]
     public Guid Id {{ get; private set; }} = Guid.NewGuid();
     
-    [Sieve(CanFilter = true, CanSort = true)]
     public DateTime CreatedOn {{ get; private set; }}
     
-    [Sieve(CanFilter = true, CanSort = true)]
     public string CreatedBy {{ get; private set; }}
     
-    [Sieve(CanFilter = true, CanSort = true)]
     public DateTime? LastModifiedOn {{ get; private set; }}
     
-    [Sieve(CanFilter = true, CanSort = true)]
     public string LastModifiedBy {{ get; private set; }}{isDeletedProp}
     
     [NotMapped]
@@ -239,9 +232,6 @@ public abstract class BaseEntity
     
         if (entityProperty.IsMany || !entityProperty.IsPrimitiveType)
             attributeString += $@"    [JsonIgnore, IgnoreDataMember]{Environment.NewLine}";
-        if (entityProperty.CanFilter || entityProperty.CanSort)
-            attributeString += @$"    [Sieve(CanFilter = {entityProperty.CanFilter.ToString().ToLower()}, CanSort = {entityProperty.CanSort.ToString().ToLower()})]{Environment.NewLine}";
-
         attributeString += ColumnAttributeBuilder(entityProperty);
 
         return attributeString;
@@ -304,23 +294,17 @@ using {modelClassPath.ClassNamespace};
 using Roles;
 using System.Text.Json.Serialization;
 using System.Runtime.Serialization;
-using Sieve.Attributes;
 
 public class User : BaseEntity
 {{
-    [Sieve(CanFilter = true, CanSort = true)]
     public string Identifier {{ get; private set; }}
 
-    [Sieve(CanFilter = true, CanSort = true)]
     public string FirstName {{ get; private set; }}
 
-    [Sieve(CanFilter = true, CanSort = true)]
     public string LastName {{ get; private set; }}
 
-    [Sieve(CanFilter = true, CanSort = true)]
     public Email Email {{ get; private set; }}
 
-    [Sieve(CanFilter = true, CanSort = true)]
     public string Username {{ get; private set; }}
 
     [JsonIgnore]

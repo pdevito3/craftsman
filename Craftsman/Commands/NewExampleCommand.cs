@@ -134,12 +134,8 @@ BoundedContexts:
     Properties:
     - Name: Title
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Directions
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Author
       Type: Author
       ForeignEntityName: Author
@@ -157,8 +153,6 @@ BoundedContexts:
     Properties:
     - Name: Name
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: RecipeId
       Type: Guid
       ForeignEntityName: Recipe
@@ -178,23 +172,15 @@ BoundedContexts:
     Properties:
     - Name: Name
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Visibility
       SmartNames:
       - Public
       - Friends Only
       - Private
-      CanFilter: true
-      CanSort: true
     - Name: Quantity
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Measure
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: RecipeId
       Type: Guid
       ForeignEntityName: Recipe";
@@ -228,31 +214,19 @@ BoundedContexts:
     Properties:
     - Name: Title
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Visibility
       SmartNames:
       - Public
       - Friends Only
       - Private
-      CanFilter: true
-      CanSort: true
     - Name: Directions
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Rating
       Type: int?
-      CanFilter: true
-      CanSort: true
     - Name: DateOfOrigin
       Type: DateOnly?
-      CanFilter: true
-      CanSort: true
     - Name: HaveMadeItMyself
       Type: bool
-      CanFilter: true
-      CanSort: true
     - Name: Author
       Type: Author
       ForeignEntityName: Author
@@ -270,8 +244,6 @@ BoundedContexts:
     Properties:
     - Name: Name
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: RecipeId
       Type: Guid
       ForeignEntityName: Recipe
@@ -291,20 +263,12 @@ BoundedContexts:
     Properties:
     - Name: Name
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Quantity
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: ExpiresOn
       Type: DateTime?
-      CanFilter: true
-      CanSort: true
     - Name: Measure
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: RecipeId
       Type: Guid
       ForeignEntityName: Recipe
@@ -453,35 +417,21 @@ BoundedContexts:
     Properties:
     - Name: Title
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Directions
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: RecipeSourceLink
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Description
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: ImageLink
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Visibility
       SmartNames:
       - Public
       - Friends Only
       - Private
-      CanFilter: true
-      CanSort: true
     - Name: DateOfOrigin
-      Type: DateOnly?
-      CanFilter: true
-      CanSort: true";
+      Type: DateOnly?";
     }
 
     private static string AuthTemplate(string name)
@@ -512,35 +462,21 @@ BoundedContexts:
     Properties:
     - Name: Title
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Directions
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: RecipeSourceLink
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Description
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: ImageLink
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Visibility
       SmartNames:
       - Public
       - Friends Only
       - Private
-      CanFilter: true
-      CanSort: true
     - Name: DateOfOrigin
       Type: DateOnly?
-      CanFilter: true
-      CanSort: true
   Environment:
     AuthSettings:
       Authority: http://localhost:3255/auth/realms/DevRealm
@@ -572,35 +508,21 @@ BoundedContexts:
     Properties:
     - Name: Title
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Directions
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: RecipeSourceLink
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Description
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: ImageLink
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Visibility
       SmartNames:
       - Public
       - Friends Only
       - Private
-      CanFilter: true
-      CanSort: true
     - Name: DateOfOrigin
       Type: DateOnly?
-      CanFilter: true
-      CanSort: true
   Environment:
       BrokerSettings:
         Host: localhost
@@ -662,39 +584,23 @@ BoundedContexts:
     Properties:
     - Name: Title
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Directions
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: RecipeSourceLink
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Description
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: ImageLink
       Type: string
-      CanFilter: true
-      CanSort: true
     - Name: Rating
       Type: int?
-      CanFilter: true
-      CanSort: true
     - Name: Visibility
       SmartNames:
       - Public
       - Friends Only
       - Private
-      CanFilter: true
-      CanSort: true
     - Name: DateOfOrigin
       Type: DateOnly?
-      CanFilter: true
-      CanSort: true
   Environment:
     AuthSettings:
       Authority: http://localhost:3255/auth/realms/DevRealm

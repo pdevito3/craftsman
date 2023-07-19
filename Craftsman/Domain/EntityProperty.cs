@@ -28,16 +28,6 @@ public class EntityProperty
     }
 
     /// <summary>
-    /// Determines if the property will be filterable by the API
-    /// </summary>
-    public bool CanFilter { get; set; } = false;
-
-    /// <summary>
-    /// Determines if the property will be sortable by the API
-    /// </summary>
-    public bool CanSort { get; set; } = false;
-
-    /// <summary>
     /// Determines if the property can be manipulated when creating or updating the associated entity
     /// </summary>
     public bool CanManipulate

@@ -56,7 +56,6 @@ using FluentValidation.AspNetCore;{hellangErrorUsings}
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Resources;
-using Sieve.Services;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -79,7 +78,6 @@ public static class {FileNames.WebAppServiceConfiguration()}
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-        builder.Services.AddScoped<SieveProcessor>();
 
         // registers all services that inherit from your base service interface - {boundaryServiceName}
         builder.Services.AddBoundaryServices(Assembly.GetExecutingAssembly());
