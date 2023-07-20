@@ -15,6 +15,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Removed `CanFilter` and `CanSort` properties. These can still be set in your code, but will no longer pollute your entities.
 * **TODO update querykit to non-prerelease**
 
+## [0.21.1] - 07/20/2023
+
+### Fixed
+
+* Remove lingering mapper from empty feature
+* Fix connection string prop in dev app settings
+* Fix using statement for interop
+
 ## [0.21.0] - 07/16/2023
 
 ### Added

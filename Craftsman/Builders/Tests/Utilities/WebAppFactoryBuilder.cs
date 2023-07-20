@@ -50,7 +50,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
+using System.Reflection;{provider.TestingDbSetupUsings()}
 using Microsoft.Extensions.Logging;
 using Xunit;
 

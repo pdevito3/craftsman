@@ -32,11 +32,9 @@ public class EmptyFeatureBuilder
         var returnValue = GetReturnValue(returnPropType);
 
         var handlerCtor = $@"private readonly {contextName} _db;
-            private readonly IMapper _mapper;
 
-            public Handler({contextName} db, IMapper mapper)
+            public Handler({contextName} db)
             {{
-                _mapper = mapper;
                 _db = db;
             }}";
 
