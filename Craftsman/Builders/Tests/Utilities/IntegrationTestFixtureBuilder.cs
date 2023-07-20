@@ -41,9 +41,6 @@ public class IntegrationTestFixtureBuilder
             ? $@"
         SetupDateAssertions();" 
             : null;
-        var sqlServerInteropUsing = provider == DbProvider.SqlServer
-            ? $"{Environment.NewLine}using System.Runtime.InteropServices;"
-            : null;
         var equivalencyMethod = provider == DbProvider.Postgres
             ? $@"
 
@@ -76,7 +73,7 @@ using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using FluentAssertions;
 using FluentAssertions.Extensions;{heimGuardUsing}
-using Moq;{sqlServerInteropUsing}
+using Moq;{provider.TestingDbSetupUsings()}
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

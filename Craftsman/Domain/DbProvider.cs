@@ -14,6 +14,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
 
     public abstract string PackageInclusionString(string version);
     public abstract string OTelSource();
+    public abstract string TestingDbSetupUsings();
     public abstract string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting);
     public abstract string IntegrationTestConnectionStringSetup(string configKeyName);
     public abstract string DbRegistrationStatement();
@@ -29,7 +30,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         public override string OTelSource()
             => @$"Npgsql";
         public override string DbRegistrationStatement() => @$"UseNpgsql";
-
+        public override string TestingDbSetupUsings() => null;
         public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
         {
             var testName = isIntegrationTesting ? "IntegrationTesting" : "FunctionalTesting";
@@ -70,6 +71,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => @$"Microsoft.EntityFrameworkCore.SqlServer";        
         public override string DbRegistrationStatement() => @$"UseSqlServer";
 
+        public override string TestingDbSetupUsings() => $"{Environment.NewLine}using System.Runtime.InteropServices;";
         public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
         {
             var testName = isIntegrationTesting ? "IntegrationTesting" : "FunctionalTesting";
@@ -94,7 +96,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         }
 
         public override string IntegrationTestConnectionStringSetup(string configKeyName) 
-            => $@"builder.Configuration.GetSection(ConnectionStringOptions.SectionName)[ConnectionStringOptions.{configKeyName}] = $""{{_dbContainer.ConnectionString}}TrustServerCertificate=true;"");";
+            => $@"builder.Configuration.GetSection(ConnectionStringOptions.SectionName)[ConnectionStringOptions.{configKeyName}] = $""{{_dbContainer.ConnectionString}}TrustServerCertificate=true;"";";
         public override int Port() => 1433;
         public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword)
             => $"Data Source={dbHostName},{1433};Integrated Security=False;Database={dbName};User ID={dbUser};Password={dbPassword}";
@@ -112,6 +114,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => throw new Exception(Response);
         public override string DbRegistrationStatement()
             => throw new Exception(Response);
+        public override string TestingDbSetupUsings() => null;
         public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
             => throw new Exception(Response);
         public override string IntegrationTestConnectionStringSetup(string configKeyName)

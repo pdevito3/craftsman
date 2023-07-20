@@ -11,6 +11,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * None yet!
 
+## [0.21.1] - 07/20/2023
+
+### Fixed
+
+* Remove lingering mapper from empty feature
+* Fix connection string prop in dev app settings
+* Fix using statement for interop
+
 ## [0.21.0] - 07/16/2023
 
 ### Added

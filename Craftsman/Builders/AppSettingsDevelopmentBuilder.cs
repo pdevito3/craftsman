@@ -20,16 +20,16 @@ public class AppSettingsDevelopmentBuilder
     {
         var appSettingFilename = FileNames.GetAppSettingsName(true);
         var classPath = ClassPathHelper.WebApiAppSettingsClassPath(srcDirectory, $"{appSettingFilename}", projectBaseName);
-        var fileText = GetAppSettingsText(env, dockerConfig);
+        var fileText = GetAppSettingsText(env, dockerConfig, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string GetAppSettingsText(ApiEnvironment env, DockerConfig dockerConfig)
+    private static string GetAppSettingsText(ApiEnvironment env, DockerConfig dockerConfig, string projectBaseName)
     {
         return @$"{{
   ""AllowedHosts"": ""*"",
   ""ConnectionStrings"": {{
-    ""RecipeManagement"": ""{dockerConfig.DbConnectionString}""
+    ""{projectBaseName}"": ""{dockerConfig.DbConnectionString}""
   }},
   ""Auth"": {{
     ""Audience"": ""{env.AuthSettings.Audience}"",
