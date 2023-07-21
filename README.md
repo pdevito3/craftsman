@@ -42,6 +42,8 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Move from Sieve to QueryKit
 
+✅ TestContainers updated
+
 🚧 No more queryable exposed in repositories
 
 🚧 Update `GetList` feature to `GetPagedList` and create a distinct `GetList
