@@ -65,12 +65,10 @@ using {contextClassPath.ClassNamespace};
 using {utilsClassPath.ClassNamespace};
 using {sharedUtilsClassPath.ClassNamespace};
 using Configurations;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using DotNet.Testcontainers.Containers;
 using FluentAssertions;
 using FluentAssertions.Extensions;{heimGuardUsing}
 using Moq;{provider.TestingDbSetupUsings()}
+using Testcontainers.RabbitMq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -84,8 +82,7 @@ public class TestFixtureCollection : ICollectionFixture<TestFixture> {{}}
 public class TestFixture : IAsyncLifetime
 {{
     public static IServiceScopeFactory BaseScopeFactory;{provider.TestingContainerDb()}
-    // private RabbitMqContainer _rmqContainer;
-    private readonly RmqConfig _rmqContainer = RmqSetup();
+    private RabbitMqContainer _rmqContainer;
 
     public async Task InitializeAsync()
     {{
@@ -96,12 +93,16 @@ public class TestFixture : IAsyncLifetime
 
         {provider.TestingDbSetupMethod(projectBaseName, true)}
 
-        await _rmqContainer.Container.StartAsync();
+        var freePort = DockerUtilities.GetFreePort();
+        _rmqContainer = new RabbitMqBuilder()
+            .WithPortBinding(freePort, 5672)
+            .Build();
+        await _rmqContainer.StartAsync();
         builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.HostKey] = ""localhost"";
         builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.VirtualHostKey] = ""/"";
         builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.UsernameKey] = ""guest"";
         builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.PasswordKey] = ""guest"";
-        builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.PortKey] = _rmqContainer.Port.ToString();
+        builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.PortKey] = _rmqContainer.GetConnectionString();
 
         builder.ConfigureServices();
         var services = builder.Services;
@@ -122,30 +123,10 @@ public class TestFixture : IAsyncLifetime
         await context?.Database?.MigrateAsync();
     }}
 
-    private class RmqConfig
-    {{
-        public IContainer Container {{ get; set; }}
-        public int Port {{ get; set; }}
-    }}
-
-    private static RmqConfig RmqSetup()
-    {{
-        var freePort = DockerUtilities.GetFreePort();
-        return new RmqConfig
-        {{
-            Container = new ContainerBuilder()
-                .WithImage(""masstransit/rabbitmq"")
-                .WithPortBinding(freePort, 5672)
-                .WithName($""IntegrationTesting_RMQ_{{Guid.NewGuid()}}"")
-                .Build(),
-            Port = freePort
-        }};
-    }}
-
     public async Task DisposeAsync()
     {{        
         {provider.DbDisposal()}
-        await _rmqContainer.Container.DisposeAsync();
+        await _rmqContainer.DisposeAsync();
     }}{equivalencyMethod}
 }}
 

@@ -43,14 +43,12 @@ using WebMotions.Fake.Authentication.JwtBearer;" : "";
 using {utilsClassPath.ClassNamespace};
 using {sharedUtilsClassPath.ClassNamespace};{authUsing}
 using Configurations;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using DotNet.Testcontainers.Containers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;{provider.TestingDbSetupUsings()}
+using Testcontainers.RabbitMq;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
@@ -60,7 +58,7 @@ public class TestingWebApplicationFactoryCollection : ICollectionFixture<Testing
 public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {{
     {provider.TestingContainerDb()}
-    private readonly RmqConfig _rmqContainer = RmqSetup();
+    private RabbitMqContainer _rmqContainer;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {{
@@ -89,37 +87,22 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsy
         {provider.TestingDbSetupMethod(projectBaseName, false)}
         // migrations applied in MigrationHostedService
 
-        await _rmqContainer.Container.StartAsync();
+        var freePort = DockerUtilities.GetFreePort();
+        _rmqContainer = new RabbitMqBuilder()
+            .WithPortBinding(freePort, 5672)
+            .Build();
+        await _rmqContainer.StartAsync();
         Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.HostKey}}"", ""localhost"");
         Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.VirtualHostKey}}"", ""/"");
         Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.UsernameKey}}"", ""guest"");
         Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.PasswordKey}}"", ""guest"");
-        Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.PortKey}}"", _rmqContainer.Port.ToString());
+        Environment.SetEnvironmentVariable($""{{RabbitMqOptions.SectionName}}__{{RabbitMqOptions.PortKey}}"", _rmqContainer.GetConnectionString());
     }}
 
     public new async Task DisposeAsync() 
     {{
         {provider.DbDisposal()}
-        await _rmqContainer.Container.DisposeAsync();
-    }}
-    private class RmqConfig
-    {{
-        public IContainer Container {{ get; set; }}
-        public int Port {{ get; set; }}
-    }}
-
-    private static RmqConfig RmqSetup()
-    {{
-        var freePort = DockerUtilities.GetFreePort();
-        return new RmqConfig
-        {{
-            Container = new ContainerBuilder()
-                .WithImage(""masstransit/rabbitmq"")
-                .WithPortBinding(freePort, 5672)
-                .WithName($""FunctionalTesting_RMQ_{{Guid.NewGuid()}}"")
-                .Build(),
-            Port = freePort
-        }};
+        await _rmqContainer.DisposeAsync();
     }}
 }}";
     }

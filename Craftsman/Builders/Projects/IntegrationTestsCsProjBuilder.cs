@@ -42,7 +42,8 @@ public class IntegrationTestsCsProjBuilder
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""7.0.2"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.Relational"" Version=""7.0.2"" />
     <PackageReference Include=""Moq"" Version=""4.18.4"" />
-    <PackageReference Include=""Testcontainers"" Version=""3.3.0"" />{provider.TestingCsProjNugetPackages()}
+    <PackageReference Include=""Testcontainers"" Version=""3.3.0"" />
+    <PackageReference Include=""Testcontainers.RabbitMq"" Version=""3.3.0"" />{provider.TestingCsProjNugetPackages()}
     <PackageReference Include=""xunit"" Version=""2.4.2"" />
     <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.4.5"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.4.1"" />
