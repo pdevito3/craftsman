@@ -65,11 +65,8 @@ app.UseCors(""{corsName}"");
 app.UseSerilogRequestLogging();
 app.UseRouting();{appAuth}
 
-app.UseEndpoints(endpoints =>
-{{
-    endpoints.MapHealthChecks(""/api/health"");
-    endpoints.MapControllers();
-}});
+app.MapHealthChecks(""api/health"");
+app.MapControllers();
 
 app.UseSwaggerExtension(builder.Configuration, builder.Environment);
 
