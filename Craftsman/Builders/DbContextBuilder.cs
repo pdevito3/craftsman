@@ -33,13 +33,13 @@ public class DbContextBuilder
     )
     {
         var classPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{dbContextName}.cs", projectBaseName);
-        var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, srcDirectory, useSoftDelete, projectBaseName);
+        var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, srcDirectory, useSoftDelete, projectBaseName, dbProvider);
         _utilities.CreateFile(classPath, data);
 
         RegisterContext(srcDirectory, dbProvider, dbContextName, dbName, localDbConnection, namingConventionEnum, projectBaseName);
     }
 
-    public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string srcDirectory, bool useSoftDelete, string projectBaseName)
+    public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string srcDirectory, bool useSoftDelete, string projectBaseName, DbProvider dbProvider)
     {
         var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var baseEntityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", "", projectBaseName);
@@ -57,6 +57,20 @@ public class DbContextBuilder
 {SoftDeleteFilterClass()}"
             : "";
 
+        var valueConverterUsing = dbProvider == DbProvider.SqlServer
+            ? $@"{Environment.NewLine}using Microsoft.EntityFrameworkCore.Storage.ValueConversion;"
+            : null;
+        var dateOnlyConverterClass = dbProvider == DbProvider.SqlServer
+            ? $@"
+
+public class DateOnlyConverter : ValueConverter<DateOnly, DateTime>
+{{
+    public DateOnlyConverter() : base(
+        d => d.ToDateTime(TimeOnly.MinValue),
+        d => DateOnly.FromDateTime(d))
+    {{ }}
+}}" : null;
+
         var modelBuilderFilter = useSoftDelete
             ? $@"
         modelBuilder.FilterSoftDeletedRecords();
@@ -65,6 +79,15 @@ public class DbContextBuilder
                 https://github.com/dotnet/efcore/issues/10275
         */"
             : "";
+
+        var dateOnlyConverter = dbProvider == DbProvider.SqlServer ? $@"
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder builder)
+    {{
+        builder.Properties<DateOnly>()
+            .HaveConversion<DateOnlyConverter>()
+            .HaveColumnType(""date"");
+    }}" : null;
 
         return @$"namespace {classNamespace};
 
@@ -78,7 +101,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query;{valueConverterUsing}
 
 public sealed class {dbContextName} : DbContext
 {{
@@ -103,7 +126,7 @@ public sealed class {dbContextName} : DbContext
 
         #region Entity Database Config Region - Only delete if you don't want to automatically add configurations
         #endregion Entity Database Config Region - Only delete if you don't want to automatically add configurations
-    }}
+    }}{dateOnlyConverter}
 
     public override int SaveChanges()
     {{
@@ -158,7 +181,7 @@ public sealed class {dbContextName} : DbContext
             }}
         }}
     }}
-}}{softDeleteFilterClass}";
+}}{softDeleteFilterClass}{dateOnlyConverterClass}";
     }
 
     private static string SoftDeleteFilterClass()
