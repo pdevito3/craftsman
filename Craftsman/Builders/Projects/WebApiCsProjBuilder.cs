@@ -57,7 +57,7 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.0.0"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""7.0.2"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.InMemory"" Version=""7.0.2"" />
-    {dbProvider.PackageInclusionString("7.0.1")}
+    {dbProvider.ApiPackageInclusionString("7.0.1")}
     <PackageReference Include=""Microsoft.Extensions.Configuration.Binder"" Version=""7.0.2"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.JwtBearer"" Version=""7.0.2"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.Design"" Version=""7.0.2"">

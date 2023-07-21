@@ -1,5 +1,6 @@
 ﻿namespace Craftsman.Builders.Projects;
 
+using Domain;
 using Helpers;
 using Services;
 
@@ -12,13 +13,13 @@ public class FunctionalTestsCsProjBuilder
         _utilities = utilities;
     }
 
-    public void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
+    public void CreateTestsCsProj(string solutionDirectory, string projectBaseName, DbProvider provider)
     {
         var classPath = ClassPathHelper.FunctionalTestProjectClassPath(solutionDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName));
+        _utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName, provider));
     }
 
-    public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName)
+    public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName, DbProvider provider)
     {
         var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
         var sharedTestClassPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
@@ -43,7 +44,7 @@ public class FunctionalTestsCsProjBuilder
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.NewtonsoftJson"" Version=""7.0.2"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.4.1"" />
     <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""7.0.0"" />
-    <PackageReference Include=""Testcontainers"" Version=""2.4.0"" />
+    <PackageReference Include=""Testcontainers"" Version=""3.3.0"" />{provider.TestingCsProjNugetPackages()}
     <PackageReference Include=""xunit"" Version=""2.4.2"" />
     <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.4.5"" />
   </ItemGroup>

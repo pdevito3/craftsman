@@ -59,7 +59,7 @@ public class TestingWebApplicationFactoryCollection : ICollectionFixture<Testing
 
 public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {{
-    private readonly TestcontainerDatabase _dbContainer = DbSetup();
+    {provider.TestingContainerDb()}
     private readonly RmqConfig _rmqContainer = RmqSetup();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -86,8 +86,7 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsy
 
     public async Task InitializeAsync()
     {{
-        await _dbContainer.StartAsync();
-        Environment.SetEnvironmentVariable($""{{ConnectionStringOptions.SectionName}}__{{ConnectionStringOptions.{FileNames.ConnectionStringOptionKey(projectBaseName)}}}"", _dbContainer.ConnectionString);
+        {provider.TestingDbSetupMethod(projectBaseName, false)}
         // migrations applied in MigrationHostedService
 
         await _rmqContainer.Container.StartAsync();
@@ -100,12 +99,9 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsy
 
     public new async Task DisposeAsync() 
     {{
-        await _dbContainer.DisposeAsync();
+        {provider.DbDisposal()}
         await _rmqContainer.Container.DisposeAsync();
     }}
-
-    {provider.TestingDbSetupMethod(projectBaseName, true)}
-
     private class RmqConfig
     {{
         public IContainer Container {{ get; set; }}

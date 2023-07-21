@@ -22,12 +22,9 @@ public class IntegrationTestFixtureBuilder
 
     public static string GetFixtureText(string classNamespace, string srcDirectory, string testDirectory, string projectBaseName, string dbContextName, DbProvider provider, bool isProtected)
     {
-        var apiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
         var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
         var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
-        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
-        var envServiceClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         var sharedUtilsClassPath = ClassPathHelper.SharedTestUtilitiesClassPath(testDirectory, "", projectBaseName);
         
         var heimGuardMock = isProtected 
@@ -86,8 +83,8 @@ public class TestFixtureCollection : ICollectionFixture<TestFixture> {{}}
 
 public class TestFixture : IAsyncLifetime
 {{
-    public static IServiceScopeFactory BaseScopeFactory;
-    private readonly TestcontainerDatabase _dbContainer = DbSetup();
+    public static IServiceScopeFactory BaseScopeFactory;{provider.TestingContainerDb()}
+    // private RabbitMqContainer _rmqContainer;
     private readonly RmqConfig _rmqContainer = RmqSetup();
 
     public async Task InitializeAsync()
@@ -97,9 +94,7 @@ public class TestFixture : IAsyncLifetime
             EnvironmentName = Consts.Testing.IntegrationTestingEnvName
         }});
 
-        await _dbContainer.StartAsync();
-        {provider.IntegrationTestConnectionStringSetup(FileNames.ConnectionStringOptionKey(projectBaseName))}
-        await RunMigration(_dbContainer.ConnectionString);
+        {provider.TestingDbSetupMethod(projectBaseName, true)}
 
         await _rmqContainer.Container.StartAsync();
         builder.Configuration.GetSection(RabbitMqOptions.SectionName)[RabbitMqOptions.HostKey] = ""localhost"";
@@ -127,8 +122,6 @@ public class TestFixture : IAsyncLifetime
         await context?.Database?.MigrateAsync();
     }}
 
-    {provider.TestingDbSetupMethod(projectBaseName, true)}
-
     private class RmqConfig
     {{
         public IContainer Container {{ get; set; }}
@@ -150,8 +143,8 @@ public class TestFixture : IAsyncLifetime
     }}
 
     public async Task DisposeAsync()
-    {{
-        await _dbContainer.DisposeAsync();
+    {{        
+        {provider.DbDisposal()}
         await _rmqContainer.Container.DisposeAsync();
     }}{equivalencyMethod}
 }}

@@ -34,8 +34,8 @@ public class SolutionBuilder
     {
         // add webapi first so it is default project
         BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, otelAgentPort, useCustomErrorHandler);
-        BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName);
-        BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName);
+        BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName, dbProvider);
+        BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName, dbProvider);
         BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName);
         BuildUnitTestProject(solutionDirectory, testDirectory, projectBaseName);
     }
@@ -86,21 +86,21 @@ public class SolutionBuilder
         _utilities.AddProjectReference(webApiProjectClassPath, @"..\..\..\SharedKernel\SharedKernel.csproj");
     }
 
-    private void BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName)
+    private void BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName, DbProvider dbProvider)
     {
         var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
         var testProjectClassPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "", projectBaseName);
 
-        new IntegrationTestsCsProjBuilder(_utilities).CreateTestsCsProj(testDirectory, projectBaseName);
+        new IntegrationTestsCsProjBuilder(_utilities).CreateTestsCsProj(testDirectory, projectBaseName, dbProvider);
         _utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
     }
 
-    private void BuildFunctionalTestProject(string solutionDirectory, string testDirectory, string projectBaseName)
+    private void BuildFunctionalTestProject(string solutionDirectory, string testDirectory, string projectBaseName, DbProvider dbProvider)
     {
         var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
         var testProjectClassPath = ClassPathHelper.FunctionalTestProjectRootClassPath(testDirectory, "", projectBaseName);
 
-        new FunctionalTestsCsProjBuilder(_utilities).CreateTestsCsProj(testDirectory, projectBaseName);
+        new FunctionalTestsCsProjBuilder(_utilities).CreateTestsCsProj(testDirectory, projectBaseName, dbProvider);
         _utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
     }
 

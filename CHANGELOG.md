@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Updated
 
+* Integration and Functional tests use the latest versions and implementations of `testcontainers`
 * Removed `Sieve` in favor of `QueryKit`
 * Removed `CanFilter` and `CanSort` properties. These can still be set in your code, but will no longer pollute your entities.
 * **TODO update querykit to non-prerelease**
