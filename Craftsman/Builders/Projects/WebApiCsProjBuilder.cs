@@ -72,7 +72,7 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""OpenTelemetry.Instrumentation.EventCounters"" Version=""1.0.0-alpha.2"" />
     <PackageReference Include=""OpenTelemetry.Instrumentation.Http"" Version=""1.0.0-rc9.9"" />
     <PackageReference Include=""OpenTelemetry.Instrumentation.Runtime"" Version=""1.0.0"" />
-    <PackageReference Include=""QueryKit"" Version=""0.5.0-pre002"" />
+    <PackageReference Include=""QueryKit"" Version=""0.6.0"" />
     <PackageReference Include=""Riok.Mapperly"" Version=""2.8.0"" />
     <PackageReference Include=""Swashbuckle.AspNetCore"" Version=""6.5.0"" />
 
