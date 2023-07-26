@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 * Sql server setups can handle dateonly
+* Duplicate usings
 
 ## [0.21.1] - 07/20/2023
 

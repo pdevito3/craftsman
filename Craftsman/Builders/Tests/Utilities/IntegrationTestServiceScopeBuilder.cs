@@ -24,8 +24,7 @@ public class IntegrationTestServiceScopeBuilder
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, projectBaseName);
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
 
-        var protectedUsings = isProtected ? @$"{Environment.NewLine}using HeimGuard;
-using Moq;" : "";
+        var protectedUsings = isProtected ? @$"{Environment.NewLine}using HeimGuard;" : "";
         var userPermissionMethods = isProtected 
             ? $@"
 

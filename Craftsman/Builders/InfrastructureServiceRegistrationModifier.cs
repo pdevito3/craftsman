@@ -15,7 +15,6 @@ public class InfrastructureServiceRegistrationModifier
     public void InitializeAuthServices(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetInfraRegistrationName()}.cs", projectBaseName);
-        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
@@ -25,8 +24,7 @@ public class InfrastructureServiceRegistrationModifier
 
         var authUsings = $@"
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using HeimGuard;
-using {servicesClassPath.ClassNamespace};";
+using HeimGuard;";
         var authServices = $@"
         var authOptions = configuration.GetAuthOptions();
         if (!env.IsEnvironment(Consts.Testing.FunctionalTestingEnvName))
