@@ -54,11 +54,12 @@ using {domainClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using Microsoft.EntityFrameworkCore;
+using QueryKit;
+using QueryKit.Configuration;
 
 public interface {interfaceName}<TEntity> : {boundaryServiceName}
     where TEntity : BaseEntity
 {{
-    IQueryable<TEntity> Query();
     Task<TEntity?> GetByIdOrDefault(Guid id, bool withTracking = true, CancellationToken cancellationToken = default);
     Task<TEntity> GetById(Guid id, bool withTracking = true, CancellationToken cancellationToken = default);
     Task<bool> Exists(Guid id, CancellationToken cancellationToken = default);
@@ -67,18 +68,20 @@ public interface {interfaceName}<TEntity> : {boundaryServiceName}
     void Update(TEntity entity);
     void Remove(TEntity entity);
     void RemoveRange(IEnumerable<TEntity> entity);
+    Task<int> TotalCount(CancellationToken cancellationToken = default);
     Task<List<TEntity>> ListAsync(ISpecification<TEntity> specification, CancellationToken cancellationToken = default);
     Task<List<TResult>> ListAsync<TResult>(ISpecification<TEntity, TResult> specification, CancellationToken cancellationToken = default);
     Task<TEntity?> GetByIdOrDefault(ISpecification<TEntity> specification, CancellationToken cancellationToken = default);
     Task<TResult?> GetByIdOrDefault<TResult>(ISpecification<TEntity, TResult> specification, CancellationToken cancellationToken = default);
     Task<TEntity> GetById(ISpecification<TEntity> specification, CancellationToken cancellationToken = default);
     Task<TResult> GetById<TResult>(ISpecification<TEntity, TResult> specification, CancellationToken cancellationToken = default);
+    Task<bool> AnyAsync(ISpecification<TEntity> specification, CancellationToken cancellationToken = default);
 }}
 
 public abstract class {repoName}<TEntity> : {interfaceName}<TEntity> 
     where TEntity : BaseEntity
 {{
-    private readonly SpecificationEvaluator _specificationEvaluator = SpecificationEvaluator.Default;
+    private readonly SpecificationEvaluator _specificationEvaluator = CustomEvaluator.Default;
     private readonly {dbContextName} _dbContext;
 
     protected {repoName}({dbContextName} dbContext)
@@ -86,9 +89,16 @@ public abstract class {repoName}<TEntity> : {interfaceName}<TEntity>
         this._dbContext = dbContext;
     }}
     
-    public virtual IQueryable<TEntity> Query()
+    private class CustomEvaluator : SpecificationEvaluator
     {{
-        return _dbContext.Set<TEntity>();
+        public new static CustomEvaluator Default {{ get; }} = new CustomEvaluator();
+        public CustomEvaluator() : base(new List<IEvaluator>
+        {{
+            PaginationEvaluator.Instance,
+            QueryKitEvaluator.Instance
+        }})
+        {{
+        }}
     }}
 
     public virtual async Task<TEntity> GetByIdOrDefault(Guid id, bool withTracking = true, CancellationToken cancellationToken = default)
@@ -140,6 +150,11 @@ public abstract class {repoName}<TEntity> : {interfaceName}<TEntity>
     public virtual void RemoveRange(IEnumerable<TEntity> entities)
     {{
         _dbContext.Set<TEntity>().RemoveRange(entities);
+    }}
+    
+    public virtual Task<int> TotalCount(CancellationToken cancellationToken = default)
+    {{
+        return _dbContext.Set<TEntity>().CountAsync(cancellationToken);
     }}
     
     public virtual async Task<List<TResult>> ListAsync<TResult>(ISpecification<TEntity, TResult> specification, CancellationToken cancellationToken = default)
@@ -198,6 +213,95 @@ public abstract class {repoName}<TEntity> : {interfaceName}<TEntity>
     private IQueryable<TResult> ApplySpecification<TResult>(ISpecification<TEntity, TResult> specification)
     {{
         return _specificationEvaluator.GetQuery(_dbContext.Set<TEntity>().AsQueryable(), specification);
+    }}
+    
+    public virtual async Task<bool> AnyAsync(ISpecification<TEntity> specification, CancellationToken cancellationToken = default)
+    {{
+        return await ApplySpecification(specification).AnyAsync(cancellationToken);
+    }}
+}}
+
+public class PaginationEvaluator : IEvaluator
+{{
+    private PaginationEvaluator() {{ }}
+    public static PaginationEvaluator Instance {{ get; }} = new PaginationEvaluator();
+
+    public bool IsCriteriaEvaluator {{ get; }} = true;
+
+    public IQueryable<T> GetQuery<T>(IQueryable<T> query, ISpecification<T> specification) where T : class
+    {{
+        if (specification.Items.TryGetValue(""PageNumber"", out var pageNumber) &&
+            specification.Items.TryGetValue(""PageSize"", out var pageSize))
+        {{
+            query = query.Skip(((int)pageNumber - 1) * (int)pageSize).Take((int)pageSize);
+        }}
+
+        return query;
+    }}
+}}
+
+public class QueryKitEvaluator : IEvaluator
+{{
+    private QueryKitEvaluator()
+    {{
+    }}
+
+    public static QueryKitEvaluator Instance {{ get; }} = new QueryKitEvaluator();
+
+    public bool IsCriteriaEvaluator {{ get; }} = false;
+
+    public IQueryable<T> GetQuery<T>(IQueryable<T> query, ISpecification<T> specification) where T : class
+    {{
+        if (specification.Items.TryGetValue(""QueryKitData"", out var data))
+        {{
+            var queryKitData = data as QueryKitData;
+
+            if (queryKitData != null)
+            {{
+                query = query.ApplyQueryKit(queryKitData);
+            }}
+        }}
+
+        return query;
+    }}
+}}
+
+public static class SpecificationBuilderExtensions
+{{
+    public static ISpecificationBuilder<T> Paginate<T>(
+        this ISpecificationBuilder<T> specificationBuilder,
+        int pageNumber,
+        int pageSize) where T : class
+    {{
+        specificationBuilder.Specification.Items[""PageNumber""] = pageNumber;
+        specificationBuilder.Specification.Items[""PageSize""] = pageSize;
+        return specificationBuilder;
+    }}
+    
+    public static ISpecificationBuilder<T, TResult> Paginate<T, TResult>(
+        this ISpecificationBuilder<T, TResult> specificationBuilder,
+        int pageNumber,
+        int pageSize) where T : class
+    {{
+        specificationBuilder.Specification.Items[""PageNumber""] = pageNumber;
+        specificationBuilder.Specification.Items[""PageSize""] = pageSize;
+        return specificationBuilder;
+    }}
+
+    public static ISpecificationBuilder<T> ApplyQueryKit<T>(
+        this ISpecificationBuilder<T> specificationBuilder,
+        QueryKitData queryKitData) where T : class
+    {{
+        specificationBuilder.Specification.Items[""QueryKitData""] = queryKitData;
+        return specificationBuilder;
+    }}
+    
+    public static ISpecificationBuilder<T, TResult> ApplyQueryKit<T, TResult>(
+        this ISpecificationBuilder<T, TResult> specificationBuilder,
+        QueryKitData queryKitData) where T : class
+    {{
+        specificationBuilder.Specification.Items[""QueryKitData""] = queryKitData;
+        return specificationBuilder;
     }}
 }}
 ";

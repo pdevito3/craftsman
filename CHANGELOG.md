@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Removed `Sieve` in favor of `QueryKit`
 * Removed `CanFilter` and `CanSort` properties. These can still be set in your code, but will no longer pollute your entities.
 * Use top level routing for health checks and controllers
+* Repository no longer exposes an IQueryable in favor of using specifications instead
+* `GetList` feature updated to use specification pattern
 
 ### Fixed
 

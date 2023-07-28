@@ -27,10 +27,13 @@ public class UserPolicyHandlerBuilder
 
         return @$"namespace {classNamespace};
 
+using Ardalis.Specification;
+using Domain.RolePermissions;
 using Domain.Roles;
 using Domain.Users.Dtos;
 using Domain.Users.Features;
 using Domain.Users.Services;
+using Domain.Users;
 using {entityServices.ClassNamespace};
 using {domainPolicyClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
@@ -61,13 +64,9 @@ public sealed class UserPolicyHandler : IUserPolicyHandler
         if(roles.Contains(Role.SuperAdmin().Value))
             return Permissions.List();
 
-        var permissions = await _rolePermissionRepository.Query()
-            .Where(rp => roles.Contains(rp.Role))
-            .Select(rp => rp.Permission)
-            .Distinct()
-            .ToArrayAsync();
-
-        return await Task.FromResult(permissions);
+        var spec = new PermissionsFromRolesSpec(roles);
+        var permissionsFromRoles = await _rolePermissionRepository.ListAsync(spec);
+        return permissionsFromRoles.Distinct();
     }}
     
     public async Task<bool> HasPermission(string permission)
@@ -78,10 +77,8 @@ public sealed class UserPolicyHandler : IUserPolicyHandler
         if (roles.Contains(Role.SuperAdmin().Value))
             return true;
         
-        return await _rolePermissionRepository.Query()
-            .Where(rp => roles.Contains(rp.Role))
-            .Select(rp => rp.Permission)
-            .AnyAsync(x => x == permission);
+        var spec = new HasPermissionSpec(roles, permission);
+        return await _rolePermissionRepository.AnyAsync(spec);
     }}
 
     private async Task<string[]> GetRoles()
@@ -90,7 +87,7 @@ public sealed class UserPolicyHandler : IUserPolicyHandler
         if (claimsPrincipal == null) throw new ArgumentNullException(nameof(claimsPrincipal));
         
         var nameIdentifier = _currentUserService.UserId;
-        var usersExist = _userRepository.Query().Any();
+        var usersExist = await _userRepository.AnyAsync(new AllUserIdsSpec());
         
         if (!usersExist)
             await SeedRootUser(nameIdentifier);
@@ -122,6 +119,34 @@ public sealed class UserPolicyHandler : IUserPolicyHandler
         var roleCommand = new AddUserRole.Command(createdUser.Id, Role.SuperAdmin().Value, true);
         await _mediator.Send(roleCommand);
         
+    }}
+}}
+
+public sealed class PermissionsFromRolesSpec : Specification<RolePermission, string>
+{{
+    public PermissionsFromRolesSpec(string[] roles)
+    {{
+        Query.Select(rp => rp.Permission)
+            .Where(rp => roles.Contains(rp.Role.Value))
+            .AsNoTracking();
+    }}
+}}
+
+public sealed class HasPermissionSpec : Specification<RolePermission, string>
+{{
+    public HasPermissionSpec(string[] roles, string permission)
+    {{
+        Query.Select(rp => rp.Permission)
+            .Where(rp => roles.Contains(rp.Role.Value) && rp.Permission == permission)
+            .AsNoTracking();
+    }}
+}}
+
+public sealed class AllUserIdsSpec : Specification<User, Guid>
+{{
+    public AllUserIdsSpec()
+    {{
+        Query.Select(x => x.Id).AsNoTracking();
     }}
 }}";
     }

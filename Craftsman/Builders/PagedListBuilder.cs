@@ -39,15 +39,15 @@ public class PagedList<T> : List<T>
     public bool HasPrevious => PageNumber > 1;
     public bool HasNext => PageNumber < TotalPages;
 
-    public PagedList(List<T> items, int count, int pageNumber, int pageSize)
+    public PagedList(List<T> items, int totalCount, int pageNumber, int pageSize)
     {{
-        TotalCount = count;
+        TotalCount = totalCount;
         PageSize = pageSize;
         PageNumber = pageNumber;
         CurrentPageSize = items.Count;
-        CurrentStartIndex = count == 0 ? 0 : ((pageNumber - 1) * pageSize) + 1;
-        CurrentEndIndex = count == 0 ? 0 : CurrentStartIndex + CurrentPageSize - 1;
-        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+        CurrentStartIndex = totalCount == 0 ? 0 : ((pageNumber - 1) * pageSize) + 1;
+        CurrentEndIndex = totalCount == 0 ? 0 : CurrentStartIndex + CurrentPageSize - 1;
+        TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
         AddRange(items);
     }}
