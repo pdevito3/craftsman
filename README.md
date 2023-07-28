@@ -40,11 +40,11 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ### Coming in 0.22
 
-✅ Move from Sieve to QueryKit
+✅ Move from Sieve to [QueryKit](https://github.com/pdevito3/querykit)
 
 ✅ TestContainers updated
 
-🚧 No more queryable exposed in repositories
+✅ No more queryable exposed in repositories
 
 🚧 Update `GetList` feature to `GetPagedList` and create a distinct `GetList
 
