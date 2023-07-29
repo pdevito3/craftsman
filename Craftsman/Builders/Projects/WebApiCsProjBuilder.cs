@@ -64,14 +64,14 @@ public class WebApiCsProjBuilder
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include=""OpenTelemetry.Exporter.Jaeger"" Version=""1.3.2"" />
-    <PackageReference Include=""OpenTelemetry.Extensions.Hosting"" Version=""1.0.0-rc9.9"" />
-    <PackageReference Include=""OpenTelemetry.Instrumentation.AspNetCore"" Version=""1.0.0-rc9.9"" />
-    <PackageReference Include=""OpenTelemetry.Instrumentation.SqlClient"" Version=""1.0.0-rc9.9"" />
-    <PackageReference Include=""OpenTelemetry.Instrumentation.EntityFrameworkCore"" Version=""1.0.0-beta.3"" />
-    <PackageReference Include=""OpenTelemetry.Instrumentation.EventCounters"" Version=""1.0.0-alpha.2"" />
-    <PackageReference Include=""OpenTelemetry.Instrumentation.Http"" Version=""1.0.0-rc9.9"" />
-    <PackageReference Include=""OpenTelemetry.Instrumentation.Runtime"" Version=""1.0.0"" />
+    <PackageReference Include=""OpenTelemetry.Exporter.Jaeger"" Version=""1.5.1"" />
+    <PackageReference Include=""OpenTelemetry.Extensions.Hosting"" Version=""1.5.1"" />
+    <PackageReference Include=""OpenTelemetry.Instrumentation.AspNetCore"" Version=""1.5.1-beta.1"" />
+    <PackageReference Include=""OpenTelemetry.Instrumentation.SqlClient"" Version=""1.5.1-beta.1"" />
+    <PackageReference Include=""OpenTelemetry.Instrumentation.EntityFrameworkCore"" Version=""1.0.0-beta.7"" />
+    <PackageReference Include=""OpenTelemetry.Instrumentation.EventCounters"" Version=""1.5.1-alpha.1"" />
+    <PackageReference Include=""OpenTelemetry.Instrumentation.Http"" Version=""1.5.1-beta.1"" />
+    <PackageReference Include=""OpenTelemetry.Instrumentation.Runtime"" Version=""1.5.0"" />
     <PackageReference Include=""QueryKit"" Version=""0.6.0"" />
     <PackageReference Include=""Riok.Mapperly"" Version=""2.8.0"" />
     <PackageReference Include=""Swashbuckle.AspNetCore"" Version=""6.5.0"" />

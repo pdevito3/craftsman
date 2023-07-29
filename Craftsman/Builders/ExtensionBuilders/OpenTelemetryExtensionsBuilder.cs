@@ -45,52 +45,48 @@ public static class OpenTelemetryServiceExtension
             // TODO: Setup an exporter here
             o.SetResourceBuilder(resourceBuilder);
         }});
-        
-        builder.Services.AddOpenTelemetryMetrics(metrics =>
-        {{
-            metrics.SetResourceBuilder(resourceBuilder)
-                .AddAspNetCoreInstrumentation()
-                .AddRuntimeInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddEventCountersInstrumentation(c =>
-                {{
-                    // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
-                    c.AddEventSources(
-                        ""Microsoft.AspNetCore.Hosting"",
-                        ""Microsoft-AspNetCore-Server-Kestrel"",
-                        ""System.Net.Http"",
-                        ""System.Net.Sockets"",
-                        ""System.Net.NameResolution"",
-                        ""System.Net.Security"");
-                }});
-        }});
 
-        builder.Services.AddOpenTelemetryTracing(builder =>
-        {{
-            builder.SetResourceBuilder(resourceBuilder)
-                .AddSource(""MassTransit"")
-                .AddSource(""{dbProvider.OTelSource()}"")
-                // The following subscribes to activities from Activity Source
-                // named ""MyCompany.MyProduct.MyLibrary"" only.
-                // .AddSource(""MyCompany.MyProduct.MyLibrary"")
-                .AddSqlClientInstrumentation(opt => opt.SetDbStatementForText = true)
-                .AddAspNetCoreInstrumentation()
-                .AddEntityFrameworkCoreInstrumentation()
-                .AddJaegerExporter(o =>
-                {{
-                    o.AgentHost = configuration.GetJaegerHostValue();
-                    o.AgentPort = {otelAgentPort};
-                    o.MaxPayloadSizeInBytes = 4096;
-                    o.ExportProcessorType = ExportProcessorType.Batch;
-                    o.BatchExportProcessorOptions = new BatchExportProcessorOptions<System.Diagnostics.Activity>
+        builder.Services.AddOpenTelemetry()
+            .WithMetrics(metricsBuilder =>
+                metricsBuilder.SetResourceBuilder(resourceBuilder)
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEventCountersInstrumentation(c =>
                     {{
-                        MaxQueueSize = 2048,
-                        ScheduledDelayMilliseconds = 5000,
-                        ExporterTimeoutMilliseconds = 30000,
-                        MaxExportBatchSize = 512,
-                    }};
-                }});
-        }});
+                        // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+                        c.AddEventSources(
+                            ""Microsoft.AspNetCore.Hosting"",
+                            ""Microsoft-AspNetCore-Server-Kestrel"",
+                            ""System.Net.Http"",
+                            ""System.Net.Sockets"",
+                            ""System.Net.NameResolution"",
+                            ""System.Net.Security"");
+                    }}))
+            .WithTracing(tracerBuilder =>
+                tracerBuilder.SetResourceBuilder(resourceBuilder)
+                    .AddSource(""MassTransit"")
+                    .AddSource(""{dbProvider.OTelSource()}"")
+                    // The following subscribes to activities from Activity Source
+                    // named ""MyCompany.MyProduct.MyLibrary"" only.
+                    // .AddSource(""MyCompany.MyProduct.MyLibrary"")
+                    .AddSqlClientInstrumentation(opt => opt.SetDbStatementForText = true)
+                    .AddAspNetCoreInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation()
+                    .AddJaegerExporter(o =>
+                    {{
+                        o.AgentHost = configuration.GetJaegerHostValue();
+                        o.AgentPort = {otelAgentPort};
+                        o.MaxPayloadSizeInBytes = 4096;
+                        o.ExportProcessorType = ExportProcessorType.Batch;
+                        o.BatchExportProcessorOptions = new BatchExportProcessorOptions<System.Diagnostics.Activity>
+                        {{
+                            MaxQueueSize = 2048,
+                            ScheduledDelayMilliseconds = 5000,
+                            ExporterTimeoutMilliseconds = 30000,
+                            MaxExportBatchSize = 512,
+                        }};
+                    }}));
     }}
 }}";
     }

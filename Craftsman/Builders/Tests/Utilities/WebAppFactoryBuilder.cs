@@ -74,6 +74,7 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>, IAsy
                 .AddJsonFile(""appsettings.json"")
                 .AddEnvironmentVariables()
                 .Build();
+            functionalConfig.GetSection(""JaegerHost"").Value = ""localhost"";
             configurationBuilder.AddConfiguration(functionalConfig);
         }});
 
