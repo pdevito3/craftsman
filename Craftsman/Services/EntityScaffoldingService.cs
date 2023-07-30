@@ -58,7 +58,7 @@ public class EntityScaffoldingService
             new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity.Name, entity.Plural, projectBaseName);
             new ApiRouteModifier(_fileSystem, _consoleWriter).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
-            _mediator.Send(new DatabaseEntityConfigBuilder.Command(entity.Name, entity.Plural));
+            _mediator.Send(new DatabaseEntityConfigBuilder.Command(entity.Name, entity.Plural, entity.Properties));
             _mediator.Send(new EntityRepositoryBuilder.Command(dbContextName, 
                 entity.Name, 
                 entity.Plural));
@@ -86,6 +86,21 @@ public class EntityScaffoldingService
             // domain events
             _mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
             _mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(entity.Name, entity.Plural));
+        }
+
+        // reloop once all bases are added for relationships to mod on top -- could push into the earlier loop if perf becomes an issue
+        foreach (var entity in entities)
+        {
+            var oneToManyPropsToAdd = entity.Properties.Where(x => x.Relationship == "1tomany").ToList();
+            foreach (var entityProperty in oneToManyPropsToAdd)
+            {
+                new EntityModifier(_fileSystem, _consoleWriter).AddSingularRelationshipEntity(srcDirectory, 
+                    entityProperty.ForeignEntityName, 
+                    entityProperty.ForeignEntityPlural, 
+                    entity.Name,
+                    entity.Plural,
+                    projectBaseName);
+            }
         }
 
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);

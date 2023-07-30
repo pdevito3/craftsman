@@ -44,6 +44,8 @@ public sealed class {FileNames.GetDtoName(entity.Name, dto)}
         var propString = "";
         for (var eachProp = 0; eachProp < props.Count; eachProp++)
         {
+            if(props[eachProp].Relationship != "none")
+                continue;
             if (!props[eachProp].CanManipulate && (dto is Dto.Creation or Dto.Update))
                 continue;
             if (props[eachProp].IsForeignKey && props[eachProp].IsMany)

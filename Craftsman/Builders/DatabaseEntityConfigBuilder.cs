@@ -7,18 +7,9 @@ using Services;
 
 public static class DatabaseEntityConfigBuilder
 {
-    public class Command : IRequest<bool>
-    {
-        public readonly string EntityName;
-        public readonly string EntityPlural;
 
-        public Command(string entityName, string entityPlural)
-        {
-            EntityName = entityName;
-            EntityPlural = entityPlural;
-        }
-    }
-
+    public record Command(string EntityName, string EntityPlural, List<EntityProperty> Properties) : IRequest<bool>;
+    
     public class Handler : IRequestHandler<Command, bool>
     {
         private readonly ICraftsmanUtilities _utilities;
@@ -36,16 +27,24 @@ public static class DatabaseEntityConfigBuilder
             var classPath = ClassPathHelper.DatabaseConfigClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
                 $"{FileNames.GetDatabaseEntityConfigName(request.EntityName)}.cs",
                 _scaffoldingDirectoryStore.ProjectBaseName);
-            var fileText = GetFileText(classPath.ClassNamespace, request.EntityName, request.EntityPlural);
+            var fileText = GetFileText(classPath.ClassNamespace, request.EntityName, request.EntityPlural, request.Properties);
             _utilities.CreateFile(classPath, fileText);
             return Task.FromResult(true);
         }
-        private string GetFileText(string classNamespace, string entityName, string entityPlural)
+        private string GetFileText(string classNamespace, string entityName, string entityPlural, List<EntityProperty> properties)
         {
             var domainPolicyClassPath = ClassPathHelper.EntityClassPath(_scaffoldingDirectoryStore.SrcDirectory,
                 "", 
                 entityPlural, 
                 _scaffoldingDirectoryStore.ProjectBaseName);
+            
+            var oneToManyConfigs = string.Empty;
+            foreach (var entityProperty in properties.Where(x => x.Relationship == "1tomany"))
+            {
+                oneToManyConfigs += @$"{Environment.NewLine}{Environment.NewLine}        builder.HasMany(x => x.{entityProperty.ForeignEntityPlural})
+            .WithOne(x => x.{entityName});";
+            }
+            oneToManyConfigs += string.IsNullOrWhiteSpace(oneToManyConfigs) ? string.Empty : $"{Environment.NewLine}";
             
             return @$"namespace {classNamespace};
 
@@ -59,7 +58,7 @@ public sealed class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntit
     /// The database configuration for {entityPlural}. 
     /// </summary>
     public void Configure(EntityTypeBuilder<{entityName}> builder)
-    {{
+    {{{oneToManyConfigs}
         // example for a simple 1:1 value object
         // builder.Property(x => x.Percent)
         //     .HasConversion(x => x.Value, x => new Percent(x))

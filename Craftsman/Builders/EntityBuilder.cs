@@ -34,7 +34,7 @@ public class EntityBuilder
     {
         var creationClassName = EntityModel.Creation.GetClassName(entity.Name);
         var updateClassName = EntityModel.Update.GetClassName(entity.Name);
-        var propString = EntityPropBuilder(entity.Properties, entity.Name);
+        var propString = EntityPropBuilder(entity.Properties);
         var tableAnnotation = EntityAnnotationBuilder(entity);
         var entityCreatedDomainMessage = FileNames.EntityCreatedDomainMessage(entity.Name);
         var entityUpdatedDomainMessage = FileNames.EntityUpdatedDomainMessage(entity.Name);
@@ -54,10 +54,18 @@ using {classPath.ClassNamespace};";
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         var createEntityVar = $"new{entity.Name.UppercaseFirstLetter()}";
-        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType).Select(property =>
+        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.Relationship == "none").Select(property =>
             $"        {createEntityVar}.{property.Name} = {creationClassName.LowercaseFirstLetter()}.{property.Name};"));
-        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType).Select(property =>
+        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.Relationship == "none").Select(property =>
             $"        {property.Name} = {updateClassName.LowercaseFirstLetter()}.{property.Name};"));
+        
+        var managedListMethods = "";
+        var oneToManyProps = entity.Properties.Where(x => x.Relationship == "1tomany").ToList();
+        foreach (var oneToManyProp in oneToManyProps)
+        {
+            var managedEntity = oneToManyProp.ForeignEntityName;
+            managedListMethods += GetListManagementMethods(entity.Name, managedEntity);
+        }
         
         return @$"namespace {classNamespace};
 
@@ -73,7 +81,7 @@ using System.Runtime.Serialization;{foreignEntityUsings}
 {tableAnnotation}
 public class {entity.Name} : BaseEntity
 {{
-{propString}
+{propString}    // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
 
 
     public static {entity.Name} Create({creationClassName} {creationClassName.LowercaseFirstLetter()})
@@ -94,9 +102,29 @@ public class {entity.Name} : BaseEntity
         QueueDomainEvent(new {entityUpdatedDomainMessage}(){{ Id = Id }});
         return this;
     }}
+
+    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete{managedListMethods}
     
     protected {entity.Name}() {{ }} // For EF + Mocking
 }}";
+    }
+
+    public static string GetListManagementMethods(string rootEntity, string managedEntity)
+    {
+        var lowerManagedEntity = managedEntity.LowercaseFirstLetter();
+        return $@"
+    
+    public {rootEntity} Add{managedEntity}({managedEntity} {lowerManagedEntity})
+    {{
+        _{lowerManagedEntity}.Add({lowerManagedEntity});
+        return this;
+    }}
+    
+    public {rootEntity} Remove{managedEntity}({managedEntity} {lowerManagedEntity})
+    {{
+        _{lowerManagedEntity}.Remove({lowerManagedEntity});
+        return this;
+    }}";
     }
 
     public static string GetBaseEntityFileText(string classNamespace, bool useSoftDelete)
@@ -166,7 +194,7 @@ public abstract class BaseEntity
         return entity.Schema != null ? @$"[Table(""{tableName}"", Schema=""{entity.Schema}"")]" : @$"[Table(""{tableName}"")]";
     }
 
-    public static string EntityPropBuilder(List<EntityProperty> props, string entityName)
+    public static string EntityPropBuilder(List<EntityProperty> props)
     {
         var propString = "";
         foreach (var property in props)
@@ -194,18 +222,22 @@ public abstract class BaseEntity
             {
                 propString += attributes;
                 var defaultValue = GetDefaultValueText(property.DefaultValue, property);
-                var newLine = (property.IsForeignKey && !property.IsMany)
-                    ? Environment.NewLine
-                    : $"{Environment.NewLine}{Environment.NewLine}";
 
-                if (property.IsPrimitiveType || property.IsMany)
-                    propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{newLine}";
+                if (property.IsPrimitiveType && property.Relationship == "none")
+                {
+                    propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{Environment.NewLine}{Environment.NewLine}";
+                }
 
-                propString += GetForeignProp(property, entityName);
+                if (property.Relationship == "1tomany")
+                {
+                    var lowerPropName = property.ForeignEntityName.LowercaseFirstLetter();
+                    propString += $@"    private readonly List<{property.ForeignEntityName}> _{lowerPropName} = new();
+    public IReadOnlyCollection<{property.ForeignEntityName}> {property.ForeignEntityPlural} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}{Environment.NewLine}";
+                }
             }
         }
 
-        return propString.RemoveLastNewLine().RemoveLastNewLine();
+        return propString;
     }
 
     private static string GetDefaultValueText(string defaultValue, EntityProperty prop)
@@ -224,11 +256,6 @@ public abstract class BaseEntity
         var attributeString = "";
         if (entityProperty.IsRequired)
             attributeString += @$"    [Required]{Environment.NewLine}";
-        if (entityProperty.IsPrimativeForeignKey)
-        {
-            attributeString += @$"    [JsonIgnore, IgnoreDataMember]
-    [ForeignKey(""{entityProperty.ForeignEntityName}"")]{Environment.NewLine}";
-        }
     
         if (entityProperty.IsMany || !entityProperty.IsPrimitiveType)
             attributeString += $@"    [JsonIgnore, IgnoreDataMember]{Environment.NewLine}";
@@ -257,16 +284,6 @@ public abstract class BaseEntity
         }
 
         return "";
-    }
-
-    private static string GetForeignProp(EntityProperty prop, string entityName)
-    {
-        var propName = !prop.IsPrimitiveType ? prop.Name : prop.ForeignEntityName;
-        
-        if (propName == entityName)
-            propName = $"Parent{propName}";
-        
-        return !string.IsNullOrEmpty(prop.ForeignEntityName) && !prop.IsMany ? $@"    public {prop.ForeignEntityName} {propName} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}" : "";
     }
 
     public void CreateUserEntity(string srcDirectory, Entity entity, string projectBaseName)
@@ -311,6 +328,8 @@ public class User : BaseEntity
     [IgnoreDataMember]
     public ICollection<UserRole> Roles {{ get; private set; }} = new List<UserRole>();
 
+    // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
+
 
     public static User Create(UserForCreation userForCreation)
     {{
@@ -344,6 +363,8 @@ public class User : BaseEntity
         QueueDomainEvent(new UserUpdated(){{ Id = Id }});
         return this;
     }}
+
+    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
 
     public UserRole AddRole(Role role)
     {{
@@ -409,6 +430,8 @@ public class UserRole : BaseEntity
     public User User {{ get; private set; }}
 
     public Role Role {{ get; private set; }}
+
+    // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
     
 
     public static UserRole Create(Guid userId, Role role)
@@ -423,6 +446,8 @@ public class UserRole : BaseEntity
         
         return newUserRole;
     }}
+
+    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
     
     protected UserRole() {{ }} // For EF + Mocking
 }}";
@@ -454,6 +479,8 @@ public class RolePermission : BaseEntity
     public Role Role {{ get; private set; }}
     public string Permission {{ get; private set; }}
 
+    // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
+
 
     public static RolePermission Create(RolePermissionForCreation rolePermissionForCreation)
     {{
@@ -481,6 +508,8 @@ public class RolePermission : BaseEntity
         QueueDomainEvent(new RolePermissionUpdated(){{ Id = Id }});
         return this;
     }}
+
+    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
     
     private static bool BeAnExistingPermission(string permission)
     {{
