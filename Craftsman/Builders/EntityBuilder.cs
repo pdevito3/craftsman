@@ -248,20 +248,21 @@ public abstract class BaseEntity
                 {
                     propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{Environment.NewLine}{Environment.NewLine}";
                 }
-
                 if (property.Relationship == "1tomany" || property.Relationship == "manytomany")
                 {
                     var lowerPropName = property.ForeignEntityName.LowercaseFirstLetter();
                     propString += $@"    private readonly List<{property.ForeignEntityName}> _{lowerPropName} = new();
     public IReadOnlyCollection<{property.ForeignEntityName}> {property.ForeignEntityPlural} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}{Environment.NewLine}";
                 }
-
                 if (property.Relationship == "1to1")
                 {
                     propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }} = {property.ForeignEntityName}.Create(new {EntityModel.Creation.GetClassName(property.ForeignEntityName)}());{Environment.NewLine}{Environment.NewLine}";
                 }
-
                 if (property.Relationship == "manyto1")
+                {
+                    propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}";
+                }
+                if (property.Relationship == "self")
                 {
                     propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}";
                 }

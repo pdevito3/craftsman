@@ -60,7 +60,10 @@ public static class DatabaseEntityConfigBuilder
                 relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name})
             .WithMany(x => x.{entityPlural});";
             }
-            relationshipConfigs += string.IsNullOrWhiteSpace(relationshipConfigs) ? string.Empty : $"{Environment.NewLine}";
+            foreach (var entityProperty in properties.Where(x => x.Relationship == "self"))
+            {
+                relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name});";
+            }
             
             return @$"namespace {classNamespace};
 
