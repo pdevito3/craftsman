@@ -102,7 +102,7 @@ public class EntityScaffoldingService
                     projectBaseName);
             }
             
-            var manyPropsToAdd = entity.Properties.Where(x => x.Relationship == "manytomany").ToList();
+            var manyPropsToAdd = entity.Properties.Where(x => x.Relationship == "manytomany" || x.Relationship == "manyto1").ToList();
             foreach (var entityProperty in manyPropsToAdd)
             {
                 new EntityModifier(_fileSystem, _consoleWriter).AddManyRelationshipEntity(srcDirectory, 

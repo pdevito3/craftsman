@@ -62,11 +62,18 @@ using {modelsClassPath.ClassNamespace};";
             $"        {property.Name} = {updateClassName.LowercaseFirstLetter()}.{property.Name};"));
 
         var managedListMethods = "";
-        var manyRelationshipProps = entity.Properties.Where(x => x.Relationship == "1tomany" || x.Relationship == "manytomany").ToList();
-        foreach (var oneToManyProp in manyRelationshipProps)
+        var manyManagementRelationshipProps = entity.Properties.Where(x => x.Relationship == "1tomany" || x.Relationship == "manytomany").ToList();
+        foreach (var oneToManyProp in manyManagementRelationshipProps)
         {
             var managedEntity = oneToManyProp.ForeignEntityName;
             managedListMethods += GetListManagementMethods(entity.Name, managedEntity);
+        }
+        var managedEntityMethod = "";
+        var manyToOne = entity.Properties.Where(x => x.Relationship == "manyto1" || x.Relationship == "1to1").ToList();
+        foreach (var oneToManyProp in manyToOne)
+        {
+            var managedEntity = oneToManyProp.ForeignEntityName;
+            managedEntityMethod += GetEntityManagementMethods(entity.Name, managedEntity);
         }
         
         return @$"namespace {classNamespace};
@@ -105,7 +112,7 @@ public class {entity.Name} : BaseEntity
         return this;
     }}
 
-{managedListMethods}    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
+{managedListMethods}{managedEntityMethod}    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
     
     protected {entity.Name}() {{ }} // For EF + Mocking
 }}";
@@ -123,6 +130,18 @@ public class {entity.Name} : BaseEntity
     public {rootEntity} Remove{managedEntity}({managedEntity} {lowerManagedEntity})
     {{
         _{lowerManagedEntity}.Remove({lowerManagedEntity});
+        return this;
+    }}
+
+";
+    }
+
+    public static string GetEntityManagementMethods(string rootEntity, string managedEntity)
+    {
+        var lowerManagedEntity = managedEntity.LowercaseFirstLetter();
+        return $@"    public {rootEntity} Set{managedEntity}({managedEntity} {lowerManagedEntity})
+    {{
+        {managedEntity} = {lowerManagedEntity};
         return this;
     }}
 
@@ -240,6 +259,11 @@ public abstract class BaseEntity
                 if (property.Relationship == "1to1")
                 {
                     propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }} = {property.ForeignEntityName}.Create(new {EntityModel.Creation.GetClassName(property.ForeignEntityName)}());{Environment.NewLine}{Environment.NewLine}";
+                }
+
+                if (property.Relationship == "manyto1")
+                {
+                    propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}";
                 }
             }
         }

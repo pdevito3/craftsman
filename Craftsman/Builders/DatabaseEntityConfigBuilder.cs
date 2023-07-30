@@ -55,6 +55,11 @@ public static class DatabaseEntityConfigBuilder
                 relationshipConfigs += @$"{Environment.NewLine}        builder.HasMany(x => x.{entityProperty.Name})
             .WithMany(x => x.{entityPlural});";
             }
+            foreach (var entityProperty in properties.Where(x => x.Relationship == "manyto1"))
+            {
+                relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name})
+            .WithMany(x => x.{entityPlural});";
+            }
             relationshipConfigs += string.IsNullOrWhiteSpace(relationshipConfigs) ? string.Empty : $"{Environment.NewLine}";
             
             return @$"namespace {classNamespace};
