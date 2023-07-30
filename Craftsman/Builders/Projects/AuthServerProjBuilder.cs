@@ -31,7 +31,7 @@ public class AuthServerProjBuilder
 
   <ItemGroup>
     <PackageReference Include=""Pulumi"" Version=""3.*"" />
-    <PackageReference Include=""Pulumi.Keycloak"" Version=""4.11.0"" />
+    <PackageReference Include=""Pulumi.Keycloak"" Version=""5.2.1"" />
   </ItemGroup>
 
 </Project>";
