@@ -38,13 +38,20 @@ public static class DatabaseEntityConfigBuilder
                 entityPlural, 
                 _scaffoldingDirectoryStore.ProjectBaseName);
             
-            var oneToManyConfigs = string.Empty;
+            var relationshipConfigs = string.Empty;
             foreach (var entityProperty in properties.Where(x => x.Relationship == "1tomany"))
             {
-                oneToManyConfigs += @$"{Environment.NewLine}{Environment.NewLine}        builder.HasMany(x => x.{entityProperty.ForeignEntityPlural})
+                relationshipConfigs += @$"{Environment.NewLine}        builder.HasMany(x => x.{entityProperty.Name})
             .WithOne(x => x.{entityName});";
             }
-            oneToManyConfigs += string.IsNullOrWhiteSpace(oneToManyConfigs) ? string.Empty : $"{Environment.NewLine}";
+            
+            foreach (var entityProperty in properties.Where(x => x.Relationship == "1to1"))
+            {
+                relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name})
+            .WithOne(x => x.{entityName})
+            .HasForeignKey<{entityName}>(s => s.Id);";
+            }
+            relationshipConfigs += string.IsNullOrWhiteSpace(relationshipConfigs) ? string.Empty : $"{Environment.NewLine}";
             
             return @$"namespace {classNamespace};
 
@@ -58,7 +65,7 @@ public sealed class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntit
     /// The database configuration for {entityPlural}. 
     /// </summary>
     public void Configure(EntityTypeBuilder<{entityName}> builder)
-    {{{oneToManyConfigs}
+    {{{relationshipConfigs}
         // example for a simple 1:1 value object
         // builder.Property(x => x.Percent)
         //     .HasConversion(x => x.Value, x => new Percent(x))

@@ -234,6 +234,11 @@ public abstract class BaseEntity
                     propString += $@"    private readonly List<{property.ForeignEntityName}> _{lowerPropName} = new();
     public IReadOnlyCollection<{property.ForeignEntityName}> {property.ForeignEntityPlural} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}{Environment.NewLine}";
                 }
+
+                if (property.Relationship == "1to1")
+                {
+                    propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}";
+                }
             }
         }
 
