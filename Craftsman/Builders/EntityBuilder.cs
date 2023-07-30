@@ -44,9 +44,11 @@ public class EntityBuilder
         foreach (var entityProperty in foreignProps)
         {
             var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", entityProperty.ForeignEntityPlural, projectBaseName);
+            var modelsClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entityProperty.ForeignEntityName, entityProperty.ForeignEntityPlural, null, projectBaseName);
 
             foreignEntityUsings += $@"
-using {classPath.ClassNamespace};";
+using {classPath.ClassNamespace};
+using {modelsClassPath.ClassNamespace};";
         }
         
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
@@ -237,7 +239,7 @@ public abstract class BaseEntity
 
                 if (property.Relationship == "1to1")
                 {
-                    propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}";
+                    propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }} = {property.ForeignEntityName}.Create(new {EntityModel.Creation.GetClassName(property.ForeignEntityName)}());{Environment.NewLine}{Environment.NewLine}";
                 }
             }
         }
