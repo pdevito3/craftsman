@@ -53,14 +53,14 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_create_valid_userRole()
     {{
         // Arrange
-        var userId = Guid.NewGuid();
+        var user = new FakeUserBuilder().Build();
         var role = _faker.PickRandom(Role.ListNames());
         
         // Act
-        var fakeUserRole = UserRole.Create(userId, new Role(role));
+        var fakeUserRole = UserRole.Create(user, new Role(role));
 
         // Assert
-        fakeUserRole.UserId.Should().Be(userId);
+        fakeUserRole.User.Id.Should().Be(user.Id);
         fakeUserRole.Role.Should().Be(new Role(role));
     }}
 
@@ -68,11 +68,11 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void queue_domain_event_on_create()
     {{
         // Arrange
-        var userId = Guid.NewGuid();
+        var user = new FakeUserBuilder().Build();
         var role = _faker.PickRandom(Role.ListNames());
         
         // Act
-        var fakeUserRole = UserRole.Create(userId, new Role(role));
+        var fakeUserRole = UserRole.Create(user, new Role(role));
 
         // Assert
         fakeUserRole.DomainEvents.Count.Should().Be(1);
