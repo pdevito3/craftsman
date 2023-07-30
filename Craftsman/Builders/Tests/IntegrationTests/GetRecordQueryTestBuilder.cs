@@ -32,7 +32,6 @@ public class GetRecordQueryTestBuilder
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
-        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
         var permissionTest = !featureIsProtected ? null : GetPermissionTest(featureName, permission);
 
         return @$"namespace {classPath.ClassNamespace};
@@ -45,7 +44,7 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using System.Threading.Tasks;{foreignEntityUsings}
+using System.Threading.Tasks;
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
@@ -59,16 +58,12 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var pkName = Entity.PrimaryKeyProperty.Name;
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
-        if (fakeParentIdRuleFor != "")
-            fakeParentIdRuleFor += $"{Environment.NewLine}            ";
-
         return $@"[Fact]
     public async Task can_get_existing_{entity.Name.ToLower()}_with_accurate_props()
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleFor}.Build();
+        var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
         await testingServiceScope.InsertAsync({fakeEntityVariableName});
 
         // Act
@@ -104,7 +99,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     private static string GetAssertions(List<EntityProperty> properties, string lowercaseEntityName, string fakeEntityVariableName)
     {
         var entityAssertions = "";
-        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType))
+        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.Relationship == "none"))
         {
             entityAssertions += entityProperty.Type switch
             {

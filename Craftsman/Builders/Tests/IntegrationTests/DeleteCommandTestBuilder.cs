@@ -37,8 +37,6 @@ public class DeleteCommandTestBuilder
 
         var permissionTest = !featureIsProtected ? null : GetPermissionTest(commandName, featureName, permission);
 
-        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
-
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
@@ -48,7 +46,7 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 using Domain;
 using {exceptionsClassPath.ClassNamespace};
-using System.Threading.Tasks;{foreignEntityUsings}
+using System.Threading.Tasks;
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
@@ -65,16 +63,13 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var dbResponseVariableName = $"{lowercaseEntityName}Response";
         var pkName = Entity.PrimaryKeyProperty.Name;
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
-        if (fakeParentIdRuleFor != "")
-            fakeParentIdRuleFor += $"{Environment.NewLine}            ";
 
         return $@"[Fact]
     public async Task can_delete_{entity.Name.ToLower()}_from_db()
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleFor}.Build();
+        var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
         await testingServiceScope.InsertAsync({fakeEntityVariableName});
         var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
@@ -120,10 +115,6 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var pkName = Entity.PrimaryKeyProperty.Name;
         var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
-        if (fakeParentIdRuleFor != "")
-            fakeParentIdRuleFor += $"{Environment.NewLine}            ";
-
         return $@"
 
     [Fact]
@@ -131,7 +122,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleFor}.Build();
+        var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
         await testingServiceScope.InsertAsync({fakeEntityVariableName});
         var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));

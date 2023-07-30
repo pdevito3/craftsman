@@ -63,11 +63,6 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
         var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
-        if (fakeParentIdRuleForOne != "")
-            fakeParentIdRuleForOne += $"{Environment.NewLine}            ";
-        if (fakeParentIdRuleForTwo != "")
-            fakeParentIdRuleForTwo += $"{Environment.NewLine}            ";
         
         return @$"
     [Fact]
@@ -75,8 +70,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableNameOne} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleForOne}.Build();
-        var {fakeEntityVariableNameTwo} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleForTwo}.Build();
+        var {fakeEntityVariableNameOne} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
+        var {fakeEntityVariableNameTwo} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
         var queryParameters = new {entityParams}();
 
         await testingServiceScope.InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});

@@ -59,22 +59,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeCreationDto = $"Fake{FileNames.GetDtoName(entity.Name, Dto.Creation)}";
         var fakeEntityVariableName = $"fake{entity.Name}";
 
-        var fakeParent = "";
-        var fakeParentIdRuleFor = "";
-        foreach (var entityProperty in entity.Properties)
-        {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType)
-            {
-                var baseVarName = entityProperty.ForeignEntityName != entity.Name
-                    ? $"{entityProperty.ForeignEntityName}"
-                    : $"{entityProperty.ForeignEntityName}Parent";
-                var fakeParentBuilder = FileNames.FakeBuilderName(entityProperty.ForeignEntityName);
-                fakeParent += @$"var fake{baseVarName}One = new {fakeParentBuilder}().Build();
-        await InsertAsync(fake{baseVarName}One);{Environment.NewLine}{Environment.NewLine}        ";
-                fakeParentIdRuleFor +=
-                    $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{baseVarName}One.Id)";
-            }
-        }
+
 
         var testName = $"create_{entity.Name.ToLower()}_returns_created_using_valid_dto";
         testName += isProtected ? "_and_valid_auth_credentials" : "";
@@ -87,7 +72,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     public async Task {testName}()
     {{
         // Arrange
-        {fakeParent}var {fakeEntityVariableName} = new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate();{clientAuth}
+        var {fakeEntityVariableName} = new {fakeCreationDto}().Generate();{clientAuth}
 
         // Act
         var route = ApiRoutes.{entity.Plural}.Create;

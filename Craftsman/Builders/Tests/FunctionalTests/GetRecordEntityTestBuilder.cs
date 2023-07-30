@@ -30,7 +30,6 @@ public class GetEntityRecordTestBuilder
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
         var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
-        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
         var permissionsUsing = isProtected
             ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};{Environment.NewLine}using {rolesClassPath.ClassNamespace};"
@@ -43,7 +42,7 @@ public class GetEntityRecordTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};{permissionsUsing}{foreignEntityUsings}
+using {testUtilClassPath.ClassNamespace};{permissionsUsing}
 using FluentAssertions;
 using Xunit;
 using System.Net;
@@ -60,8 +59,6 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var fakeEntity = FileNames.FakerName(entity.Name);
         var fakeEntityVariableName = $"fake{entity.Name}";
         var pkName = Entity.PrimaryKeyProperty.Name;
-        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-        var fakeParent = FunctionalTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
 
         var testName = $"get_{entity.Name.ToLower()}_returns_success_when_entity_exists";
         testName += isProtected ? "_using_valid_auth_credentials" : "";
@@ -74,7 +71,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     public async Task {testName}()
     {{
         // Arrange
-        {fakeParent}var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleFor}.Build();{clientAuth}
+        var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}().Build();{clientAuth}
         await InsertAsync({fakeEntityVariableName});
 
         // Act
