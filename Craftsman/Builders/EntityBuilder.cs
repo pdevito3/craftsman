@@ -60,10 +60,10 @@ using {modelsClassPath.ClassNamespace};";
             $"        {createEntityVar}.{property.Name} = {creationClassName.LowercaseFirstLetter()}.{property.Name};"));
         var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.Relationship == "none").Select(property =>
             $"        {property.Name} = {updateClassName.LowercaseFirstLetter()}.{property.Name};"));
-        
+
         var managedListMethods = "";
-        var oneToManyProps = entity.Properties.Where(x => x.Relationship == "1tomany").ToList();
-        foreach (var oneToManyProp in oneToManyProps)
+        var manyRelationshipProps = entity.Properties.Where(x => x.Relationship == "1tomany" || x.Relationship == "manytomany").ToList();
+        foreach (var oneToManyProp in manyRelationshipProps)
         {
             var managedEntity = oneToManyProp.ForeignEntityName;
             managedListMethods += GetListManagementMethods(entity.Name, managedEntity);
@@ -105,7 +105,7 @@ public class {entity.Name} : BaseEntity
         return this;
     }}
 
-    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete{managedListMethods}
+{managedListMethods}    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
     
     protected {entity.Name}() {{ }} // For EF + Mocking
 }}";
@@ -114,9 +114,7 @@ public class {entity.Name} : BaseEntity
     public static string GetListManagementMethods(string rootEntity, string managedEntity)
     {
         var lowerManagedEntity = managedEntity.LowercaseFirstLetter();
-        return $@"
-    
-    public {rootEntity} Add{managedEntity}({managedEntity} {lowerManagedEntity})
+        return $@"    public {rootEntity} Add{managedEntity}({managedEntity} {lowerManagedEntity})
     {{
         _{lowerManagedEntity}.Add({lowerManagedEntity});
         return this;
@@ -126,7 +124,9 @@ public class {entity.Name} : BaseEntity
     {{
         _{lowerManagedEntity}.Remove({lowerManagedEntity});
         return this;
-    }}";
+    }}
+
+";
     }
 
     public static string GetBaseEntityFileText(string classNamespace, bool useSoftDelete)
@@ -230,7 +230,7 @@ public abstract class BaseEntity
                     propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{Environment.NewLine}{Environment.NewLine}";
                 }
 
-                if (property.Relationship == "1tomany")
+                if (property.Relationship == "1tomany" || property.Relationship == "manytomany")
                 {
                     var lowerPropName = property.ForeignEntityName.LowercaseFirstLetter();
                     propString += $@"    private readonly List<{property.ForeignEntityName}> _{lowerPropName} = new();

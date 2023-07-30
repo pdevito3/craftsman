@@ -91,10 +91,21 @@ public class EntityScaffoldingService
         // reloop once all bases are added for relationships to mod on top -- could push into the earlier loop if perf becomes an issue
         foreach (var entity in entities)
         {
-            var oneToManyPropsToAdd = entity.Properties.Where(x => x.Relationship == "1tomany" || x.Relationship == "1to1").ToList();
-            foreach (var entityProperty in oneToManyPropsToAdd)
+            var singularPropsToAdd = entity.Properties.Where(x => x.Relationship == "1tomany" || x.Relationship == "1to1").ToList();
+            foreach (var entityProperty in singularPropsToAdd)
             {
                 new EntityModifier(_fileSystem, _consoleWriter).AddSingularRelationshipEntity(srcDirectory, 
+                    entityProperty.ForeignEntityName, 
+                    entityProperty.ForeignEntityPlural, 
+                    entity.Name,
+                    entity.Plural,
+                    projectBaseName);
+            }
+            
+            var manyPropsToAdd = entity.Properties.Where(x => x.Relationship == "manytomany").ToList();
+            foreach (var entityProperty in manyPropsToAdd)
+            {
+                new EntityModifier(_fileSystem, _consoleWriter).AddManyRelationshipEntity(srcDirectory, 
                     entityProperty.ForeignEntityName, 
                     entityProperty.ForeignEntityPlural, 
                     entity.Name,

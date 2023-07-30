@@ -44,12 +44,16 @@ public static class DatabaseEntityConfigBuilder
                 relationshipConfigs += @$"{Environment.NewLine}        builder.HasMany(x => x.{entityProperty.Name})
             .WithOne(x => x.{entityName});";
             }
-            
             foreach (var entityProperty in properties.Where(x => x.Relationship == "1to1"))
             {
                 relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name})
             .WithOne(x => x.{entityName})
             .HasForeignKey<{entityName}>(s => s.Id);";
+            }
+            foreach (var entityProperty in properties.Where(x => x.Relationship == "manytomany"))
+            {
+                relationshipConfigs += @$"{Environment.NewLine}        builder.HasMany(x => x.{entityProperty.Name})
+            .WithMany(x => x.{entityPlural});";
             }
             relationshipConfigs += string.IsNullOrWhiteSpace(relationshipConfigs) ? string.Empty : $"{Environment.NewLine}";
             
