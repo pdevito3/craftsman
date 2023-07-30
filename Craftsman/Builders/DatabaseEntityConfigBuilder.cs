@@ -27,43 +27,16 @@ public static class DatabaseEntityConfigBuilder
             var classPath = ClassPathHelper.DatabaseConfigClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
                 $"{FileNames.GetDatabaseEntityConfigName(request.EntityName)}.cs",
                 _scaffoldingDirectoryStore.ProjectBaseName);
-            var fileText = GetFileText(classPath.ClassNamespace, request.EntityName, request.EntityPlural, request.Properties);
+            var fileText = GetFileText(classPath.ClassNamespace, request.EntityName, request.EntityPlural);
             _utilities.CreateFile(classPath, fileText);
             return Task.FromResult(true);
         }
-        private string GetFileText(string classNamespace, string entityName, string entityPlural, List<EntityProperty> properties)
+        private string GetFileText(string classNamespace, string entityName, string entityPlural)
         {
             var domainPolicyClassPath = ClassPathHelper.EntityClassPath(_scaffoldingDirectoryStore.SrcDirectory,
                 "", 
                 entityPlural, 
                 _scaffoldingDirectoryStore.ProjectBaseName);
-            
-            var relationshipConfigs = string.Empty;
-            foreach (var entityProperty in properties.Where(x => x.Relationship == "1tomany"))
-            {
-                relationshipConfigs += @$"{Environment.NewLine}        builder.HasMany(x => x.{entityProperty.Name})
-            .WithOne(x => x.{entityName});";
-            }
-            foreach (var entityProperty in properties.Where(x => x.Relationship == "1to1"))
-            {
-                relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name})
-            .WithOne(x => x.{entityName})
-            .HasForeignKey<{entityName}>(s => s.Id);";
-            }
-            foreach (var entityProperty in properties.Where(x => x.Relationship == "manytomany"))
-            {
-                relationshipConfigs += @$"{Environment.NewLine}        builder.HasMany(x => x.{entityProperty.Name})
-            .WithMany(x => x.{entityPlural});";
-            }
-            foreach (var entityProperty in properties.Where(x => x.Relationship == "manyto1"))
-            {
-                relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name})
-            .WithMany(x => x.{entityPlural});";
-            }
-            foreach (var entityProperty in properties.Where(x => x.Relationship == "self"))
-            {
-                relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name});";
-            }
             
             return @$"namespace {classNamespace};
 
@@ -77,7 +50,9 @@ public sealed class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntit
     /// The database configuration for {entityPlural}. 
     /// </summary>
     public void Configure(EntityTypeBuilder<{entityName}> builder)
-    {{{relationshipConfigs}
+    {{
+        // Relationship Marker -- Deleting or modifying this comment could cause incomplete relationship scaffolding
+
         // example for a simple 1:1 value object
         // builder.Property(x => x.Percent)
         //     .HasConversion(x => x.Value, x => new Percent(x))

@@ -40,7 +40,7 @@ public class EntityBuilder
         var entityUpdatedDomainMessage = FileNames.EntityUpdatedDomainMessage(entity.Name);
 
         var foreignEntityUsings = "";
-        var foreignProps = entity.Properties.Where(e => e.IsForeignKey).ToList();
+        var foreignProps = entity.Properties.Where(e => e.IsForeignKey && e.Relationship != "self").ToList();
         foreach (var entityProperty in foreignProps)
         {
             var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", entityProperty.ForeignEntityPlural, projectBaseName);

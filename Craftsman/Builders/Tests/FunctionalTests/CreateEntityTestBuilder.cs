@@ -29,7 +29,6 @@ public class CreateEntityTestBuilder
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
         var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
-        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
         var permissionsUsing = isProtected
             ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};{Environment.NewLine}using {rolesClassPath.ClassNamespace};"
@@ -42,7 +41,7 @@ public class CreateEntityTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-using {testUtilClassPath.ClassNamespace};{permissionsUsing}{foreignEntityUsings}
+using {testUtilClassPath.ClassNamespace};{permissionsUsing}
 using FluentAssertions;
 using Xunit;
 using System.Net;

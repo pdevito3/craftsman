@@ -112,6 +112,8 @@ public class EntityScaffoldingService
                     entity.Plural,
                     projectBaseName);
             }
+            
+            new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name, entity.Plural, entity.Properties, projectBaseName);
         }
 
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);

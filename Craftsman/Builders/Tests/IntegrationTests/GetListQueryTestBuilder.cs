@@ -36,8 +36,6 @@ public class GetListQueryTestBuilder
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(testDirectory, featureName, entity.Plural, projectBaseName);
 
-        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
-
         return @$"namespace {classPath.ClassNamespace};
 
 using {dtoClassPath.ClassNamespace};
@@ -47,7 +45,7 @@ using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Domain;
 using Xunit;
-using System.Threading.Tasks;{foreignEntityUsings}
+using System.Threading.Tasks;
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
