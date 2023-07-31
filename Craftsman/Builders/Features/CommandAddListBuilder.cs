@@ -34,6 +34,7 @@ public class CommandAddListBuilder
 
         var entityName = entity.Name;
         var entityNameLowercase = entity.Name.LowercaseFirstLetter();
+        var parentEntityNameLowercaseFirst = feature.ParentEntity.LowercaseFirstLetter();
         var entityNameLowercaseListVar = $"{entity.Name.LowercaseFirstLetter()}List";
         var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
         var commandProp = $"{entityName}ListToAdd";
@@ -63,8 +64,8 @@ public class CommandAddListBuilder
             out string heimGuardField);
 
         var batchFkCheck = !string.IsNullOrEmpty(feature.BatchPropertyName)
-            ? @$"// throws error if parent doesn't exist 
-            await _{repoInterfacePropBatchFk}.GetById(request.{feature.BatchPropertyName}, cancellationToken: cancellationToken);{Environment.NewLine}{Environment.NewLine}            "
+            ? @$"
+            var {parentEntityNameLowercaseFirst} = await _{repoInterfacePropBatchFk}.GetById(request.{feature.BatchPropertyName}, cancellationToken: cancellationToken);{Environment.NewLine}{Environment.NewLine}            "
             : "";
         var batchFkUsingRepo =  !string.IsNullOrEmpty(feature.BatchPropertyName)
             ? @$"{Environment.NewLine}using {entityServicesClassPathBatchFk.ClassNamespace};"
@@ -117,14 +118,14 @@ public static class {className}
 
         public async Task<{readDtoAsList}> Handle({addCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            {batchFkCheck}var {entityNameLowercaseListVar}ToAdd = request.{commandProp}
-                .Select({entity.Lambda} => {{ {entity.Lambda}.{feature.BatchPropertyName} = request.{feature.BatchPropertyName}; return {entity.Lambda}; }})
-                .ToList();
+            {batchFkCheck}var {entityNameLowercaseListVar}ToAdd = request.{commandProp}.ToList();
             var {entityNameLowercaseListVar} = new List<{entityName}>();
             foreach (var {entityNameLowercase} in {entityNameLowercaseListVar}ToAdd)
             {{
-                var {entityNameLowercase}ToAdd = {entityNameLowercase}.To{EntityModel.Creation.GetClassName(entity.Name)}();
-                {entityNameLowercaseListVar}.Add({entityName}.Create({entityNameLowercase}ToAdd));
+                var {entityNameLowercase}ForCreation = {entityNameLowercase}.To{EntityModel.Creation.GetClassName(entity.Name)}();
+                var {entityNameLowercase}ToAdd = {entityName}.Create({entityNameLowercase}ForCreation);
+                {entityNameLowercaseListVar}.Add({entityNameLowercase}ToAdd);
+                {parentEntityNameLowercaseFirst}.Add{entityName}({entityNameLowercase}ToAdd);
             }}
 
             // if you have large datasets to add in bulk and have performance concerns, there 
