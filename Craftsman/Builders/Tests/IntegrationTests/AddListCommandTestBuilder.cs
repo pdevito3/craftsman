@@ -99,7 +99,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {
         var dtoAssertions = "";
         var entityAssertions = "";
-        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.Relationship == "none"))
+        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone))
         {
             switch (entityProperty.Type)
             {

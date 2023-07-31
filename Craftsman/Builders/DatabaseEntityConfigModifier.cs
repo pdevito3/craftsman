@@ -35,30 +35,9 @@ public class DatabaseEntityConfigModifier
         }
             
         var relationshipConfigs = string.Empty;
-        foreach (var entityProperty in properties.Where(x => x.Relationship == "1tomany"))
+        foreach (var entityProperty in properties)
         {
-            relationshipConfigs += @$"{Environment.NewLine}        builder.HasMany(x => x.{entityProperty.Name})
-            .WithOne(x => x.{entityName});";
-        }
-        foreach (var entityProperty in properties.Where(x => x.Relationship == "1to1"))
-        {
-            relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name})
-            .WithOne(x => x.{entityName})
-            .HasForeignKey<{entityName}>(s => s.Id);";
-        }
-        foreach (var entityProperty in properties.Where(x => x.Relationship == "manytomany"))
-        {
-            relationshipConfigs += @$"{Environment.NewLine}        builder.HasMany(x => x.{entityProperty.Name})
-            .WithMany(x => x.{entityPlural});";
-        }
-        foreach (var entityProperty in properties.Where(x => x.Relationship == "manyto1"))
-        {
-            relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name})
-            .WithMany(x => x.{entityPlural});";
-        }
-        foreach (var entityProperty in properties.Where(x => x.Relationship == "self"))
-        {
-            relationshipConfigs += @$"{Environment.NewLine}        builder.HasOne(x => x.{entityProperty.Name});";
+            relationshipConfigs += entityProperty.GetDbRelationship.GetEntityDbConfig(entityName, entityPlural, entityProperty.Name);
         }
         
         var tempPath = $"{classPath.FullClassPath}temp";

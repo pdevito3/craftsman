@@ -49,6 +49,8 @@ public sealed class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntit
     /// </summary>
     public void Configure(EntityTypeBuilder<User> builder)
     {{
+        // Relationship Marker -- Deleting or modifying this comment could cause incomplete relationship scaffolding
+
         builder.Property(x => x.Email)
             .HasConversion(x => x.Value, x => new Email(x))
             .HasColumnName(""email"");

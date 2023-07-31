@@ -40,7 +40,7 @@ public class EntityBuilder
         var entityUpdatedDomainMessage = FileNames.EntityUpdatedDomainMessage(entity.Name);
 
         var foreignEntityUsings = "";
-        var foreignProps = entity.Properties.Where(e => e.IsForeignKey && e.Relationship != "self").ToList();
+        var foreignProps = entity.Properties.Where(e => e.IsForeignKey && !e.GetDbRelationship.IsSelf).ToList();
         foreach (var entityProperty in foreignProps)
         {
             var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", entityProperty.ForeignEntityPlural, projectBaseName);
@@ -56,20 +56,20 @@ using {modelsClassPath.ClassNamespace};";
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         var createEntityVar = $"new{entity.Name.UppercaseFirstLetter()}";
-        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.Relationship == "none").Select(property =>
+        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone).Select(property =>
             $"        {createEntityVar}.{property.Name} = {creationClassName.LowercaseFirstLetter()}.{property.Name};"));
-        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.Relationship == "none").Select(property =>
+        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone).Select(property =>
             $"        {property.Name} = {updateClassName.LowercaseFirstLetter()}.{property.Name};"));
 
         var managedListMethods = "";
-        var manyManagementRelationshipProps = entity.Properties.Where(x => x.Relationship == "1tomany" || x.Relationship == "manytomany").ToList();
+        var manyManagementRelationshipProps = entity.Properties.Where(x => x.GetDbRelationship.IsOneToMany || x.GetDbRelationship.IsManyToMany).ToList();
         foreach (var oneToManyProp in manyManagementRelationshipProps)
         {
             var managedEntity = oneToManyProp.ForeignEntityName;
             managedListMethods += GetListManagementMethods(entity.Name, managedEntity);
         }
         var managedEntityMethod = "";
-        var manyToOne = entity.Properties.Where(x => x.Relationship == "manyto1" || x.Relationship == "1to1").ToList();
+        var manyToOne = entity.Properties.Where(x => x.GetDbRelationship.IsManyToOne || x.GetDbRelationship.IsOneToOne).ToList();
         foreach (var oneToManyProp in manyToOne)
         {
             var managedEntity = oneToManyProp.ForeignEntityName;
@@ -243,29 +243,11 @@ public abstract class BaseEntity
             {
                 propString += attributes;
                 var defaultValue = GetDefaultValueText(property.DefaultValue, property);
-
-                if (property.IsPrimitiveType && property.Relationship == "none")
-                {
-                    propString += $@"    public {property.Type} {property.Name} {{ get; private set; }}{defaultValue}{Environment.NewLine}{Environment.NewLine}";
-                }
-                if (property.Relationship == "1tomany" || property.Relationship == "manytomany")
-                {
-                    var lowerPropName = property.ForeignEntityName.LowercaseFirstLetter();
-                    propString += $@"    private readonly List<{property.ForeignEntityName}> _{lowerPropName} = new();
-    public IReadOnlyCollection<{property.ForeignEntityName}> {property.ForeignEntityPlural} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}{Environment.NewLine}";
-                }
-                if (property.Relationship == "1to1")
-                {
-                    propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }} = {property.ForeignEntityName}.Create(new {EntityModel.Creation.GetClassName(property.ForeignEntityName)}());{Environment.NewLine}{Environment.NewLine}";
-                }
-                if (property.Relationship == "manyto1")
-                {
-                    propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}";
-                }
-                if (property.Relationship == "self")
-                {
-                    propString += $@"    public {property.ForeignEntityName} {property.Name} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}";
-                }
+                propString += property.GetDbRelationship.GetPrincipalPropString(property.Type, 
+                    property.Name, 
+                    defaultValue, 
+                    property.ForeignEntityName, 
+                    property.ForeignEntityPlural);
             }
         }
 

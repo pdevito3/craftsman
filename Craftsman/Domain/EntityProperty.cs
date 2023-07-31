@@ -83,7 +83,25 @@ public class EntityProperty
                || Type.StartsWith("List<");
     }
 
-    public string Relationship { get; set; } = "none";
+    private string _relationship;
+    public string Relationship
+    {
+        get => _relationship;
+        set => _relationship = value.ToLower().Replace("one", "1");
+    }
+    public DbRelationship GetDbRelationship => GetDbRelationshipFromName();
+    
+    private DbRelationship GetDbRelationshipFromName()
+    {
+        if (string.IsNullOrEmpty(Relationship))
+            return DbRelationship.None;
+
+        
+        if (!DbRelationship.TryFromName(Relationship, true, out var parsed))
+            parsed = DbRelationship.None;
+
+        return parsed;
+    }
 
     /// <summary>
     /// Captures the name of the entity this property is linked to as a foreign key.
