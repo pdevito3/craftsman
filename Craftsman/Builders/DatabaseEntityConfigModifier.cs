@@ -37,7 +37,7 @@ public class DatabaseEntityConfigModifier
         var relationshipConfigs = string.Empty;
         foreach (var entityProperty in properties)
         {
-            relationshipConfigs += entityProperty.GetDbRelationship.GetEntityDbConfig(entityName, entityPlural, entityProperty.Name);
+            relationshipConfigs += entityProperty.GetDbRelationship.GetEntityDbConfig(entityName, entityPlural, entityProperty.Name, entityProperty.ForeignEntityPlural);
         }
         
         var tempPath = $"{classPath.FullClassPath}temp";
