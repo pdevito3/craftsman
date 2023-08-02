@@ -50,7 +50,7 @@ public static class LoggingConfiguration
             .MinimumLevel.Override(""Microsoft.Hosting.Lifetime"", LogEventLevel.Information)
             .MinimumLevel.Override(""Microsoft.AspNetCore.Authentication"", LogEventLevel.Information)
             .Enrich.FromLogContext()
-            .Enrich.WithEnvironment(env.EnvironmentName)
+            .Enrich.WithProperty(""EnvironmentName"", env.EnvironmentName)
             .Enrich.WithProperty(""ApplicationName"", env.ApplicationName)
             .Enrich.WithExceptionDetails()
             .WriteTo.Console();
