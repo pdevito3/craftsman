@@ -134,7 +134,7 @@ public class EntityModifier
                     var newText = $"{line}";
                     if (line.Contains($"Add Props Marker"))
                     {
-                        newText = @$"    public IReadOnlyCollection<{parentEntityName}> {parentEntityPlural} {{ get; }}{Environment.NewLine}{Environment.NewLine}{line}";
+                        newText = @$"    public IReadOnlyCollection<{parentEntityName}> {parentEntityPlural} {{ get; }} = new List<{parentEntityName}>();{Environment.NewLine}{Environment.NewLine}{line}";
                     }
                     if (line.Contains($"using") && !usingStatementHasBeenAdded)
                     {
