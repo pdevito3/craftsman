@@ -51,12 +51,7 @@ using System.Collections.Generic;
 
 public static class {featureClassName}
 {{
-    public sealed class {commandName} : IRequest<{returnPropType}>
-    {{
-        public {commandName}()
-        {{
-        }}
-    }}
+    public sealed record {commandName}() : IRequest<{returnPropType}>;
 
     public sealed class Handler : IRequestHandler<{commandName}, {returnPropType}>
     {{

@@ -67,15 +67,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed class {addCommandName} : IRequest<{readDto}>
-    {{
-        public readonly {createDto} {commandProp};
-
-        public {addCommandName}({createDto} {newEntityProp})
-        {{
-            {commandProp} = {newEntityProp};
-        }}
-    }}
+    public sealed record {addCommandName}({createDto} {commandProp}) : IRequest<{readDto}>;
 
     public sealed class Handler : IRequestHandler<{addCommandName}, {readDto}>
     {{

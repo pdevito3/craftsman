@@ -57,15 +57,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed class {queryRecordName} : IRequest<{readDto}>
-    {{
-        public readonly {primaryKeyPropType} {primaryKeyPropName};
-
-        public {queryRecordName}({primaryKeyPropType} {primaryKeyPropNameLowercase})
-        {{
-            {primaryKeyPropName} = {primaryKeyPropNameLowercase};
-        }}
-    }}
+    public sealed record {queryRecordName}({primaryKeyPropType} {primaryKeyPropName}) : IRequest<{readDto}>;
 
     public sealed class Handler : IRequestHandler<{queryRecordName}, {readDto}>
     {{

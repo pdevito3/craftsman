@@ -42,17 +42,7 @@ using Roles;
 
 public static class {FileNames.RemoveUserRoleFeatureClassName()}
 {{
-    public sealed class Command : IRequest
-    {{
-        public readonly Guid UserId;
-        public readonly string Role;
-
-        public Command(Guid userId, string role)
-        {{
-            UserId = userId;
-            Role = role;
-        }}
-    }}
+    public sealed record Command(Guid UserId, string Role) : IRequest;
 
     public sealed class Handler : IRequestHandler<Command>
     {{

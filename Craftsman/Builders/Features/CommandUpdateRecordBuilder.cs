@@ -68,17 +68,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed class {updateCommandName} : IRequest
-    {{
-        public readonly {primaryKeyPropType} {primaryKeyPropName};
-        public readonly {updateDto} {commandProp};
-
-        public {updateCommandName}({primaryKeyPropType} {primaryKeyPropNameLowercase}, {updateDto} {newEntityDataProp})
-        {{
-            {primaryKeyPropName} = {primaryKeyPropNameLowercase};
-            {commandProp} = {newEntityDataProp};
-        }}
-    }}
+    public sealed record {updateCommandName}({primaryKeyPropType} {primaryKeyPropName}, {updateDto} {commandProp}) : IRequest;
 
     public sealed class Handler : IRequestHandler<{updateCommandName}>
     {{

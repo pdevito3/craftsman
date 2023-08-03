@@ -43,19 +43,7 @@ using Roles;
 
 public static class {FileNames.AddUserRoleFeatureClassName()}
 {{
-    public sealed class Command : IRequest
-    {{
-        public readonly Guid UserId;
-        public readonly string Role;
-        public readonly bool SkipPermissions;
-
-        public Command(Guid userId, string role, bool skipPermissions = false)
-        {{
-            UserId = userId;
-            Role = role;
-            SkipPermissions = skipPermissions;
-        }}
-    }}
+    public sealed record Command(Guid UserId, string Role, bool SkipPermissions = false) : IRequest;
 
     public sealed class Handler : IRequestHandler<Command>
     {{

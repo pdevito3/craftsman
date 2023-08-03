@@ -92,17 +92,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed class {addCommandName} : IRequest<{readDtoAsList}>
-    {{
-        public readonly {createDto} {commandProp};
-        public readonly {feature.BatchPropertyType} {feature.BatchPropertyName};
-
-        public {addCommandName}({createDto} {newEntityProp}, {feature.BatchPropertyType} {featurePropNameLowerFirst})
-        {{
-            {commandProp} = {newEntityProp};
-            {feature.BatchPropertyName} = {featurePropNameLowerFirst};
-        }}
-    }}
+    public sealed record {addCommandName}({createDto} {commandProp}, {feature.BatchPropertyType} {feature.BatchPropertyName}) : IRequest<{readDtoAsList}>;
 
     public sealed class Handler : IRequestHandler<{addCommandName}, {readDtoAsList}>
     {{

@@ -47,12 +47,7 @@ using System.Threading.Tasks;{contextUsing}
 
 public static class {producer.ProducerName}
 {{
-    public sealed class {commandName} : IRequest<{propTypeToReturn}>
-    {{
-        public {commandName}()
-        {{
-        }}
-    }}
+    public sealed record {commandName}() : IRequest<{propTypeToReturn}>;
 
     public sealed class Handler : IRequestHandler<{commandName}, {propTypeToReturn}>
     {{

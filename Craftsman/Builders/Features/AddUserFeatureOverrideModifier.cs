@@ -73,17 +73,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed class {addCommandName} : IRequest<{readDto}>
-    {{
-        public readonly {createDto} {commandProp};
-        public readonly bool SkipPermissions;
-
-        public {addCommandName}({createDto} {newEntityProp}, bool skipPermissions = false)
-        {{
-            {commandProp} = {newEntityProp};
-            SkipPermissions = skipPermissions;
-        }}
-    }}
+    public sealed record {addCommandName}({createDto} {commandProp}, bool SkipPermissions = false) : IRequest<{readDto}>;
 
     public sealed class Handler : IRequestHandler<{addCommandName}, {readDto}>
     {{
