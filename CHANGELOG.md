@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Update OTel to latest with newer syntax
 * Remove other base specification things from generic repo
 * Commands/Queries use records for input
+* DTOs are records
 
 ### Fixed
 

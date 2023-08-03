@@ -17,7 +17,7 @@ public static class DtoFileTextGenerator
 
 using {sharedDtoClassPath.ClassNamespace};
 
-public sealed class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
+public sealed record {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
 {{
     public string Filters {{ get; set; }}
     public string SortOrder {{ get; set; }}
@@ -32,7 +32,7 @@ public sealed class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationPar
 
         return @$"namespace {dtoClassPath.ClassNamespace};
 
-public sealed class {FileNames.GetDtoName(entity.Name, dto)}
+public sealed record {FileNames.GetDtoName(entity.Name, dto)}
 {{
 {propString}
 }}

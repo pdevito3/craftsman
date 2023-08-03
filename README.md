@@ -44,7 +44,7 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ TestContainers updated
 
-✅ Records for queries and commands
+✅ Records for queries and commands and DTOs
 
 🕰️ No more queryable exposed in repositories
 
