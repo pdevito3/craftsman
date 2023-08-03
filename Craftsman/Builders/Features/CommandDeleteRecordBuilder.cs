@@ -54,15 +54,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed class {deleteCommandName} : IRequest
-    {{
-        public readonly {primaryKeyPropType} {primaryKeyPropName};
-
-        public {deleteCommandName}({primaryKeyPropType} {primaryKeyPropNameLowercase})
-        {{
-            {primaryKeyPropName} = {primaryKeyPropNameLowercase};
-        }}
-    }}
+    public sealed record {deleteCommandName}({primaryKeyPropType} {primaryKeyPropName}) : IRequest;
 
     public sealed class Handler : IRequestHandler<{deleteCommandName}>
     {{

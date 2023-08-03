@@ -62,15 +62,7 @@ using QueryKit.Configuration;
 
 public static class {className}
 {{
-    public sealed class {queryListName} : IRequest<PagedList<{readDto }>>
-    {{
-        public readonly {paramsDto} QueryParameters;
-
-        public {queryListName}({paramsDto} queryParameters)
-        {{
-            QueryParameters = queryParameters;
-        }}
-    }}
+    public sealed record {queryListName}({paramsDto} QueryParameters) : IRequest<PagedList<{readDto }>>;
 
     public sealed class Handler : IRequestHandler<{queryListName}, PagedList<{readDto}>>
     {{
