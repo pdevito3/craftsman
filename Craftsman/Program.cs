@@ -124,13 +124,13 @@ app.Configure(config =>
             .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
             .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
-        add.AddCommand<AddProducerCommand>("message")
+        add.AddCommand<AddMessageCommand>("message")
             .WithAlias("messages")
             .WithDescription(
                 "Adds one or more messages to your Shared Kernel project using a formatted yaml or json file.")
-            .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new[] { "add producer", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
+            .WithExample(new[] { "add message", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
+            .WithExample(new[] { "add message", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
+            .WithExample(new[] { "add message", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
         add.AddBranch("next", next =>
         {

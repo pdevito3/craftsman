@@ -148,10 +148,11 @@ public class UserPolicyHandlerTests
             Permission = permissionToAssign
         }});
         var rolePermissions = new List<RolePermission>() {{rolePermission}};
+        var mockData = rolePermissions.AsQueryable().BuildMock();
         var rolePermissionsRepo = new Mock<IRolePermissionRepository>();
         rolePermissionsRepo
-            .Setup(c => c.ListAsync(It.IsAny<PermissionsFromRolesSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(rolePermissions.Select(x => x.Permission).ToList());
+            .Setup(c => c.Query())
+            .Returns(mockData);
         
         // Act
     
@@ -184,10 +185,11 @@ public class UserPolicyHandlerTests
             Permission = permissionToAssign
         }});
         var rolePermissions = new List<RolePermission>() {{rolePermission, rolePermission}};
+        var mockData = rolePermissions.AsQueryable().BuildMock();
         var rolePermissionsRepo = new Mock<IRolePermissionRepository>();
         rolePermissionsRepo
-            .Setup(c => c.ListAsync(It.IsAny<PermissionsFromRolesSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(rolePermissions.Select(x => x.Permission).ToList());
+            .Setup(c => c.Query())
+            .Returns(mockData);
         
         // Act
         var userPolicyHandler = new UserPolicyHandler(rolePermissionsRepo.Object, currentUserService.Object, userRepo.Object, mediator.Object);
@@ -210,8 +212,13 @@ public static class UserExtensions
 
     public static void UsersExist(this Mock<IUserRepository> repo)
     {{
-        repo.Setup(c => c.AnyAsync(It.IsAny<AllUserIdsSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        var user = new FakeUserBuilder().Build();
+        var users = new List<User>() {{user}};
+        var mockData = users.AsQueryable().BuildMock();
+        
+        repo
+            .Setup(c => c.Query())
+            .Returns(mockData);
     }}
 }}
 public static class CurrentUserServiceExtensions
