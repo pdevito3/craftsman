@@ -47,7 +47,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             .WithOne(x => x.{entityName});";
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural)
         {
-            var lowerPropName = foreignEntityName.LowercaseFirstLetter();
+            var lowerPropName = foreignEntityPlural.LowercaseFirstLetter();
             return $@"    private readonly List<{foreignEntityName}> _{lowerPropName} = new();
     public IReadOnlyCollection<{foreignEntityName}> {foreignEntityPlural} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}{Environment.NewLine}";
         }

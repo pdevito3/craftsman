@@ -80,12 +80,7 @@ using {modelsClassPath.ClassNamespace};";
 
 using {exceptionClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
-using {domainEventsClassPath.ClassNamespace};
-using FluentValidation;
-using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;{foreignEntityUsings}
+using {domainEventsClassPath.ClassNamespace};{foreignEntityUsings}
 
 {tableAnnotation}
 public class {entity.Name} : BaseEntity
@@ -129,7 +124,7 @@ public class {entity.Name} : BaseEntity
     
     public {rootEntity} Remove{managedEntity}({managedEntity} {lowerManagedEntity})
     {{
-        _{lowerManagedEntity}.Remove({lowerManagedEntity});
+        _{lowerManagedEntity}.RemoveAll(x => x.Id == {lowerManagedEntity}.Id);
         return this;
     }}
 
