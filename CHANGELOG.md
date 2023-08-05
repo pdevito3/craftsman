@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Remove other base specification things from generic repo
 * Commands/Queries use records for input
 * DTOs are records
+* Additional validation exception extension method for `MustNot`
 
 ### Fixed
 

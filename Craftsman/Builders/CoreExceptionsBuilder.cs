@@ -246,6 +246,11 @@ public static class CoreExceptionBuilder
             if(!condition)
                 throw new ValidationException(message);
         }}
+        public static void MustNot(bool condition, string message)
+        {{
+            if(condition)
+                throw new ValidationException(message);
+        }}
     }}
 }}";
         }
