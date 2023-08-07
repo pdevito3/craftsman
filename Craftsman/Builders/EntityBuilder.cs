@@ -61,21 +61,7 @@ using {modelsClassPath.ClassNamespace};";
         var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate && x.CanManipulate).Select(property =>
             $"        {property.Name} = {updateClassName.LowercaseFirstLetter()}.{property.Name};"));
 
-        var managedListMethods = "";
-        var manyManagementRelationshipProps = entity.Properties.Where(x => x.GetDbRelationship.IsOneToMany || x.GetDbRelationship.IsManyToMany).ToList();
-        foreach (var oneToManyProp in manyManagementRelationshipProps)
-        {
-            var managedEntity = oneToManyProp.ForeignEntityName;
-            managedListMethods += GetListManagementMethods(entity.Name, managedEntity, oneToManyProp.ForeignEntityPlural);
-        }
-        var managedEntityMethod = "";
-        var manyToOne = entity.Properties.Where(x => x.GetDbRelationship.IsManyToOne || x.GetDbRelationship.IsOneToOne).ToList();
-        foreach (var oneToManyProp in manyToOne)
-        {
-            var managedEntity = oneToManyProp.ForeignEntityName;
-            var managedPropName = oneToManyProp.Name;
-            managedEntityMethod += GetEntityManagementMethods(entity.Name, managedEntity, managedPropName);
-        }
+
         
         return @$"namespace {classNamespace};
 
@@ -108,41 +94,10 @@ public class {entity.Name} : BaseEntity
         return this;
     }}
 
-{managedListMethods}{managedEntityMethod}    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
+    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
     
     protected {entity.Name}() {{ }} // For EF + Mocking
 }}";
-    }
-
-    public static string GetListManagementMethods(string rootEntity, string managedEntity, string managedEntityPlural)
-    {
-        var lowerManagedEntity = managedEntity.LowercaseFirstLetter();
-        var lowerManagedEntityPlural = managedEntityPlural.LowercaseFirstLetter();
-        return $@"    public {rootEntity} Add{managedEntity}({managedEntity} {lowerManagedEntity})
-    {{
-        _{lowerManagedEntityPlural}.Add({lowerManagedEntity});
-        return this;
-    }}
-    
-    public {rootEntity} Remove{managedEntity}({managedEntity} {lowerManagedEntity})
-    {{
-        _{lowerManagedEntityPlural}.RemoveAll(x => x.Id == {lowerManagedEntity}.Id);
-        return this;
-    }}
-
-";
-    }
-
-    public static string GetEntityManagementMethods(string rootEntity, string managedEntity, string managedPropName)
-    {
-        var lowerManagedEntity = managedEntity.LowercaseFirstLetter();
-        return $@"    public {rootEntity} Set{managedEntity}({managedEntity} {lowerManagedEntity})
-    {{
-        {managedPropName} = {lowerManagedEntity};
-        return this;
-    }}
-
-";
     }
 
     public static string GetBaseEntityFileText(string classNamespace, bool useSoftDelete)

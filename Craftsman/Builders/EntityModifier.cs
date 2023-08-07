@@ -205,4 +205,134 @@ public class EntityModifier
         _fileSystem.File.Delete(classPath.FullClassPath);
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
+
+    public void AddEntityManyManagementMethods(string srcDirectory, 
+        EntityProperty property,
+        string parentEntityName,
+        string parentEntityPlural,
+        string projectBaseName)
+    {
+        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, projectBaseName);
+
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        {
+            _consoleWriter.WriteInfo($"The `{classPath.FullClassPath}` file could not be found.");
+            return;
+        }
+        
+        var managedListMethods = "";
+        var managedEntity = property.ForeignEntityName;
+        managedListMethods += GetListManagementMethods(parentEntityName, managedEntity, property.ForeignEntityPlural);
+        
+        // var managedEntityMethod = "";
+        // var manyToOne = entity.Properties.Where(x => x.GetDbRelationship.IsManyToOne || x.GetDbRelationship.IsOneToOne).ToList();
+        // foreach (var oneToManyProp in manyToOne)
+        // {
+        //     var managedEntity = oneToManyProp.ForeignEntityName;
+        //     var managedPropName = oneToManyProp.Name;
+        //     managedEntityMethod += GetEntityManagementMethods(entity.Name, managedEntity, managedPropName);
+        // }
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
+        {
+            using var output = _fileSystem.File.CreateText(tempPath);
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"Add Prop Methods Marker"))
+                    {
+                        newText = @$"{managedListMethods}{line}";
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        _fileSystem.File.Delete(classPath.FullClassPath);
+        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+    }
+
+    public void AddEntitySingularManagementMethods(string srcDirectory, 
+        EntityProperty property,
+        string parentEntityName,
+        string parentEntityPlural,
+        string projectBaseName)
+    {
+        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, projectBaseName);
+
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        {
+            _consoleWriter.WriteInfo($"The `{classPath.FullClassPath}` file could not be found.");
+            return;
+        }
+        
+        var managedEntityMethod = "";
+        var managedEntity = property.ForeignEntityName;
+        var managedPropName = property.Name;
+        managedEntityMethod += GetEntityManagementMethods(parentEntityName, managedEntity, managedPropName);
+        
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
+        {
+            using var output = _fileSystem.File.CreateText(tempPath);
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"Add Prop Methods Marker"))
+                    {
+                        newText = @$"{managedEntityMethod}{line}";
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        _fileSystem.File.Delete(classPath.FullClassPath);
+        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+    }
+
+    private static string GetListManagementMethods(string rootEntity, string managedEntity, string managedEntityPlural)
+    {
+        var lowerManagedEntity = managedEntity.LowercaseFirstLetter();
+        var lowerManagedEntityPlural = managedEntityPlural.LowercaseFirstLetter();
+        return $@"    public {rootEntity} Add{managedEntity}({managedEntity} {lowerManagedEntity})
+    {{
+        _{lowerManagedEntityPlural}.Add({lowerManagedEntity});
+        return this;
+    }}
+    
+    public {rootEntity} Remove{managedEntity}({managedEntity} {lowerManagedEntity})
+    {{
+        _{lowerManagedEntityPlural}.RemoveAll(x => x.Id == {lowerManagedEntity}.Id);
+        return this;
+    }}
+
+";
+    }
+
+    private static string GetEntityManagementMethods(string rootEntity, string managedEntity, string managedPropName)
+    {
+        var lowerManagedEntity = managedEntity.LowercaseFirstLetter();
+        return $@"    public {rootEntity} Set{managedEntity}({managedEntity} {lowerManagedEntity})
+    {{
+        {managedPropName} = {lowerManagedEntity};
+        return this;
+    }}
+
+";
+    }
 }
