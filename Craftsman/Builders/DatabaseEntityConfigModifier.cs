@@ -19,7 +19,7 @@ public class DatabaseEntityConfigModifier
         _consoleWriter = consoleWriter;
     }
 
-    public void AddRelationships(string srcDirectory, string entityName, string entityPlural, List<EntityProperty> properties, string projectBaseName)
+    public void AddRelationships(string srcDirectory, string entityName, string entityPlural, EntityProperty entityProperty, string projectBaseName)
     {
         var classPath = ClassPathHelper.DatabaseConfigClassPath(srcDirectory, 
             $"{FileNames.GetDatabaseEntityConfigName(entityName)}.cs",
@@ -35,10 +35,8 @@ public class DatabaseEntityConfigModifier
         }
             
         var relationshipConfigs = string.Empty;
-        foreach (var entityProperty in properties)
-        {
-            relationshipConfigs += entityProperty.GetDbRelationship.GetEntityDbConfig(entityName, entityPlural, entityProperty.Name, entityProperty.ForeignEntityPlural);
-        }
+        relationshipConfigs += entityProperty.GetDbRelationship.GetEntityDbConfig(entityName, entityPlural, entityProperty.Name, entityProperty.ForeignEntityPlural);
+        
         
         var tempPath = $"{classPath.FullClassPath}temp";
         using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))

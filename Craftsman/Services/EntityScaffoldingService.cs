@@ -111,17 +111,19 @@ public class EntityScaffoldingService
                         entity.Name,
                         entity.Plural,
                         projectBaseName);
+                
+                    new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory, entityProperty, 
+                        entity.Name, entity.Plural, projectBaseName);
+                    
+                    if(entityProperty.GetDbRelationship.IsOneToOne)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntitySingularManagementMethods(srcDirectory, entityProperty, 
+                            entity.Name, entity.Plural, projectBaseName);
+                    if(entityProperty.GetDbRelationship.IsOneToMany)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory, entityProperty, 
+                            entity.Name, entity.Plural, projectBaseName);
+                    
+                    new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name, entity.Plural, entityProperty, projectBaseName);
                 }
-                
-                new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory, entityProperty, 
-                    entity.Name, entity.Plural, projectBaseName);
-                
-                if(entityProperty.GetDbRelationship.IsOneToOne)
-                    new EntityModifier(_fileSystem, _consoleWriter).AddEntitySingularManagementMethods(srcDirectory, entityProperty, 
-                        entity.Name, entity.Plural, projectBaseName);
-                if(entityProperty.GetDbRelationship.IsOneToMany)
-                    new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory, entityProperty, 
-                        entity.Name, entity.Plural, projectBaseName);
             }
             
             var manyPropsToAdd = entity.Properties.Where(x => x.GetDbRelationship.IsManyToMany || x.GetDbRelationship.IsManyToOne).ToList();
@@ -144,21 +146,20 @@ public class EntityScaffoldingService
                         entity.Name,
                         entity.Plural,
                         projectBaseName);
+                
+                    new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory, entityProperty, 
+                        entity.Name, entity.Plural, projectBaseName);
+                    
+                    if(entityProperty.GetDbRelationship.IsManyToOne)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntitySingularManagementMethods(srcDirectory, entityProperty, 
+                            entity.Name, entity.Plural, projectBaseName);
+                    if(entityProperty.GetDbRelationship.IsManyToMany)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory, entityProperty, 
+                            entity.Name, entity.Plural, projectBaseName);
                 }
-                
-                new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory, entityProperty, 
-                    entity.Name, entity.Plural, projectBaseName);
-                
-                if(entityProperty.GetDbRelationship.IsManyToOne)
-                    new EntityModifier(_fileSystem, _consoleWriter).AddEntitySingularManagementMethods(srcDirectory, entityProperty, 
-                        entity.Name, entity.Plural, projectBaseName);
-                if(entityProperty.GetDbRelationship.IsManyToMany)
-                    new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory, entityProperty, 
-                        entity.Name, entity.Plural, projectBaseName);
 
+                new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name, entity.Plural, entityProperty, projectBaseName);
             }
-            
-            new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name, entity.Plural, entity.Properties, projectBaseName);
         }
 
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);
