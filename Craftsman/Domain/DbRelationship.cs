@@ -14,6 +14,14 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
     public static readonly DbRelationship ManyToMany = new ManyToManyType();
     public static readonly DbRelationship Self = new SelfType();
     
+    public static DbRelationship NoRelationship(bool isChildRelationship = false) => new NoneType(isChildRelationship);
+    public static DbRelationship OneToManyRelationship(bool isChildRelationship = false) => new OneToManyType(isChildRelationship);
+    public static DbRelationship ManyToOneRelationship(bool isChildRelationship = false) => new ManyToOneType(isChildRelationship);
+    public static DbRelationship OneToOneRelationship(bool isChildRelationship = false) => new OneToOneType(isChildRelationship);
+    public static DbRelationship ManyToManyRelationship(bool isChildRelationship = false) => new ManyToManyType(isChildRelationship);
+    public static DbRelationship SelfRelationship(bool isChildRelationship = false) => new SelfType(isChildRelationship);
+
+
     public bool IsNone => this == None;
     public bool IsOneToMany => this == OneToMany;
     public bool IsManyToOne => this == ManyToOne;
@@ -22,8 +30,11 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
     public bool IsSelf => this == Self;
     
 
-    protected DbRelationship(string name, int value) : base(name, value)
+    public bool IsChildRelationship { get; protected set; }
+    public void SetChildRelationship(bool isChildRelationship) => IsChildRelationship = isChildRelationship;
+    protected DbRelationship(string name, int value, bool isChildRelationship = false) : base(name, value)
     {
+        IsChildRelationship = isChildRelationship;
     }
 
     public abstract string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural);
@@ -31,7 +42,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
 
     private class NoneType : DbRelationship
     {
-        public NoneType() : base("none", 0) { }
+        public NoneType(bool isChildRelationship = false) : base("none", 0, isChildRelationship) { }
 
         public override string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural)
             => null;
@@ -41,7 +52,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
 
     private class OneToManyType : DbRelationship
     {
-        public OneToManyType() : base("1tomany", 1) { }
+        public OneToManyType(bool isChildRelationship = false) : base("1tomany", 1, isChildRelationship) { }
         public override string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural)
             => @$"{Environment.NewLine}        builder.HasMany(x => x.{foreignEntityPlural})
             .WithOne(x => x.{entityName});";
@@ -55,7 +66,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
 
     private class ManyToOneType : DbRelationship
     {
-        public ManyToOneType() : base("manyto1", 2) { }
+        public ManyToOneType(bool isChildRelationship = false) : base("manyto1", 2, isChildRelationship) { }
         public override string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural)
             => @$"{Environment.NewLine}        builder.HasOne(x => x.{propertyName})
             .WithMany(x => x.{entityPlural});";
@@ -65,7 +76,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
     
     private class OneToOneType : DbRelationship
     {
-        public OneToOneType() : base("1to1", 3) { }
+        public OneToOneType(bool isChildRelationship = false) : base("1to1", 3, isChildRelationship) { }
         public override string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural)
             => @$"{Environment.NewLine}        builder.HasOne(x => x.{propertyName})
             .WithOne(x => x.{entityName})
@@ -76,13 +87,13 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
     
     private class ManyToManyType : DbRelationship
     {
-        public ManyToManyType() : base("manytomany", 4) { }
+        public ManyToManyType(bool isChildRelationship = false) : base("manytomany", 4, isChildRelationship) { }
         public override string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural)
             => @$"{Environment.NewLine}        builder.HasMany(x => x.{foreignEntityPlural})
             .WithMany(x => x.{entityPlural});";
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural)
         {
-            var lowerPropName = foreignEntityName.LowercaseFirstLetter();
+            var lowerPropName = foreignEntityPlural.LowercaseFirstLetter();
             return $@"    private readonly List<{foreignEntityName}> _{lowerPropName} = new();
     public IReadOnlyCollection<{foreignEntityName}> {foreignEntityPlural} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}{Environment.NewLine}";
         }
@@ -90,7 +101,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
     
     private class SelfType : DbRelationship
     {
-        public SelfType() : base("self", 5) { }
+        public SelfType(bool isChildRelationship = false) : base("self", 5, isChildRelationship) { }
         public override string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural)
             => @$"{Environment.NewLine}        builder.HasOne(x => x.{propertyName});";
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural) 

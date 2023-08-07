@@ -73,7 +73,8 @@ using {modelsClassPath.ClassNamespace};";
         foreach (var oneToManyProp in manyToOne)
         {
             var managedEntity = oneToManyProp.ForeignEntityName;
-            managedEntityMethod += GetEntityManagementMethods(entity.Name, managedEntity);
+            var managedPropName = oneToManyProp.Name;
+            managedEntityMethod += GetEntityManagementMethods(entity.Name, managedEntity, managedPropName);
         }
         
         return @$"namespace {classNamespace};
@@ -132,12 +133,12 @@ public class {entity.Name} : BaseEntity
 ";
     }
 
-    public static string GetEntityManagementMethods(string rootEntity, string managedEntity)
+    public static string GetEntityManagementMethods(string rootEntity, string managedEntity, string managedPropName)
     {
         var lowerManagedEntity = managedEntity.LowercaseFirstLetter();
         return $@"    public {rootEntity} Set{managedEntity}({managedEntity} {lowerManagedEntity})
     {{
-        {managedEntity} = {lowerManagedEntity};
+        {managedPropName} = {lowerManagedEntity};
         return this;
     }}
 
@@ -214,7 +215,7 @@ public abstract class BaseEntity
     public static string EntityPropBuilder(List<EntityProperty> props)
     {
         var propString = "";
-        foreach (var property in props)
+        foreach (var property in props.Where(x => x.GetDbRelationship.IsNone || x.GetDbRelationship.IsSelf))
         {
             var attributes = AttributeBuilder(property);
             

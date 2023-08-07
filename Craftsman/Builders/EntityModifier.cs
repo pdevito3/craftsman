@@ -151,4 +151,58 @@ public class EntityModifier
         _fileSystem.File.Delete(classPath.FullClassPath);
         _fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
+
+    public void AddParentRelationshipEntity(string srcDirectory, 
+        EntityProperty property,
+        string parentEntityName,
+        string parentEntityPlural, 
+        string projectBaseName)
+    {
+        var parentClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{property.ForeignEntityName}.cs", property.ForeignEntityPlural, projectBaseName);
+        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, projectBaseName);
+
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        {
+            _consoleWriter.WriteInfo($"The `{classPath.FullClassPath}` file could not be found.");
+            return;
+        }
+        
+        var parentUsingStatement = $@"using {parentClassPath.ClassNamespace};";
+        var usingStatementHasBeenAdded = false;
+        var propToAdd = property.GetDbRelationship.GetPrincipalPropString(property.Type,
+            property.Name,
+            null,
+            property.ForeignEntityName,
+            property.ForeignEntityPlural);
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
+        {
+            using var output = _fileSystem.File.CreateText(tempPath);
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"Add Props Marker"))
+                    {
+                        newText = @$"{propToAdd}{Environment.NewLine}{line}";
+                    }
+                    if (line.Contains($"using") && !usingStatementHasBeenAdded)
+                    {
+                        newText += @$"{Environment.NewLine}{parentUsingStatement}";
+                        usingStatementHasBeenAdded = true;
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        _fileSystem.File.Delete(classPath.FullClassPath);
+        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+    }
 }

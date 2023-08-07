@@ -83,6 +83,7 @@ public class EntityProperty
                || Type.StartsWith("List<");
     }
 
+    public bool IsChildRelationship { get; set; } = false;
     private string _relationship;
     public string Relationship
     {
@@ -94,12 +95,13 @@ public class EntityProperty
     private DbRelationship GetDbRelationshipFromName()
     {
         if (string.IsNullOrEmpty(Relationship))
-            return DbRelationship.None;
+            return DbRelationship.NoRelationship(IsChildRelationship);
 
         
         if (!DbRelationship.TryFromName(Relationship, true, out var parsed))
             parsed = DbRelationship.None;
-
+        
+        parsed.SetChildRelationship(IsChildRelationship);
         return parsed;
     }
 
