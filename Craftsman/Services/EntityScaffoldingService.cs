@@ -96,7 +96,7 @@ public class EntityScaffoldingService
             {
                 if (entityProperty.IsChildRelationship)
                 {
-                    new EntityModifier(_fileSystem, _consoleWriter).AddSingularRelationshipEntity(srcDirectory, 
+                    new EntityModifier(_fileSystem, _consoleWriter).AddManyRelationshipEntity(srcDirectory, 
                         entity.Name,
                         entity.Plural,
                         entityProperty.ForeignEntityName, 
@@ -134,12 +134,15 @@ public class EntityScaffoldingService
             {
                 if (entityProperty.IsChildRelationship)
                 {
-                    new EntityModifier(_fileSystem, _consoleWriter).AddManyRelationshipEntity(srcDirectory, 
+                    new EntityModifier(_fileSystem, _consoleWriter).AddSingularRelationshipEntity(srcDirectory, 
                         entity.Name,
                         entity.Plural,
                         entityProperty.ForeignEntityName, 
                         entityProperty.ForeignEntityPlural, 
                         projectBaseName);
+                
+                    new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory, entityProperty, 
+                        entity.Name, entity.Plural, projectBaseName);
                 }
                 else
                 {

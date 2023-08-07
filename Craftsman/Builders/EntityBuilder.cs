@@ -199,7 +199,11 @@ public abstract class BaseEntity
                     property.Name, 
                     defaultValue, 
                     property.ForeignEntityName, 
-                    property.ForeignEntityPlural);
+                    property.ForeignEntityPlural,
+                    
+                    // these can be null because practically we only need it for children
+                    null,
+                    null);
             }
         }
 

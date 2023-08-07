@@ -161,6 +161,12 @@ public class EntityModifier
         var parentClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{property.ForeignEntityName}.cs", property.ForeignEntityPlural, projectBaseName);
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, projectBaseName);
 
+        if (property.IsChildRelationship)
+        {
+            parentClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, projectBaseName);
+            classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{property.ForeignEntityName}.cs", property.ForeignEntityPlural, projectBaseName);
+        }
+        
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
@@ -176,7 +182,9 @@ public class EntityModifier
             property.Name,
             null,
             property.ForeignEntityName,
-            property.ForeignEntityPlural);
+            property.ForeignEntityPlural,
+            parentEntityName,
+            parentEntityPlural);
         var tempPath = $"{classPath.FullClassPath}temp";
         using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
         {

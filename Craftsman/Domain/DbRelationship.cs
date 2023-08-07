@@ -37,7 +37,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
         IsChildRelationship = isChildRelationship;
     }
 
-    public abstract string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural);
+    public abstract string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural);
     public abstract string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural, string foreignEntityName);
 
     private class NoneType : DbRelationship
@@ -46,7 +46,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
 
         public override string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural, string foreignEntityName)
             => null;
-        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural) 
+        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural) 
             => $@"    public {propertyType} {propertyName} {{ get; private set; }}{defaultValue}{Environment.NewLine}{Environment.NewLine}";
     }
 
@@ -64,8 +64,13 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             return @$"{Environment.NewLine}        builder.HasMany(x => x.{foreignEntityPlural})
             .WithOne(x => x.{entityName});";
         }
-        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural)
+        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural)
         {
+            if (IsChildRelationship)
+            {
+                return $@"    public {entityName} {entityName} {{ get; private set; }}{Environment.NewLine}";
+            }
+            
             var lowerPropName = foreignEntityPlural.LowercaseFirstLetter();
             return $@"    private readonly List<{foreignEntityName}> _{lowerPropName} = new();
     public IReadOnlyCollection<{foreignEntityName}> {foreignEntityPlural} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}";
@@ -86,8 +91,19 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             return @$"{Environment.NewLine}        builder.HasOne(x => x.{propertyName})
             .WithMany(x => x.{entityPlural});";
         }
-        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural) 
-            => $@"    public {foreignEntityName} {propertyName} {{ get; private set; }}{Environment.NewLine}";
+
+        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue,
+            string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural)
+        {
+            if (IsChildRelationship)
+            {
+                var lowerPropName = entityPlural.LowercaseFirstLetter();
+                return $@"    private readonly List<{entityName}> _{lowerPropName} = new();
+    public IReadOnlyCollection<{entityName}> {entityPlural} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}";
+            }
+            
+            return $@"    public {foreignEntityName} {propertyName} {{ get; private set; }}{Environment.NewLine}";
+        }
     }
     
     private class OneToOneType : DbRelationship
@@ -106,7 +122,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             .WithOne(x => x.{entityName})
             .HasForeignKey<{entityName}>(s => s.Id);";
         }
-        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural) 
+        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural) 
             => $@"    public {foreignEntityName} {propertyName} {{ get; private set; }} = {foreignEntityName}.Create(new {EntityModel.Creation.GetClassName(foreignEntityName)}());{Environment.NewLine}";
     }
     
@@ -124,7 +140,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             return @$"{Environment.NewLine}        builder.HasMany(x => x.{propertyName})
             .WithMany(x => x.{entityPlural});";
         }
-        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural)
+        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural)
         {
             var lowerPropName = foreignEntityPlural.LowercaseFirstLetter();
             return $@"    private readonly List<{foreignEntityName}> _{lowerPropName} = new();
@@ -137,7 +153,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
         public SelfType(bool isChildRelationship = false) : base("self", 5, isChildRelationship) { }
         public override string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural, string foreignEntityName)
             => @$"{Environment.NewLine}        builder.HasOne(x => x.{propertyName});";
-        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural) 
+        public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural) 
             => $@"    public {foreignEntityName} {propertyName} {{ get; private set; }}{Environment.NewLine}";
     }
 }
