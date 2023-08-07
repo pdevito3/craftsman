@@ -66,7 +66,7 @@ using {modelsClassPath.ClassNamespace};";
         foreach (var oneToManyProp in manyManagementRelationshipProps)
         {
             var managedEntity = oneToManyProp.ForeignEntityName;
-            managedListMethods += GetListManagementMethods(entity.Name, managedEntity);
+            managedListMethods += GetListManagementMethods(entity.Name, managedEntity, oneToManyProp.ForeignEntityPlural);
         }
         var managedEntityMethod = "";
         var manyToOne = entity.Properties.Where(x => x.GetDbRelationship.IsManyToOne || x.GetDbRelationship.IsOneToOne).ToList();
@@ -113,18 +113,19 @@ public class {entity.Name} : BaseEntity
 }}";
     }
 
-    public static string GetListManagementMethods(string rootEntity, string managedEntity)
+    public static string GetListManagementMethods(string rootEntity, string managedEntity, string managedEntityPlural)
     {
         var lowerManagedEntity = managedEntity.LowercaseFirstLetter();
+        var lowerManagedEntityPlural = managedEntityPlural.LowercaseFirstLetter();
         return $@"    public {rootEntity} Add{managedEntity}({managedEntity} {lowerManagedEntity})
     {{
-        _{lowerManagedEntity}.Add({lowerManagedEntity});
+        _{lowerManagedEntityPlural}.Add({lowerManagedEntity});
         return this;
     }}
     
     public {rootEntity} Remove{managedEntity}({managedEntity} {lowerManagedEntity})
     {{
-        _{lowerManagedEntity}.RemoveAll(x => x.Id == {lowerManagedEntity}.Id);
+        _{lowerManagedEntityPlural}.RemoveAll(x => x.Id == {lowerManagedEntity}.Id);
         return this;
     }}
 
