@@ -56,9 +56,9 @@ using {modelsClassPath.ClassNamespace};";
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         var createEntityVar = $"new{entity.Name.UppercaseFirstLetter()}";
-        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone).Select(property =>
+        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate).Select(property =>
             $"        {createEntityVar}.{property.Name} = {creationClassName.LowercaseFirstLetter()}.{property.Name};"));
-        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone).Select(property =>
+        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate).Select(property =>
             $"        {property.Name} = {updateClassName.LowercaseFirstLetter()}.{property.Name};"));
 
         var managedListMethods = "";
