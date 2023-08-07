@@ -102,6 +102,9 @@ public class EntityScaffoldingService
                         entityProperty.ForeignEntityName, 
                         entityProperty.ForeignEntityPlural, 
                         projectBaseName);
+                
+                    new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory, entityProperty, 
+                        entity.Name, entity.Plural, projectBaseName);
                 }
                 else
                 {
@@ -121,9 +124,9 @@ public class EntityScaffoldingService
                     if(entityProperty.GetDbRelationship.IsOneToMany)
                         new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory, entityProperty, 
                             entity.Name, entity.Plural, projectBaseName);
-                    
-                    new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name, entity.Plural, entityProperty, projectBaseName);
                 }
+                
+                new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name, entity.Plural, entityProperty, projectBaseName);
             }
             
             var manyPropsToAdd = entity.Properties.Where(x => x.GetDbRelationship.IsManyToMany || x.GetDbRelationship.IsManyToOne).ToList();
