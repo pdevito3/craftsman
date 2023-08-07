@@ -49,6 +49,9 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         var directoryClasses = _fileSystem.Directory.GetFiles(classPath.FullClassPath, "*.cs");
         foreach (var directoryClass in directoryClasses)
         {
+            if (_fileSystem.Path.GetFileNameWithoutExtension(directoryClass) == FileNames.GetMigrationHostedServiceFileName())
+                continue;
+            
             using var input = _fileSystem.File.OpenText(directoryClass);
             string line;
             while (null != (line = input.ReadLine()))

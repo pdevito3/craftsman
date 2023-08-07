@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Sql server setups can handle dateonly
 * Duplicate usings
 * Remove bad serilog enricher and update logger for env name
+* `MigrationHostedService` will not conflict with dbcontext when adding entities
 
 ## [0.21.1] - 07/20/2023
 
