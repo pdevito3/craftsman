@@ -106,7 +106,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     private static string GetAssertions(List<EntityProperty> properties, string entityName)
     {
         var entityAssertions = "";
-        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone))
+        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate))
         {
             entityAssertions += entityProperty.Type switch
             {

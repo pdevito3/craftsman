@@ -104,7 +104,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {
         var dtoAssertions = "";
         var entityAssertions = "";
-        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone))
+        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate))
         {
             switch (entityProperty.Type)
             {

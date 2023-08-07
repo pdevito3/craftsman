@@ -83,7 +83,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     private static string GetAssertions(List<EntityProperty> properties, string createdEntityVar, string seedInfoVar)
     {
         var entityAssertions = "";
-        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone))
+        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate))
         {
             entityAssertions += entityProperty.Type switch
             {
