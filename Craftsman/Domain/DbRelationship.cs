@@ -134,7 +134,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             string foreignEntityPlural, string foreignEntityName)
         {
             if(IsChildRelationship)
-                return @$"{Environment.NewLine}        builder.HasMany(x => x.{entityName})
+                return @$"{Environment.NewLine}        builder.HasMany(x => x.{entityPlural})
             .WithMany(x => x.{foreignEntityPlural});";
             
             return @$"{Environment.NewLine}        builder.HasMany(x => x.{propertyName})
@@ -142,6 +142,12 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
         }
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural)
         {
+            if (IsChildRelationship)
+            {
+                var lowerPropNameForChild = entityPlural.LowercaseFirstLetter();
+                return $@"    private readonly List<{entityName}> _{lowerPropNameForChild} = new();
+    public IReadOnlyCollection<{entityName}> {entityPlural} => _{lowerPropNameForChild}.AsReadOnly();{Environment.NewLine}";
+            }
             var lowerPropName = foreignEntityPlural.LowercaseFirstLetter();
             return $@"    private readonly List<{foreignEntityName}> _{lowerPropName} = new();
     public IReadOnlyCollection<{foreignEntityName}> {propertyName} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}";

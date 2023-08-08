@@ -221,7 +221,12 @@ public class EntityModifier
         string projectBaseName)
     {
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, projectBaseName);
-
+        
+        if (property.IsChildRelationship)
+        {
+            classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{property.ForeignEntityName}.cs", property.ForeignEntityPlural, projectBaseName);   
+        }
+        
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
@@ -232,8 +237,10 @@ public class EntityModifier
         }
         
         var managedListMethods = "";
-        var managedEntity = property.ForeignEntityName;
-        managedListMethods += GetListManagementMethods(parentEntityName, managedEntity, property.ForeignEntityPlural);
+        if (property.IsChildRelationship)
+            managedListMethods += GetListManagementMethods(property.ForeignEntityName, parentEntityName, parentEntityPlural);
+        else
+            managedListMethods += GetListManagementMethods(parentEntityName, property.ForeignEntityName, property.ForeignEntityPlural);
         
         // var managedEntityMethod = "";
         // var manyToOne = entity.Properties.Where(x => x.GetDbRelationship.IsManyToOne || x.GetDbRelationship.IsOneToOne).ToList();
@@ -275,6 +282,11 @@ public class EntityModifier
     {
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, projectBaseName);
 
+        if (property.IsChildRelationship)
+        {
+            classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{property.ForeignEntityName}.cs", property.ForeignEntityPlural, projectBaseName);
+        }
+        
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
@@ -285,9 +297,10 @@ public class EntityModifier
         }
         
         var managedEntityMethod = "";
-        var managedEntity = property.ForeignEntityName;
-        var managedPropName = property.Name;
-        managedEntityMethod += GetEntityManagementMethods(parentEntityName, managedEntity, managedPropName);
+        if(property.IsChildRelationship)
+            managedEntityMethod += GetEntityManagementMethods(property.ForeignEntityName, parentEntityName, parentEntityName);
+        else
+            managedEntityMethod += GetEntityManagementMethods(parentEntityName, property.ForeignEntityName, property.Name);
         
         var tempPath = $"{classPath.FullClassPath}temp";
         using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))

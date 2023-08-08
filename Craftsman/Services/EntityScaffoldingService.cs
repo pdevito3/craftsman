@@ -88,87 +88,129 @@ public class EntityScaffoldingService
             _mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(entity.Name, entity.Plural));
         }
 
+        AddRelationships(srcDirectory, projectBaseName, entities);
+
+        new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);
+    }
+
+    private void AddRelationships(string srcDirectory, string projectBaseName, List<Entity> entities)
+    {
         // reloop once all bases are added for relationships to mod on top -- could push into the earlier loop if perf becomes an issue
         foreach (var entity in entities)
         {
-            var singularPropsToAdd = entity.Properties.Where(x => x.GetDbRelationship.IsOneToMany || x.GetDbRelationship.IsOneToOne).ToList();
+            var singularPropsToAdd = entity.Properties
+                .Where(x => x.GetDbRelationship.IsOneToMany || x.GetDbRelationship.IsOneToOne).ToList();
             foreach (var entityProperty in singularPropsToAdd)
             {
                 if (entityProperty.IsChildRelationship)
                 {
-                    new EntityModifier(_fileSystem, _consoleWriter).AddManyRelationshipEntity(srcDirectory, 
+                    new EntityModifier(_fileSystem, _consoleWriter).AddManyRelationshipEntity(srcDirectory,
                         entity.Name,
                         entity.Plural,
-                        entityProperty.ForeignEntityName, 
-                        entityProperty.ForeignEntityPlural, 
+                        entityProperty.ForeignEntityName,
+                        entityProperty.ForeignEntityPlural,
                         projectBaseName);
-                
-                    new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory, entityProperty, 
-                        entity.Name, entity.Plural, projectBaseName);
+
+                    if (entityProperty.GetDbRelationship.IsOneToOne)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntitySingularManagementMethods(srcDirectory,
+                            entityProperty,
+                            entity.Name, entity.Plural, projectBaseName);
+                    if (entityProperty.GetDbRelationship.IsOneToMany)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntitySingularManagementMethods(srcDirectory,
+                            entityProperty,
+                            entity.Name, entity.Plural, projectBaseName);
                 }
                 else
                 {
-                    new EntityModifier(_fileSystem, _consoleWriter).AddSingularRelationshipEntity(srcDirectory, 
-                        entityProperty.ForeignEntityName, 
-                        entityProperty.ForeignEntityPlural, 
+                    new EntityModifier(_fileSystem, _consoleWriter).AddSingularRelationshipEntity(srcDirectory,
+                        entityProperty.ForeignEntityName,
+                        entityProperty.ForeignEntityPlural,
                         entity.Name,
                         entity.Plural,
                         projectBaseName);
-                
-                    new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory, entityProperty, 
-                        entity.Name, entity.Plural, projectBaseName);
-                    
-                    if(entityProperty.GetDbRelationship.IsOneToOne)
-                        new EntityModifier(_fileSystem, _consoleWriter).AddEntitySingularManagementMethods(srcDirectory, entityProperty, 
+
+                    if (entityProperty.GetDbRelationship.IsOneToOne)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntitySingularManagementMethods(srcDirectory,
+                            entityProperty,
                             entity.Name, entity.Plural, projectBaseName);
-                    if(entityProperty.GetDbRelationship.IsOneToMany)
-                        new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory, entityProperty, 
+                    if (entityProperty.GetDbRelationship.IsOneToMany)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory,
+                            entityProperty,
                             entity.Name, entity.Plural, projectBaseName);
                 }
-                
-                new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name, entity.Plural, entityProperty, projectBaseName);
+
+                new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory,
+                    entityProperty,
+                    entity.Name, entity.Plural, projectBaseName);
+
+                new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name,
+                    entity.Plural, entityProperty, projectBaseName);
             }
-            
-            var manyPropsToAdd = entity.Properties.Where(x => x.GetDbRelationship.IsManyToMany || x.GetDbRelationship.IsManyToOne).ToList();
+
+            var manyPropsToAdd = entity.Properties
+                .Where(x => x.GetDbRelationship.IsManyToMany || x.GetDbRelationship.IsManyToOne).ToList();
             foreach (var entityProperty in manyPropsToAdd)
             {
                 if (entityProperty.IsChildRelationship)
                 {
-                    new EntityModifier(_fileSystem, _consoleWriter).AddSingularRelationshipEntity(srcDirectory, 
-                        entity.Name,
-                        entity.Plural,
-                        entityProperty.ForeignEntityName, 
-                        entityProperty.ForeignEntityPlural, 
-                        projectBaseName);
-                
-                    new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory, entityProperty, 
-                        entity.Name, entity.Plural, projectBaseName);
+                    if(entityProperty.GetDbRelationship.IsManyToMany)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddManyRelationshipEntity(srcDirectory,
+                            entity.Name,
+                            entity.Plural,
+                            entityProperty.ForeignEntityName,
+                            entityProperty.ForeignEntityPlural,
+                            projectBaseName);
+                    else
+                        new EntityModifier(_fileSystem, _consoleWriter).AddSingularRelationshipEntity(srcDirectory,
+                            entity.Name,
+                            entity.Plural,
+                            entityProperty.ForeignEntityName,
+                            entityProperty.ForeignEntityPlural,
+                            projectBaseName);
+
+                    if (entityProperty.GetDbRelationship.IsManyToOne)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory,
+                            entityProperty,
+                            entity.Name, entity.Plural, projectBaseName);
+                    if (entityProperty.GetDbRelationship.IsManyToMany)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory,
+                            entityProperty,
+                            entity.Name, entity.Plural, projectBaseName);
                 }
                 else
                 {
-                    new EntityModifier(_fileSystem, _consoleWriter).AddManyRelationshipEntity(srcDirectory, 
-                        entityProperty.ForeignEntityName, 
-                        entityProperty.ForeignEntityPlural, 
+                    new EntityModifier(_fileSystem, _consoleWriter).AddManyRelationshipEntity(srcDirectory,
+                        entityProperty.ForeignEntityName,
+                        entityProperty.ForeignEntityPlural,
                         entity.Name,
                         entity.Plural,
                         projectBaseName);
-                
-                    new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory, entityProperty, 
-                        entity.Name, entity.Plural, projectBaseName);
-                    
-                    if(entityProperty.GetDbRelationship.IsManyToOne)
-                        new EntityModifier(_fileSystem, _consoleWriter).AddEntitySingularManagementMethods(srcDirectory, entityProperty, 
+
+                    if (entityProperty.GetDbRelationship.IsManyToOne)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntitySingularManagementMethods(srcDirectory,
+                            entityProperty,
                             entity.Name, entity.Plural, projectBaseName);
-                    if(entityProperty.GetDbRelationship.IsManyToMany)
-                        new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory, entityProperty, 
+                    if (entityProperty.GetDbRelationship.IsManyToMany)
+                        new EntityModifier(_fileSystem, _consoleWriter).AddEntityManyManagementMethods(srcDirectory,
+                            entityProperty,
                             entity.Name, entity.Plural, projectBaseName);
                 }
 
-                new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name, entity.Plural, entityProperty, projectBaseName);
+                new EntityModifier(_fileSystem, _consoleWriter).AddParentRelationshipEntity(srcDirectory,
+                    entityProperty,
+                    entity.Name, entity.Plural, projectBaseName);
+
+                new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name,
+                    entity.Plural, entityProperty, projectBaseName);
+            }
+
+            var selfProps = entity.Properties.Where(x => x.GetDbRelationship.IsSelf).ToList();
+            foreach (var entityProperty in selfProps)
+            {
+                new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, entity.Name,
+                    entity.Plural, entityProperty, projectBaseName);
             }
         }
-
-        new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);
     }
 
     public void ScaffoldRolePermissions(string solutionDirectory,
