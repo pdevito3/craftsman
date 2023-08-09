@@ -108,6 +108,7 @@ public class EntityScaffoldingService
                     entity.Plural,
                     entityProperty.ForeignEntityName,
                     entityProperty.ForeignEntityPlural,
+                    entityProperty.Name,
                     projectBaseName);
                 
                 entityProperty.GetDbRelationship.UpdateEntityManagementMethods(entityModifier, 

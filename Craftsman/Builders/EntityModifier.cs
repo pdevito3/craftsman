@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using Domain;
+using Domain.Enums;
 using Helpers;
 using Services;
 
@@ -57,11 +58,13 @@ public class EntityModifier
         string childEntityPlural, 
         string parentEntityName,
         string parentEntityPlural,
+        string propertyName,
+        bool isChildRelationship,
         string projectBaseName)
     {
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{childEntityName}.cs", childEntityPlural, projectBaseName);
         var parentClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, projectBaseName);
-
+        
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
             _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
@@ -84,7 +87,7 @@ public class EntityModifier
                     var newText = $"{line}";
                     if (line.Contains($"Add Props Marker"))
                     {
-                        newText = @$"    public {parentEntityName} {parentEntityName} {{ get; }}{Environment.NewLine}{Environment.NewLine}{line}";
+                        newText = @$"    public {parentEntityName} {propertyName} {{ get; }}{Environment.NewLine}{Environment.NewLine}{line}";
                     }
                     if (line.Contains($"using") && !usingStatementHasBeenAdded)
                     {
@@ -160,11 +163,13 @@ public class EntityModifier
     {
         var parentClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{property.ForeignEntityName}.cs", property.ForeignEntityPlural, projectBaseName);
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, projectBaseName);
+        var parentModelsClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, $"{property.ForeignEntityName}.cs", property.ForeignEntityPlural, EntityModel.Creation, projectBaseName);
 
         if (property.IsChildRelationship)
         {
             parentClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, projectBaseName);
             classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{property.ForeignEntityName}.cs", property.ForeignEntityPlural, projectBaseName);
+            parentModelsClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, $"{parentEntityName}.cs", parentEntityPlural, EntityModel.Creation, projectBaseName);
         }
         
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
@@ -177,6 +182,9 @@ public class EntityModifier
         }
         
         var parentUsingStatement = $@"using {parentClassPath.ClassNamespace};";
+        if(property.GetDbRelationship.IsOneToOne)
+            parentUsingStatement += $@"{Environment.NewLine}using {parentModelsClassPath.ClassNamespace};";
+        
         var usingStatementHasBeenAdded = false;
         var propToAdd = property.GetDbRelationship.GetPrincipalPropString(property.Type,
             property.Name,
@@ -242,14 +250,6 @@ public class EntityModifier
         else
             managedListMethods += GetListManagementMethods(parentEntityName, property.ForeignEntityName, property.ForeignEntityPlural);
         
-        // var managedEntityMethod = "";
-        // var manyToOne = entity.Properties.Where(x => x.GetDbRelationship.IsManyToOne || x.GetDbRelationship.IsOneToOne).ToList();
-        // foreach (var oneToManyProp in manyToOne)
-        // {
-        //     var managedEntity = oneToManyProp.ForeignEntityName;
-        //     var managedPropName = oneToManyProp.Name;
-        //     managedEntityMethod += GetEntityManagementMethods(entity.Name, managedEntity, managedPropName);
-        // }
         var tempPath = $"{classPath.FullClassPath}temp";
         using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
         {
