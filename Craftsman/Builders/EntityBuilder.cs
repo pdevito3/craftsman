@@ -170,7 +170,7 @@ public abstract class BaseEntity
     public static string EntityPropBuilder(List<EntityProperty> props)
     {
         var propString = "";
-        foreach (var property in props.Where(x => x.GetDbRelationship.IsNone || x.GetDbRelationship.IsSelf))
+        foreach (var property in props.Where(x => x.GetDbRelationship.IsNone))
         {
             var attributes = AttributeBuilder(property);
             

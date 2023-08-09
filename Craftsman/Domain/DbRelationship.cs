@@ -1,6 +1,7 @@
 namespace Craftsman.Domain;
 
 using Ardalis.SmartEnum;
+using Builders;
 using Enums;
 using Helpers;
 using Services;
@@ -39,6 +40,10 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
 
     public abstract string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural);
     public abstract string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural, string foreignEntityName);
+    public abstract void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+        string entityPlural, string foreignEntityName, string foreignEntityPlural, string projectBaseName);
+    public abstract void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+        string entityPlural, EntityProperty entityProperty, string projectBaseName);
 
     private class NoneType : DbRelationship
     {
@@ -46,6 +51,19 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
 
         public override string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural, string foreignEntityName)
             => null;
+
+        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, string foreignEntityName, string foreignEntityPlural, string projectBaseName)
+        {
+            // no op
+        }
+        
+        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, EntityProperty entityProperty, string projectBaseName)
+        {
+            // no op
+        }
+
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural) 
             => $@"    public {propertyType} {propertyName} {{ get; private set; }}{defaultValue}{Environment.NewLine}{Environment.NewLine}";
     }
@@ -64,6 +82,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             return @$"{Environment.NewLine}        builder.HasMany(x => x.{foreignEntityPlural})
             .WithOne(x => x.{entityName});";
         }
+
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural)
         {
             if (IsChildRelationship)
@@ -74,6 +93,39 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             var lowerPropName = foreignEntityPlural.LowercaseFirstLetter();
             return $@"    private readonly List<{foreignEntityName}> _{lowerPropName} = new();
     public IReadOnlyCollection<{foreignEntityName}> {foreignEntityPlural} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}";
+        }
+
+        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, string foreignEntityName, string foreignEntityPlural, string projectBaseName)
+        {
+            if (IsChildRelationship)
+            {
+                entityModifier.AddManyRelationshipEntity(srcDirectory,
+                    entityName,
+                    entityPlural,
+                    foreignEntityName,
+                    foreignEntityPlural,
+                    projectBaseName);
+                return;
+            }
+
+            entityModifier.AddSingularRelationshipEntity(srcDirectory,
+                    foreignEntityName,
+                    foreignEntityPlural,
+                    entityName,
+                    entityPlural,
+                    projectBaseName);
+        }
+        
+        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, EntityProperty entityProperty, string projectBaseName)
+        {
+            if (IsChildRelationship)
+            {
+                entityModifier.AddEntitySingularManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
+                return;
+            }
+            entityModifier.AddEntityManyManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
         }
     }
 
@@ -104,6 +156,40 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             
             return $@"    public {foreignEntityName} {propertyName} {{ get; private set; }}{Environment.NewLine}";
         }
+
+        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, string foreignEntityName, string foreignEntityPlural, string projectBaseName)
+        {
+            if (IsChildRelationship)
+            {
+                entityModifier.AddSingularRelationshipEntity(srcDirectory,
+                    entityName,
+                    entityPlural,
+                    foreignEntityName,
+                    foreignEntityPlural,
+                    projectBaseName);
+            }
+            else
+            {
+                entityModifier.AddManyRelationshipEntity(srcDirectory,
+                    foreignEntityName,
+                    foreignEntityPlural,
+                    entityName,
+                    entityPlural,
+                    projectBaseName);
+            }
+        }
+        
+        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, EntityProperty entityProperty, string projectBaseName)
+        {
+            if (IsChildRelationship)
+            {
+                entityModifier.AddEntityManyManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
+                return;
+            }
+            entityModifier.AddEntitySingularManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
+        }
     }
     
     private class OneToOneType : DbRelationship
@@ -122,6 +208,31 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             .WithOne(x => x.{entityName})
             .HasForeignKey<{entityName}>(s => s.Id);";
         }
+
+        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, string foreignEntityName, string foreignEntityPlural, string projectBaseName)
+        {
+            entityModifier.AddSingularRelationshipEntity(srcDirectory,
+                    foreignEntityName,
+                    foreignEntityPlural,
+                    entityName,
+                    entityPlural,
+                    projectBaseName);
+            entityModifier.AddSingularRelationshipEntity(srcDirectory,
+                entityName,
+                entityPlural,
+                foreignEntityName,
+                foreignEntityPlural,
+                projectBaseName);
+        }
+        
+        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, EntityProperty entityProperty, string projectBaseName)
+        {
+            // entityModifier.AddEntitySingularManagementMethods(srcDirectory,
+            //     entityProperty, entityName, entityPlural, projectBaseName);
+        }
+        
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural) 
             => $@"    public {foreignEntityName} {propertyName} {{ get; private set; }} = {foreignEntityName}.Create(new {EntityModel.Creation.GetClassName(foreignEntityName)}());{Environment.NewLine}";
     }
@@ -152,6 +263,34 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             return $@"    private readonly List<{foreignEntityName}> _{lowerPropName} = new();
     public IReadOnlyCollection<{foreignEntityName}> {propertyName} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}";
         }
+
+        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, string foreignEntityName, string foreignEntityPlural, string projectBaseName)
+        {
+            if (IsChildRelationship)
+            {
+                entityModifier.AddManyRelationshipEntity(srcDirectory,
+                    entityName,
+                    entityPlural,
+                    foreignEntityName,
+                    foreignEntityPlural,
+                    projectBaseName);
+                return;
+            }
+
+            entityModifier.AddManyRelationshipEntity(srcDirectory,
+                    foreignEntityName,
+                    foreignEntityPlural,
+                    entityName,
+                    entityPlural,
+                    projectBaseName);
+        }
+        
+        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, EntityProperty entityProperty, string projectBaseName)
+        {
+            entityModifier.AddEntityManyManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
+        }
     }
     
     private class SelfType : DbRelationship
@@ -161,5 +300,17 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             => @$"{Environment.NewLine}        builder.HasOne(x => x.{propertyName});";
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural) 
             => $@"    public {foreignEntityName} {propertyName} {{ get; private set; }}{Environment.NewLine}";
+
+        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory,
+            string entityName, string entityPlural, string foreignEntityName, string foreignEntityPlural, string projectBaseName)
+        {
+            // no op
+        }
+        
+        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+            string entityPlural, EntityProperty entityProperty, string projectBaseName)
+        {
+            // no op
+        }
     }
 }

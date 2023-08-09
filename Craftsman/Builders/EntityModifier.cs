@@ -56,7 +56,7 @@ public class EntityModifier
         string childEntityName, 
         string childEntityPlural, 
         string parentEntityName,
-        string parentEntityPlural, 
+        string parentEntityPlural,
         string projectBaseName)
     {
         var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{childEntityName}.cs", childEntityPlural, projectBaseName);
