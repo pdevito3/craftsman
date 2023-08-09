@@ -115,7 +115,6 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
                     entityName,
                     entityPlural,
                     propertyName,
-                    IsChildRelationship,
                     projectBaseName);
         }
         
@@ -169,19 +168,17 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
                     entityPlural,
                     foreignEntityName,
                     foreignEntityPlural,
-                    propertyName,
-                    IsChildRelationship,
-                    projectBaseName);
-            }
-            else
-            {
-                entityModifier.AddManyRelationshipEntity(srcDirectory,
                     foreignEntityName,
-                    foreignEntityPlural,
-                    entityName,
-                    entityPlural,
                     projectBaseName);
+                return;
             }
+            entityModifier.AddManyRelationshipEntity(srcDirectory,
+                foreignEntityName,
+                foreignEntityPlural,
+                entityName,
+                entityPlural,
+                projectBaseName);
+            
         }
         
         public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
@@ -225,7 +222,6 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
                     foreignEntityName,
                     foreignEntityPlural,
                     propertyName,
-                    IsChildRelationship,
                     projectBaseName);
                 return;
             }
@@ -236,7 +232,6 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
                 entityName,
                 entityPlural,
                 entityName,
-                IsChildRelationship,
                 projectBaseName);
         }
         
@@ -286,19 +281,23 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
         public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
             string entityPlural, string foreignEntityName, string foreignEntityPlural, string propertyName, string projectBaseName)
         {
-            entityModifier.AddManyRelationshipEntity(srcDirectory,
-                entityName,
-                entityPlural,
-                foreignEntityName,
-                foreignEntityPlural,
-                projectBaseName);
-
-            entityModifier.AddManyRelationshipEntity(srcDirectory,
-                    foreignEntityName,
-                    foreignEntityPlural,
+            if (IsChildRelationship)
+            {
+                entityModifier.AddManyRelationshipEntity(srcDirectory,
                     entityName,
                     entityPlural,
+                    foreignEntityName,
+                    foreignEntityPlural,
                     projectBaseName);
+                return;
+            }
+
+            entityModifier.AddManyRelationshipEntity(srcDirectory,
+                foreignEntityName,
+                foreignEntityPlural,
+                entityName,
+                entityPlural,
+                projectBaseName);
         }
         
         public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
