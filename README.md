@@ -46,6 +46,8 @@ Have a request for something you don't see below? Join [our discord](https://dis
 
 ✅ Records for queries and commands and DTOs
 
+🚧 Relationships overhaul
+
 🕰️ No more queryable exposed in repositories
 
 🚧 Update `GetList` feature to `GetPagedList` and create a distinct `GetList
