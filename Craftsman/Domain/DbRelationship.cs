@@ -114,7 +114,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
                     foreignEntityPlural,
                     entityName,
                     entityPlural,
-                    propertyName,
+                    entityName,
                     projectBaseName);
         }
         
