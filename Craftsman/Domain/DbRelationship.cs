@@ -76,7 +76,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             string foreignEntityPlural, string foreignEntityName)
         {
             if (IsChildRelationship)
-                return @$"{Environment.NewLine}        builder.HasOne(x => x.{entityName})
+                return @$"{Environment.NewLine}        builder.HasOne(x => x.{propertyName})
             .WithMany(x => x.{foreignEntityPlural});";
             
             return @$"{Environment.NewLine}        builder.HasMany(x => x.{foreignEntityPlural})
@@ -87,7 +87,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
         {
             if (IsChildRelationship)
             {
-                return $@"    public {entityName} {entityName} {{ get; private set; }}{Environment.NewLine}";
+                return $@"    public {entityName} {propertyName} {{ get; private set; }}{Environment.NewLine}";
             }
             
             var lowerPropName = foreignEntityPlural.LowercaseFirstLetter();
@@ -139,7 +139,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
         {
             if (IsChildRelationship)
                 return @$"{Environment.NewLine}        builder.HasMany(x => x.{entityPlural})
-            .WithOne(x => x.{foreignEntityName});";
+            .WithOne(x => x.{propertyName});";
             
             return @$"{Environment.NewLine}        builder.HasOne(x => x.{propertyName})
             .WithMany(x => x.{entityPlural});";
@@ -168,7 +168,7 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
                     entityPlural,
                     foreignEntityName,
                     foreignEntityPlural,
-                    foreignEntityName,
+                    propertyName,
                     projectBaseName);
                 return;
             }

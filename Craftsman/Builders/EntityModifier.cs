@@ -264,7 +264,7 @@ public class EntityModifier
         
         var managedEntityMethod = "";
         if(property.IsChildRelationship)
-            managedEntityMethod += GetEntityManagementMethods(property.ForeignEntityName, parentEntityName, parentEntityName);
+            managedEntityMethod += GetEntityManagementMethods(property.ForeignEntityName, parentEntityName, property.Name);
         else
             managedEntityMethod += GetEntityManagementMethods(parentEntityName, property.ForeignEntityName, property.Name);
         
