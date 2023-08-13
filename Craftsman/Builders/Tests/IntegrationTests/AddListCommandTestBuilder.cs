@@ -92,6 +92,9 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var secondDbRecord = {lowercaseEntityName}Db.FirstOrDefault(x => x.Id == secondReturned.Id);
 
         // Assert{GetAssertions(entity.Properties, fakeEntityVariableNameOne, fakeEntityVariableNameTwo)}
+
+        firstDbRecord.{feature.ParentEntity}.Id.Should().Be({fakeParentEntity}.Id);
+        secondDbRecord.{feature.ParentEntity}.Id.Should().Be({fakeParentEntity}.Id);
     }}";
     }
 
@@ -99,7 +102,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {
         var dtoAssertions = "";
         var entityAssertions = "";
-        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType))
+        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate))
         {
             switch (entityProperty.Type)
             {

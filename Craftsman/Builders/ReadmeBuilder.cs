@@ -31,11 +31,11 @@ infrastructure depending on your configuration (e.g. RabbitMQ, Keycloak, Jaeger,
 2. If using a Keycloak auth server, you'll need to configure it manually (new realm, client, etc) or use the scaffolded Pulumi setup.
     1. [Install the pulumi CLI](https://www.pulumi.com/docs/get-started/) 
     1. `cd` to your scaffolded Pulumi project
+    1. Run `pulumi login --local` to use Pulumi locally
     1. Run `pulumi up` to start the scaffolding process
-    1. Create a new stack by pressing `Enter` when prompted and then typing the name of the stack (e.g. `dev`). Alternatively
-    you can use the `pulumi stack init` command to make a new stack first.
         > Note: The stack name must match the extension on your yaml config file (e.g. `Pulumi.dev.yaml`) would have a stack of `dev`.
     1. Select yes to apply the configuration to your local Keycloak instance.
+        > If you want to reset your pulumi configuration, run `pulumi destroy` to remove all the resources and then `pulumi up` again to start fresh.
 3. If running a BFF:
     1. Make sure you have [`yarn` installed](https://yarnpkg.com/getting-started/install)
     1. Run the project with `dotnet run` or your IDE

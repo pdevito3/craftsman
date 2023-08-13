@@ -7,18 +7,9 @@ using Services;
 
 public static class DatabaseEntityConfigBuilder
 {
-    public class Command : IRequest<bool>
-    {
-        public readonly string EntityName;
-        public readonly string EntityPlural;
 
-        public Command(string entityName, string entityPlural)
-        {
-            EntityName = entityName;
-            EntityPlural = entityPlural;
-        }
-    }
-
+    public record Command(string EntityName, string EntityPlural, List<EntityProperty> Properties) : IRequest<bool>;
+    
     public class Handler : IRequestHandler<Command, bool>
     {
         private readonly ICraftsmanUtilities _utilities;
@@ -60,6 +51,8 @@ public sealed class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntit
     /// </summary>
     public void Configure(EntityTypeBuilder<{entityName}> builder)
     {{
+        // Relationship Marker -- Deleting or modifying this comment could cause incomplete relationship scaffolding
+
         // example for a simple 1:1 value object
         // builder.Property(x => x.Percent)
         //     .HasConversion(x => x.Value, x => new Percent(x))

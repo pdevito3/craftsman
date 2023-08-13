@@ -33,8 +33,6 @@ public class AddCommandTestBuilder
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
-        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
-
         var permissionTest = !featureIsProtected ? null : GetPermissionTest(commandName, entity, featureName, permission);
 
         return @$"namespace {classPath.ClassNamespace};
@@ -47,7 +45,7 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 using System.Threading.Tasks;
 using {featuresClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};{foreignEntityUsings}
+using {exceptionsClassPath.ClassNamespace};
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
@@ -61,29 +59,12 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var fakeEntityVariableName = $"fake{entity.Name}One";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
 
-        var fakeParent = "";
-        var fakeParentIdRuleFor = "";
-        foreach (var entityProperty in entity.Properties)
-        {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType)
-            {
-                var baseVarName = entityProperty.ForeignEntityName != entity.Name
-                    ? $"{entityProperty.ForeignEntityName}"
-                    : $"{entityProperty.ForeignEntityName}Parent";
-                var fakeParentBuilder = FileNames.FakeBuilderName(entityProperty.ForeignEntityName);
-                fakeParent += @$"var fake{baseVarName}One = new {fakeParentBuilder}().Build();
-        await testingServiceScope.InsertAsync(fake{baseVarName}One);{Environment.NewLine}{Environment.NewLine}        ";
-                fakeParentIdRuleFor +=
-                    $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{baseVarName}One.Id)";
-            }
-        }
-
         return $@"[Fact]
     public async Task can_add_new_{entity.Name.ToLower()}_to_db()
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableName} = new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate();
+        var {fakeEntityVariableName} = new {fakeCreationDto}().Generate();
 
         // Act
         var command = new {featureName}.{commandName}({fakeEntityVariableName});
@@ -123,7 +104,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {
         var dtoAssertions = "";
         var entityAssertions = "";
-        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType))
+        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate))
         {
             switch (entityProperty.Type)
             {

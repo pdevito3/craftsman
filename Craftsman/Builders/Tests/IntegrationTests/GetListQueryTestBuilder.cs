@@ -36,8 +36,6 @@ public class GetListQueryTestBuilder
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(testDirectory, featureName, entity.Plural, projectBaseName);
 
-        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
-
         return @$"namespace {classPath.ClassNamespace};
 
 using {dtoClassPath.ClassNamespace};
@@ -47,7 +45,7 @@ using {featuresClassPath.ClassNamespace};
 using FluentAssertions;
 using Domain;
 using Xunit;
-using System.Threading.Tasks;{foreignEntityUsings}
+using System.Threading.Tasks;
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
@@ -63,11 +61,6 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
         var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpersTwoCount(entity, out var fakeParentIdRuleForOne, out var fakeParentIdRuleForTwo);
-        if (fakeParentIdRuleForOne != "")
-            fakeParentIdRuleForOne += $"{Environment.NewLine}            ";
-        if (fakeParentIdRuleForTwo != "")
-            fakeParentIdRuleForTwo += $"{Environment.NewLine}            ";
         
         return @$"
     [Fact]
@@ -75,8 +68,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableNameOne} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleForOne}.Build();
-        var {fakeEntityVariableNameTwo} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleForTwo}.Build();
+        var {fakeEntityVariableNameOne} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
+        var {fakeEntityVariableNameTwo} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
         var queryParameters = new {entityParams}();
 
         await testingServiceScope.InsertAsync({fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo});

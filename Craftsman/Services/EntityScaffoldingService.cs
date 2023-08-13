@@ -58,7 +58,7 @@ public class EntityScaffoldingService
             new EntityMappingBuilder(_utilities).CreateMapping(srcDirectory, entity.Name, entity.Plural, projectBaseName);
             new ApiRouteModifier(_fileSystem, _consoleWriter).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
-            _mediator.Send(new DatabaseEntityConfigBuilder.Command(entity.Name, entity.Plural));
+            _mediator.Send(new DatabaseEntityConfigBuilder.Command(entity.Name, entity.Plural, entity.Properties));
             _mediator.Send(new EntityRepositoryBuilder.Command(dbContextName, 
                 entity.Name, 
                 entity.Plural));
@@ -88,7 +88,49 @@ public class EntityScaffoldingService
             _mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(entity.Name, entity.Plural));
         }
 
+        AddRelationships(srcDirectory, projectBaseName, entities);
+
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);
+    }
+
+    private void AddRelationships(string srcDirectory, string projectBaseName, List<Entity> entities)
+    {
+        // reloop once all bases are added for relationships to mod on top -- could push into the earlier loop if perf becomes an issue
+        foreach (var entity in entities)
+        {
+            var entityModifier = new EntityModifier(_fileSystem, _consoleWriter);
+            var allPropsNotNone = entity.Properties.Where(x => !x.GetDbRelationship.IsNone).ToList();
+            foreach (var entityProperty in allPropsNotNone)
+            {
+                entityProperty.GetDbRelationship.UpdateEntityProperties(entityModifier, 
+                    srcDirectory,
+                    entity.Name,
+                    entity.Plural,
+                    entityProperty.ForeignEntityName,
+                    entityProperty.ForeignEntityPlural,
+                    entityProperty.Name,
+                    projectBaseName);
+                
+                entityProperty.GetDbRelationship.UpdateEntityManagementMethods(entityModifier, 
+                    srcDirectory,
+                    entity.Name,
+                    entity.Plural,
+                    entityProperty,
+                    projectBaseName);
+                
+                entityModifier.AddParentRelationshipEntity(srcDirectory,
+                    entityProperty, 
+                    entity.Name, 
+                    entity.Plural, 
+                    projectBaseName);
+                
+                new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddRelationships(srcDirectory, 
+                    entity.Name,
+                    entity.Plural, 
+                    entityProperty, 
+                    projectBaseName);
+            }
+        }
     }
 
     public void ScaffoldRolePermissions(string solutionDirectory,

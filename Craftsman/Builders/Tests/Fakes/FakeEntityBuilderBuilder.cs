@@ -71,6 +71,8 @@ public class {FileNames.FakeBuilderName(entity.Name)}
         var propString = string.Empty;
         for (var eachProp = 0; eachProp < props.Count; eachProp++)
         {
+            if(!props[eachProp].GetDbRelationship.IsNone)
+                continue;
             if (!props[eachProp].CanManipulate)
                 continue;
             if (props[eachProp].IsForeignKey && props[eachProp].IsMany)

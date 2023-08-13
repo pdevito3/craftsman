@@ -40,14 +40,6 @@ public class PutCommandTestBuilder
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, projectBaseName);
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
-        if (fakeParentIdRuleFor != "")
-            fakeParentIdRuleFor += $"{Environment.NewLine}            ";
-        IntegrationTestServices.FakeParentTestHelpersForUpdateDto(entity, out var fakeParentForUpdateDtoIdRuleFor);
-        if (fakeParentForUpdateDtoIdRuleFor != "")
-            fakeParentForUpdateDtoIdRuleFor += $"{Environment.NewLine}            ";
-
-        var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
         var permissionTest = !featureIsProtected ? null : GetPermissionTest(commandName, entity, featureName, permission);
 
         return @$"namespace {classPath.ClassNamespace};
@@ -61,7 +53,7 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using System.Threading.Tasks;{foreignEntityUsings}
+using System.Threading.Tasks;
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{
@@ -70,8 +62,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleFor}.Build();
-        var updated{entity.Name}Dto = new {fakeUpdateDto}(){fakeParentForUpdateDtoIdRuleFor}.Generate();
+        var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
+        var updated{entity.Name}Dto = new {fakeUpdateDto}().Generate();
         await testingServiceScope.InsertAsync({fakeEntityVariableName});
 
         var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
@@ -114,7 +106,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     private static string GetAssertions(List<EntityProperty> properties, string entityName)
     {
         var entityAssertions = "";
-        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType))
+        foreach (var entityProperty in properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate))
         {
             entityAssertions += entityProperty.Type switch
             {

@@ -17,7 +17,7 @@ public class GetRecordEndpointBuilder
         var queryRecordMethodName = FileNames.QueryRecordName();
         var pkPropertyType = primaryKeyProp.Type;
         var singleResponse = $@"{readDto}";
-        var getRecordEndpointName = entity.Name == entity.Plural ? $@"Get{entityNamePlural}Record" : $@"Get{entity.Name}";
+        var getRecordEndpointName = $@"Get{entity.Name}";
         var getRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
 
 

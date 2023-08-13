@@ -137,11 +137,12 @@ BoundedContexts:
     - Name: Directions
       Type: string
     - Name: Author
-      Type: Author
+      Relationship: manyto1
       ForeignEntityName: Author
       ForeignEntityPlural: Authors
     - Name: Ingredients
-      Type: ICollection<Ingredient>
+      Relationship: 1tomany
+      ForeignEntityName: Ingredient
       ForeignEntityPlural: Ingredients
   - Name: Author
     Features:
@@ -153,10 +154,6 @@ BoundedContexts:
     Properties:
     - Name: Name
       Type: string
-    - Name: RecipeId
-      Type: Guid
-      ForeignEntityName: Recipe
-      ForeignEntityPlural: Recipes
   - Name: Ingredient
     Features:
     - Type: GetList
@@ -180,10 +177,7 @@ BoundedContexts:
     - Name: Quantity
       Type: string
     - Name: Measure
-      Type: string
-    - Name: RecipeId
-      Type: Guid
-      ForeignEntityName: Recipe";
+      Type: string";
     }
 
     private static string ComplexTemplate(string name)
@@ -228,11 +222,12 @@ BoundedContexts:
     - Name: HaveMadeItMyself
       Type: bool
     - Name: Author
-      Type: Author
+      Relationship: manyto1
       ForeignEntityName: Author
       ForeignEntityPlural: Authors
     - Name: Ingredients
-      Type: ICollection<Ingredient>
+      Relationship: 1tomany
+      ForeignEntityName: Ingredient
       ForeignEntityPlural: Ingredients
   - Name: Author
     Features:
@@ -244,10 +239,6 @@ BoundedContexts:
     Properties:
     - Name: Name
       Type: string
-    - Name: RecipeId
-      Type: Guid
-      ForeignEntityName: Recipe
-      ForeignEntityPlural: Recipes
   - Name: Ingredient
     Features:
     - Type: GetList
@@ -269,9 +260,6 @@ BoundedContexts:
       Type: DateTime?
     - Name: Measure
       Type: string
-    - Name: RecipeId
-      Type: Guid
-      ForeignEntityName: Recipe
   Environment:
       AuthSettings:
         Authority: http://localhost:3255/auth/realms/DevRealm

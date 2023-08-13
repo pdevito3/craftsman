@@ -9,36 +9,21 @@ public class EntityProperty
     private string _type = "string";
     private string _name;
 
-    /// <summary>
-    /// Name of the property
-    /// </summary>
     public string Name
     {
         get => _name.UppercaseFirstLetter();
         set => _name = value;
     }
-
-    /// <summary>
-    /// Type of property (e.g. string, int, DateTime?, etc.)
-    /// </summary>
     public string Type
     {
         get => _type;
         set => _type = CraftsmanUtilities.PropTypeCleanupDotNet(value);
     }
-
-    /// <summary>
-    /// Determines if the property can be manipulated when creating or updating the associated entity
-    /// </summary>
     public bool CanManipulate
     {
         get => _canManipulate;
         set => _canManipulate = IsForeignKey ? false : value;
     }
-
-    /// <summary>
-    /// Denotes a required field in the database
-    /// </summary>
     public bool IsRequired
     {
         get => _isRequired;
@@ -96,6 +81,28 @@ public class EntityProperty
                || Type.StartsWith("IDictionary<")
                || Type.EndsWith("[]")
                || Type.StartsWith("List<");
+    }
+
+    public bool IsChildRelationship { get; set; } = false;
+    private string _relationship;
+    public string Relationship
+    {
+        get => _relationship;
+        set => _relationship = value.ToLower().Replace("one", "1");
+    }
+    public DbRelationship GetDbRelationship => GetDbRelationshipFromName();
+    
+    private DbRelationship GetDbRelationshipFromName()
+    {
+        if (string.IsNullOrEmpty(Relationship))
+            return DbRelationship.NoRelationship(IsChildRelationship);
+
+        
+        if (!DbRelationship.TryFromName(Relationship, true, out var parsed))
+            parsed = DbRelationship.None;
+        
+        parsed.SetChildRelationship(IsChildRelationship);
+        return parsed;
     }
 
     /// <summary>
