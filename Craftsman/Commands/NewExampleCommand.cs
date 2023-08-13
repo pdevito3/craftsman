@@ -263,7 +263,7 @@ BoundedContexts:
   Environment:
       AuthSettings:
         Authority: http://localhost:3255/auth/realms/DevRealm
-        Audience: recipe_management
+        Audience: the_kitchen_company
         AuthorizationUrl: http://localhost:3255/auth/realms/DevRealm/protocol/openid-connect/auth
         TokenUrl: http://localhost:3255/auth/realms/DevRealm/protocol/openid-connect/token
         ClientId: recipe_management.swagger
@@ -309,7 +309,7 @@ Bff:
     - LocalPath: /api/ingredients
       ApiAddress: https://localhost:5375/api/ingredients
   BoundaryScopes:
-    - recipe_management
+    - the_kitchen_company
   Entities:
   - Name: Recipe
     Features:
@@ -354,21 +354,21 @@ AuthServer:
       GrantType: ClientCredentials
       BaseUrl: 'https://oauth.pstmn.io/'
       Scopes:
-        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs
+        - the_kitchen_company #this should match the audience scope in your boundary auth settings and swagger specs
     - Id: recipe_management.postman.code
       Name: RecipeManagement Postman Code
       Secret: 974d6f71-d41b-4601-9a7a-a33081f84680 #optional
       GrantType: Code
       BaseUrl: 'https://oauth.pstmn.io/'
       Scopes:
-        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs
+        - the_kitchen_company #this should match the audience scope in your boundary auth settings and swagger specs
     - Id: recipe_management.swagger
       Name: RecipeManagement Swagger
       Secret: 974d6f71-d41b-4601-9a7a-a33081f80687
       GrantType: Code
       BaseUrl: 'https://localhost:5375/'
       Scopes:
-        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs
+        - the_kitchen_company #this should match the audience scope in your boundary auth settings and swagger specs
     - Id: recipe_management.bff
       Name: RecipeManagement BFF
       Secret: 974d6f71-d41b-4601-9a7a-a33081f80688
@@ -380,7 +380,7 @@ AuthServer:
         - 'https://localhost:5375' # api 1 - recipe_management
         - 'https://localhost:4378'
       Scopes:
-        - recipe_management #this should match the audience scope in your boundary auth settings and swagger specs";
+        - the_kitchen_company #this should match the audience scope in your boundary auth settings and swagger specs";
     }
 
     private static string BasicTemplate(string name)

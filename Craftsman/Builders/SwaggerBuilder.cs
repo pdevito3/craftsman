@@ -19,23 +19,23 @@ public class SwaggerBuilder
         _fileSystem = fileSystem;
     }
 
-    public void AddSwagger(string srcDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string projectBaseName)
+    public void AddSwagger(string srcDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string audience, string projectBaseName)
     {
         if (swaggerConfig.Equals(new SwaggerConfig())) return;
 
-        AddSwaggerServiceExtension(srcDirectory, projectBaseName, swaggerConfig, projectName, addJwtAuthentication, policyName);
+        AddSwaggerServiceExtension(srcDirectory, projectBaseName, swaggerConfig, projectName, addJwtAuthentication, audience);
         new WebApiAppExtensionsBuilder(_utilities).CreateSwaggerWebApiAppExtension(srcDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
         UpdateWebApiCsProjSwaggerSettings(srcDirectory, projectBaseName);
     }
 
-    public void AddSwaggerServiceExtension(string srcDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName)
+    public void AddSwaggerServiceExtension(string srcDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string audience)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetSwaggerServiceExtensionName()}.cs", projectBaseName);
-        var fileText = GetSwaggerServiceExtensionText(classPath.ClassNamespace, swaggerConfig, projectName, addJwtAuthentication, policyName, srcDirectory, projectBaseName);
+        var fileText = GetSwaggerServiceExtensionText(classPath.ClassNamespace, swaggerConfig, projectName, addJwtAuthentication, audience, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetSwaggerServiceExtensionText(string classNamespace, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName, string srcDirectory, string projectBaseName)
+    public static string GetSwaggerServiceExtensionText(string classNamespace, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string audience, string srcDirectory, string projectBaseName)
     {
         var envServiceClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         return @$"namespace {classNamespace};
@@ -55,11 +55,11 @@ using System.Reflection;
 
 public static class SwaggerServiceExtension
 {{
-    {GetSwaggerServiceExtensionText(swaggerConfig, projectName, addJwtAuthentication, policyName)}
+    {GetSwaggerServiceExtensionText(swaggerConfig, projectName, addJwtAuthentication, audience)}
 }}";
     }
 
-    private static string GetSwaggerServiceExtensionText(SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string policyName)
+    private static string GetSwaggerServiceExtensionText(SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string audience)
     {
         var contactUrlLine = IsCleanUri(swaggerConfig.ApiContact.Url)
             ? $@"
@@ -85,7 +85,7 @@ public static class SwaggerServiceExtension
                         TokenUrl = new Uri(authOptions.TokenUrl),
                         Scopes = new Dictionary<string, string>
                         {{
-                            {{""{policyName}"", ""{projectName.Humanize()} access""}}
+                            {{""{audience}"", ""{audience.Humanize().Titleize()} Access""}}
                         }}
                     }}
                 }}
