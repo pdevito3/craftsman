@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Updated
 
+* Revamped Relationships to a new model
 * Integration and Functional tests use the latest versions and implementations of `testcontainers`
 * Removed `Sieve` in favor of `QueryKit`
 * Removed `CanFilter` and `CanSort` properties. These can still be set in your code, but will no longer pollute your entities.
@@ -26,7 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Sql server setups can handle dateonly
 * Duplicate usings
 * Remove bad serilog enricher and update logger for env name
-* `MigrationHostedService` will not conflict with dbcontext when adding entities
+* fix: get endpoint when name == plural
 
 ## [0.21.1] - 07/20/2023
 
