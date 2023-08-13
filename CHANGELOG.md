@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+* None yet!
+
+## [0.22.0] - 08/12/2023
+
 ### Updated
 
 * Revamped Relationships to a new model

@@ -34,11 +34,11 @@ For all the documentation on how to use Craftsman, visit [wrapt.dev](https://wra
 
 ## Upcoming Features
 
-I'm currently working through a deep example project the really dogfood things and will be making updates around my finding from there. I also want to harden up the frontend work with NextJS soon as well and get that more widely available. If any React devs want to help with this definitely let me know!
+You can find some highlights below. I have some reminement items in the pipe and I'm working through a deep example project the really dogfood things and will be making updates around my finding from there.
 
-Have a request for something you don't see below? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
+Have a request for something you don't see in the project? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-### Coming in 0.22
+### Some 0.22 highlights
 
 ✅ Move from Sieve to [QueryKit](https://github.com/pdevito3/querykit)
 
@@ -47,12 +47,6 @@ Have a request for something you don't see below? Join [our discord](https://dis
 ✅ Records for queries and commands and DTOs
 
 ✅ Relationships overhaul
-
-🕰️ No more queryable exposed in repositories
-
-🚧 Update `GetList` feature to `GetPagedList` and create a distinct `GetList
-
-🚧 Limit shared kernel to messages
 
 ### Some 0.21 highlights
 
