@@ -42,6 +42,8 @@ Have a request for something you don't see in the project? Join [our discord](ht
 
 ✅ Moq -> NSub
 
+✅ New `GetAll` feature
+
 ### Some 0.22 highlights
 
 ✅ Move from Sieve to [QueryKit](https://github.com/pdevito3/querykit)

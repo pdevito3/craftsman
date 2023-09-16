@@ -324,6 +324,15 @@ public class EntityScaffoldingService
                 feature, projectBaseName);
         }
 
+        if (feature.Type == FeatureType.GetAll.Name)
+        {
+            new QueryGetAllBuilder(_utilities).CreateQuery(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
+            new GetAllQueryTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName, feature.PermissionName, feature.IsProtected);
+            new GetAllEntitiesTestBuilder(_utilities).CreateTests(solutionDirectory, testDirectory, entity, feature.IsProtected, projectBaseName);
+            new ControllerModifier(_fileSystem).AddEndpoint(srcDirectory, FeatureType.GetAll, entity, addSwaggerComments,
+                feature, projectBaseName);
+        }
+
         if (feature.Type == FeatureType.DeleteRecord.Name)
         {
             new CommandDeleteRecordBuilder(_utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);

@@ -42,6 +42,8 @@ public class ControllerModifier
                             endpoint = GetListEndpointBuilder.GetEndpointTextForGetList(entity, addSwaggerComments, feature);
                         else if (featureType == FeatureType.GetRecord)
                             endpoint = GetRecordEndpointBuilder.GetEndpointTextForGetRecord(entity, addSwaggerComments, feature);
+                        else if (featureType == FeatureType.GetAll)
+                            endpoint = GetAllEndpointBuilder.GetEndpointTextForGetAll(entity, addSwaggerComments, feature);
                         else if (featureType == FeatureType.AddRecord)
                             endpoint = CreateRecordEndpointBuilder.GetEndpointTextForCreateRecord(entity, addSwaggerComments, feature);
                         else if (featureType == FeatureType.AddListByFk)

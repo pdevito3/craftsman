@@ -18,7 +18,7 @@ public class DynamicFeatureGetListEntityBuilder
         var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory,
             entityPlural,
             BffFeatureCategory.Api,
-            $"{FeatureType.GetList.BffApiName(entityName)}.ts");
+            $"{FeatureType.GetList.BffApiName(entityName, entityPlural)}.ts");
         var routesIndexFileText = GetApiText(entityName, entityPlural);
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
     }

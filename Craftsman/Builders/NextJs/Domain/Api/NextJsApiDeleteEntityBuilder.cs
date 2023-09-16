@@ -18,7 +18,7 @@ public class NextJsApiDeleteEntityBuilder
         var classPath = ClassPathHelper.NextJsSpaFeatureClassPath(spaDirectory,
             entityPlural,
             NextJsDomainCategory.Api,
-            $"{FeatureType.DeleteRecord.NextJsApiName(entityName)}.tsx");
+            $"{FeatureType.DeleteRecord.NextJsApiName(entityName, entityPlural)}.tsx");
         var fileText = GetApiText(entityName, entityPlural, clientName);
         _utilities.CreateFile(classPath, fileText);
     }

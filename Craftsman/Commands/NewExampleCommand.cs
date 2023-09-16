@@ -147,6 +147,7 @@ BoundedContexts:
   - Name: Author
     Features:
     - Type: GetList
+    - Type: GetAll
     - Type: GetRecord
     - Type: AddRecord
     - Type: UpdateRecord
@@ -232,6 +233,7 @@ BoundedContexts:
   - Name: Author
     Features:
     - Type: GetList
+    - Type: GetAll
     - Type: GetRecord
     - Type: AddRecord
     - Type: UpdateRecord

@@ -18,7 +18,7 @@ public class NextJsApiGetEntityBuilder
         var classPath = ClassPathHelper.NextJsSpaFeatureClassPath(spaDirectory,
             entityPlural,
             NextJsDomainCategory.Api,
-            $"{FeatureType.GetRecord.NextJsApiName(entityName)}.tsx");
+            $"{FeatureType.GetRecord.NextJsApiName(entityName, entityPlural)}.tsx");
         var fileText = GetApiText(entityName, entityPlural, clientName);
         _utilities.CreateFile(classPath, fileText);
     }

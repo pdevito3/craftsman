@@ -18,7 +18,7 @@ public class DynamicFeatureGetEntityBuilder
         var classPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory,
             entityPlural,
             BffFeatureCategory.Api,
-            $"{FeatureType.GetRecord.BffApiName(entityName)}.ts");
+            $"{FeatureType.GetRecord.BffApiName(entityName, entityPlural)}.ts");
         var fileText = GetApiText(entityName, entityPlural);
         _utilities.CreateFile(classPath, fileText);
     }

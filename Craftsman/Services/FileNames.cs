@@ -76,6 +76,8 @@ public static class FileNames
 
     public static string GetEntityListFeatureClassName(string entityName) => $"Get{entityName}List";
 
+    public static string GetAllEntitiesFeatureClassName(string entityPlural) => $"GetAll{entityPlural}";
+
     public static string AddEntityFeatureClassName(string entityName) => $"Add{entityName}";
 
     public static string DeleteEntityFeatureClassName(string entityName) => $"Delete{entityName}";
@@ -91,6 +93,11 @@ public static class FileNames
     }
 
     public static string QueryRecordName()
+    {
+        return $"Query";
+    }
+
+    public static string QueryAllName()
     {
         return $"Query";
     }

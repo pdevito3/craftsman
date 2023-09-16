@@ -16,18 +16,18 @@ public class NextJsApiIndexBuilder
     public void CreateDynamicFeatureApiIndex(string spaDirectory, string entityName, string entityPlural)
     {
         var routesIndexClassPath = ClassPathHelper.NextJsSpaFeatureClassPath(spaDirectory, entityPlural, NextJsDomainCategory.Api, "index.ts");
-        var routesIndexFileText = GetDynamicFeatureApisIndexText(entityName);
+        var routesIndexFileText = GetDynamicFeatureApisIndexText(entityName, entityPlural);
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
     }
 
-    public static string GetDynamicFeatureApisIndexText(string entityName)
+    public static string GetDynamicFeatureApisIndexText(string entityName, string entityPlural)
     {
         var keysImport = FileNames.NextJsApiKeysFilename(entityName);
         return @$"export * from './{keysImport}';
-export * from ""./{FeatureType.AddRecord.NextJsApiName(entityName)}"";
-export * from ""./{FeatureType.GetList.NextJsApiName(entityName)}"";
-export * from ""./{FeatureType.GetRecord.NextJsApiName(entityName)}"";
-export * from ""./{FeatureType.DeleteRecord.NextJsApiName(entityName)}"";
-export * from ""./{FeatureType.UpdateRecord.NextJsApiName(entityName)}"";";
+export * from ""./{FeatureType.AddRecord.NextJsApiName(entityName, entityPlural)}"";
+export * from ""./{FeatureType.GetList.NextJsApiName(entityName, entityPlural)}"";
+export * from ""./{FeatureType.GetRecord.NextJsApiName(entityName, entityPlural)}"";
+export * from ""./{FeatureType.DeleteRecord.NextJsApiName(entityName, entityPlural)}"";
+export * from ""./{FeatureType.UpdateRecord.NextJsApiName(entityName, entityPlural)}"";";
     }
 }

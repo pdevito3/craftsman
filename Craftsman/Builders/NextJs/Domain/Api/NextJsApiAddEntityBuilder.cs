@@ -18,7 +18,7 @@ public class NextJsApiAddEntityBuilder
         var routesIndexClassPath = ClassPathHelper.NextJsSpaFeatureClassPath(spaDirectory,
             entityPlural,
             NextJsDomainCategory.Api,
-            $"{FeatureType.AddRecord.NextJsApiName(entityName)}.tsx");
+            $"{FeatureType.AddRecord.NextJsApiName(entityName, entityPlural)}.tsx");
         var routesIndexFileText = GetApiText(entityName, entityPlural, clientName);
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
     }

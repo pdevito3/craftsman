@@ -18,7 +18,7 @@ public class DynamicFeatureUpdateEntityBuilder
         var routesIndexClassPath = ClassPathHelper.BffSpaFeatureClassPath(spaDirectory,
             entityPlural,
             BffFeatureCategory.Api,
-            $"{FeatureType.UpdateRecord.BffApiName(entityName)}.ts");
+            $"{FeatureType.UpdateRecord.BffApiName(entityName, entityPlural)}.ts");
         var routesIndexFileText = GetApiText(entityName, entityPlural);
         _utilities.CreateFile(routesIndexClassPath, routesIndexFileText);
     }

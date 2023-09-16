@@ -26,7 +26,5 @@ public class BffFeature
         }
     }
 
-    public string BffApiName => FeatureType == FeatureType.GetList
-        ? FeatureType.BffApiName(EntityPlural)
-        : FeatureType.BffApiName(EntityName);
+    public string BffApiName => FeatureType.BffApiName(EntityName, EntityPlural);
 }

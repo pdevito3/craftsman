@@ -100,6 +100,7 @@ public class ApiRouteModifier
         entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}    public static class {entity.Plural}
     {{
         public static string GetList => $""{{Base}}/{lowercaseEntityPluralName}"";
+        public static string GetAll => $""{{Base}}/{lowercaseEntityPluralName}/all"";
         public static string GetRecord(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
         public static string Delete(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
         public static string Put(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
