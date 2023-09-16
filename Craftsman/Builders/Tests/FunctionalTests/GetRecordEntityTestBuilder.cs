@@ -57,15 +57,15 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string GetEntityTest(Entity entity, bool isProtected)
     {
         var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeEntityVariableName = $"fake{entity.Name}";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}";
         var pkName = Entity.PrimaryKeyProperty.Name;
 
         var testName = $"get_{entity.Name.ToLower()}_returns_success_when_entity_exists";
         testName += isProtected ? "_using_valid_auth_credentials" : "";
         var clientAuth = isProtected ? @$"
 
-        var user = await AddNewSuperAdmin();
-        FactoryClient.AddAuth(user.Identifier);" : "";
+        var callingUser = await AddNewSuperAdmin();
+        FactoryClient.AddAuth(callingUser.Identifier);" : "";
 
         return $@"[Fact]
     public async Task {testName}()
@@ -86,7 +86,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string GetEntityTestUnauthorized(Entity entity)
     {
         var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeEntityVariableName = $"fake{entity.Name}";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
@@ -109,7 +109,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string GetEntityTestForbidden(Entity entity)
     {
         var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeEntityVariableName = $"fake{entity.Name}";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 

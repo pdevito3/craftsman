@@ -57,7 +57,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string DeleteEntityTest(Entity entity, bool isProtected)
     {
         var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeEntityVariableName = $"fake{entity.Name}";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
@@ -65,8 +65,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         testName += isProtected ? "_and_auth_credentials_are_valid" : "";
         var clientAuth = isProtected ? @$"
 
-        var user = await AddNewSuperAdmin();
-        FactoryClient.AddAuth(user.Identifier);" : "";
+        var callingUser = await AddNewSuperAdmin();
+        FactoryClient.AddAuth(callingUser.Identifier);" : "";
 
         return $@"[Fact]
     public async Task {testName}()
@@ -87,7 +87,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string DeleteEntityTestUnauthorized(Entity entity)
     {
         var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeEntityVariableName = $"fake{entity.Name}";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
@@ -110,7 +110,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string DeleteEntityTestForbidden(Entity entity)
     {
         var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeEntityVariableName = $"fake{entity.Name}";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 

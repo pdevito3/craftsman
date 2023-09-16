@@ -56,8 +56,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     private static string GetEntitiesTest(Entity entity)
     {
         var queryName = FileNames.QueryAllName();
-        var fakeEntityVariableNameOne = $"fake{entity.Name}One";
-        var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
+        var fakeEntityVariableNameOne = $"{entity.Name.LowercaseFirstLetter()}One";
+        var fakeEntityVariableNameTwo = $"{entity.Name.LowercaseFirstLetter()}Two";
         var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
 
         

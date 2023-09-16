@@ -51,7 +51,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
     private static string GetTest(string queryName, Entity entity, string featureName)
     {
-        var fakeEntityVariableName = $"fake{entity.Name}One";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}One";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var pkName = Entity.PrimaryKeyProperty.Name;
 
@@ -70,11 +70,11 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var {lowercaseEntityName} = await testingServiceScope.SendAsync(query);
 
         // Assert
-        user.FirstName.Should().Be(fakeUserOne.FirstName);
-        user.LastName.Should().Be(fakeUserOne.LastName);
-        user.Username.Should().Be(fakeUserOne.Username);
-        user.Identifier.Should().Be(fakeUserOne.Identifier);
-        user.Email.Should().Be(fakeUserOne.Email.Value);
+        user.FirstName.Should().Be({fakeEntityVariableName}.FirstName);
+        user.LastName.Should().Be({fakeEntityVariableName}.LastName);
+        user.Username.Should().Be({fakeEntityVariableName}.Username);
+        user.Identifier.Should().Be({fakeEntityVariableName}.Identifier);
+        user.Email.Should().Be({fakeEntityVariableName}.Email.Value);
     }}";
     }
 

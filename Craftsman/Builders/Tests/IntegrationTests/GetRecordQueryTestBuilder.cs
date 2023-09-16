@@ -54,7 +54,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
     private static string GetTest(string queryName, Entity entity, string featureName)
     {
-        var fakeEntityVariableName = $"fake{entity.Name}One";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}One";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var pkName = Entity.PrimaryKeyProperty.Name;
 

@@ -63,10 +63,10 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {
         var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-        var fakeEntityVariableNameOne = $"fake{entity.Name}One";
-        var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
+        var fakeEntityVariableNameOne = $"{entity.Name.LowercaseFirstLetter()}One";
+        var fakeEntityVariableNameTwo = $"{entity.Name.LowercaseFirstLetter()}Two";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
-        var fakeParentEntity = $"fake{feature.ParentEntity}";
+        var fakeParentEntity = $"{feature.ParentEntity.LowercaseFirstLetter()}";
         var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(feature.ParentEntity, Dto.Creation));
 
         return $@"[Fact]
@@ -145,7 +145,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     private static string GetPermissionTest(string commandName, Entity entity, string featureName, string permission)
     {
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-        var fakeEntityVariableName = $"fake{entity.Name}List";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}List";
 
         return $@"
 

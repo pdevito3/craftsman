@@ -62,7 +62,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string PatchEntityTest(Entity entity, bool isProtected)
     {
         var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeEntityVariableName = $"fake{entity.Name}";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
         var myProp = entity.Properties.Where(e => e.Type == "string" && e.CanManipulate).FirstOrDefault();
@@ -73,8 +73,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         testName += isProtected ? "_and__valid_auth_credentials" : "";
         var clientAuth = isProtected ? @$"
 
-        var user = await AddNewSuperAdmin();
-        FactoryClient.AddAuth(user.Identifier);" : "";
+        var callingUser = await AddNewSuperAdmin();
+        FactoryClient.AddAuth(callingUser.Identifier);" : "";
 
         // if no string properties, do one with an int
         if (myProp == null)
@@ -107,7 +107,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string EntityTestUnauthorized(Entity entity)
     {
         var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeEntityVariableName = $"fake{entity.Name}";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
         var myProp = entity.Properties.FirstOrDefault(e => e.Type == "string" && e.CanManipulate);
@@ -135,7 +135,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
     private static string EntityTestForbidden(Entity entity)
     {
         var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeEntityVariableName = $"fake{entity.Name}";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}";
         var pkName = Entity.PrimaryKeyProperty.Name;
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
         var myProp = entity.Properties.FirstOrDefault(e => e.Type == "string" && e.CanManipulate);

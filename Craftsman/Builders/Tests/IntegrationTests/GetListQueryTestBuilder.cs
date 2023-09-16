@@ -57,8 +57,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {
         var queryName = FileNames.QueryListName();
         var entityParams = FileNames.GetDtoName(entity.Name, Dto.ReadParamaters);
-        var fakeEntityVariableNameOne = $"fake{entity.Name}One";
-        var fakeEntityVariableNameTwo = $"fake{entity.Name}Two";
+        var fakeEntityVariableNameOne = $"{entity.Name.LowercaseFirstLetter()}One";
+        var fakeEntityVariableNameTwo = $"{entity.Name.LowercaseFirstLetter()}Two";
         var lowercaseEntityPluralName = entity.Plural.LowercaseFirstLetter();
 
         

@@ -53,7 +53,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     private static string GetAddCommandTest(string commandName, Entity entity, string featureName)
     {
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-        var fakeEntityVariableName = $"fake{entity.Name}One";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}One";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
 
         var fakeParent = "";

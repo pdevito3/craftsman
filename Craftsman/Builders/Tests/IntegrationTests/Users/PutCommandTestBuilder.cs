@@ -30,7 +30,7 @@ public class PutCommandTestBuilder
         var fakeEntity = FileNames.FakerName(entity.Name);
         var fakeUpdateDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Update));
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-        var fakeEntityVariableName = $"fake{entity.Name}One";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}One";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var pkName = Entity.PrimaryKeyProperty.Name;
         var lowercaseEntityPk = pkName.LowercaseFirstLetter();

@@ -53,7 +53,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     private static string GetAddCommandTest(string commandName, Entity entity, string featureName)
     {
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-        var fakeEntityVariableName = $"fake{entity.Name}One";
+        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}One";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
 
         var fakeParent = "";
@@ -85,17 +85,17 @@ public class {classPath.ClassNameWithoutExt} : TestBase
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}Returned.Id));
 
         // Assert
-        userReturned.FirstName.Should().Be(fakeUserOne.FirstName);
-        userReturned.LastName.Should().Be(fakeUserOne.LastName);
-        userReturned.Username.Should().Be(fakeUserOne.Username);
-        userReturned.Identifier.Should().Be(fakeUserOne.Identifier);
-        userReturned.Email.Should().Be(fakeUserOne.Email);
+        userReturned.FirstName.Should().Be({fakeEntityVariableName}.FirstName);
+        userReturned.LastName.Should().Be({fakeEntityVariableName}.LastName);
+        userReturned.Username.Should().Be({fakeEntityVariableName}.Username);
+        userReturned.Identifier.Should().Be({fakeEntityVariableName}.Identifier);
+        userReturned.Email.Should().Be({fakeEntityVariableName}.Email);
 
-        userCreated?.FirstName.Should().Be(fakeUserOne.FirstName);
-        userCreated?.LastName.Should().Be(fakeUserOne.LastName);
-        userCreated?.Username.Should().Be(fakeUserOne.Username);
-        userCreated?.Identifier.Should().Be(fakeUserOne.Identifier);
-        userCreated?.Email.Value.Should().Be(fakeUserOne.Email);
+        userCreated?.FirstName.Should().Be({fakeEntityVariableName}.FirstName);
+        userCreated?.LastName.Should().Be({fakeEntityVariableName}.LastName);
+        userCreated?.Username.Should().Be({fakeEntityVariableName}.Username);
+        userCreated?.Identifier.Should().Be({fakeEntityVariableName}.Identifier);
+        userCreated?.Email.Value.Should().Be({fakeEntityVariableName}.Email);
     }}";
     }
 }

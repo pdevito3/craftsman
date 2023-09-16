@@ -31,7 +31,7 @@ public class CreateEntityUnitTestBuilder
         var seedInfoVar = $"{entityName.LowercaseFirstLetter()}ToCreate";
         var creationModelName = EntityModel.Creation.GetClassName(entityName);
         var fakeCreationModelName = FileNames.FakerName(creationModelName);
-        var createdEntityVar = $"fake{entityName}";
+        var createdEntityVar = $"{entityName.LowercaseFirstLetter()}";
         
         return @$"namespace {classPath.ClassNamespace};
 
@@ -74,8 +74,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var {createdEntityVar} = {entityName}.Create({seedInfoVar});
 
         // Assert
-        fake{entityName}.DomainEvents.Count.Should().Be(1);
-        fake{entityName}.DomainEvents.FirstOrDefault().Should().BeOfType(typeof({FileNames.EntityCreatedDomainMessage(entityName)}));
+        {createdEntityVar}.DomainEvents.Count.Should().Be(1);
+        {createdEntityVar}.DomainEvents.FirstOrDefault().Should().BeOfType(typeof({FileNames.EntityCreatedDomainMessage(entityName)}));
     }}
 }}";
     }
