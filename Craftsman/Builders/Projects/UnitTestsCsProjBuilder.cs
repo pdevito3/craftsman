@@ -36,16 +36,16 @@ public class UnitTestsCsProjBuilder
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""7.0.2"" />
     <PackageReference Include=""AutoBogusLifesupport"" Version=""2.14.0"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
-    <PackageReference Include=""FakeItEasy"" Version=""7.3.1"" />
-    <PackageReference Include=""FakeItEasy.Analyzer.CSharp"" Version=""6.1.1"">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include=""FluentAssertions"" Version=""6.9.0"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.Relational"" Version=""7.0.2"" />
     <PackageReference Include=""MockQueryable.Moq"" Version=""7.0.0"" />
     <PackageReference Include=""Moq"" Version=""4.18.4"" />
-    <PackageReference Include=""NSubstitute"" Version=""4.4.0"" />
+    <PackageReference Include=""NSubstitute"" Version=""5.1.0"" />
+    <PackageReference Include=""NSubstitute.Analyzers.CSharp"" Version=""1.0.16"">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include=""MockQueryable.NSubstitute"" Version=""7.0.0"" />
     <PackageReference Include=""xunit"" Version=""2.4.2"" />
     <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.4.5"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.4.1"" />

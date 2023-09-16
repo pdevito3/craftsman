@@ -41,7 +41,11 @@ public class IntegrationTestsCsProjBuilder
     <PackageReference Include=""MediatR"" Version=""12.0.1"" />
     <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""7.0.2"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore.Relational"" Version=""7.0.2"" />
-    <PackageReference Include=""Moq"" Version=""4.18.4"" />
+    <PackageReference Include=""NSubstitute"" Version=""5.1.0"" />
+    <PackageReference Include=""NSubstitute.Analyzers.CSharp"" Version=""1.0.16"">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include=""Testcontainers"" Version=""3.3.0"" />
     <PackageReference Include=""Testcontainers.RabbitMq"" Version=""3.3.0"" />{provider.TestingCsProjNugetPackages()}
     <PackageReference Include=""xunit"" Version=""2.4.2"" />

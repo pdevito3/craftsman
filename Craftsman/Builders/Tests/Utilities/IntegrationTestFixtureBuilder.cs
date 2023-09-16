@@ -67,7 +67,7 @@ using {sharedUtilsClassPath.ClassNamespace};
 using Configurations;
 using FluentAssertions;
 using FluentAssertions.Extensions;{heimGuardUsing}
-using Moq;{provider.TestingDbSetupUsings()}
+using NSubstitute;{provider.TestingDbSetupUsings()}
 using Testcontainers.RabbitMq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -136,7 +136,7 @@ public static class ServiceCollectionServiceExtensions
         where TService : class
     {{
         services.RemoveAll(typeof(TService));
-        services.AddSingleton(_ => Mock.Of<TService>());
+        services.AddSingleton(_ => Substitute.For<TService>());
         return services;
     }}
 }}
