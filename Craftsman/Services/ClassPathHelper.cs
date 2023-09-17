@@ -333,9 +333,9 @@ public static class ClassPathHelper
         return FeaturesClassPath(srcDirectory, className, domainDirectory, projectBaseName);
     }
 
-    public static ClassPath ExceptionsClassPath(string solutionDirectory, string className)
+    public static ClassPath ExceptionsClassPath(string srcDirectory, string className, string projectBaseName)
     {
-        return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Exceptions"), className);
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Exceptions"), className);
     }
 
     public static ClassPath WrappersClassPath(string srcDirectory, string className, string projectBaseName)

@@ -33,19 +33,18 @@ public class RolePermissionsUnitTestBuilder
         var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
         var rolesClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Roles", projectBaseName);
-        var errorsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "RolePermission", "RolePermissions", null, projectBaseName);
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
 
-using {errorsClassPath.ClassNamespace};
 using {domainPolicyClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using Bogus;
-using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
+using ValidationException = {exceptionClassPath.ClassNamespace}.ValidationException;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
@@ -111,8 +110,8 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
         var rolesClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Roles", projectBaseName);
-        var errorsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "RolePermission", "RolePermissions", null, projectBaseName);
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -121,9 +120,8 @@ using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
-using {errorsClassPath.ClassNamespace};
 using Bogus;
-using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
+using ValidationException = {exceptionClassPath.ClassNamespace}.ValidationException;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{

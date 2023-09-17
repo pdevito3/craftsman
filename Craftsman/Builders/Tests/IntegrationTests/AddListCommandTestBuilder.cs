@@ -31,7 +31,6 @@ public class AddListCommandTestBuilder
         var commandName = feature.Command;
 
         var dtoUtilClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var parentFakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", feature.ParentEntity, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
@@ -45,7 +44,6 @@ using {dtoUtilClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using {parentFakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};
 using Domain;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -65,7 +63,6 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var fakeEntityVariableNameTwo = $"{entity.Name.LowercaseFirstLetter()}Two";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var fakeParentEntity = $"{feature.ParentEntity.LowercaseFirstLetter()}";
-        var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(feature.ParentEntity, Dto.Creation));
 
         return $@"[Fact]
     public async Task can_add_new_{entity.Name.ToLower()}_list_to_db()

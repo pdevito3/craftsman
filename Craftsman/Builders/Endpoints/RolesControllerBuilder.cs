@@ -16,12 +16,13 @@ public class RolesControllerBuilder
     public void CreateController(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"RolesController.cs", projectBaseName, "v1");
-        var fileText = GetControllerFileText(classPath.ClassNamespace);
+        var fileText = GetControllerFileText(classPath.ClassNamespace, srcDirectory, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetControllerFileText(string classNamespace)
+    public static string GetControllerFileText(string classNamespace, string srcDirectory, string projectBaseName)
     {
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         return @$"namespace {classNamespace};
 
 using Domain;
@@ -29,7 +30,7 @@ using Domain.Roles;
 using HeimGuard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SharedKernel.Exceptions;
+using {exceptionClassPath.ClassNamespace};
 
 [ApiController]
 [Route(""api/roles"")]

@@ -29,7 +29,6 @@ public class AddCommandTestBuilder
         var featureName = FileNames.AddEntityFeatureClassName(entity.Name);
         var commandName = FileNames.CommandAddName();
 
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
@@ -43,7 +42,6 @@ using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using {featuresClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};
 
 public class {classPath.ClassNameWithoutExt} : TestBase
 {{

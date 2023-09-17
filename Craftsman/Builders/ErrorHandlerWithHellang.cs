@@ -15,13 +15,13 @@ public class ErrorHandlerWithHellang
     public void CreateErrorHandler(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, $"ProblemDetailsConfigurationExtension.cs", projectBaseName);
-        var fileText = GetErrorHandlerText(srcDirectory, classPath.ClassNamespace);
+        var fileText = GetErrorHandlerText(srcDirectory, classPath.ClassNamespace, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetErrorHandlerText(string srcDirectory, string classNamespace)
+    public static string GetErrorHandlerText(string srcDirectory, string classNamespace, string projectBaseName)
     {
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
 
         return @$"// source: https://github.com/jasontaylordev/CleanArchitecture/blob/main/src/WebUI/Filters/ApiExceptionFilterAttribute.cs
 

@@ -29,6 +29,7 @@ public class CreateUserRoleUnitTestBuilder
         var roleClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Roles", projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entityPlural, projectBaseName);
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -37,6 +38,7 @@ using {entityClassPath.ClassNamespace};
 using {roleClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
 using Bogus;
+using ValidationException = {exceptionClassPath.ClassNamespace}.ValidationException;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{

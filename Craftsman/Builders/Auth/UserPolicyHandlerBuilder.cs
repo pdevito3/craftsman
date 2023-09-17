@@ -22,7 +22,7 @@ public class UserPolicyHandlerBuilder
     private static string GetPolicyBuilderText(string classNamespace, string solutionDirectory, string srcDirectory, string projectBaseName)
     {
         var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         var entityServices = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
 
         return @$"namespace {classNamespace};

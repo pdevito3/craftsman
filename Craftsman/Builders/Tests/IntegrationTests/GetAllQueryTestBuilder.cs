@@ -31,7 +31,6 @@ public class GetAllQueryTestBuilder
         var featureName = FileNames.GetEntityListFeatureClassName(entity.Name);
         var permissionTest = !featureIsProtected ? null : GetPermissionTest(entity.Plural, featureName, permission);
 
-        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(testDirectory, "");
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(testDirectory, featureName, entity.Plural, projectBaseName);
@@ -40,7 +39,6 @@ public class GetAllQueryTestBuilder
 
 using {dtoClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
-using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using Domain;
 using System.Threading.Tasks;

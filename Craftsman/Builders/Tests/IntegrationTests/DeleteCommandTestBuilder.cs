@@ -32,7 +32,6 @@ public class DeleteCommandTestBuilder
         var softDeleteTest = useSoftDelete ? SoftDeleteTest(commandName, entity, featureName) : "";
 
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
         var permissionTest = !featureIsProtected ? null : GetPermissionTest(commandName, featureName, permission);
@@ -43,7 +42,6 @@ using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using Microsoft.EntityFrameworkCore;
 using Domain;
-using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;
 
 public class {classPath.ClassNameWithoutExt} : TestBase

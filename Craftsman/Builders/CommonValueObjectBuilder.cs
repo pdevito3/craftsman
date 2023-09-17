@@ -254,7 +254,7 @@ public class {ValueObjectEnum.MonetaryAmount.Name} : ValueObject
         private string GetRoleFileText(string classNamespace)
         {
             var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(_scaffoldingDirectoryStore.SrcDirectory, "", _scaffoldingDirectoryStore.ProjectBaseName);
             
             return @$"namespace {classNamespace};
 

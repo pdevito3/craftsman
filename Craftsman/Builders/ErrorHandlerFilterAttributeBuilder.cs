@@ -15,13 +15,13 @@ public class ErrorHandlerFilterAttributeBuilder
     public void CreateErrorHandlerFilterAttribute(string srcDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, $"ErrorHandlerFilterAttribute.cs", projectBaseName);
-        var fileText = GetErrorHandlerFilterAttributeText(srcDirectory, classPath.ClassNamespace);
+        var fileText = GetErrorHandlerFilterAttributeText(srcDirectory, classPath.ClassNamespace, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetErrorHandlerFilterAttributeText(string srcDirectory, string classNamespace)
+    public static string GetErrorHandlerFilterAttributeText(string srcDirectory, string classNamespace, string projectBaseName)
     {
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
 
         return @$"// source: https://github.com/jasontaylordev/CleanArchitecture/blob/main/src/WebUI/Filters/ApiExceptionFilterAttribute.cs
 

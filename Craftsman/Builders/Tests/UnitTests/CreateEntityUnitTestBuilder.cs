@@ -27,6 +27,7 @@ public class CreateEntityUnitTestBuilder
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", entityName, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entityPlural, projectBaseName);
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
 
         var seedInfoVar = $"{entityName.LowercaseFirstLetter()}ToCreate";
         var creationModelName = EntityModel.Creation.GetClassName(entityName);
@@ -40,6 +41,7 @@ using {entityClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
 using Bogus;
 using FluentAssertions.Extensions;
+using ValidationException = {exceptionClassPath.ClassNamespace}.ValidationException;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{

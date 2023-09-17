@@ -30,7 +30,6 @@ public class GetRecordQueryTestBuilder
 
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
         var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
@@ -38,7 +37,6 @@ public class GetRecordQueryTestBuilder
 using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using Microsoft.EntityFrameworkCore;
-using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;{foreignEntityUsings}
 
 public class {classPath.ClassNameWithoutExt} : TestBase

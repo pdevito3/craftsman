@@ -31,14 +31,12 @@ public class GetRecordQueryTestBuilder
 
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, "");
         var permissionTest = !featureIsProtected ? null : GetPermissionTest(featureName, permission);
 
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};
 using Domain;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;

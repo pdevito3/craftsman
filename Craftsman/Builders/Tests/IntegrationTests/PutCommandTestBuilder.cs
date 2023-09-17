@@ -38,7 +38,6 @@ public class PutCommandTestBuilder
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, projectBaseName);
 
         var permissionTest = !featureIsProtected ? null : GetPermissionTest(commandName, entity, featureName, permission);
 
@@ -46,7 +45,6 @@ public class PutCommandTestBuilder
 
 using {fakerClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {exceptionsClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using Domain;
 using FluentAssertions.Extensions;

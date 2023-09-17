@@ -15,13 +15,12 @@ public class IntegrationTestServiceScopeBuilder
     public void CreateBase(string solutionDirectory, string projectBaseName, string dbContextName, bool isProtected)
     {
         var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, $"{FileNames.TestingServiceScope()}.cs", projectBaseName);
-        var fileText = GetBaseText(classPath.ClassNamespace, dbContextName, isProtected, solutionDirectory, projectBaseName);
+        var fileText = GetBaseText(classPath.ClassNamespace, dbContextName, isProtected);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetBaseText(string classNamespace, string dbContextName, bool isProtected, string solutionDirectory, string projectBaseName)
+    public static string GetBaseText(string classNamespace, string dbContextName, bool isProtected)
     {
-        var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(solutionDirectory, projectBaseName);
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
 
         var protectedUsings = isProtected ? @$"{Environment.NewLine}using HeimGuard;" : "";
@@ -47,7 +46,7 @@ public class IntegrationTestServiceScopeBuilder
     }}"
             : null;
         var userPermissionSetter = isProtected ? $@"{Environment.NewLine}        SetUserIsPermitted();" : null;
-
+        
         return @$"namespace {classNamespace};
 
 using System.Threading.Tasks;
@@ -57,7 +56,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using {exceptionsClassPath.ClassNamespace};
 using static {testFixtureName};{protectedUsings}
 
 public class {FileNames.TestingServiceScope()} 

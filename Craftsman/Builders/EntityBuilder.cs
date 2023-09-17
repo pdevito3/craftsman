@@ -51,7 +51,7 @@ using {classPath.ClassNamespace};
 using {modelsClassPath.ClassNamespace};";
         }
         
-        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entity.Name, entity.Plural, null, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
@@ -268,7 +268,7 @@ public abstract class BaseEntity
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var emailsClassPath = ClassPathHelper.EntityClassPath(srcDirectory, $"", "Emails", projectBaseName);
-        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "User", "Users", null, projectBaseName);
 
         return @$"namespace {classNamespace};
@@ -428,7 +428,7 @@ public class UserRole : BaseEntity
 
     public static string GetRolePermissionsEntityFileText(string classNamespace, string srcDirectory, string projectBaseName)
     {
-        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "RolePermission", "RolePermissions", null, projectBaseName);
         return @$"namespace {classNamespace};
 

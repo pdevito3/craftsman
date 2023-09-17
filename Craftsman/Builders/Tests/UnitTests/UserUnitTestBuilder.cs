@@ -34,8 +34,8 @@ public class UserUnitTestBuilder
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Users", projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", "Users", projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", "User", projectBaseName);
-        var errorsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "User", "Users", null, projectBaseName);
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -45,9 +45,8 @@ using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
-using {errorsClassPath.ClassNamespace};
 using Bogus;
-using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
+using ValidationException = {exceptionClassPath.ClassNamespace}.ValidationException;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{
@@ -123,7 +122,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "User", "Users", null, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", "Users", projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(solutionDirectory, "", "User", projectBaseName);
-        var errorsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "");
+        var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -133,9 +132,8 @@ using {entityClassPath.ClassNamespace};
 using {wrapperClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
-using {errorsClassPath.ClassNamespace};
 using Bogus;
-using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
+using ValidationException = {exceptionClassPath.ClassNamespace}.ValidationException;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{

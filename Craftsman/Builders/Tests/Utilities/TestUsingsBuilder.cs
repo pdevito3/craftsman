@@ -37,8 +37,12 @@ public static class TestUsingsBuilder
 
         private string GetFileText()
         {
+            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                "", 
+                _scaffoldingDirectoryStore.ProjectBaseName);
             return @$"global using Xunit;
-global using FluentAssertions;";
+global using FluentAssertions;
+global using {exceptionClassPath.ClassNamespace};";
         }
         
         private ClassPath GetTestingClassPath(TestingTarget testingTarget)
