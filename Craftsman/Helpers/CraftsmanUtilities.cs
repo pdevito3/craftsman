@@ -341,5 +341,8 @@ using {parentClassPath.ClassNamespace};";
 
         return packageString;
     }
+    
+    public static string GetCleanProjectName(string projectBaseName) 
+        => projectBaseName.Replace(".", "").Replace("-", "").Replace("_", "");
 }
 

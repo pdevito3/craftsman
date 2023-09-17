@@ -185,7 +185,7 @@ BoundedContexts:
     {
         return $@"DomainName: {name}
 BoundedContexts:
-- ProjectName: RecipeManagement
+- ProjectName: RecipeManagement.Api
   Port: 5375
   DbContext:
    ContextName: RecipesDbContext

@@ -13,7 +13,7 @@ public class DbContextConfig
     /// The name of the database
     /// </summary>
     public string DatabaseName { get; set; }
-
+    
     public DbProvider ProviderEnum = DbProvider.Postgres;
     /// <summary>
     /// The database provider for this dbcontext. You can choose SqlServer, MySql, or Postgres

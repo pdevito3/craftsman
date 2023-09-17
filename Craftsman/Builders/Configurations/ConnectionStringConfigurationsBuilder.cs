@@ -2,6 +2,7 @@ namespace Craftsman.Builders.Configurations;
 
 using Craftsman.Helpers;
 using Craftsman.Services;
+using Domain;
 
 public class ConnectionStringConfigurationsBuilder
 {
@@ -26,9 +27,9 @@ public class ConnectionStringConfigurationsBuilder
 public class {FileNames.ConnectionStringOptions()}
 {{
     public const string SectionName = ""ConnectionStrings"";
-    public const string {FileNames.ConnectionStringOptionKey(projectBaseName)} = nameof({projectBaseName});
+    public const string {FileNames.ConnectionStringOptionKey(projectBaseName)} = ""{CraftsmanUtilities.GetCleanProjectName(projectBaseName)}"";
 
-    public string {projectBaseName} {{ get; set; }} = String.Empty;
+    public string {CraftsmanUtilities.GetCleanProjectName(projectBaseName)} {{ get; set; }} = String.Empty;
 }}
 
 public static class ConnectionStringOptionsExtensions

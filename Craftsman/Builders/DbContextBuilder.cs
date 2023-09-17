@@ -236,7 +236,7 @@ public sealed class {dbContextName} : DbContext
                     if (line.Contains("// DbContext -- Do Not Delete")) // abstract this to a constants file?
                     {
                         newText += @$"
-        var connectionString = configuration.GetConnectionStringOptions().{projectBaseName};
+        var connectionString = configuration.GetConnectionStringOptions().{CraftsmanUtilities.GetCleanProjectName(projectBaseName)};
         if(string.IsNullOrWhiteSpace(connectionString))
         {{
             // this makes local migrations easier to manage. feel free to refactor if desired.

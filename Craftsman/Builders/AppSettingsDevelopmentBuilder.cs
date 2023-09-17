@@ -29,7 +29,7 @@ public class AppSettingsDevelopmentBuilder
         return @$"{{
   ""AllowedHosts"": ""*"",
   ""ConnectionStrings"": {{
-    ""{projectBaseName}"": ""{dockerConfig.DbConnectionString}""
+    ""{CraftsmanUtilities.GetCleanProjectName(projectBaseName)}"": ""{dockerConfig.DbConnectionString}""
   }},
   ""Auth"": {{
     ""Audience"": ""{env.AuthSettings.Audience}"",

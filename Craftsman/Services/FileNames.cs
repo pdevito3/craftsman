@@ -7,7 +7,7 @@ using Helpers;
 public static class FileNames
 {
     public static string BoundaryServiceInterface(string projectBaseName)
-        => $"I{projectBaseName}ScopedService";
+        => $"I{CraftsmanUtilities.GetCleanProjectName(projectBaseName)}ScopedService";
     public static string EntityRepository(string entityName) 
         => $"{entityName.UppercaseFirstLetter()}Repository";    
     public static string EntityRepositoryInterface(string entityName) 
@@ -22,7 +22,8 @@ public static class FileNames
         => "MassTransitServiceExtension";
     public static string MessageClassName(string messageName) 
         => $"{messageName}";
-    public static string ConnectionStringOptionKey(string projectBaseName) => $"{projectBaseName}Key";
+    public static string ConnectionStringOptionKey(string projectBaseName) 
+        => $"{CraftsmanUtilities.GetCleanProjectName(projectBaseName)}Key";
     public static string TestingServiceScope() => "TestingServiceScope";
     public static string AuthOptions() => "AuthOptions";
     public static string RabbitMqOptions() => "RabbitMqOptions";
