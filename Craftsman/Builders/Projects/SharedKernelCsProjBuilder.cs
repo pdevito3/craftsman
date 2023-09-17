@@ -27,10 +27,6 @@ public class SharedKernelCsProjBuilder
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include=""FluentValidation"" Version=""11.2.2"" />
-  </ItemGroup>
-
 </Project>";
     }
 }

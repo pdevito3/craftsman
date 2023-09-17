@@ -35,7 +35,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => @$"Npgsql";
         public override string DbRegistrationStatement() => @$"UseNpgsql";
         public override string TestingCsProjNugetPackages() => @$"
-    <PackageReference Include=""Testcontainers.PostgreSql"" Version=""3.3.0"" />";
+    <PackageReference Include=""Testcontainers.PostgreSql"" Version=""3.5.0"" />";
         public override string DbDisposal() => @$"await _dbContainer.DisposeAsync();";
         public override string TestingContainerDb() => @$"
     private PostgreSqlContainer _dbContainer;";
@@ -75,8 +75,8 @@ public abstract class DbProvider : SmartEnum<DbProvider>
             => @$"Microsoft.EntityFrameworkCore.SqlServer";        
         public override string DbRegistrationStatement() => @$"UseSqlServer";
         public override string TestingCsProjNugetPackages() => @$"
-    <PackageReference Include=""Testcontainers.SqlEdge"" Version=""3.3.0"" />
-    <PackageReference Include=""Testcontainers.MsSql"" Version=""3.3.0"" />";
+    <PackageReference Include=""Testcontainers.SqlEdge"" Version=""3.5.0"" />
+    <PackageReference Include=""Testcontainers.MsSql"" Version=""3.5.0"" />";
         public override string DbDisposal() => @$"try
         {{
             await _msSqlContainer.DisposeAsync();
