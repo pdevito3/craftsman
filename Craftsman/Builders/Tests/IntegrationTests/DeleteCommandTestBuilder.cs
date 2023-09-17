@@ -41,9 +41,7 @@ public class DeleteCommandTestBuilder
 
 using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 using Domain;
 using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;

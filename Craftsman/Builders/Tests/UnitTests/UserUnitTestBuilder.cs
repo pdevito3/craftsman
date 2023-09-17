@@ -47,8 +47,6 @@ using {modelClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using {errorsClassPath.ClassNamespace};
 using Bogus;
-using FluentAssertions;
-using Xunit;
 using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
@@ -137,8 +135,6 @@ using {modelClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using {errorsClassPath.ClassNamespace};
 using Bogus;
-using FluentAssertions;
-using Xunit;
 using ValidationException = {errorsClassPath.ClassNamespace}.ValidationException;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}

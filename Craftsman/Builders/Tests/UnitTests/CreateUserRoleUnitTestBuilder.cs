@@ -37,8 +37,6 @@ using {entityClassPath.ClassNamespace};
 using {roleClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
 using Bogus;
-using FluentAssertions;
-using Xunit;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{

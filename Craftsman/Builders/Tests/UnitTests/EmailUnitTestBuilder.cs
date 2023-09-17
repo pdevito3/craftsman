@@ -29,8 +29,6 @@ public class EmailUnitTestBuilder
 
 using {entityClassPath.ClassNamespace};
 using Bogus;
-using FluentAssertions;
-using Xunit;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{

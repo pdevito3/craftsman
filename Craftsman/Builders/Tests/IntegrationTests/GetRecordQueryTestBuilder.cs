@@ -40,10 +40,8 @@ using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using Domain;
-using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 using System.Threading.Tasks;
 
 public class {classPath.ClassNameWithoutExt} : TestBase

@@ -27,8 +27,6 @@ public class PagedListTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {wrapperClassPath.ClassNamespace};
-using FluentAssertions;
-using Xunit;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{

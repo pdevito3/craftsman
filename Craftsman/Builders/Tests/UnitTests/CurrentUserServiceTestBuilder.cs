@@ -29,10 +29,8 @@ public class CurrentUserServiceTestBuilder
 using {servicesClassPath.ClassNamespace};
 using System.Security.Claims;
 using Bogus;
-using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
-using Xunit;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{

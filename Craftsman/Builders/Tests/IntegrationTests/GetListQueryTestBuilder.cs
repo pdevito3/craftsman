@@ -42,9 +42,7 @@ using {dtoClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
-using FluentAssertions;
 using Domain;
-using Xunit;
 using System.Threading.Tasks;
 
 public class {classPath.ClassNameWithoutExt} : TestBase

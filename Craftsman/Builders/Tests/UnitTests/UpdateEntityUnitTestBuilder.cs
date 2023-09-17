@@ -37,9 +37,7 @@ using {fakerClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};
 using Bogus;
-using FluentAssertions;
 using FluentAssertions.Extensions;
-using Xunit;
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{

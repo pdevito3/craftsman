@@ -49,9 +49,7 @@ using {fakerClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 using System.Threading.Tasks;{foreignEntityUsings}
 
 public class {classPath.ClassNameWithoutExt} : TestBase

@@ -27,8 +27,6 @@ public class HealthTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {testUtilClassPath.ClassNamespace};
-using FluentAssertions;
-using Xunit;
 using System.Net;
 using System.Threading.Tasks;
 

@@ -43,11 +43,9 @@ using {entityClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using Bogus;
-using FluentAssertions;
 using MediatR;
 using MockQueryable.Moq;
 using NSubstitute;
-using Xunit;
 using System.Threading.Tasks;
 using System.Security.Claims;
 

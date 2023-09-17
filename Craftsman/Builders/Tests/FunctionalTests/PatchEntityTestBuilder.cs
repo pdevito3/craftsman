@@ -45,8 +45,6 @@ using {fakerClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};{permissionsUsing}
 using Microsoft.AspNetCore.JsonPatch;
-using FluentAssertions;
-using Xunit;
 using System.Net;
 using System.Threading.Tasks;
 using Bogus;

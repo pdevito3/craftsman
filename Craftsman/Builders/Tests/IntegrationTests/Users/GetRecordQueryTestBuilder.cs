@@ -37,9 +37,7 @@ public class GetRecordQueryTestBuilder
 
 using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 using {exceptionsClassPath.ClassNamespace};
 using System.Threading.Tasks;{foreignEntityUsings}
 

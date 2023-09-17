@@ -25,12 +25,10 @@ public class AllEndpointsProtectedUnitTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using System.Reflection;
-using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using TestHelpers;
-using Xunit;
 
 public sealed class EndpointTests
 {{

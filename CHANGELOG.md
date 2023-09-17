@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Moq -> NSubsititute
 * Bump base page size limit to 500
+* Added global usings to the test projects
 * Entity variables in tests don't start with `fake` anymore
 
 ## [0.22.1] - 08/13/2023

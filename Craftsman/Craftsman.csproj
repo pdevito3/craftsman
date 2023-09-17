@@ -30,7 +30,7 @@
     <PackageReference Include="FluentValidation" Version="11.4.0" />
     <PackageReference Include="Humanizer.Core" Version="2.14.1" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0175" />
-    <PackageReference Include="MediatR" Version="11.1.0" />
+    <PackageReference Include="MediatR" Version="12.1.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />

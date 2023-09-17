@@ -185,6 +185,9 @@ public class ApiScaffoldingService
         _mediator.Send(new UnitOfWorkBuilder.UnitOfWorkBuilderCommand(template.DbContext.ContextName));
         _mediator.Send(new IBoundaryServiceInterfaceBuilder.IBoundaryServiceInterfaceBuilderCommand());
         _mediator.Send(new GenericRepositoryBuilder.GenericRepositoryBuilderCommand(template.DbContext.ContextName));
+        _mediator.Send(new TestUsingsBuilder.Command(TestUsingsBuilder.TestingTarget.Functional));
+        _mediator.Send(new TestUsingsBuilder.Command(TestUsingsBuilder.TestingTarget.Integration));
+        _mediator.Send(new TestUsingsBuilder.Command(TestUsingsBuilder.TestingTarget.Unit));
         new AuthConfigurationsBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
         new RabbitMqConfigurationsBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
         new ConnectionStringConfigurationsBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);

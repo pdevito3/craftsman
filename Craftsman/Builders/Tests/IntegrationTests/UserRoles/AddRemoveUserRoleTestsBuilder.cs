@@ -35,9 +35,7 @@ using {rolesClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
 using Bogus;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 using System.Threading.Tasks;
 
 public class {classPath.ClassNameWithoutExt} : TestBase

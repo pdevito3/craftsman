@@ -37,9 +37,7 @@ public class AddCommandTestBuilder
         return @$"namespace {classPath.ClassNamespace};
 
 using {fakerClassPath.ClassNamespace};
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 using System.Threading.Tasks;
 using {featuresClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};{foreignEntityUsings}

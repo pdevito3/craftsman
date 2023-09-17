@@ -54,9 +54,7 @@ using {fakerClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
 using {exceptionClassPath.ClassNamespace};
 using {featuresClassPath.ClassNamespace};
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;{foreignEntityUsings}
 

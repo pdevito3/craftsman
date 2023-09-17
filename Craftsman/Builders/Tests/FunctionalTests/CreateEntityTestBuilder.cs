@@ -42,8 +42,6 @@ public class CreateEntityTestBuilder
 
 using {fakerClassPath.ClassNamespace};
 using {testUtilClassPath.ClassNamespace};{permissionsUsing}
-using FluentAssertions;
-using Xunit;
 using System.Net;
 using System.Threading.Tasks;
 
