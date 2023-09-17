@@ -365,11 +365,6 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain"), className);
     }
 
-    public static ClassPath SharedKernelDomainClassPath(string solutionDirectory, string className)
-    {
-        return new ClassPath(solutionDirectory, Path.Combine($"{SharedKernelProjName}", "Domain"), className);
-    }
-
     public static ClassPath WebApiProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
     {
         var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";

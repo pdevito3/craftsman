@@ -30,10 +30,8 @@ public class ControllerBuilder
         var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
         var featureClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
-        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
         var permissionsUsing = usesJwtAuth
-            ? @$"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};
-using {rolesClassPath.ClassNamespace};"
+            ? @$"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};"
             : string.Empty;
 
         return @$"namespace {classNamespace};

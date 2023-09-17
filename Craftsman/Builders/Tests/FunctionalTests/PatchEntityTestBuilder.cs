@@ -29,10 +29,9 @@ public class PatchEntityTestBuilder
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(testDirectory, "", projectBaseName);
-        var rolesClassPath = ClassPathHelper.SharedKernelDomainClassPath(solutionDirectory, "");
 
         var permissionsUsing = isProtected
-            ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};{Environment.NewLine}using {rolesClassPath.ClassNamespace};"
+            ? $"{Environment.NewLine}using {permissionsClassPath.ClassNamespace};"
             : string.Empty;
 
         var authOnlyTests = isProtected ? $@"

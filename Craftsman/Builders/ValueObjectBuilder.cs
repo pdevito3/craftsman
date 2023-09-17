@@ -24,7 +24,10 @@ public static class ValueObjectBuilder
 
         public Task<bool> Handle(ValueObjectBuilderCommand request, CancellationToken cancellationToken)
         {
-            var classPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "ValueObject.cs");
+            var classPath = ClassPathHelper.EntityClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                $"ValueObject.cs", 
+                "", 
+                _scaffoldingDirectoryStore.ProjectBaseName);
             var fileText = GetFileText(classPath.ClassNamespace);
             _utilities.CreateFile(classPath, fileText);
             return Task.FromResult(true);

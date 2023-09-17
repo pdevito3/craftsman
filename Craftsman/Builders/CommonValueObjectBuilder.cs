@@ -75,11 +75,9 @@ public static class CommonValueObjectBuilder
         
         private string GetPercentFileText(string classNamespace)
         {
-            var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
             
             return @$"namespace {classNamespace};
 
-using {voClassPath.ClassNamespace};
 using FluentValidation;
 
 // source: https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/Percent.cs
@@ -123,11 +121,9 @@ public static class PercentExtensions
         
         private string GetAddressFileText(string classNamespace)
         {
-            var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
             
             return @$"namespace {classNamespace};
 
-using {voClassPath.ClassNamespace};
 using FluentValidation;
 
 public class {ValueObjectEnum.Address.Name} : ValueObject
@@ -199,12 +195,10 @@ public class PostalCode : ValueObject
                 $"{ValueObjectEnum.Percent.Name}.cs",
                 ValueObjectEnum.Percent.Plural(),
                 _scaffoldingDirectoryStore.ProjectBaseName);
-            var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
             
             return @$"namespace {classNamespace};
 
 using {percentClassPath.ClassNamespace};
-using {voClassPath.ClassNamespace};
 using FluentValidation;
 
 // source: https://github.com/asc-lab/better-code-with-ddd/blob/ef_core/LoanApplication.TacticalDdd/LoanApplication.TacticalDdd/DomainModel/MonetaryAmount.cs
@@ -253,13 +247,11 @@ public class {ValueObjectEnum.MonetaryAmount.Name} : ValueObject
         
         private string GetRoleFileText(string classNamespace)
         {
-            var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
             var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(_scaffoldingDirectoryStore.SrcDirectory, "", _scaffoldingDirectoryStore.ProjectBaseName);
             
             return @$"namespace {classNamespace};
 
 using {exceptionsClassPath.ClassNamespace};
-using {voClassPath.ClassNamespace};
 using Ardalis.SmartEnum;
 
 public class Role : ValueObject
@@ -322,11 +314,9 @@ public abstract class RoleEnum : SmartEnum<RoleEnum>
         }
         private string GetEmailFileText(string classNamespace)
         {
-            var voClassPath = ClassPathHelper.SharedKernelDomainClassPath(_scaffoldingDirectoryStore.SolutionDirectory, "");
 
             return @$"namespace {classNamespace};
 
-using {voClassPath.ClassNamespace};
 using FluentValidation;
 
 public sealed class Email : ValueObject
