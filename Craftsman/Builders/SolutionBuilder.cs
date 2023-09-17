@@ -56,7 +56,7 @@ public class SolutionBuilder
         // additional from what was other projects
         _fileSystem.Directory.CreateDirectory(ClassPathHelper.ExceptionsClassPath(solutionDirectory, "").ClassDirectory);
         _fileSystem.Directory.CreateDirectory(ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
-        _fileSystem.Directory.CreateDirectory(ClassPathHelper.SharedDtoClassPath(solutionDirectory, "").ClassDirectory);
+        _fileSystem.Directory.CreateDirectory(ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
         _fileSystem.Directory.CreateDirectory(ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
 
         new ApiVersioningExtensionsBuilder(_utilities).CreateApiVersioningServiceExtension(srcDirectory, projectBaseName);
@@ -79,7 +79,7 @@ public class SolutionBuilder
             new ErrorHandlerWithHellang(_utilities).CreateErrorHandler(srcDirectory, projectBaseName);
         }
 
-        new BasePaginationParametersBuilder(_utilities).CreateBasePaginationParameters(solutionDirectory);
+        new BasePaginationParametersBuilder(_utilities).CreateBasePaginationParameters(srcDirectory, projectBaseName);
         new PagedListBuilder(_utilities).CreatePagedList(srcDirectory, projectBaseName);
         _mediator.Send(new CoreExceptionBuilder.CoreExceptionBuilderCommand());
 

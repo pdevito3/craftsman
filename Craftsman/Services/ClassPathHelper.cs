@@ -411,12 +411,6 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Domain", entityPlural, "Dtos"), className);
     }
 
-    public static ClassPath SharedDtoClassPath(string solutionDirectory, string className)
-    {
-        var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
-        return new ClassPath(solutionDirectory, Path.Combine(SharedKernelProjName, "Dtos"), className);
-    }
-
     public static ClassPath IntegrationTestProjectClassPath(string solutionDirectory, string projectBaseName)
     {
         return new ClassPath(solutionDirectory, $"{projectBaseName}.{IntegrationTestProjectSuffix}", $"{projectBaseName}.{IntegrationTestProjectSuffix}.csproj");

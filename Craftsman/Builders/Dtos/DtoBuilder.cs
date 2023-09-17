@@ -35,14 +35,14 @@ public class DtoBuilder
     {
         var dtoFileName = $"{FileNames.GetDtoName(entity.Name, dto)}.cs";
         var classPath = ClassPathHelper.DtoClassPath(srcDirectory, dtoFileName, entity.Plural, projectBaseName);
-        var fileText = GetDtoFileText(srcDirectory, classPath, entity, dto);
+        var fileText = GetDtoFileText(srcDirectory, classPath, entity, dto, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetDtoFileText(string srcDirectory, ClassPath classPath, Entity entity, Dto dto)
+    public static string GetDtoFileText(string srcDirectory, ClassPath classPath, Entity entity, Dto dto, string projectBaseName)
     {
         if (dto == Dto.ReadParamaters)
-            return DtoFileTextGenerator.GetReadParameterDtoText(srcDirectory, classPath.ClassNamespace, entity, dto);
+            return DtoFileTextGenerator.GetReadParameterDtoText(srcDirectory, classPath.ClassNamespace, entity, dto, projectBaseName);
 
         return DtoFileTextGenerator.GetDtoText(classPath, entity, dto);
     }

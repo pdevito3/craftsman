@@ -9,13 +9,13 @@ using Services;
 
 public static class DtoFileTextGenerator
 {
-    public static string GetReadParameterDtoText(string solutionDirectory, string classNamespace, Entity entity, Dto dto)
+    public static string GetReadParameterDtoText(string srcDirectory, string classNamespace, Entity entity, Dto dto, string projectBaseName)
     {
-        var sharedDtoClassPath = ClassPathHelper.SharedDtoClassPath(solutionDirectory, "");
+        var webApiResourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
 
         return @$"namespace {classNamespace};
 
-using {sharedDtoClassPath.ClassNamespace};
+using {webApiResourcesClassPath.ClassNamespace};
 
 public sealed class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
 {{
