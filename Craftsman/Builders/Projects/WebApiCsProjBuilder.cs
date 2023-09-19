@@ -69,7 +69,7 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""OpenTelemetry.Instrumentation.Http"" Version=""1.5.1-beta.1"" />
     <PackageReference Include=""OpenTelemetry.Instrumentation.Runtime"" Version=""1.5.1"" />
     <PackageReference Include=""QueryKit"" Version=""0.6.1"" />
-    <PackageReference Include=""Riok.Mapperly"" Version=""3.1.0"" />
+    <PackageReference Include=""Riok.Mapperly"" Version=""3.2.0"" />
     <PackageReference Include=""Swashbuckle.AspNetCore"" Version=""6.5.0"" />
 
     <PackageReference Include=""Serilog.AspNetCore"" Version=""7.0.0"" />

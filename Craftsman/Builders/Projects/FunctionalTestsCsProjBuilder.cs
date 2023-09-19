@@ -50,8 +50,8 @@ public class FunctionalTestsCsProjBuilder
     <PackageReference Include=""WebMotions.Fake.Authentication.JwtBearer"" Version=""7.0.0"" />
     <PackageReference Include=""Testcontainers"" Version=""3.5.0"" />
     <PackageReference Include=""Testcontainers.RabbitMq"" Version=""3.5.0"" />{provider.TestingCsProjNugetPackages()}
-    <PackageReference Include=""xunit"" Version=""2.5.0"" />
-    <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.5.0"" />
+    <PackageReference Include=""xunit"" Version=""2.5.1"" />
+    <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.5.1"" />
   </ItemGroup>
 
   <ItemGroup>

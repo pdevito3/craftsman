@@ -44,8 +44,8 @@ public class UnitTestsCsProjBuilder
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include=""xunit"" Version=""2.5.0"" />
-    <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.5.0"" />
+    <PackageReference Include=""xunit"" Version=""2.5.1"" />
+    <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.5.1"" />
     <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.7.2"" />
   </ItemGroup>
 
