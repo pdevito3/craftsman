@@ -66,7 +66,8 @@ using {utilsClassPath.ClassNamespace};
 using {sharedUtilsClassPath.ClassNamespace};
 using Configurations;
 using FluentAssertions;
-using FluentAssertions.Extensions;{heimGuardUsing}
+using FluentAssertions.Extensions;
+using Hangfire;{heimGuardUsing}
 using NSubstitute;{provider.TestingDbSetupUsings()}
 using Testcontainers.RabbitMq;
 using Microsoft.AspNetCore.Builder;
@@ -108,7 +109,8 @@ public class TestFixture : IAsyncLifetime
         var services = builder.Services;
 
         // add any mock services here
-        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();{heimGuardMock}
+        services.ReplaceServiceWithSingletonMock<IHttpContextAccessor>();
+        services.ReplaceServiceWithSingletonMock<IBackgroundJobClient>();{heimGuardMock}
 
         var provider = services.BuildServiceProvider();
         BaseScopeFactory = provider.GetService<IServiceScopeFactory>();{equivalencyCall}

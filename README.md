@@ -44,6 +44,8 @@ Have a request for something you don't see in the project? Join [our discord](ht
 
 ✅ New `GetAll` feature
 
+✅ Hangfire scaffolding
+
 ### Some 0.22 highlights
 
 ✅ Move from Sieve to [QueryKit](https://github.com/pdevito3/querykit)

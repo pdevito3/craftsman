@@ -163,7 +163,7 @@ public class ApiScaffoldingService
         new HealthTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
         new HttpClientExtensionsBuilder(_utilities).Create(testDirectory, projectBaseName);
         new EntityBuilder(_utilities).CreateBaseEntity(srcDirectory, projectBaseName, template.UseSoftDelete);
-        new CurrentUserServiceTestBuilder(_utilities).CreateTests(testDirectory, projectBaseName);
+        new CurrentUserServiceTestBuilder(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
         _mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
         _mediator.Send(new CommonValueObjectBuilder.Command(template.AddJwtAuthentication));
         new FakesBuilder(_utilities).CreateAddressFakes(srcDirectory, testDirectory, projectBaseName);
@@ -188,6 +188,10 @@ public class ApiScaffoldingService
         _mediator.Send(new TestUsingsBuilder.Command(TestUsingsBuilder.TestingTarget.Functional));
         _mediator.Send(new TestUsingsBuilder.Command(TestUsingsBuilder.TestingTarget.Integration));
         _mediator.Send(new TestUsingsBuilder.Command(TestUsingsBuilder.TestingTarget.Unit));
+        _mediator.Send(new CurrentUserFilterAttributeBuilder.Command());
+        _mediator.Send(new HangfireAuthorizationFilterBuilder.Command());
+        _mediator.Send(new JobWithUserContextBuilder.Command());
+        _mediator.Send(new ServiceJobActivatorScopeBuilder.Command());
         new AuthConfigurationsBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
         new RabbitMqConfigurationsBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
         new ConnectionStringConfigurationsBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);

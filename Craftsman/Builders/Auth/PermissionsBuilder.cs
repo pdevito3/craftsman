@@ -35,7 +35,8 @@ using System.Reflection;
 
 public static class Permissions
 {{
-    // Permissions marker - do not delete this comment{rolePermissions}
+    // Permissions marker - do not delete this comment
+    public const string HangfireAccess = nameof(HangfireAccess);{rolePermissions}
     
     public static List<string> List()
     {{

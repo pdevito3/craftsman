@@ -48,6 +48,8 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""7.0.2"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""11.3.0"" />
+    <PackageReference Include=""Hangfire"" Version=""1.8.5"" />
+    <PackageReference Include=""Hangfire.MemoryStorage"" Version=""1.8.0"" />
     <PackageReference Include=""HeimGuard"" Version=""0.3.0"" />{errorPackages}
     <PackageReference Include=""MediatR"" Version=""12.1.1"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""7.0.11"" />

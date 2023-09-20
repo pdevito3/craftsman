@@ -13,20 +13,22 @@ public class CurrentUserServiceTestBuilder
         _utilities = utilities;
     }
 
-    public void CreateTests(string solutionDirectory, string projectBaseName)
+    public void CreateTests(string testDirectory, string srcDirectory, string projectBaseName)
     {
-        var classPath = ClassPathHelper.UnitTestServiceTestsClassPath(solutionDirectory, $"CurrentUserServiceTests.cs", projectBaseName);
-        var fileText = WriteTestFileText(solutionDirectory, classPath, projectBaseName);
+        var classPath = ClassPathHelper.UnitTestServiceTestsClassPath(testDirectory, $"CurrentUserServiceTests.cs", projectBaseName);
+        var fileText = WriteTestFileText(srcDirectory, classPath, projectBaseName);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, string projectBaseName)
+    private static string WriteTestFileText(string srcDirectory, ClassPath classPath, string projectBaseName)
     {
-        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(solutionDirectory, "", projectBaseName);
+        var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
+        var hangfireUtilsClassPath = ClassPathHelper.HangfireResourcesClassPath(srcDirectory, $"", projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
 
 using {servicesClassPath.ClassNamespace};
+using {hangfireUtilsClassPath.ClassNamespace};
 using System.Security.Claims;
 using Bogus;
 using Microsoft.AspNetCore.Http;
@@ -48,8 +50,29 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var sub = Substitute.For<IHttpContextAccessor>();
         sub.HttpContext.Returns(context);
         
-        var currentUserService = new CurrentUserService(sub);
+        var currentUserService = new CurrentUserService(sub, null);
 
+        currentUserService.UserId.Should().Be(name);
+    }}
+    
+    [Fact]
+    public void can_fallback_to_user_in_job_context()
+    {{
+        // Arrange
+        var name = new Faker().Person.UserName;
+
+        var httpContextAccessor = Substitute.For<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext.Returns((HttpContext)null);
+
+        var jobContextAccessor = new JobContextAccessor();
+        jobContextAccessor.UserContext = new JobWithUserContext()
+        {{
+            User = name
+        }};
+
+        var currentUserService = new CurrentUserService(httpContextAccessor, jobContextAccessor);
+
+        // Act & Assert
         currentUserService.UserId.Should().Be(name);
     }}
     
@@ -60,7 +83,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         var sub = Substitute.For<IHttpContextAccessor>();
         sub.HttpContext.Returns(context);
         
-        var currentUserService = new CurrentUserService(sub);
+        var currentUserService = new CurrentUserService(sub, null);
 
         currentUserService.UserId.Should().BeNullOrEmpty();
     }}

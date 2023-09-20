@@ -25,6 +25,7 @@ public class ProgramBuilder
         var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(srcDirectory, "", projectBaseName);
         var configClassPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, "", projectBaseName);
         var dbClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{FileNames.GetMigrationHostedServiceFileName()}.cs", projectBaseName);
+        var hangfireUtilsClassPath = ClassPathHelper.HangfireResourcesClassPath(srcDirectory, $"", projectBaseName);
         
         var errorUsingStatement = !useCustomErrorHandler ? $@"{Environment.NewLine}using Hellang.Middleware.ProblemDetails;" : ""; 
         var errorRegistration = !useCustomErrorHandler ? $"{Environment.NewLine}app.UseProblemDetails();" : "";
@@ -32,11 +33,13 @@ public class ProgramBuilder
 app.UseAuthorization();" : "";
         var corsName = $"{projectBaseName}CorsPolicy";
 
-        return @$"using Serilog;{errorUsingStatement}
+        return @$"using Serilog;
+using Hangfire;{errorUsingStatement}
 using {apiAppExtensionsClassPath.ClassNamespace};
 using {hostExtClassPath.ClassNamespace};
 using {configClassPath.ClassNamespace};
 using {dbClassPath.ClassNamespace};
+using {hangfireUtilsClassPath.ClassNamespace};
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.AddLoggingConfiguration(builder.Environment);
@@ -67,6 +70,12 @@ app.UseRouting();{appAuth}
 
 app.MapHealthChecks(""api/health"");
 app.MapControllers();
+
+app.UseHangfireDashboard(""/hangfire"", new DashboardOptions
+{{
+    AsyncAuthorization = new[] {{ new HangfireAuthorizationFilter(scope.ServiceProvider) }},
+    IgnoreAntiforgeryToken = true
+}});
 
 app.UseSwaggerExtension(builder.Configuration, builder.Environment);
 

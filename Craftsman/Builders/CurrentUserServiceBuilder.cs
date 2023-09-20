@@ -21,10 +21,12 @@ public class CurrentUserServiceBuilder
     private static string GetCurrentUserServiceText(string classNamespace, string srcDirectory, string projectBaseName)
     {
         var boundaryServiceName = FileNames.BoundaryServiceInterface(projectBaseName);
+        var hangfireUtilsClassPath = ClassPathHelper.HangfireResourcesClassPath(srcDirectory, $"", projectBaseName);
 
         return @$"namespace {classNamespace};
 
 using System.Security.Claims;
+using {hangfireUtilsClassPath.ClassNamespace};
 
 public interface ICurrentUserService : {boundaryServiceName}
 {{
@@ -41,28 +43,45 @@ public interface ICurrentUserService : {boundaryServiceName}
 public sealed class CurrentUserService : ICurrentUserService
 {{
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IJobContextAccessor _jobContextAccessor;
 
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor)
+    public CurrentUserService(IHttpContextAccessor httpContextAccessor, IJobContextAccessor jobContextAccessor)
     {{
         _httpContextAccessor = httpContextAccessor;
+        _jobContextAccessor = jobContextAccessor;
     }}
 
-    public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
-    public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-    public string? Email => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
-    public string? FirstName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.GivenName);
-    public string? LastName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Surname);
-    public string? Username => _httpContextAccessor.HttpContext
-        ?.User
+    public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User ?? CreatePrincipalFromJobContextUserId();
+    public string? UserId => User?.FindFirstValue(ClaimTypes.NameIdentifier);
+    public string? Email => User?.FindFirstValue(ClaimTypes.Email);
+    public string? FirstName => User?.FindFirstValue(ClaimTypes.GivenName);
+    public string? LastName => User?.FindFirstValue(ClaimTypes.Surname);
+    public string? Username => User
         ?.Claims
         ?.FirstOrDefault(x => x.Type is ""preferred_username"" or ""username"")
         ?.Value;
-    public string? ClientId => _httpContextAccessor.HttpContext
-        ?.User
+    public string? ClientId => User
         ?.Claims
         ?.FirstOrDefault(x => x.Type is ""client_id"" or ""clientId"")
         ?.Value;
     public bool IsMachine => ClientId != null;
+    
+    private ClaimsPrincipal? CreatePrincipalFromJobContextUserId()
+    {{
+        var userId = _jobContextAccessor?.UserContext?.User;
+        if (string.IsNullOrEmpty(userId))
+        {{
+            return null;
+        }}
+
+        var claims = new[]
+        {{
+            new Claim(ClaimTypes.NameIdentifier, userId)
+        }};
+
+        var identity = new ClaimsIdentity(claims, $""hangfire-job-{{userId}}"");
+        return new ClaimsPrincipal(identity);
+    }}
 }}";
     }
 }

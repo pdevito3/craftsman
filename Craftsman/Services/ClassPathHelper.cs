@@ -348,6 +348,11 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Resources"), className);
     }
 
+    public static ClassPath HangfireResourcesClassPath(string srcDirectory, string className, string projectBaseName)
+    {
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Resources", "HangfireUtilities"), className);
+    }
+
     public static ClassPath WebApiConfigurationsClassPath(string srcDirectory, string className, string projectBaseName)
     {
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Configurations"), className);
