@@ -44,7 +44,7 @@ using {modelClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using Bogus;
 using MediatR;
-using MockQueryable.Moq;
+using MockQueryable.NSubstitute;
 using NSubstitute;
 using System.Threading.Tasks;
 using System.Security.Claims;
