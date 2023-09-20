@@ -91,7 +91,6 @@ public class AddBffCommand : Command<AddBffCommand.Settings>
 
                 new BffProgramBuilder(_utilities).CreateProgram(projectDirectory, domainDirectory, projectName, template);
                 new BffReadmeBuilder(_utilities).CreateReadme(projectDirectory, projectName);
-                new CorrelationMiddlewareBuilder(_utilities).CreateFile(projectDirectory);
 
                 // SPA - root
                 new ViteConfigBuilder(_utilities).CreateViteConfig(spaDirectory, template.ProxyPort);
