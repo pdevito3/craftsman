@@ -31,7 +31,7 @@ public class Feature
     private string _featureName = null;
     public string Name
     {
-        get => FeatureType.FeatureName(EntityName, _featureName);
+        get => FeatureType.FeatureName(EntityName, EntityPlural, _featureName);
         set => _featureName = value;
     }
 
@@ -45,7 +45,7 @@ public class Feature
     private string _permission;
     public string PermissionName
     {
-        get => _permission ?? FeatureType.DefaultPermission(EntityPlural);
+        get => _permission ?? FeatureType.DefaultPermission(EntityPlural, _featureName);
         set => _permission = value;
     }
 

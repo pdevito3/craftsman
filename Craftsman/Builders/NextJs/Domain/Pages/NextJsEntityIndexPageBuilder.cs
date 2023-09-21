@@ -28,8 +28,8 @@ public class NextJsEntityIndexPageBuilder
         var entityPluralLowercase = entityPlural.ToLower();
         var entityUpperFirst = entityName.UppercaseFirstLetter();
         var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
-        var addPermission = FeatureType.AddRecord.DefaultPermission(entityPlural);
-        var readPermission = FeatureType.GetList.DefaultPermission(entityPlural);
+        var addPermission = FeatureType.AddRecord.DefaultPermission(entityPlural, null);
+        var readPermission = FeatureType.GetList.DefaultPermission(entityPlural, null);
 
         return @$"import {{ PrivateLayout, SearchInput }} from ""@/components"";
 import {{

@@ -28,7 +28,7 @@ public class NextJsEditEntityPageBuilder
         var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var entityUpperFirst = entityName.UppercaseFirstLetter();
         var entityLowerFirst = entityName.LowercaseFirstLetter();
-        var updatePermission = FeatureType.UpdateRecord.DefaultPermission(entityPlural);
+        var updatePermission = FeatureType.UpdateRecord.DefaultPermission(entityPlural, null);
 
         return @$"import {{ PrivateLayout }} from ""@/components"";
 import {{ Button }} from ""@/components/forms"";

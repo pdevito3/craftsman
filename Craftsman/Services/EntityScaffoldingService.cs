@@ -382,6 +382,12 @@ public class EntityScaffoldingService
             // TODO ad hoc feature endpoint
             // TODO empty failing test to promote test writing?
         }
+
+        if (feature.Type == FeatureType.Job.Name)
+        {
+            _mediator.Send(new JobFeatureBuilder.Command(feature, entity.Plural));
+            _mediator.Send(new JobFeatureIntegrationTestBuilder.Command(feature, entity.Plural));
+        }
     }
 
     public void ScaffoldBffEntities(List<BffEntity> entities, string spaDirectory)

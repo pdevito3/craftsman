@@ -3,6 +3,7 @@
 using System;
 using Ardalis.SmartEnum;
 using Helpers;
+using Humanizer;
 
 public abstract class FeatureType : SmartEnum<FeatureType>
 {
@@ -15,6 +16,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
     public static readonly FeatureType AdHoc = new AdHocType();
     public static readonly FeatureType AddListByFk = new AddListByFkType();
     public static readonly FeatureType GetAll = new GetAllType();
+    public static readonly FeatureType Job = new JobType();
 
     protected FeatureType(string name, int value) : base(name, value)
     {
@@ -22,7 +24,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
     public abstract string FeatureName(string entityName, string entityPlural, string featureName = null);
     public abstract string BffApiName(string entityName, string entityPlural);
     public abstract string NextJsApiName(string entityName, string entityPlural);
-    public abstract string DefaultPermission(string entityPlural);
+    public abstract string DefaultPermission(string entityPlural, string featureName);
 
     private class GetRecordType : FeatureType
     {
@@ -34,7 +36,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"get{entityName}";
         public override string NextJsApiName(string entityName, string entityPlural)
             => $"get{entityName}";
-        public override string DefaultPermission(string entityPlural)
+        public override string DefaultPermission(string entityPlural, string featureName)
             => $"CanRead{entityPlural}";
     }
 
@@ -48,7 +50,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"get{entityPlural}List";
         public override string NextJsApiName(string entityName, string entityPlural)
             => $"get{entityName}List";
-        public override string DefaultPermission(string entityPlural)
+        public override string DefaultPermission(string entityPlural, string featureName)
             => $"CanRead{entityPlural}";
     }
 
@@ -62,7 +64,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"add{entityName}";
         public override string NextJsApiName(string entityName, string entityPlural)
             => $"add{entityName}";
-        public override string DefaultPermission(string entityPlural)
+        public override string DefaultPermission(string entityPlural, string featureName)
             => $"CanAdd{entityPlural}";
     }
 
@@ -76,7 +78,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"delete{entityName}";
         public override string NextJsApiName(string entityName, string entityPlural)
             => $"delete{entityName}";
-        public override string DefaultPermission(string entityPlural)
+        public override string DefaultPermission(string entityPlural, string featureName)
             => $"CanDelete{entityPlural}";
     }
 
@@ -91,7 +93,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"update{entityName}";
         public override string NextJsApiName(string entityName, string entityPlural)
             => $"update{entityName}";
-        public override string DefaultPermission(string entityPlural)
+        public override string DefaultPermission(string entityPlural, string featureName)
             => $"CanUpdate{entityPlural}";
     }
 
@@ -119,7 +121,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => throw new Exception("Ad Hoc Features need to be manually configured in a BFF.");
         public override string NextJsApiName(string entityName, string entityPlural)
             => throw new Exception("Ad Hoc Features need to be manually configured in a BFF.");
-        public override string DefaultPermission(string entityPlural)
+        public override string DefaultPermission(string entityPlural, string featureName)
             => $"CanPerformAdHocFeature";
     }
 
@@ -133,7 +135,7 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => throw new Exception("Add List Features need to be manually configured in a BFF.");
         public override string NextJsApiName(string entityName, string entityPlural)
             => throw new Exception("Add List Features need to be manually configured in a BFF.");
-        public override string DefaultPermission(string entityPlural)
+        public override string DefaultPermission(string entityPlural, string featureName)
             => $"CanAdd{entityPlural}";
     }
 
@@ -147,7 +149,22 @@ public abstract class FeatureType : SmartEnum<FeatureType>
             => $"getAll{entityPlural}";
         public override string NextJsApiName(string entityName, string entityPlural)
             => $"getAll{entityPlural}";
-        public override string DefaultPermission(string entityPlural)
+        public override string DefaultPermission(string entityPlural, string featureName)
             => $"CanRead{entityPlural}";
+    }
+
+
+    private class JobType : FeatureType
+    {
+        public JobType() : base(nameof(Job), 10) { }
+
+        public override string FeatureName(string entityName, string entityPlural, string featureName = null)
+            => featureName.EscapeSpaces() ?? throw new Exception("Job features require a name path.");
+        public override string BffApiName(string entityName, string entityPlural)
+            => throw new Exception("Job features need to be manually configured in a BFF.");
+        public override string NextJsApiName(string entityName, string entityPlural)
+            => throw new Exception("Job features need to be manually configured in a BFF.");
+        public override string DefaultPermission(string entityPlural, string featureName)
+            => $"CanPerform{featureName.Humanize(LetterCasing.Title).Replace(" ", "")}";
     }
 }

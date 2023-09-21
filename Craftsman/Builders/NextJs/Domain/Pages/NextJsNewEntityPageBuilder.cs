@@ -30,7 +30,7 @@ public class NextJsNewEntityPageBuilder
         var formName = FileNames.NextJsEntityFeatureFormName(entityName);
         var entityStartsWithVowel = "aeiouAEIOU".IndexOf(entityName) >= 0;
         var aOrAn = entityStartsWithVowel ? "an" : "a";
-        var addPermission = FeatureType.AddRecord.DefaultPermission(entityPlural);
+        var addPermission = FeatureType.AddRecord.DefaultPermission(entityPlural, null);
 
         return @$"import {{ PrivateLayout }} from ""@/components"";
 import {{ Button }} from ""@/components/forms"";

@@ -206,6 +206,8 @@ BoundedContexts:
       IsProtected: true
     - Type: DeleteRecord
       IsProtected: true
+    - Type: Job
+      Name: PerformFakeBookMigration
     Properties:
     - Name: Title
       Type: string

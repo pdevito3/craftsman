@@ -76,11 +76,11 @@ public class NextJsEntityScaffoldingService
             new NextJsEditEntityPageBuilder(_utilities).CreateFile(nextSrc, entity.Name, entity.Plural);
             
             // permissions
-            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.GetList.DefaultPermission(entity.Plural));
-            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.GetRecord.DefaultPermission(entity.Plural));
-            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.AddRecord.DefaultPermission(entity.Plural));
-            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.UpdateRecord.DefaultPermission(entity.Plural));
-            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.DeleteRecord.DefaultPermission(entity.Plural));
+            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.GetList.DefaultPermission(entity.Plural, null));
+            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.GetRecord.DefaultPermission(entity.Plural, null));
+            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.AddRecord.DefaultPermission(entity.Plural, null));
+            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.UpdateRecord.DefaultPermission(entity.Plural, null));
+            new PermissionsModifier(_fileSystem).AddPermission(nextSrc, FeatureType.DeleteRecord.DefaultPermission(entity.Plural, null));
         }
     }
 }

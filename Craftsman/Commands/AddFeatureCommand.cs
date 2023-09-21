@@ -74,7 +74,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
 
         var featureType = AskFeatureType();
 
-        if (featureType != FeatureType.AdHoc.Name && featureType != FeatureType.AddListByFk.Name)
+        if (featureType != FeatureType.AdHoc.Name && featureType != FeatureType.AddListByFk.Name && featureType != FeatureType.Job.Name)
         {
             var entityName = AskEntityName();
             var entityPlural = AskEntityPlural(entityName);
@@ -134,6 +134,26 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
             };
         }
 
+        if (featureType == FeatureType.Job.Name)
+        {
+            var jobName = AskFeature();
+            var entityPluralForJobFeatureDir = AskEntityPluralForDir();
+
+            _console.WriteLine();
+            _console.Write(new Table().AddColumns("[grey]Property[/]", "[grey]Value[/]")
+                .RoundedBorder()
+                .BorderColor(Color.Grey)
+                .AddRow("[grey]Feature Name[/]", jobName)
+                .AddRow("[grey]Entity Plural[/]", entityPluralForJobFeatureDir)
+            );
+
+            return new Feature()
+            {
+                Type = "Job",
+                Name = jobName,
+                EntityPlural = entityPluralForJobFeatureDir
+            };
+        }
 
         var feature = AskFeature();
         var responseType = AskResponseType();
@@ -147,6 +167,7 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
             .AddRow("[grey]Feature Name[/]", feature)
             .AddRow("[grey]Response Type[/]", responseType)
             .AddRow("[grey]Is Producer[/]", producer.ToString())
+            .AddRow("[grey]Entity Plural[/]", entityPluralForDir)
         );
 
         return new Feature()

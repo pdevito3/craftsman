@@ -2,7 +2,7 @@
   "profiles": {
     "Craftsman Dev": {
       "commandName": "Project",
-      "commandLineArgs": "new domain /Users/paul/Documents/simple-onetomany.yml",
+      "commandLineArgs": "add feature",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Dev"
       }

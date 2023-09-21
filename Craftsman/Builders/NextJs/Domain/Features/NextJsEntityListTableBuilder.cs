@@ -32,8 +32,8 @@ public class NextJsEntityListTableBuilder
         var entityUpperFirst = entityName.UppercaseFirstLetter();
         var entityPluralLowercaseFirst = entityPlural.LowercaseFirstLetter();
         var entityLowerFirst = entityName.LowercaseFirstLetter();
-        var deletePermission = FeatureType.DeleteRecord.DefaultPermission(entityPlural);
-        var updatePermission = FeatureType.UpdateRecord.DefaultPermission(entityPlural);
+        var deletePermission = FeatureType.DeleteRecord.DefaultPermission(entityPlural, null);
+        var updatePermission = FeatureType.UpdateRecord.DefaultPermission(entityPlural, null);
 
         string columnHelpers = GetColumnHelpers(properties);
 

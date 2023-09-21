@@ -19,7 +19,7 @@ public class AddUserFeatureOverrideModifier
     {
         var entityName = "User";
         var entityPlural = "Users";
-        var permissionName = FeatureType.AddRecord.DefaultPermission("Users");
+        var permissionName = FeatureType.AddRecord.DefaultPermission("Users", "AddUser");
         var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.AddEntityFeatureClassName(entityName)}.cs", entityPlural, projectBaseName);
 
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
