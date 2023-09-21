@@ -49,7 +49,7 @@ public class CreateRecordEndpointBuilder
     public async Task<ActionResult<{readDto}>> Add{entityName}([FromBody]{creationDto} {creationPropName},
         [FromQuery(Name = ""{batchPropNameLower}""), BindRequired] {feature.BatchPropertyType} {batchPropNameLower})
     {{
-        var command = new {feature.Name}.{feature.Command}({creationPropName}, {batchPropNameLower});
+        var command = new {feature.Name}.Command({creationPropName}, {batchPropNameLower});
         var commandResponse = await _mediator.Send(command);
         return Created(""Get{entityName}"", commandResponse);
     }}";

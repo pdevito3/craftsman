@@ -20,7 +20,6 @@ public abstract class FeatureType : SmartEnum<FeatureType>
     {
     }
     public abstract string FeatureName(string entityName, string entityPlural, string featureName = null);
-    public abstract string CommandName(string command, string entityName);
     public abstract string BffApiName(string entityName, string entityPlural);
     public abstract string NextJsApiName(string entityName, string entityPlural);
     public abstract string DefaultPermission(string entityPlural);
@@ -31,8 +30,6 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string entityPlural, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Get{entityName}";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Get{entityName}Query";
         public override string BffApiName(string entityName, string entityPlural)
             => $"get{entityName}";
         public override string NextJsApiName(string entityName, string entityPlural)
@@ -47,8 +44,6 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string entityPlural, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Get{entityName}List";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Get{entityName}ListQuery";
         public override string BffApiName(string entityName, string entityPlural)
             => $"get{entityPlural}List";
         public override string NextJsApiName(string entityName, string entityPlural)
@@ -63,8 +58,6 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string entityPlural, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Add{entityName}";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Add{entityName}Command";
         public override string BffApiName(string entityName, string entityPlural)
             => $"add{entityName}";
         public override string NextJsApiName(string entityName, string entityPlural)
@@ -79,8 +72,6 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string entityPlural, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Delete{entityName}";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Delete{entityName}Command";
         public override string BffApiName(string entityName, string entityPlural)
             => $"delete{entityName}";
         public override string NextJsApiName(string entityName, string entityPlural)
@@ -96,8 +87,6 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string entityPlural, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Update{entityName}";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Update{entityName}Command";
         public override string BffApiName(string entityName, string entityPlural)
             => $"update{entityName}";
         public override string NextJsApiName(string entityName, string entityPlural)
@@ -126,8 +115,6 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string entityPlural, string featureName = null)
             => featureName.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? throw new Exception("Ad Hoc Features require a name path.");
         public override string BffApiName(string entityName, string entityPlural)
             => throw new Exception("Ad Hoc Features need to be manually configured in a BFF.");
         public override string NextJsApiName(string entityName, string entityPlural)
@@ -142,8 +129,6 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string entityPlural, string featureName = null)
             => featureName.EscapeSpaces() ?? $"Add{entityName}List";
-        public override string CommandName(string command, string entityName)
-            => command.EscapeSpaces() ?? $"Add{entityName}ListCommand";
         public override string BffApiName(string entityName, string entityPlural)
             => throw new Exception("Add List Features need to be manually configured in a BFF.");
         public override string NextJsApiName(string entityName, string entityPlural)
@@ -158,8 +143,6 @@ public abstract class FeatureType : SmartEnum<FeatureType>
 
         public override string FeatureName(string entityName, string entityPlural, string featureName = null)
             => featureName.EscapeSpaces() ?? $"GetAll{entityPlural}";
-        public override string CommandName(string command, string entityPlural)
-            => command.EscapeSpaces() ?? $"GetAll{entityPlural}Query";
         public override string BffApiName(string entityName, string entityPlural)
             => $"getAll{entityPlural}";
         public override string NextJsApiName(string entityName, string entityPlural)

@@ -24,7 +24,6 @@ public class EmptyFeatureBuilder
         string projectBaseName, Feature newFeature)
     {
         var featureClassName = newFeature.Name;
-        var commandName = newFeature.Command;
         var returnPropType = newFeature.ResponseType;
 
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
@@ -51,15 +50,15 @@ using System.Collections.Generic;
 
 public static class {featureClassName}
 {{
-    public sealed record {commandName}() : IRequest<{returnPropType}>;
+    public sealed record Request() : IRequest<{returnPropType}>;
 
-    public sealed class Handler : IRequestHandler<{commandName}, {returnPropType}>
+    public sealed class Handler : IRequestHandler<Request, {returnPropType}>
     {{
         {handlerCtor}
 
-        public async Task<{returnPropType}> Handle({commandName} request, CancellationToken cancellationToken)
+        public async Task<{returnPropType}> Handle(Request request, CancellationToken cancellationToken)
         {{
-            // Add your command logic for your feature here!
+            // Add your logic for your feature here!
 
             return {returnValue};
         }}

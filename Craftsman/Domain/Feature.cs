@@ -35,13 +35,6 @@ public class Feature
         set => _featureName = value;
     }
 
-    private string _command = null;
-    public string Command
-    {
-        get => FeatureType.CommandName(_command, EntityName);
-        set => _command = value;
-    }
-
     private string _responseType = "bool";
     public string ResponseType
     {

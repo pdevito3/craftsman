@@ -25,7 +25,6 @@ public class CommandAddListBuilder
     public static string GetCommandFileText(string classNamespace, Entity entity, string srcDirectory, Feature feature, string projectBaseName, bool isProtected, string permissionName)
     {
         var className = feature.Name;
-        var addCommandName = feature.Command;
         var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
         var readDtoAsList = $"List<{readDto}>";
         var createDto = FileNames.GetDtoName(entity.Name, Dto.Creation);
@@ -65,7 +64,7 @@ public class CommandAddListBuilder
 
         var batchFkCheck = !string.IsNullOrEmpty(feature.BatchPropertyName)
             ? @$"
-            var {parentEntityNameLowercaseFirst} = await _{repoInterfacePropBatchFk}.GetById(request.{feature.BatchPropertyName}, cancellationToken: cancellationToken);{Environment.NewLine}{Environment.NewLine}            "
+            var {parentEntityNameLowercaseFirst} = await _{repoInterfacePropBatchFk}.GetById(command.{feature.BatchPropertyName}, cancellationToken: cancellationToken);{Environment.NewLine}{Environment.NewLine}            "
             : "";
         var batchFkUsingRepo =  !string.IsNullOrEmpty(feature.BatchPropertyName)
             ? @$"{Environment.NewLine}using {entityServicesClassPathBatchFk.ClassNamespace};"
@@ -93,9 +92,9 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed record {addCommandName}({createDto} {commandProp}, {feature.BatchPropertyType} {feature.BatchPropertyName}) : IRequest<{readDtoAsList}>;
+    public sealed record Command({createDto} {commandProp}, {feature.BatchPropertyType} {feature.BatchPropertyName}) : IRequest<{readDtoAsList}>;
 
-    public sealed class Handler : IRequestHandler<{addCommandName}, {readDtoAsList}>
+    public sealed class Handler : IRequestHandler<Command, {readDtoAsList}>
     {{
         private readonly {repoInterface} _{repoInterfaceProp};{batchFkDiReadonly}
         private readonly IUnitOfWork _unitOfWork;{heimGuardField}
@@ -106,9 +105,9 @@ public static class {className}
             _unitOfWork = unitOfWork;{batchFkDiPropSetter}{heimGuardSetter}
         }}
 
-        public async Task<{readDtoAsList}> Handle({addCommandName} request, CancellationToken cancellationToken)
+        public async Task<{readDtoAsList}> Handle(Command command, CancellationToken cancellationToken)
         {{{permissionCheck}
-            {batchFkCheck}var {entityNameLowercaseListVar}ToAdd = request.{commandProp}.ToList();
+            {batchFkCheck}var {entityNameLowercaseListVar}ToAdd = command.{commandProp}.ToList();
             var {entityNameLowercaseListVar} = new List<{entityName}>();
             foreach (var {entityNameLowercase} in {entityNameLowercaseListVar}ToAdd)
             {{

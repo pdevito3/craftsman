@@ -28,7 +28,6 @@ public class AddListCommandTestBuilder
     {
         var featureName = FileNames.AddEntityFeatureClassName(entity.Name);
         var testFixtureName = FileNames.GetIntegrationTestFixtureName();
-        var commandName = feature.Command;
 
         var dtoUtilClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var fakerClassPath = ClassPathHelper.TestFakesClassPath(testDirectory, "", entity.Name, projectBaseName);
@@ -36,7 +35,7 @@ public class AddListCommandTestBuilder
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
         var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
-        var permissionTest = !featureIsProtected ? null : GetPermissionTest(commandName, entity, featureName, permission);
+        var permissionTest = !featureIsProtected ? null : GetPermissionTest(entity, featureName, permission);
 
         return @$"namespace {classPath.ClassNamespace};
 
@@ -75,7 +74,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var {fakeEntityVariableNameTwo} = new {fakeCreationDto}().Generate();
 
         // Act
-        var command = new {feature.Name}.{feature.Command}(new List<{createDto}>() {{{fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}}}, {fakeParentEntity}.Id);
+        var command = new {feature.Name}.Command(new List<{createDto}>() {{{fakeEntityVariableNameOne}, {fakeEntityVariableNameTwo}}}, {fakeParentEntity}.Id);
         var {lowercaseEntityName}Returned = await testingServiceScope.SendAsync(command);
         var firstReturned = {lowercaseEntityName}Returned.FirstOrDefault();
         var secondReturned = {lowercaseEntityName}Returned.Skip(1).FirstOrDefault();
@@ -137,7 +136,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         return string.Join(Environment.NewLine, dtoAssertions, entityAssertions);
     }
 
-    private static string GetPermissionTest(string commandName, Entity entity, string featureName, string permission)
+    private static string GetPermissionTest(Entity entity, string featureName, string permission)
     {
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
         var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}List";
@@ -153,7 +152,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var {fakeEntityVariableName} = new List<{fakeCreationDto}>();
 
         // Act
-        var command = new {featureName}.{commandName}({fakeEntityVariableName});
+        var command = new {featureName}.Command({fakeEntityVariableName});
         var act = () => testingServiceScope.SendAsync(command);
 
         // Assert

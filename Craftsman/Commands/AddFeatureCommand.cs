@@ -136,7 +136,6 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
 
 
         var feature = AskFeature();
-        var command = AskCommand(feature);
         var responseType = AskResponseType();
         var producer = AskIsProducer();
         var entityPluralForDir = AskEntityPluralForDir();
@@ -146,7 +145,6 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
             .RoundedBorder()
             .BorderColor(Color.Grey)
             .AddRow("[grey]Feature Name[/]", feature)
-            .AddRow("[grey]Command Name[/]", command)
             .AddRow("[grey]Response Type[/]", responseType)
             .AddRow("[grey]Is Producer[/]", producer.ToString())
         );
@@ -155,7 +153,6 @@ public class AddFeatureCommand : Command<AddFeatureCommand.Settings>
         {
             Type = "AdHoc",
             Name = feature,
-            Command = command,
             ResponseType = responseType,
             EntityPlural = entityPluralForDir
         };
