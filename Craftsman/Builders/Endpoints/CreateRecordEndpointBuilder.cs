@@ -18,6 +18,7 @@ public class CreateRecordEndpointBuilder
         var singleResponse = $@"{readDto}";
         var addRecordAuthorizations = feature.IsProtected ? EndpointSwaggerCommentBuilders.BuildAuthorizations() : "";
         var creationPropName = $"{lowercaseEntityVariable}ForCreation";
+        var lowercasePrimaryKey = $"{entity.Name.LowercaseFirstLetter()}Id";
 
         return @$"{EndpointSwaggerCommentBuilders.GetSwaggerComments_CreateRecord(entity, addSwaggerComments, singleResponse, addRecordAuthorizations.Length > 0)}{addRecordAuthorizations}
     [HttpPost(Name = ""Add{entityName}"")]
@@ -27,7 +28,7 @@ public class CreateRecordEndpointBuilder
         var commandResponse = await _mediator.Send(command);
 
         return CreatedAtRoute(""Get{entityName}"",
-            new {{ commandResponse.{primaryKeyProp.Name} }},
+            new {{ {lowercasePrimaryKey} = commandResponse.{primaryKeyProp.Name} }},
             commandResponse);
     }}";
     }
