@@ -28,8 +28,7 @@ public class CommandUpdateRecordBuilder
         var updateDto = FileNames.GetDtoName(entity.Name, Dto.Update);
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
-        var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
-        var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
+        var lowercasePrimaryKey = $"{entity.Name}Id";
         var entityNameLowercase = entity.Name.LowercaseFirstLetter();
         var commandProp = $"Updated{entity.Name}Data";
         var newEntityDataProp = $"updated{entity.Name}Data";
@@ -68,7 +67,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed record {updateCommandName}({primaryKeyPropType} {primaryKeyPropName}, {updateDto} {commandProp}) : IRequest;
+    public sealed record {updateCommandName}({primaryKeyPropType} {lowercasePrimaryKey}, {updateDto} {commandProp}) : IRequest;
 
     public sealed class Handler : IRequestHandler<{updateCommandName}>
     {{
@@ -83,7 +82,7 @@ public static class {className}
 
         public async Task Handle({updateCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            var {updatedEntityProp} = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
+            var {updatedEntityProp} = await _{repoInterfaceProp}.GetById(request.{lowercasePrimaryKey}, cancellationToken: cancellationToken);
             var {modelToUpdateVariableName} = request.{commandProp}.To{EntityModel.Update.GetClassName(entity.Name)}();
             {updatedEntityProp}.Update({modelToUpdateVariableName});
 

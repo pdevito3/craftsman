@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Moved `BasePaginationParameters` and `Exceptions` and `ValueObject` to api project (#124)
 * Package bumps and cleanup with the exception of pulumi
 * Remove `Command` prop from feature scaffolding
+* Better property names for controllers and requests
 
 ### Fixed
 

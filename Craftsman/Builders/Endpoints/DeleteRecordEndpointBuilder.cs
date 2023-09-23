@@ -8,7 +8,7 @@ public class DeleteRecordEndpointBuilder
 {
     public static string GetEndpointTextForDeleteRecord(Entity entity, bool addSwaggerComments, Feature feature)
     {
-        var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
+        var lowercasePrimaryKey = $"{entity.Name.LowercaseFirstLetter()}Id";
         var entityName = entity.Name;
         var primaryKeyProp = Entity.PrimaryKeyProperty;
         var deleteRecordCommandMethodName = FileNames.CommandDeleteName();

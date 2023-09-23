@@ -26,7 +26,7 @@ public class CommandDeleteRecordBuilder
         var deleteCommandName = FileNames.CommandDeleteName();
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
-        var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
+        var lowercasePrimaryKey = $"{entity.Name}Id";
         var primaryKeyPropNameLowercase = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
         var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
@@ -54,7 +54,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed record {deleteCommandName}({primaryKeyPropType} {primaryKeyPropName}) : IRequest;
+    public sealed record {deleteCommandName}({primaryKeyPropType} {lowercasePrimaryKey}) : IRequest;
 
     public sealed class Handler : IRequestHandler<{deleteCommandName}>
     {{
@@ -69,7 +69,7 @@ public static class {className}
 
         public async Task Handle({deleteCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            var recordToDelete = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
+            var recordToDelete = await _{repoInterfaceProp}.GetById(request.{lowercasePrimaryKey}, cancellationToken: cancellationToken);
             _{repoInterfaceProp}.Remove(recordToDelete);
             await _unitOfWork.CommitChanges(cancellationToken);
         }}

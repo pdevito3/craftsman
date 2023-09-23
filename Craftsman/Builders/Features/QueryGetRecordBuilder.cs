@@ -28,8 +28,7 @@ public class QueryGetRecordBuilder
         var readDto = FileNames.GetDtoName(entity.Name, Dto.Read);
 
         var primaryKeyPropType = Entity.PrimaryKeyProperty.Type;
-        var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
-        var primaryKeyPropNameLowercase = primaryKeyPropName.LowercaseFirstLetter();
+        var lowercasePrimaryKey = $"{entity.Name}Id";
         var repoInterface = FileNames.EntityRepositoryInterface(entity.Name);
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
 
@@ -57,7 +56,7 @@ using MediatR;
 
 public static class {className}
 {{
-    public sealed record {queryRecordName}({primaryKeyPropType} {primaryKeyPropName}) : IRequest<{readDto}>;
+    public sealed record {queryRecordName}({primaryKeyPropType} {lowercasePrimaryKey}) : IRequest<{readDto}>;
 
     public sealed class Handler : IRequestHandler<{queryRecordName}, {readDto}>
     {{
@@ -70,7 +69,7 @@ public static class {className}
 
         public async Task<{readDto}> Handle({queryRecordName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            var result = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
+            var result = await _{repoInterfaceProp}.GetById(request.{lowercasePrimaryKey}, cancellationToken: cancellationToken);
             return result.To{readDto}();
         }}
     }}

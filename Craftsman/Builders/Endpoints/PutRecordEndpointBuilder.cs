@@ -10,7 +10,7 @@ public class PutRecordEndpointBuilder
     public static string GetEndpointTextForPutRecord(Entity entity, bool addSwaggerComments, Feature feature)
     {
         var lowercaseEntityVariable = entity.Name.LowercaseFirstLetter();
-        var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
+        var lowercasePrimaryKey = $"{entity.Name.LowercaseFirstLetter()}Id";
         var entityName = entity.Name;
         var updateDto = FileNames.GetDtoName(entityName, Dto.Update);
         var primaryKeyProp = Entity.PrimaryKeyProperty;

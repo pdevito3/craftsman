@@ -9,7 +9,7 @@ public class GetRecordEndpointBuilder
 {
     public static string GetEndpointTextForGetRecord(Entity entity, bool addSwaggerComments, Feature feature)
     {
-        var lowercasePrimaryKey = Entity.PrimaryKeyProperty.Name.LowercaseFirstLetter();
+        var lowercasePrimaryKey = $"{entity.Name.LowercaseFirstLetter()}Id";
         var entityName = entity.Name;
         var entityNamePlural = entity.Plural;
         var readDto = FileNames.GetDtoName(entityName, Dto.Read);
