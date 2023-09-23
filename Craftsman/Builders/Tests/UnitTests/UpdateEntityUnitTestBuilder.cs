@@ -54,11 +54,11 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void can_update_{entityName.LowercaseFirstLetter()}()
     {{
         // Arrange
-        var fake{entityName} = new {FileNames.FakeBuilderName(entityName)}().Build();
+        var {entityName.LowercaseFirstLetter()} = new {FileNames.FakeBuilderName(entityName)}().Build();
         var updated{entityName} = new {fakeUpdateModelName}().Generate();
         
         // Act
-        fake{entityName}.Update(updated{entityName});
+        {entityName.LowercaseFirstLetter()}.Update(updated{entityName});
 
         // Assert{GetAssertions(properties, entityName)}
     }}
@@ -67,16 +67,16 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
     public void queue_domain_event_on_update()
     {{
         // Arrange
-        var fake{entityName} = new {FileNames.FakeBuilderName(entityName)}().Build();
+        var {entityName.LowercaseFirstLetter()} = new {FileNames.FakeBuilderName(entityName)}().Build();
         var updated{entityName} = new {fakeUpdateModelName}().Generate();
-        fake{entityName}.DomainEvents.Clear();
+        {entityName.LowercaseFirstLetter()}.DomainEvents.Clear();
         
         // Act
-        fake{entityName}.Update(updated{entityName});
+        {entityName.LowercaseFirstLetter()}.Update(updated{entityName});
 
         // Assert
-        fake{entityName}.DomainEvents.Count.Should().Be(1);
-        fake{entityName}.DomainEvents.FirstOrDefault().Should().BeOfType(typeof({FileNames.EntityUpdatedDomainMessage(entityName)}));
+        {entityName.LowercaseFirstLetter()}.DomainEvents.Count.Should().Be(1);
+        {entityName.LowercaseFirstLetter()}.DomainEvents.FirstOrDefault().Should().BeOfType(typeof({FileNames.EntityUpdatedDomainMessage(entityName)}));
     }}
 }}";
     }
@@ -89,15 +89,15 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
             entityAssertions += entityProperty.Type switch
             {
                 "DateTime" or "DateTimeOffset" or "TimeOnly" =>
-                    $@"{Environment.NewLine}        fake{entityName}.{entityProperty.Name}.Should().BeCloseTo(updated{entityName}.{entityProperty.Name}, 1.Seconds());",
+                    $@"{Environment.NewLine}        {entityName.LowercaseFirstLetter()}.{entityProperty.Name}.Should().BeCloseTo(updated{entityName}.{entityProperty.Name}, 1.Seconds());",
                 "DateTime?" =>
-                    $@"{Environment.NewLine}        fake{entityName}.{entityProperty.Name}.Should().BeCloseTo((DateTime)updated{entityName}.{entityProperty.Name}, 1.Seconds());",
+                    $@"{Environment.NewLine}        {entityName.LowercaseFirstLetter()}.{entityProperty.Name}.Should().BeCloseTo((DateTime)updated{entityName}.{entityProperty.Name}, 1.Seconds());",
                 "DateTimeOffset?" =>
-                    $@"{Environment.NewLine}        fake{entityName}.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset)updated{entityName}.{entityProperty.Name}, 1.Seconds());",
+                    $@"{Environment.NewLine}        {entityName.LowercaseFirstLetter()}.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset)updated{entityName}.{entityProperty.Name}, 1.Seconds());",
                 "TimeOnly?" =>
-                    $@"{Environment.NewLine}        fake{entityName}.{entityProperty.Name}.Should().BeCloseTo((TimeOnly)updated{entityName}.{entityProperty.Name}, 1.Seconds());",
+                    $@"{Environment.NewLine}        {entityName.LowercaseFirstLetter()}.{entityProperty.Name}.Should().BeCloseTo((TimeOnly)updated{entityName}.{entityProperty.Name}, 1.Seconds());",
                 _ =>
-                    $@"{Environment.NewLine}        fake{entityName}.{entityProperty.Name}.Should().Be(updated{entityName}.{entityProperty.Name});"
+                    $@"{Environment.NewLine}        {entityName.LowercaseFirstLetter()}.{entityProperty.Name}.Should().Be(updated{entityName}.{entityProperty.Name});"
             };
         }
 
