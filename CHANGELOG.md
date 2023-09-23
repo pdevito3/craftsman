@@ -9,11 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+* None yet!
+
+## [0.23.0] - 09/22/2023
+
 ### Added
 
 * New `GetAll` and `Job` features
 * Hangfire integration
-  * ***TBD HOW TO UPDATE***
 
 
 ### Updates
