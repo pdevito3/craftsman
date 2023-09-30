@@ -16,7 +16,7 @@ public class QueryGetAllBuilder
 
     public void CreateQuery(string srcDirectory, Entity entity, string projectBaseName, bool isProtected, string permissionName)
     {
-        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetAllEntitiesFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
+        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetAllEntitiesFeatureClassName(entity.Plural)}.cs", entity.Plural, projectBaseName);
         var fileText = GetQueryFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName, isProtected, permissionName);
         _utilities.CreateFile(classPath, fileText);
     }
