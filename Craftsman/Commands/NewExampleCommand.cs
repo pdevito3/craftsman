@@ -243,6 +243,7 @@ BoundedContexts:
     Properties:
     - Name: Name
       Type: string
+      IsLogMasked: true
   - Name: Ingredient
     Features:
     - Type: GetList

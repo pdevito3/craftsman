@@ -33,19 +33,19 @@ public class ProgramBuilder
 app.UseAuthorization();" : "";
         var corsName = $"{projectBaseName}CorsPolicy";
 
-        return @$"using Serilog;
+        return @$"using Destructurama;
+using Serilog;
 using Hangfire;{errorUsingStatement}
 using {apiAppExtensionsClassPath.ClassNamespace};
-using {hostExtClassPath.ClassNamespace};
 using {configClassPath.ClassNamespace};
 using {dbClassPath.ClassNamespace};
 using {hangfireUtilsClassPath.ClassNamespace};
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.AddLoggingConfiguration(builder.Environment);
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.WithProperty(""ApplicationName"", builder.Environment.ApplicationName)
+    .Destructure.UsingAttributes()
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -75,7 +75,6 @@ app.MapHealthChecks(""api/health"");
 app.UseSerilogRequestLogging();
 app.UseRouting();{appAuth}
 
-app.MapHealthChecks(""api/health"");
 app.MapControllers();
 
 app.UseHangfireDashboard(""/hangfire"", new DashboardOptions

@@ -145,6 +145,8 @@ public class EntityProperty
     }
 
     public List<string> SmartNames { get; set; } = new List<string>();
+    
+    public bool IsLogMasked { get; set; }
 
     public List<SmartOption> GetSmartOptions() => SmartNames.Select((name, index) => new SmartOption { Name = name, Value = index}).ToList();
 

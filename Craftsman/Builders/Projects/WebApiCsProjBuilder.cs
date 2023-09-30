@@ -46,6 +46,7 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""Ardalis.SmartEnum"" Version=""7.0.0"" />
     <PackageReference Include=""AutoBogus"" Version=""2.13.1"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
+    <PackageReference Include=""Destructurama.Attributed"" Version=""3.1.0"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""7.0.2"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""11.3.0"" />
     <PackageReference Include=""Hangfire"" Version=""1.8.5"" />

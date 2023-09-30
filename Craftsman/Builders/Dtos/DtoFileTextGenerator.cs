@@ -32,6 +32,8 @@ public sealed class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationPar
 
         return @$"namespace {dtoClassPath.ClassNamespace};
 
+using Destructurama.Attributed;
+
 public sealed record {FileNames.GetDtoName(entity.Name, dto)}
 {{
 {propString}
@@ -53,10 +55,21 @@ public sealed record {FileNames.GetDtoName(entity.Name, dto)}
             if (!props[eachProp].IsPrimitiveType)
                 continue;
 
+            var attributes = AttributeBuilder(props[eachProp]);
             string newLine = eachProp == props.Count - 1 ? "" : Environment.NewLine;
-            propString += $@"    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
+            propString += $@"{attributes}    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
         }
 
         return propString;
+    }
+
+    private static string AttributeBuilder(EntityProperty entityProperty)
+    {
+        var attributeString = "";
+        
+        if(entityProperty.IsLogMasked)
+            attributeString += $@"    [LogMasked]{Environment.NewLine}";
+
+        return attributeString;
     }
 }

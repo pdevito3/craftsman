@@ -67,6 +67,7 @@ using {modelsClassPath.ClassNamespace};";
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Destructurama.Attributed;
 using {exceptionClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};{foreignEntityUsings}
@@ -232,6 +233,9 @@ public abstract class BaseEntity
         if (entityProperty.IsMany || !entityProperty.IsPrimitiveType)
             attributeString += $@"    [JsonIgnore, IgnoreDataMember]{Environment.NewLine}";
         attributeString += ColumnAttributeBuilder(entityProperty);
+        
+        if(entityProperty.IsLogMasked)
+            attributeString += $@"    [LogMasked]{Environment.NewLine}";
 
         return attributeString;
     }

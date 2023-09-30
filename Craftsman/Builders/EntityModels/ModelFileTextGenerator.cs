@@ -16,6 +16,8 @@ public static class EntityModelFileTextGenerator
 
         return @$"namespace {modelClassPath.ClassNamespace};
 
+using Destructurama.Attributed;
+
 public sealed class {model.GetClassName(entity.Name)}
 {{
 {propString}
@@ -37,10 +39,21 @@ public sealed class {model.GetClassName(entity.Name)}
             if (!props[eachProp].IsPrimitiveType)
                 continue;
 
+            var attributes = AttributeBuilder(props[eachProp]);
             string newLine = eachProp == props.Count - 1 ? "" : Environment.NewLine;
-            propString += $@"    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
+            propString += $@"{attributes}    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
         }
 
         return propString;
+    }
+
+    private static string AttributeBuilder(EntityProperty entityProperty)
+    {
+        var attributeString = "";
+        
+        if(entityProperty.IsLogMasked)
+            attributeString += $@"    [LogMasked]{Environment.NewLine}";
+
+        return attributeString;
     }
 }
