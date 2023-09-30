@@ -19,15 +19,35 @@ public class AppSettingsBuilder
     {
         var appSettingFilename = FileNames.GetAppSettingsName();
         var classPath = ClassPathHelper.WebApiAppSettingsClassPath(srcDirectory, $"{appSettingFilename}", projectBaseName);
-        var fileText = GetAppSettingsText(dbName);
+        var fileText = GetAppSettingsText();
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string GetAppSettingsText(string dbName)
+    private static string GetAppSettingsText()
     {
         // won't build properly if it has an empty string
         return @$"{{
   ""AllowedHosts"": ""*"",
+  ""Serilog"": {{
+    ""MinimumLevel"": {{
+      ""Default"": ""Information"",
+      ""Override"": {{
+        ""Microsoft.Hosting.Lifetime"": ""Information"",
+        ""Microsoft.AspNetCore.Authentication"": ""Information""
+      }}
+    }},
+    ""Enrich"": [
+      ""FromLogContext"", 
+      ""WithExceptionDetails"",
+      ""WithMachineName"",
+      ""WithThreadId""
+    ],
+    ""WriteTo"": [
+      {{
+        ""Name"": ""Console""
+      }}
+    ]
+  }}
 }}
 ";
     }

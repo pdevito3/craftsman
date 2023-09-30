@@ -43,6 +43,12 @@ using {hangfireUtilsClassPath.ClassNamespace};
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.AddLoggingConfiguration(builder.Environment);
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.WithProperty(""ApplicationName"", builder.Environment.ApplicationName)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.ConfigureServices();
 var app = builder.Build();
@@ -65,6 +71,7 @@ app.UseHttpsRedirection();
 
 app.UseCors(""{corsName}"");
 
+app.MapHealthChecks(""api/health"");
 app.UseSerilogRequestLogging();
 app.UseRouting();{appAuth}
 

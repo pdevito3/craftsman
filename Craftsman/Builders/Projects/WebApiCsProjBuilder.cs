@@ -76,6 +76,7 @@ public class WebApiCsProjBuilder
 
     <PackageReference Include=""Serilog.AspNetCore"" Version=""7.0.0"" />
     <PackageReference Include=""Serilog.Enrichers.AspNetCore"" Version=""1.0.0"" />
+    <PackageReference Include=""Serilog.Enrichers.Environment"" Version=""2.2.0"" />
     <PackageReference Include=""Serilog.Exceptions"" Version=""8.4.0"" />
     <PackageReference Include=""Serilog.Enrichers.Process"" Version=""2.0.2"" />
     <PackageReference Include=""Serilog.Enrichers.Thread"" Version=""3.1.0"" />

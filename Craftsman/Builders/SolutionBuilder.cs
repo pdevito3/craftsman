@@ -67,7 +67,6 @@ public class SolutionBuilder
         new ServiceConfigurationBuilder(_utilities).CreateWebAppServiceConfiguration(srcDirectory, projectBaseName, useCustomErrorHandler);
         new ConstsResourceBuilder(_utilities).CreateLocalConfig(srcDirectory, projectBaseName);
         new QueryKitConfigBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
-        new LoggingConfigurationBuilder(_utilities).CreateWebApiConfigFile(srcDirectory, projectBaseName);
         new InfrastructureServiceRegistrationBuilder(_utilities).CreateInfrastructureServiceExtension(srcDirectory, projectBaseName);
 
         if (useCustomErrorHandler)
