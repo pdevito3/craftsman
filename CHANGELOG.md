@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Logging was refactored to use app settings
+* Add missing HttpClientInstrumentation on OTel
 
 ## [0.23.2] - 09/29/2023
 

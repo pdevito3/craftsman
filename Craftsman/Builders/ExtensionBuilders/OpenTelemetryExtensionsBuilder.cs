@@ -67,11 +67,9 @@ public static class OpenTelemetryServiceExtension
                 tracerBuilder.SetResourceBuilder(resourceBuilder)
                     .AddSource(""MassTransit"")
                     .AddSource(""{dbProvider.OTelSource()}"")
-                    // The following subscribes to activities from Activity Source
-                    // named ""MyCompany.MyProduct.MyLibrary"" only.
-                    // .AddSource(""MyCompany.MyProduct.MyLibrary"")
                     .AddSqlClientInstrumentation(opt => opt.SetDbStatementForText = true)
                     .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation()
                     .AddJaegerExporter(o =>
                     {{
