@@ -61,7 +61,7 @@ public static class HangfireConfig
         services.AddHangfire(config =>
         {{
             config
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                 .UseMemoryStorage()
                 .UseColouredConsoleLogProvider()
                 .UseSimpleAssemblyNameTypeSerializer()

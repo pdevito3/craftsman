@@ -19,6 +19,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.23.1] - 09/29/2023
 
+### Update
+
+* Hangfire CompatibilityLevel updated to latest
+
+## [0.23.1] - 09/29/2023
+
 ### Fixed
 
 * Entity usings for data annotations (#126)
