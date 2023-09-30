@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Logging was refactored to use app settings
 
-## [0.23.1] - 09/29/2023
+## [0.23.2] - 09/29/2023
 
 ### Update
 
