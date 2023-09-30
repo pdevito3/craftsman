@@ -65,6 +65,8 @@ using {modelsClassPath.ClassNamespace};";
         
         return @$"namespace {classNamespace};
 
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using {exceptionClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {domainEventsClassPath.ClassNamespace};{foreignEntityUsings}
