@@ -213,6 +213,13 @@ public class ApiScaffoldingService
             new AddProducerCommand(_console, _fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper)
                 .AddProducers(template.Producers, projectBaseName, solutionDirectory, srcDirectory, testDirectory);
 
+        if (template.IncludeGithubTestActions)
+        {
+            new GithubTestActionsBuilder(_utilities).CreateUnitTestAction(solutionDirectory, projectBaseName);
+            new GithubTestActionsBuilder(_utilities).CreateIntegrationTestAction(solutionDirectory, projectBaseName);
+            new GithubTestActionsBuilder(_utilities).CreateFunctionalTestAction(solutionDirectory, projectBaseName);
+        }
+        
         new WebApiDockerfileBuilder(_utilities).CreateStandardDotNetDockerfile(srcDirectory, projectBaseName);
         new DockerIgnoreBuilder(_utilities).CreateDockerIgnore(srcDirectory, projectBaseName);
         // new DockerComposeBuilders(_utilities, _fileSystem).AddBoundaryToDockerCompose(solutionDirectory,

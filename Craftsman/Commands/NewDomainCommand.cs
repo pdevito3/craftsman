@@ -105,6 +105,12 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
         // migrations
         _dbMigrator.RunDbMigrations(domainProject.BoundedContexts, solutionDirectory);
 
+        // github
+        if (domainProject.IncludeDependabot)
+        {
+            new GithubDependabotBuilder(_utilities).CreateFile(solutionDirectory);
+        }
+        
         //final
         new ReadmeBuilder(_utilities).CreateReadme(solutionDirectory, domainProject.DomainName);
 

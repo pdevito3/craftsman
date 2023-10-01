@@ -20,4 +20,5 @@ public class DomainProject
     public AuthServerTemplate AuthServer { get; set; } = null;
 
     public BffTemplate Bff { get; set; } = null;
+    public bool IncludeDependabot { get; set; } = true;
 }

@@ -82,4 +82,5 @@ public class ApiTemplate
 
     public DockerConfig DockerConfig { get; set; } = new DockerConfig();
     public bool UseCustomErrorHandler { get; set; } = false;
+    public bool IncludeGithubTestActions { get; set; } = true;
 }

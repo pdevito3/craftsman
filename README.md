@@ -42,6 +42,8 @@ Have a request for something you don't see in the project? Join [our discord](ht
 
 ✅ Logging enhancements and masking
 
+✅ Dependabot and Github Actions for tests
+
 ### Some 0.23 highlights
 
 ✅ Moq -> NSub

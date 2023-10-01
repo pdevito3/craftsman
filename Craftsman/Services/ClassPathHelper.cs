@@ -18,6 +18,16 @@ public static class ClassPathHelper
     {
         return new ClassPath(solutionDirectory, "", className);
     }
+    
+    public static ClassPath GithubClassPath(string solutionDirectory, string className)
+    {
+        return new ClassPath(solutionDirectory, ".github", className);
+    }
+    
+    public static ClassPath GithubWorkflowsClassPath(string solutionDirectory, string className)
+    {
+        return new ClassPath(solutionDirectory, Path.Combine(".github", "workflows"), className);
+    }
 
     public static ClassPath MessagesClassPath(string solutionDirectory, string className)
     {
