@@ -65,15 +65,15 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
-        await testingServiceScope.InsertAsync({fakeEntityVariableName});
-        var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
-            .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
+        var {lowercaseEntityName} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
+        await testingServiceScope.InsertAsync({lowercaseEntityName});
 
         // Act
         var command = new {featureName}.{commandName}({lowercaseEntityName}.{pkName});
         await testingServiceScope.SendAsync(command);
-        var {dbResponseVariableName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}.CountAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}.{pkName}));
+        var {dbResponseVariableName} = await testingServiceScope
+            .ExecuteDbContextAsync(db => db.{entity.Plural}
+                .CountAsync({entity.Lambda} => {entity.Lambda}.Id == {lowercaseEntityName}.{pkName}));
 
         // Assert
         {dbResponseVariableName}.Should().Be(0);
