@@ -28,9 +28,14 @@ updates:
     # Targeted directory, it will look for any csProj file recursively.
     directory: ""/""
     schedule:
-      interval: ""weekly""
-      # wednesday so we can get the latest .net release from tuesday on the weeks it does drop
-      day: ""wednesday""
+      interval: ""daily""
+    groups:
+      microsoft:
+        patterns:
+        - ""Microsoft*""
+        update-types:
+        - ""minor""
+        - ""patch""
     commit-message:      
       prefix: ""Package Dependencies""
     # Temporarily disable PR limit, till initial dependency update goes through
