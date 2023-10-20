@@ -7,6 +7,7 @@ using System.IO.Abstractions;
 using Domain;
 using Domain.Enums;
 using Helpers;
+using Humanizer;
 using Services;
 
 public class EntityModifier
@@ -176,6 +177,72 @@ public class EntityModifier
                     {
                         newText += @$"{Environment.NewLine}{parentUsingStatement}";
                         usingStatementHasBeenAdded = true;
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        _fileSystem.File.Delete(classPath.FullClassPath);
+        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+    }
+
+    public void AddStringArrayManagement(string srcDirectory, 
+        EntityProperty property,
+        string entityName,
+        string entityPlural, 
+        string projectBaseName)
+    {
+        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entityName}.cs", entityPlural, projectBaseName);
+
+        
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        {
+            _consoleWriter.WriteInfo($"The `{classPath.FullClassPath}` file could not be found.");
+            return;
+        }
+        
+        var arrayPropNameSingular = property.Name.Singularize().UppercaseFirstLetter();
+        var arrayPropNameSingularLowerFirst = property.Name.Singularize().LowercaseFirstLetter();
+        var arrayPropPlural = property.Name.UppercaseFirstLetter();
+        var arrayPropPluralLowerFirst = property.Name.LowercaseFirstLetter();
+        var managementText = $@"    public {entityName} Add{arrayPropNameSingular}(string {arrayPropNameSingularLowerFirst})
+    {{
+        {arrayPropPlural} ??= Array.Empty<string>();
+        {arrayPropPlural} = {arrayPropPlural}.Append({arrayPropNameSingularLowerFirst}).ToArray();
+        return this;
+    }}
+
+    public {entityName} Remove{arrayPropNameSingular}(string {arrayPropNameSingularLowerFirst})
+    {{
+        {arrayPropPlural} ??= Array.Empty<string>();
+        {arrayPropPlural} = {arrayPropPlural}.Where(x => x != {arrayPropNameSingularLowerFirst}).ToArray();
+        return this;
+    }}
+
+    public {entityName} Set{arrayPropPlural}(string[] {arrayPropPluralLowerFirst})
+    {{
+        {arrayPropPlural} = {arrayPropPluralLowerFirst};
+        return this;
+    }}";
+        
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
+        {
+            using var output = _fileSystem.File.CreateText(tempPath);
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"Add Prop Methods Marker"))
+                    {
+                        newText = @$"{managementText}{Environment.NewLine}{Environment.NewLine}{line}";
                     }
 
                     output.WriteLine(newText);

@@ -111,6 +111,10 @@ public class {classPath.ClassNameWithoutExt} : TestBase
                     $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().Be({fakeEntityVariableName}.{entityProperty.Name});"
             };
         }
+        foreach (var entityProperty in properties.Where(x => x.IsStringArray && x.CanManipulate))
+        {
+            entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeEquivalentTo({fakeEntityVariableName}.{entityProperty.Name});";
+        }
 
         return entityAssertions;
     }

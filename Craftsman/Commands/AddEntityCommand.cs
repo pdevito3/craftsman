@@ -77,7 +77,8 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
             template.Entities,
             template.DbContextName,
             template.AddSwaggerComments,
-            useSoftDelete);
+            useSoftDelete,
+            DbProvider.Unknown);
     }
 
     private AddEntityTemplate GetDbContext(string srcDirectory, AddEntityTemplate template, string projectBaseName)

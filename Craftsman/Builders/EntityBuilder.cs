@@ -56,10 +56,32 @@ using {modelsClassPath.ClassNamespace};";
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         var createEntityVar = $"new{entity.Name.UppercaseFirstLetter()}";
-        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate && x.CanManipulate).Select(property =>
-            $"        {createEntityVar}.{property.Name} = {creationClassName.LowercaseFirstLetter()}.{property.Name};"));
-        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties.Where(x => x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate && x.CanManipulate).Select(property =>
-            $"        {property.Name} = {updateClassName.LowercaseFirstLetter()}.{property.Name};"));
+        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties
+            .Where(x => (x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate) || x.IsStringArray)
+            .Select(property =>
+                {
+                    if (property.IsPrimitiveType && property.GetDbRelationship.IsNone && property.CanManipulate)
+                        return
+                            $"        {createEntityVar}.{property.Name} = {creationClassName.LowercaseFirstLetter()}.{property.Name};";
+
+                    if(property.IsStringArray)
+                        return
+                            $"        {createEntityVar}.Set{property.Name}({creationClassName.LowercaseFirstLetter()}.{property.Name});";
+                    
+                    return string.Empty;
+                }));
+        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties
+            .Where(x => (x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate) || x.IsStringArray)
+            .Select(property =>
+                {
+                    if (property.IsPrimitiveType && property.GetDbRelationship.IsNone && property.CanManipulate)
+                        return $"        {property.Name} = {updateClassName.LowercaseFirstLetter()}.{property.Name};";
+                    
+                    if(property.IsStringArray)
+                        return $"        Set{property.Name}({updateClassName.LowercaseFirstLetter()}.{property.Name});";
+                    
+                    return string.Empty;
+                }));
 
 
         
@@ -103,6 +125,7 @@ public class {entity.Name} : BaseEntity
 }}";
     }
 
+    
     public static string GetBaseEntityFileText(string classNamespace, bool useSoftDelete)
     {
         var isDeletedProp = useSoftDelete
@@ -221,6 +244,9 @@ public abstract class BaseEntity
         if ((prop.Type.IsGuidPropertyType() && !prop.Type.Contains("?") && !prop.IsForeignKey))
             return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : "";
 
+        if (prop.IsStringArray)
+            return " = Array.Empty<string>();";
+
         return string.IsNullOrEmpty(defaultValue) ? "" : $" = {defaultValue};";
     }
 
@@ -230,7 +256,7 @@ public abstract class BaseEntity
         if (entityProperty.IsRequired)
             attributeString += @$"    [Required]{Environment.NewLine}";
     
-        if (!entityProperty.IsPrimitiveType)
+        if (!entityProperty.IsPrimitiveType && !entityProperty.IsStringArray)
             attributeString += $@"    [JsonIgnore, IgnoreDataMember]{Environment.NewLine}";
         attributeString += ColumnAttributeBuilder(entityProperty);
         

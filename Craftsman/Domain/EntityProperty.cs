@@ -37,6 +37,10 @@ public class EntityProperty
     {
         get => !string.IsNullOrEmpty(ForeignEntityName);
     }
+    
+    public bool IsStringArray => Type.ToLower()
+        .Trim()
+        .Replace("?", "") == "string[]";
 
     public bool IsPrimitiveType
     {

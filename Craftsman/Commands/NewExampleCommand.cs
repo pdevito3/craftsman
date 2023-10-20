@@ -210,20 +210,20 @@ BoundedContexts:
       Name: PerformFakeBookMigration
     Properties:
     - Name: Title
-      Type: string
     - Name: Visibility
       SmartNames:
       - Public
       - Friends Only
       - Private
     - Name: Directions
-      Type: string
     - Name: Rating
       Type: int?
     - Name: DateOfOrigin
       Type: DateOnly?
     - Name: HaveMadeItMyself
       Type: bool
+    - Name: Tags
+      Type: string[]
     - Name: Author
       Relationship: manyto1
       ForeignEntityName: Author

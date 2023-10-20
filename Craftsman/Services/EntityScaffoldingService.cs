@@ -47,7 +47,8 @@ public class EntityScaffoldingService
         List<Entity> entities,
         string dbContextName,
         bool addSwaggerComments,
-        bool useSoftDelete)
+        bool useSoftDelete,
+        DbProvider dbProvider)
     {
         foreach (var entity in entities)
         {
@@ -89,6 +90,7 @@ public class EntityScaffoldingService
         }
 
         AddRelationships(srcDirectory, projectBaseName, entities);
+        AddStringArrayItems(srcDirectory, projectBaseName, entities, dbProvider);
 
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);
     }
@@ -132,6 +134,31 @@ public class EntityScaffoldingService
             }
         }
     }
+
+    public void AddStringArrayItems(string srcDirectory, string projectBaseName, List<Entity> entities, DbProvider dbProvider)
+    {
+        foreach (var entity in entities)
+        {
+            var entityModifier = new EntityModifier(_fileSystem, _consoleWriter);
+            var stringArrayProps = entity.Properties.Where(x => x.IsStringArray).ToList();
+            foreach (var stringArrayProp in stringArrayProps)
+            {
+                entityModifier.AddStringArrayManagement(srcDirectory,
+                    stringArrayProp,
+                    entity.Name,
+                    entity.Plural,
+                    projectBaseName);
+                
+                new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddStringArrayProperty(srcDirectory, 
+                    entity.Name,
+                    stringArrayProp, 
+                    dbProvider,
+                    projectBaseName);
+            }
+            
+        }
+    }
+    
 
     public void ScaffoldRolePermissions(string solutionDirectory,
         string srcDirectory,

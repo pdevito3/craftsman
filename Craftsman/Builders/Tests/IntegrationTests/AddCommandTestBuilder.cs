@@ -126,6 +126,11 @@ public class {classPath.ClassNameWithoutExt} : TestBase
                     break;
             }
         }
+        foreach (var entityProperty in properties.Where(x => x.IsStringArray && x.CanManipulate))
+        {
+            dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeEquivalentTo({fakeEntityVariableName}.{entityProperty.Name});";
+            entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeEquivalentTo({fakeEntityVariableName}.{entityProperty.Name});";
+        }
 
         return string.Join(Environment.NewLine, dtoAssertions, entityAssertions);
     }

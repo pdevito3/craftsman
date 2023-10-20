@@ -100,6 +100,10 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
                     $@"{Environment.NewLine}        {entityName.LowercaseFirstLetter()}.{entityProperty.Name}.Should().Be(updated{entityName}.{entityProperty.Name});"
             };
         }
+        foreach (var entityProperty in properties.Where(x => x.IsStringArray && x.CanManipulate))
+        {
+            entityAssertions += $@"{Environment.NewLine}        {entityName.LowercaseFirstLetter()}.{entityProperty.Name}.Should().BeEquivalentTo(updated{entityName}.{entityProperty.Name});";
+        }
 
         return entityAssertions;
     }

@@ -44,6 +44,8 @@ Have a request for something you don't see in the project? Join [our discord](ht
 
 ✅ Dependabot and Github Actions for tests
 
+✅ `string[]` support for Postgres
+
 ### Some 0.23 highlights
 
 ✅ Moq -> NSub

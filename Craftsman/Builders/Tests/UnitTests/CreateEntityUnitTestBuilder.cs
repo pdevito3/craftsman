@@ -99,6 +99,10 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
                     $@"{Environment.NewLine}        {createdEntityVar}.{entityProperty.Name}.Should().Be({seedInfoVar}.{entityProperty.Name});"
             };
         }
+        foreach (var entityProperty in properties.Where(x => x.IsStringArray && x.CanManipulate))
+        {
+            entityAssertions += $@"{Environment.NewLine}        {createdEntityVar}.{entityProperty.Name}.Should().BeEquivalentTo({seedInfoVar}.{entityProperty.Name});";
+        }
 
         return entityAssertions;
     }

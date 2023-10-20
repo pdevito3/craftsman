@@ -117,6 +117,10 @@ public class {classPath.ClassNameWithoutExt} : TestBase
                     $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().Be(updated{entityName}Dto.{entityProperty.Name});"
             };
         }
+        foreach (var entityProperty in properties.Where(x => x.IsStringArray && x.CanManipulate))
+        {
+            entityAssertions += $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeEquivalentTo(updated{entityName}Dto.{entityProperty.Name});";
+        }
 
         return entityAssertions;
     }

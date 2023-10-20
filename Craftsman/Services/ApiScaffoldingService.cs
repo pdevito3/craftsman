@@ -140,7 +140,8 @@ public class ApiScaffoldingService
             template.Entities,
             template.DbContext.ContextName,
             template.SwaggerConfig.AddSwaggerComments,
-            template.UseSoftDelete);
+            template.UseSoftDelete,
+            template.DbContext.ProviderEnum);
 
         // config
         new EditorConfigBuilder(_utilities).CreateEditorConfig(srcDirectory, projectBaseName);

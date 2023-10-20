@@ -34,12 +34,14 @@ public sealed class {model.GetClassName(entity.Name)}
                 continue;
             if (!props[eachProp].CanManipulate && (model == EntityModel.Creation || model == EntityModel.Update))
                 continue;
-            if (!props[eachProp].IsPrimitiveType)
+            if (!props[eachProp].IsPrimitiveType && !props[eachProp].IsStringArray)
                 continue;
 
+            var defaultValue = props[eachProp].IsStringArray ? " = Array.Empty<string>();" : "";
+            
             var attributes = AttributeBuilder(props[eachProp]);
             string newLine = eachProp == props.Count - 1 ? "" : Environment.NewLine;
-            propString += $@"{attributes}    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
+            propString += $@"{attributes}    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{defaultValue}{newLine}";
         }
 
         return propString;

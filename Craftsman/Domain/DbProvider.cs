@@ -8,6 +8,7 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     public static readonly DbProvider Postgres = new PostgresType();
     public static readonly DbProvider SqlServer = new SqlServerType();
     public static readonly DbProvider MySql = new MySqlType();
+    public static readonly DbProvider Unknown = new UnknownType();
 
     protected DbProvider(string name, int value) : base(name, value)
     {
@@ -158,6 +159,35 @@ using Testcontainers.SqlEdge;";
             => throw new Exception(Response);
         public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)
              => throw new Exception(Response);
+        public override string TestingCsProjNugetPackages()
+            => throw new Exception(Response);
+    }
+
+    private class UnknownType : DbProvider
+    {
+        private const string Response = "The db provider is currently unknown.";
+        public UnknownType() : base(nameof(Unknown), 4) { }
+        public override string ApiPackageInclusionString(string version)
+            => throw new Exception(Response);
+        public override string OTelSource()
+            => throw new Exception(Response);
+        public override string DbRegistrationStatement()
+            => throw new Exception(Response);
+        public override string DbDisposal()
+            => throw new Exception(Response);
+        public override string TestingContainerDb()
+            => throw new Exception(Response);
+        public override string TestingDbSetupUsings() => null;
+        public override string TestingDbSetupMethod(string projectBaseName, bool isIntegrationTesting)
+            => throw new Exception(Response);
+        public override string IntegrationTestConnectionStringSetup(string configKeyName)
+            => throw new Exception(Response);
+        public override int Port()
+            => throw new Exception(Response);
+        public override string DbConnectionStringCompose(string dbHostName, string dbName, string dbUser, string dbPassword)
+            => throw new Exception(Response);
+        public override string DbConnectionString(string dbHostName, int? dbPort, string dbName, string dbUser, string dbPassword)
+            => throw new Exception(Response);
         public override string TestingCsProjNugetPackages()
             => throw new Exception(Response);
     }
