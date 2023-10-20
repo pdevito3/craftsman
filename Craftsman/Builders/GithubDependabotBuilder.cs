@@ -28,7 +28,8 @@ updates:
     # Targeted directory, it will look for any csProj file recursively.
     directory: ""/""
     schedule:
-      interval: ""daily""
+      interval: ""weekly""
+        day: ""wednesday"" 
     groups:
       microsoft:
         patterns:
