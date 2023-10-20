@@ -73,14 +73,12 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var lowercaseEntityPk = pkName.LowercaseFirstLetter();
         var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
-
         return $@"[Fact]
     public async Task can_patch_existing_{entity.Name.ToLower()}_in_db()
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}(){fakeParentIdRuleFor}.Generate());
+        var {fakeEntityVariableName} = {fakeEntity}.Generate(new {fakeCreationDto}().Generate());
         await testingServiceScope.InsertAsync({fakeEntityVariableName});
         var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
             .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));

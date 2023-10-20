@@ -112,7 +112,7 @@ public class CraftsmanUtilities : ICraftsmanUtilities
         var foreignProps = entity.Properties.Where(e => e.IsForeignKey).ToList();
         foreach (var entityProperty in foreignProps)
         {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany)
+            if (entityProperty.IsForeignKey)
             {
                 var parentClassPath =
                     ClassPathHelper.TestFakesClassPath(testDirectory, $"", entityProperty.ForeignEntityName, projectBaseName);

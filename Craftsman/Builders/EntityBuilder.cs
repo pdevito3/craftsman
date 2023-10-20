@@ -230,7 +230,7 @@ public abstract class BaseEntity
         if (entityProperty.IsRequired)
             attributeString += @$"    [Required]{Environment.NewLine}";
     
-        if (entityProperty.IsMany || !entityProperty.IsPrimitiveType)
+        if (!entityProperty.IsPrimitiveType)
             attributeString += $@"    [JsonIgnore, IgnoreDataMember]{Environment.NewLine}";
         attributeString += ColumnAttributeBuilder(entityProperty);
         

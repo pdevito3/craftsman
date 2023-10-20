@@ -12,7 +12,7 @@ public static class FunctionalTestServices
         fakeParentIdRuleFor = "";
         foreach (var entityProperty in entity.Properties)
         {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType)
+            if (entityProperty.IsForeignKey && entityProperty.IsPrimitiveType)
             {
                 var baseVarName = entityProperty.ForeignEntityName != entity.Name
                     ? $"{entityProperty.ForeignEntityName}"
@@ -35,7 +35,7 @@ public static class FunctionalTestServices
         fakeParentIdRuleFor = "";
         foreach (var entityProperty in entity.Properties)
         {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType && entityProperty.IsPrimitiveType)
+            if (entityProperty.IsForeignKey && entityProperty.IsPrimitiveType)
             {
                 var baseVarName = entityProperty.ForeignEntityName != entity.Name
                     ? $"{entityProperty.ForeignEntityName}"
@@ -73,7 +73,7 @@ public static class FunctionalTestServices
         fakeParentIdRuleForTwo = "";
         foreach (var entityProperty in entity.Properties)
         {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType && entityProperty.IsPrimitiveType)
+            if (entityProperty.IsForeignKey && entityProperty.IsPrimitiveType)
             {
                 var baseVarName = entityProperty.ForeignEntityName != entity.Name
                     ? $"{entityProperty.ForeignEntityName}"
@@ -104,7 +104,7 @@ public static class FunctionalTestServices
         fakeParentIdRuleForThree = "";
         foreach (var entityProperty in entity.Properties)
         {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType && entityProperty.IsPrimitiveType)
+            if (entityProperty.IsForeignKey && entityProperty.IsPrimitiveType)
             {
                 var baseVarName = entityProperty.ForeignEntityName != entity.Name
                     ? $"{entityProperty.ForeignEntityName}"

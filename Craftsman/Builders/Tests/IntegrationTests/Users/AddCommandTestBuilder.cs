@@ -54,18 +54,6 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         var fakeParent = "";
         var fakeParentIdRuleFor = "";
-        foreach (var entityProperty in entity.Properties)
-        {
-            if (entityProperty.IsForeignKey && !entityProperty.IsMany && entityProperty.IsPrimitiveType)
-            {
-                var fakeParentClass = FileNames.FakerName(entityProperty.ForeignEntityName);
-                var fakeParentCreationDto = FileNames.FakerName(FileNames.GetDtoName(entityProperty.ForeignEntityName, Dto.Creation));
-                fakeParent += @$"var fake{entityProperty.ForeignEntityName}One = {fakeParentClass}.Generate(new {fakeParentCreationDto}().Generate());
-        await testingServiceScope.InsertAsync(fake{entityProperty.ForeignEntityName}One);{Environment.NewLine}{Environment.NewLine}        ";
-                fakeParentIdRuleFor +=
-                    $"{Environment.NewLine}            .RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, _ => fake{entityProperty.ForeignEntityName}One.Id){Environment.NewLine}            ";
-            }
-        }
 
         return $@"[Fact]
     public async Task can_add_new_{entity.Name.ToLower()}_to_db()

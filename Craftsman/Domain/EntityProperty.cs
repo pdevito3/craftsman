@@ -35,11 +35,8 @@ public class EntityProperty
     /// </summary>
     public bool IsForeignKey
     {
-        get => !string.IsNullOrEmpty(ForeignEntityName)
-               || IsMany;
+        get => !string.IsNullOrEmpty(ForeignEntityName);
     }
-
-    public bool IsPrimativeForeignKey => IsForeignKey && !IsMany && IsPrimitiveType;
 
     public bool IsPrimitiveType
     {
@@ -68,19 +65,6 @@ public class EntityProperty
                 or "object"
                 or "guid";
         }
-    }
-
-    public bool IsMany
-    {
-        get => Type.StartsWith("Collection<")
-               || Type.StartsWith("ICollection<")
-               || Type.StartsWith("IEnumerable<")
-               || Type.StartsWith("Enumerable<")
-               || Type.StartsWith("Hashset<")
-               || Type.StartsWith("Dictionary<")
-               || Type.StartsWith("IDictionary<")
-               || Type.EndsWith("[]")
-               || Type.StartsWith("List<");
     }
 
     public bool IsChildRelationship { get; set; } = false;

@@ -34,8 +34,6 @@ public sealed class {model.GetClassName(entity.Name)}
                 continue;
             if (!props[eachProp].CanManipulate && (model == EntityModel.Creation || model == EntityModel.Update))
                 continue;
-            if (props[eachProp].IsForeignKey && props[eachProp].IsMany)
-                continue;
             if (!props[eachProp].IsPrimitiveType)
                 continue;
 

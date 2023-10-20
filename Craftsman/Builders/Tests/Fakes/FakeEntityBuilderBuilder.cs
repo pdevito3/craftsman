@@ -75,8 +75,6 @@ public class {FileNames.FakeBuilderName(entity.Name)}
                 continue;
             if (!props[eachProp].CanManipulate)
                 continue;
-            if (props[eachProp].IsForeignKey && props[eachProp].IsMany)
-                continue;
             if (!props[eachProp].IsPrimitiveType)
                 continue;
 

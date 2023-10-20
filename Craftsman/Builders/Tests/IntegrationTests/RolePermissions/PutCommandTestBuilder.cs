@@ -39,7 +39,6 @@ public class PutCommandTestBuilder
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var featuresClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, featureName, entity.Plural, projectBaseName);
 
-        var fakeParent = IntegrationTestServices.FakeParentTestHelpersForBuilders(entity, out var fakeParentIdRuleFor);
         var foreignEntityUsings = CraftsmanUtilities.GetForeignEntityUsings(testDirectory, entity, projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
@@ -57,8 +56,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        {fakeParent}var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}(){fakeParentIdRuleFor}.Build();
-        var updated{entity.Name}Dto = new {fakeUpdateDto}(){fakeParentIdRuleFor}.Generate();
+        var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
+        var updated{entity.Name}Dto = new {fakeUpdateDto}().Generate();
         await testingServiceScope.InsertAsync({fakeEntityVariableName});
 
         var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
