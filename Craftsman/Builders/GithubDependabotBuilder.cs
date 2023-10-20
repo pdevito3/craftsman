@@ -36,6 +36,24 @@ updates:
         update-types:
         - ""minor""
         - ""patch""
+      hangfire:
+        patterns:
+        - ""Hangfire*""
+        update-types:
+        - ""minor""
+        - ""patch""
+      xunit:
+        patterns:
+        - ""xunit*""
+        update-types:
+        - ""minor""
+        - ""patch""
+      serilog:
+        patterns:
+        - ""Serilog*""
+        update-types:
+        - ""minor""
+        - ""patch""
     commit-message:      
       prefix: ""Package Dependencies""
     # Temporarily disable PR limit, till initial dependency update goes through
