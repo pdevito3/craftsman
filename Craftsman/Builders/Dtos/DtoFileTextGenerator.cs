@@ -19,8 +19,8 @@ using {webApiResourcesClassPath.ClassNamespace};
 
 public sealed class {FileNames.GetDtoName(entity.Name, dto)} : BasePaginationParameters
 {{
-    public string Filters {{ get; set; }}
-    public string SortOrder {{ get; set; }}
+    public string? Filters {{ get; set; }}
+    public string? SortOrder {{ get; set; }}
 }}
 ";
     }
