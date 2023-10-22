@@ -118,10 +118,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
     {{
         // Arrange
         var testingServiceScope = new {FileNames.TestingServiceScope()}();
-        var {fakeEntityVariableName} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
-        await testingServiceScope.InsertAsync({fakeEntityVariableName});
-        var {lowercaseEntityName} = await testingServiceScope.ExecuteDbContextAsync(db => db.{entity.Plural}
-            .FirstOrDefaultAsync({entity.Lambda} => {entity.Lambda}.Id == {fakeEntityVariableName}.Id));
+        var {lowercaseEntityName} = new {FileNames.FakeBuilderName(entity.Name)}().Build();
+        await testingServiceScope.InsertAsync({lowercaseEntityName});
 
         // Act
         var command = new {featureName}.{commandName}({lowercaseEntityName}.{pkName});
