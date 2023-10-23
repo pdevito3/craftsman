@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Logging was refactored to use app settings
 * Add missing HttpClientInstrumentation on OTel
 * `SortOrder` and `Filters` are nullable on list dto param
+* Remove old and unused fluent assertion options
 
 ### Fixed
 

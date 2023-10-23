@@ -34,30 +34,6 @@ public class IntegrationTestFixtureBuilder
             ? $@"{Environment.NewLine}using HeimGuard;" 
             : null;
 
-        var equivalencyCall = provider == DbProvider.Postgres 
-            ? $@"
-        SetupDateAssertions();" 
-            : null;
-        var equivalencyMethod = provider == DbProvider.Postgres
-            ? $@"
-
-    private static void SetupDateAssertions()
-    {{
-        // close to equivalency required to reconcile precision differences between EF and Postgres
-        AssertionOptions.AssertEquivalencyUsing(options =>
-        {{
-            options.Using<DateTime>(ctx => ctx.Subject
-                .Should()
-                .BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTime>();
-            options.Using<DateTimeOffset>(ctx => ctx.Subject
-                .Should()
-                .BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTimeOffset>();
-
-            return options;
-        }});
-    }}"
-            : null;
-
         return @$"namespace {classNamespace};
 
 using {configClassPath.ClassNamespace};
@@ -113,7 +89,7 @@ public class TestFixture : IAsyncLifetime
         services.ReplaceServiceWithSingletonMock<IBackgroundJobClient>();{heimGuardMock}
 
         var provider = services.BuildServiceProvider();
-        BaseScopeFactory = provider.GetService<IServiceScopeFactory>();{equivalencyCall}
+        BaseScopeFactory = provider.GetService<IServiceScopeFactory>();
     }}
 
     private static async Task RunMigration(string connectionString)
@@ -129,7 +105,7 @@ public class TestFixture : IAsyncLifetime
     {{        
         {provider.DbDisposal()}
         await _rmqContainer.DisposeAsync();
-    }}{equivalencyMethod}
+    }}
 }}
 
 public static class ServiceCollectionServiceExtensions
