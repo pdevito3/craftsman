@@ -32,7 +32,7 @@ public class EntityBuilder
 
     public static string GetEntityFileText(string classNamespace, string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName)
     {
-        var creationClassName = EntityModel.Creation.GetClassName(entity.Name);
+        var creationModelClassName = EntityModel.Creation.GetClassName(entity.Name);
         var updateClassName = EntityModel.Update.GetClassName(entity.Name);
         var propString = EntityPropBuilder(entity.Properties);
         var tableAnnotation = EntityAnnotationBuilder(entity);
@@ -50,40 +50,25 @@ public class EntityBuilder
 using {classPath.ClassNamespace};
 using {modelsClassPath.ClassNamespace};";
         }
+
+        var valueObjectUsings = "";
+        var valueObjects = entity.Properties.Where(e => e.IsValueObject).ToList();
+        foreach (var entityProperty in valueObjects)
+        {
+            var voClassPath = ClassPathHelper.ValueObjectClassPath(srcDirectory, entityProperty.ValueObjectType.ClassName, entityProperty.ValueObjectTypePlural, projectBaseName);
+            valueObjectUsings += $@"
+using {voClassPath.ClassNamespace};";
+        }
         
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entity.Name, entity.Plural, null, projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
+        var creationModelVarName = creationModelClassName.LowercaseFirstLetter();
+        var updateModelVarName = updateClassName.LowercaseFirstLetter();
         var createEntityVar = $"new{entity.Name.UppercaseFirstLetter()}";
-        var createPropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties
-            .Where(x => (x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate) || x.IsStringArray)
-            .Select(property =>
-                {
-                    if (property.IsPrimitiveType && property.GetDbRelationship.IsNone && property.CanManipulate)
-                        return
-                            $"        {createEntityVar}.{property.Name} = {creationClassName.LowercaseFirstLetter()}.{property.Name};";
-
-                    if(property.IsStringArray)
-                        return
-                            $"        {createEntityVar}.Set{property.Name}({creationClassName.LowercaseFirstLetter()}.{property.Name});";
-                    
-                    return string.Empty;
-                }));
-        var updatePropsAssignment = string.Join($"{Environment.NewLine}", entity.Properties
-            .Where(x => (x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate) || x.IsStringArray)
-            .Select(property =>
-                {
-                    if (property.IsPrimitiveType && property.GetDbRelationship.IsNone && property.CanManipulate)
-                        return $"        {property.Name} = {updateClassName.LowercaseFirstLetter()}.{property.Name};";
-                    
-                    if(property.IsStringArray)
-                        return $"        Set{property.Name}({updateClassName.LowercaseFirstLetter()}.{property.Name});";
-                    
-                    return string.Empty;
-                }));
-
-
+        var createPropsAssignment = GetCreatePropsAssignment(entity, createEntityVar, creationModelVarName, creationModelClassName);
+        var updatePropsAssignment = GetUpdatePropsAssignment(entity, updateClassName, updateModelVarName);
         
         return @$"namespace {classNamespace};
 
@@ -92,7 +77,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Destructurama.Attributed;
 using {exceptionClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
-using {domainEventsClassPath.ClassNamespace};{foreignEntityUsings}
+using {domainEventsClassPath.ClassNamespace};{foreignEntityUsings}{valueObjectUsings}
 
 {tableAnnotation}
 public class {entity.Name} : BaseEntity
@@ -100,7 +85,7 @@ public class {entity.Name} : BaseEntity
 {propString}    // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
 
 
-    public static {entity.Name} Create({creationClassName} {creationClassName.LowercaseFirstLetter()})
+    public static {entity.Name} Create({creationModelClassName} {creationModelClassName.LowercaseFirstLetter()})
     {{
         var {createEntityVar} = new {entity.Name}();
 
@@ -125,7 +110,58 @@ public class {entity.Name} : BaseEntity
 }}";
     }
 
-    
+    private static string GetUpdatePropsAssignment(Entity entity, string updateClassName, string updateModelVarName)
+    {
+        return string.Join($"{Environment.NewLine}", entity.Properties
+            .Where(x => (x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate)
+                        || x.IsStringArray
+                        || x.IsValueObject)
+            .Select(property =>
+            {
+                if (property.IsPrimitiveType && property.GetDbRelationship.IsNone && property.CanManipulate)
+                    return $"        {property.Name} = {updateClassName.LowercaseFirstLetter()}.{property.Name};";
+
+                if (property.IsStringArray)
+                    return $"        Set{property.Name}({updateClassName.LowercaseFirstLetter()}.{property.Name});";
+
+                if (property.IsValueObject)
+                {
+                    return property.ValueObjectType
+                        .GetEntityUpdateSetter(property.Name, updateModelVarName);
+                }
+
+                return string.Empty;
+            }));
+    }
+
+    private static string GetCreatePropsAssignment(Entity entity, string createEntityVar, string creationModelVarName,
+        string creationModelClassName)
+    {
+        return string.Join($"{Environment.NewLine}", entity.Properties
+            .Where(x => (x.IsPrimitiveType && x.GetDbRelationship.IsNone && x.CanManipulate)
+                        || x.IsStringArray
+                        || x.IsValueObject)
+            .Select(property =>
+            {
+                if (property.IsPrimitiveType && property.GetDbRelationship.IsNone && property.CanManipulate)
+                    return
+                        $"        {createEntityVar}.{property.Name} = {creationModelVarName}.{property.Name};";
+
+                if (property.IsValueObject)
+                {
+                    return property.ValueObjectType
+                        .GetEntityCreationSetter(createEntityVar, property.Name, creationModelVarName);
+                }
+
+                if (property.IsStringArray)
+                    return
+                        $"        {createEntityVar}.Set{property.Name}({creationModelClassName.LowercaseFirstLetter()}.{property.Name});";
+
+                return string.Empty;
+            }));
+    }
+
+
     public static string GetBaseEntityFileText(string classNamespace, bool useSoftDelete)
     {
         var isDeletedProp = useSoftDelete
@@ -200,24 +236,7 @@ public abstract class BaseEntity
         {
             var attributes = AttributeBuilder(property);
             
-            if (property.IsSmartEnum())
-            {
-                propString += $@"    private {property.SmartEnumPropName} _{property.Name.LowercaseFirstLetter()};
-{attributes}    public string {property.Name}
-    {{
-        get => _{property.Name.LowercaseFirstLetter()}.Name;
-        private set
-        {{
-            if (!{property.SmartEnumPropName}.TryFromName(value, true, out var parsed))
-                throw new InvalidSmartEnumPropertyName(nameof({property.Name}), value);
-
-            _{property.Name.LowercaseFirstLetter()} = parsed;
-        }}
-    }}
-
-";
-            }
-            else
+            if (property.ValueObjectType.IsNone)
             {
                 propString += attributes;
                 var defaultValue = GetDefaultValueText(property.DefaultValue, property);
@@ -230,6 +249,11 @@ public abstract class BaseEntity
                     // these can be null because practically we only need it for children
                     null,
                     null);
+            }
+            else
+            {
+                propString += attributes;
+                propString += $@"   public {property.ValueObjectName} {property.Name} {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}";
             }
         }
 
@@ -256,7 +280,7 @@ public abstract class BaseEntity
         if (entityProperty.IsRequired)
             attributeString += @$"    [Required]{Environment.NewLine}";
     
-        if (!entityProperty.IsPrimitiveType && !entityProperty.IsStringArray)
+        if (!entityProperty.IsPrimitiveType && !entityProperty.IsStringArray && !entityProperty.IsValueObject)
             attributeString += $@"    [JsonIgnore, IgnoreDataMember]{Environment.NewLine}";
         attributeString += ColumnAttributeBuilder(entityProperty);
         

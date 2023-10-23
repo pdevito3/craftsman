@@ -114,9 +114,62 @@ for {entityProperty.Name} in the {classPath.ClassName} class.");
                 while (null != (line = input.ReadLine()))
                 {
                     var newText = $"{line}";
-                    if (line.Contains($"Relationship Marker --"))
+                    if (line.Contains($"Property Marker --"))
                     {
                         newText += stringArrayProps;
+                    }
+
+                    output.WriteLine(newText);
+                }
+            }
+        }
+
+        // delete the old file and set the name of the new one to the original name
+        _fileSystem.File.Delete(classPath.FullClassPath);
+        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+    }
+
+    public void AddValueObjectConfig(string srcDirectory, 
+        string entityName,
+        EntityProperty entityProperty,
+        string projectBaseName)
+    {
+        var classPath = ClassPathHelper.DatabaseConfigClassPath(srcDirectory,
+            $"{FileNames.GetDatabaseEntityConfigName(entityName)}.cs",
+            projectBaseName);
+
+        var voClassPath = ClassPathHelper.EntityClassPath(srcDirectory,
+            $"{FileNames.GetMappingName(entityName)}.cs",
+            entityProperty.ValueObjectTypePlural,
+            projectBaseName);
+        
+        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        {
+            _consoleWriter.WriteInfo($"The `{classPath.FullClassPath}` file could not be found.");
+            return;
+        }
+
+        var usingAdded = false;
+        var tempPath = $"{classPath.FullClassPath}temp";
+        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
+        {
+            using var output = _fileSystem.File.CreateText(tempPath);
+            {
+                string line;
+                while (null != (line = input.ReadLine()))
+                {
+                    var newText = $"{line}";
+                    if (line.Contains($"Property Marker --"))
+                    {
+                        newText += entityProperty.ValueObjectType.GetDbConfig(entityProperty.Name);
+                    }
+                    if (line.Contains($"using ") && !usingAdded)
+                    {
+                        newText += $@"{Environment.NewLine}using {voClassPath.ClassNamespace};";
+                        usingAdded = true;
                     }
 
                     output.WriteLine(newText);

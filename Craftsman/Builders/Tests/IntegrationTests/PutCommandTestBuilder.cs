@@ -113,6 +113,14 @@ public class {classPath.ClassNameWithoutExt} : TestBase
                     $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
                 "TimeOnly?" =>
                     $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeCloseTo((TimeOnly)updated{entityName}Dto.{entityProperty.Name}, 1.Seconds());",
+                "decimal" =>
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeApproximately(updated{entityName}Dto.{entityProperty.Name}, 0.001M);",
+                "decimal?" =>
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeApproximately((decimal)updated{entityName}Dto.{entityProperty.Name}, 0.001M);",
+                "float" =>
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeApproximately(updated{entityName}Dto.{entityProperty.Name}, 0.001F);",
+                "float?" =>
+                    $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeApproximately((float)updated{entityName}Dto.{entityProperty.Name}, 0.001F);",
                 _ =>
                     $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().Be(updated{entityName}Dto.{entityProperty.Name});"
             };
@@ -120,6 +128,10 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         foreach (var entityProperty in properties.Where(x => x.IsStringArray && x.CanManipulate))
         {
             entityAssertions += $@"{Environment.NewLine}        updated{entityName}.{entityProperty.Name}.Should().BeEquivalentTo(updated{entityName}Dto.{entityProperty.Name});";
+        }
+        foreach (var entityProperty in properties.Where(x => x.IsValueObject && x.CanManipulate))
+        {
+            entityAssertions += entityProperty.ValueObjectType.GetIntegratedUpdatedRecordAssertion($"updated{entityName}", entityProperty.Name, $"updated{entityName}Dto", entityProperty.Type);
         }
 
         return entityAssertions;

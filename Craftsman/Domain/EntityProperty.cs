@@ -1,6 +1,8 @@
 ﻿namespace Craftsman.Domain;
 
+using Enums;
 using Helpers;
+using Humanizer;
 
 public class EntityProperty
 {
@@ -16,8 +18,17 @@ public class EntityProperty
     }
     public string Type
     {
-        get => _type;
-        set => _type = CraftsmanUtilities.PropTypeCleanupDotNet(value);
+        get
+        {
+            if (ValueObjectType.IsMonetaryAmount || ValueObjectType.IsPercent)
+            {
+                _type = CraftsmanUtilities.PropTypeCleanupDotNet("decimal");
+            }
+
+            return CraftsmanUtilities.PropTypeCleanupDotNet(_type);
+        }
+        set => _type = value;
+        
     }
     public bool CanManipulate
     {
@@ -41,11 +52,39 @@ public class EntityProperty
     public bool IsStringArray => Type.ToLower()
         .Trim()
         .Replace("?", "") == "string[]";
+    
+    public string AsValueObject { get; set; }
+    
+    private string _valueObjectName; 
+    public string ValueObjectName
+    {
+        get => _valueObjectName  ?? Name;
+        set => _valueObjectName = value;
+    }
+    private string _valueObjectTypePlural; 
+    public string ValueObjectTypePlural
+    {
+        get
+        {
+            if (AsValueObject != "Percent")
+            {
+                return _valueObjectTypePlural ?? ValueObjectName.Pluralize();
+            }
+
+            _valueObjectTypePlural = "Percentages";
+            return _valueObjectTypePlural;
+        }
+        set => _valueObjectTypePlural = value;
+    }
+
+    public bool IsValueObject => !ValueObjectType.IsNone;
 
     public bool IsPrimitiveType
     {
         get
         {
+            if (IsValueObject) return false;
+            
             var rawType = Type.ToLower().Trim().Replace("?", "");
             return rawType is "string"
                 or "byte"
@@ -69,6 +108,32 @@ public class EntityProperty
                 or "object"
                 or "guid";
         }
+    }
+
+    public ValueObjectPropertyType ValueObjectType => CoreGetValueObjectPropertyType();
+    private ValueObjectPropertyType CoreGetValueObjectPropertyType() 
+    {
+        var parsed = ValueObjectPropertyType.None(ValueObjectName);
+        if (IsSmartEnum())
+            return ValueObjectPropertyType.Smart(ValueObjectName);
+        
+        // TODO temp
+        if(AsValueObject == "Simple")
+            return ValueObjectPropertyType.Simple(ValueObjectName);
+        
+        if(AsValueObject == "Email")
+            return ValueObjectPropertyType.Email(ValueObjectName);
+        
+        if(AsValueObject == "Percent")
+            return ValueObjectPropertyType.Percent(ValueObjectName);
+        
+        if(AsValueObject == "MonetaryAmount")
+            return ValueObjectPropertyType.MonetaryAmount(ValueObjectName);
+        
+        // if (!ValueObjectPropertyType.TryFromName(AsValueObject, true, out var parsed))
+        //     parsed = ValueObjectPropertyType.None(ValueObjectName);
+        
+        return parsed;
     }
 
     public bool IsChildRelationship { get; set; } = false;

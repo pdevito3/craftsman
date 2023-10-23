@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Dependabot scaffolding. Can be excluded with `IncludeDependabot = false` at the domain template level
 * Github test action scaffolding. Can be excluded with `IncludeGithubTestActions = false` at the api template level
 * Support for `string[]` when using Postgres
+* `ValueObject` property scaffolding
+  * TODO docs
+    * `Name`
+    * `Plural`
+    * future: complex, property add with cli
+
 
 ### Updated
 

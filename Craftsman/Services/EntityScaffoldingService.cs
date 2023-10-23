@@ -91,6 +91,7 @@ public class EntityScaffoldingService
 
         AddRelationships(srcDirectory, projectBaseName, entities);
         AddStringArrayItems(srcDirectory, projectBaseName, entities, dbProvider);
+        AddValueObjects(srcDirectory, projectBaseName, entities);
 
         new DbContextModifier(_fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);
     }
@@ -131,6 +132,85 @@ public class EntityScaffoldingService
                     entity.Plural, 
                     entityProperty, 
                     projectBaseName);
+            }
+        }
+    }
+
+    public void AddValueObjects(string srcDirectory, string projectBaseName, List<Entity> entities)
+    {
+        foreach (var entity in entities)
+        {
+            var valueObjectProps = entity.Properties.Where(x => x.IsValueObject).ToList();
+            foreach (var valueObjectProp in valueObjectProps)
+            {
+                new DatabaseEntityConfigModifier(_fileSystem, _consoleWriter).AddValueObjectConfig(srcDirectory, 
+                    entity.Name,
+                    valueObjectProp, 
+                    projectBaseName);
+            }
+        }
+        
+        var baseValueObjects = new List<EntityProperty>();
+        baseValueObjects.Add(new EntityProperty()
+        {
+            ValueObjectName = "Email",
+            AsValueObject = "Email",
+        });
+        baseValueObjects.Add(new EntityProperty()
+        {
+            Name = "Percent",
+            ValueObjectName = "Percent",
+            ValueObjectTypePlural = "Percentages",
+            AsValueObject = "Percent",
+        });
+        baseValueObjects.Add(new EntityProperty()
+        {
+            Name = "MonetaryAmount",
+            ValueObjectName = "MonetaryAmount",
+            AsValueObject = "MonetaryAmount",
+        });
+
+        var distinctValueObjects = entities
+            .SelectMany(x => x.Properties.Where(p => p.IsValueObject))
+            .ToList();
+        distinctValueObjects.AddRange(baseValueObjects);
+        distinctValueObjects = distinctValueObjects.DistinctBy(x => x.ValueObjectName).ToList();
+        foreach (var valueObjectProp in distinctValueObjects)
+        {
+            var classPath = ClassPathHelper.WebApiValueObjectsClassPath(srcDirectory, 
+                $"{valueObjectProp.ValueObjectName}.cs",
+                valueObjectProp.ValueObjectTypePlural,
+                projectBaseName);
+            
+            if (_fileSystem.File.Exists(classPath.FullClassPath))
+                continue;
+            
+            var fileText = valueObjectProp.ValueObjectType.GetFileText(classPath.ClassNamespace, 
+                valueObjectProp.ValueObjectName,
+                valueObjectProp.Type,
+                valueObjectProp.SmartNames,
+                srcDirectory,
+                projectBaseName);
+            _utilities.CreateFile(classPath, fileText);
+        }
+        
+        var entitiesThatHaveValueObjectProperties = entities
+            .Where(x => x.Properties.Any(p => p.IsValueObject))
+            .ToList();
+        foreach (var entityThatHasValueObjectProperties in entitiesThatHaveValueObjectProperties)
+        {
+            var voProperties = entityThatHasValueObjectProperties.Properties.Where(x => x.IsValueObject).ToList();
+            foreach (var entityProperty in voProperties)
+            {
+                if (entityProperty.Type.ToLower() != "string")
+                {
+                    new EntityMappingModifier(_fileSystem, _consoleWriter)
+                        .UpdateMappingAttributesForValueObject(srcDirectory, 
+                            entityThatHasValueObjectProperties.Name,
+                            entityThatHasValueObjectProperties.Plural, 
+                            entityProperty, 
+                            projectBaseName);
+                }
             }
         }
     }

@@ -107,6 +107,14 @@ public class {classPath.ClassNameWithoutExt} : TestBase
                     $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeCloseTo((DateTimeOffset){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());",
                 "TimeOnly?" =>
                     $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());",
+                "decimal" =>
+                    $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeApproximately({fakeEntityVariableName}.{entityProperty.Name}, 0.001M);",
+                "decimal?" =>
+                    $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeApproximately((decimal){fakeEntityVariableName}.{entityProperty.Name}, 0.001M);",
+                "float" =>
+                    $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeApproximately({fakeEntityVariableName}.{entityProperty.Name}, 0.001F);",
+                "float?" =>
+                    $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeApproximately((float){fakeEntityVariableName}.{entityProperty.Name}, 0.001F);",
                 _ =>
                     $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().Be({fakeEntityVariableName}.{entityProperty.Name});"
             };
@@ -114,6 +122,10 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         foreach (var entityProperty in properties.Where(x => x.IsStringArray && x.CanManipulate))
         {
             entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}.{entityProperty.Name}.Should().BeEquivalentTo({fakeEntityVariableName}.{entityProperty.Name});";
+        }
+        foreach (var entityProperty in properties.Where(x => x.IsValueObject && x.CanManipulate))
+        {
+            entityAssertions += entityProperty.ValueObjectType.GetIntegratedReadRecordAssertion(lowercaseEntityName, entityProperty.Name, fakeEntityVariableName, entityProperty.Type);
         }
 
         return entityAssertions;

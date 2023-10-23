@@ -90,6 +90,12 @@ public sealed class FakesBuilder
         var rulesFor = "";
         foreach (var entityProperty in entity.Properties)
         {
+            if (entityProperty.ValueObjectType.IsEmail)
+            {
+                rulesFor += @$"
+        RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.Person.Email);";
+            }
+            
             if(entityProperty.IsSmartEnum() && (dtoType is Dto.Creation or Dto.Update))
                 rulesFor += @$"
         RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.PickRandom<{entityProperty.SmartEnumPropName}>({entityProperty.SmartEnumPropName}.List).Name);";
@@ -132,6 +138,12 @@ public sealed class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassNa
         var rulesFor = "";
         foreach (var entityProperty in entity.Properties)
         {
+            if (entityProperty.ValueObjectType.IsEmail)
+            {
+                rulesFor += @$"
+        RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.Person.Email);";
+            }
+            
             if(entityProperty.IsSmartEnum())
                 rulesFor += @$"
         RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.PickRandom<{entityProperty.SmartEnumPropName}>({entityProperty.SmartEnumPropName}.List).Name);";

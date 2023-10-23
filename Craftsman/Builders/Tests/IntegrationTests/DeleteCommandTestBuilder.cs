@@ -104,12 +104,8 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
     private static string SoftDeleteTest(string commandName, Entity entity, string featureName)
     {
-        var fakeEntity = FileNames.FakerName(entity.Name);
-        var fakeCreationDto = FileNames.FakerName(FileNames.GetDtoName(entity.Name, Dto.Creation));
-        var fakeEntityVariableName = $"{entity.Name.LowercaseFirstLetter()}One";
         var lowercaseEntityName = entity.Name.LowercaseFirstLetter();
         var pkName = Entity.PrimaryKeyProperty.Name;
-        var lowercaseEntityPk = pkName.LowercaseFirstLetter();
 
         return $@"
 

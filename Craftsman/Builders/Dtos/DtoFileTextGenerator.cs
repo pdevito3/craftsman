@@ -50,7 +50,7 @@ public sealed record {FileNames.GetDtoName(entity.Name, dto)}
                 continue;
             if (!props[eachProp].CanManipulate && (dto is Dto.Creation or Dto.Update))
                 continue;
-            if (!props[eachProp].IsPrimitiveType && !props[eachProp].IsStringArray)
+            if (!props[eachProp].IsPrimitiveType && !props[eachProp].IsStringArray && !props[eachProp].IsValueObject)
                 continue;
 
             var defaultValue = props[eachProp].IsStringArray ? " = Array.Empty<string>();" : "";

@@ -37,8 +37,14 @@ public static partial class {FileNames.GetMappingName(entityName)}
 {{
     public static partial {EntityModel.Creation.GetClassName(entityName)} To{EntityModel.Creation.GetClassName(entityName)}(this {FileNames.GetDtoName(entityName, Dto.Creation)} {FileNames.GetDtoName(entityName, Dto.Creation).LowercaseFirstLetter()});
     public static partial {EntityModel.Update.GetClassName(entityName)} To{EntityModel.Update.GetClassName(entityName)}(this {FileNames.GetDtoName(entityName, Dto.Update)} {FileNames.GetDtoName(entityName, Dto.Update).LowercaseFirstLetter()});
-    public static partial {FileNames.GetDtoName(entityName, Dto.Read)} To{FileNames.GetDtoName(entityName, Dto.Read)}(this {entityName} {entityName.LowercaseFirstLetter()});
-    public static partial IQueryable<{FileNames.GetDtoName(entityName, Dto.Read)}> To{FileNames.GetDtoName(entityName, Dto.Read)}Queryable(this IQueryable<{entityName}> {entityName.LowercaseFirstLetter()});
+    {ToReadDtoMapperMethodRoot(entityName)}(this {entityName} {entityName.LowercaseFirstLetter()});
+    {ToQueryableMapperMethodRoot(entityName)}(this IQueryable<{entityName}> {entityName.LowercaseFirstLetter()});
 }}";
     }
+
+    public static string ToReadDtoMapperMethodRoot(string entityName)
+        => $"public static partial {FileNames.GetDtoName(entityName, Dto.Read)} To{FileNames.GetDtoName(entityName, Dto.Read)}";
+    
+    public static string ToQueryableMapperMethodRoot(string entityName)
+        => $"public static partial IQueryable<{FileNames.GetDtoName(entityName, Dto.Read)}> To{FileNames.GetDtoName(entityName, Dto.Read)}Queryable";
 }

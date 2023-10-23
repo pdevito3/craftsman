@@ -32,33 +32,12 @@ public static class CommonValueObjectBuilder
 
         public Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {
-            var percentClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"{ValueObjectEnum.Percent.Name}.cs",
-                ValueObjectEnum.Percent.Plural(),
-                _scaffoldingDirectoryStore.ProjectBaseName);
-            var percentFileText = GetPercentFileText(percentClassPath.ClassNamespace);
-            _utilities.CreateFile(percentClassPath, percentFileText);
-            
             var addressClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
                 $"{ValueObjectEnum.Address.Name}.cs",
                 ValueObjectEnum.Address.Plural(),
                 _scaffoldingDirectoryStore.ProjectBaseName);
             var addressFileText = GetAddressFileText(addressClassPath.ClassNamespace);
             _utilities.CreateFile(addressClassPath, addressFileText);
-            
-            var monetaryAmountClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"{ValueObjectEnum.MonetaryAmount.Name}.cs",
-                ValueObjectEnum.MonetaryAmount.Plural(),
-                _scaffoldingDirectoryStore.ProjectBaseName);
-            var monetaryAmountFileText = GetMonetaryAmountFileText(monetaryAmountClassPath.ClassNamespace);
-            _utilities.CreateFile(monetaryAmountClassPath, monetaryAmountFileText);
-            
-            var emailClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"{ValueObjectEnum.Email.Name}.cs",
-                ValueObjectEnum.Email.Plural(),
-                _scaffoldingDirectoryStore.ProjectBaseName);
-            var emailFileText = GetEmailFileText(emailClassPath.ClassNamespace);
-            _utilities.CreateFile(emailClassPath, emailFileText);
 
             if (request.HasAuth)
             {

@@ -268,6 +268,12 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", entityPlural), className);
     }
 
+    public static ClassPath ValueObjectClassPath(string srcDirectory, string className, string voPlural, string projectBaseName)
+    {
+        var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";
+        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Domain", voPlural), className);
+    }
+
     public static ClassPath DummySeederClassPath(string solutionDirectory, string className, string projectBaseName)
     {
         var withSuffix = ApiProjectSuffix.Length > 0 ? $".{ApiProjectSuffix}" : "";

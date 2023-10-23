@@ -120,6 +120,22 @@ public class {classPath.ClassNameWithoutExt} : TestBase
                     dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());";
                     entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeCloseTo((TimeOnly){fakeEntityVariableName}.{entityProperty.Name}, 1.Seconds());";
                     break;
+                case "decimal":
+                    dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeApproximately({fakeEntityVariableName}.{entityProperty.Name}, 0.001M);";
+                    entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeApproximately({fakeEntityVariableName}.{entityProperty.Name}, 0.001M);";
+                    break;
+                case "decimal?":
+                    dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeApproximately((decimal){fakeEntityVariableName}.{entityProperty.Name}, 0.001M);";
+                    entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeApproximately((decimal){fakeEntityVariableName}.{entityProperty.Name}, 0.001M);";
+                    break;
+                case "float":
+                    dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeApproximately({fakeEntityVariableName}.{entityProperty.Name}, 0.001F);";
+                    entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeApproximately({fakeEntityVariableName}.{entityProperty.Name}, 0.001F);";
+                    break;
+                case "float?":
+                    dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeApproximately((float){fakeEntityVariableName}.{entityProperty.Name}, 0.001F);";
+                    entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeApproximately((float){fakeEntityVariableName}.{entityProperty.Name}, 0.001F);";
+                    break;
                 default:
                     dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().Be({fakeEntityVariableName}.{entityProperty.Name});";
                     entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().Be({fakeEntityVariableName}.{entityProperty.Name});";
@@ -130,6 +146,11 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         {
             dtoAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Returned.{entityProperty.Name}.Should().BeEquivalentTo({fakeEntityVariableName}.{entityProperty.Name});";
             entityAssertions += $@"{Environment.NewLine}        {lowercaseEntityName}Created.{entityProperty.Name}.Should().BeEquivalentTo({fakeEntityVariableName}.{entityProperty.Name});";
+        }
+        foreach (var entityProperty in properties.Where(x => x.IsValueObject && x.CanManipulate))
+        {
+            dtoAssertions += entityProperty.ValueObjectType.GetIntegratedCreationReturnedAssertion($"{lowercaseEntityName}Returned", entityProperty.Name, fakeEntityVariableName, entityProperty.Type);
+            entityAssertions += entityProperty.ValueObjectType.GetIntegratedCreationDomainAssertion($"{lowercaseEntityName}Created", entityProperty.Name, fakeEntityVariableName, entityProperty.Type);
         }
 
         return string.Join(Environment.NewLine, dtoAssertions, entityAssertions);

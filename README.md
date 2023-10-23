@@ -46,6 +46,8 @@ Have a request for something you don't see in the project? Join [our discord](ht
 
 ✅ `string[]` support for Postgres
 
+✅ Value Object property scaffolding
+
 ### Some 0.23 highlights
 
 ✅ Moq -> NSub

@@ -218,6 +218,7 @@ BoundedContexts:
     - Name: Directions
     - Name: Rating
       Type: int?
+      AsValueObject: Simple
     - Name: DateOfOrigin
       Type: DateOnly?
     - Name: HaveMadeItMyself
@@ -244,6 +245,9 @@ BoundedContexts:
     - Name: Name
       Type: string
       IsLogMasked: true
+    - Name: PrimaryEmail
+      AsValueObject: Email
+      ValueObjectName: Email
   - Name: Ingredient
     Features:
     - Type: GetList
@@ -265,6 +269,9 @@ BoundedContexts:
       Type: DateTime?
     - Name: Measure
       Type: string
+    - Name: AverageCost
+      AsValueObject: MonetaryAmount
+      ValueObjectName: MonetaryAmount
   Environment:
       AuthSettings:
         Authority: http://localhost:3255/auth/realms/DevRealm
@@ -418,6 +425,9 @@ BoundedContexts:
       Type: string
     - Name: ImageLink
       Type: string
+    - Name: Rating
+      Type: int?
+      AsValueObject: Simple
     - Name: Visibility
       SmartNames:
       - Public
@@ -463,6 +473,9 @@ BoundedContexts:
       Type: string
     - Name: ImageLink
       Type: string
+    - Name: Rating
+      Type: int?
+      AsValueObject: Simple
     - Name: Visibility
       SmartNames:
       - Public
@@ -509,6 +522,9 @@ BoundedContexts:
       Type: string
     - Name: ImageLink
       Type: string
+    - Name: Rating
+      Type: int?
+      AsValueObject: Simple
     - Name: Visibility
       SmartNames:
       - Public
@@ -587,6 +603,7 @@ BoundedContexts:
       Type: string
     - Name: Rating
       Type: int?
+      AsValueObject: Simple
     - Name: Visibility
       SmartNames:
       - Public
