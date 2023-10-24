@@ -140,7 +140,7 @@ for {entityProperty.Name} in the {classPath.ClassName} class.");
 
         var voClassPath = ClassPathHelper.EntityClassPath(srcDirectory,
             $"{FileNames.GetMappingName(entityName)}.cs",
-            entityProperty.ValueObjectTypePlural,
+            entityProperty.ValueObjectPlural,
             projectBaseName);
         
         if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))

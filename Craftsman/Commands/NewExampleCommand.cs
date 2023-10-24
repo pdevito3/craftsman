@@ -219,6 +219,8 @@ BoundedContexts:
     - Name: Rating
       Type: int?
       AsValueObject: Simple
+      ValueObjectName: UserRating
+      ValueObjectPlural: UserRatings
     - Name: DateOfOrigin
       Type: DateOnly?
     - Name: HaveMadeItMyself
@@ -245,9 +247,9 @@ BoundedContexts:
     - Name: Name
       Type: string
       IsLogMasked: true
+    - Name: Ownership
+      AsValueObject: Percent
     - Name: PrimaryEmail
-      AsValueObject: Email
-      ValueObjectName: Email
   - Name: Ingredient
     Features:
     - Type: GetList
@@ -271,7 +273,6 @@ BoundedContexts:
       Type: string
     - Name: AverageCost
       AsValueObject: MonetaryAmount
-      ValueObjectName: MonetaryAmount
   Environment:
       AuthSettings:
         Authority: http://localhost:3255/auth/realms/DevRealm

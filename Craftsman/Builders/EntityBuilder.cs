@@ -55,7 +55,7 @@ using {modelsClassPath.ClassNamespace};";
         var valueObjects = entity.Properties.Where(e => e.IsValueObject).ToList();
         foreach (var entityProperty in valueObjects)
         {
-            var voClassPath = ClassPathHelper.ValueObjectClassPath(srcDirectory, entityProperty.ValueObjectType.ClassName, entityProperty.ValueObjectTypePlural, projectBaseName);
+            var voClassPath = ClassPathHelper.ValueObjectClassPath(srcDirectory, entityProperty.ValueObjectType.ClassName, entityProperty.ValueObjectPlural, projectBaseName);
             valueObjectUsings += $@"
 using {voClassPath.ClassNamespace};";
         }

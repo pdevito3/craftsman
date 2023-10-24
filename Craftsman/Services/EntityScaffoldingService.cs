@@ -160,7 +160,7 @@ public class EntityScaffoldingService
         {
             Name = "Percent",
             ValueObjectName = "Percent",
-            ValueObjectTypePlural = "Percentages",
+            ValueObjectPlural = "Percentages",
             AsValueObject = "Percent",
         });
         baseValueObjects.Add(new EntityProperty()
@@ -179,7 +179,7 @@ public class EntityScaffoldingService
         {
             var classPath = ClassPathHelper.WebApiValueObjectsClassPath(srcDirectory, 
                 $"{valueObjectProp.ValueObjectName}.cs",
-                valueObjectProp.ValueObjectTypePlural,
+                valueObjectProp.ValueObjectPlural,
                 projectBaseName);
             
             if (_fileSystem.File.Exists(classPath.FullClassPath))

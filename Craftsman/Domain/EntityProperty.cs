@@ -58,11 +58,20 @@ public class EntityProperty
     private string _valueObjectName; 
     public string ValueObjectName
     {
-        get => _valueObjectName  ?? Name;
+        get
+        {
+            return AsValueObject switch
+            {
+                "Email" => "Email",
+                "Percent" => "Percent",
+                "MonetaryAmount" => "MonetaryAmount",
+                _ => _valueObjectName ?? Name
+            };
+        }
         set => _valueObjectName = value;
     }
     private string _valueObjectTypePlural; 
-    public string ValueObjectTypePlural
+    public string ValueObjectPlural
     {
         get
         {
@@ -75,6 +84,32 @@ public class EntityProperty
             return _valueObjectTypePlural;
         }
         set => _valueObjectTypePlural = value;
+    }
+
+    public ValueObjectPropertyType ValueObjectType => CoreGetValueObjectPropertyType();
+    private ValueObjectPropertyType CoreGetValueObjectPropertyType() 
+    {
+        var parsed = ValueObjectPropertyType.None(ValueObjectName);
+        if (IsSmartEnum())
+            return ValueObjectPropertyType.Smart(ValueObjectName);
+        
+        // TODO temp
+        if(AsValueObject == "Simple")
+            return ValueObjectPropertyType.Simple(ValueObjectName);
+        
+        if(AsValueObject == "Email")
+            return ValueObjectPropertyType.Email(ValueObjectName);
+        
+        if(AsValueObject == "Percent")
+            return ValueObjectPropertyType.Percent(ValueObjectName);
+        
+        if(AsValueObject == "MonetaryAmount")
+            return ValueObjectPropertyType.MonetaryAmount(ValueObjectName);
+        
+        // if (!ValueObjectPropertyType.TryFromName(AsValueObject, true, out var parsed))
+        //     parsed = ValueObjectPropertyType.None(ValueObjectName);
+        
+        return parsed;
     }
 
     public bool IsValueObject => !ValueObjectType.IsNone;
@@ -108,32 +143,6 @@ public class EntityProperty
                 or "object"
                 or "guid";
         }
-    }
-
-    public ValueObjectPropertyType ValueObjectType => CoreGetValueObjectPropertyType();
-    private ValueObjectPropertyType CoreGetValueObjectPropertyType() 
-    {
-        var parsed = ValueObjectPropertyType.None(ValueObjectName);
-        if (IsSmartEnum())
-            return ValueObjectPropertyType.Smart(ValueObjectName);
-        
-        // TODO temp
-        if(AsValueObject == "Simple")
-            return ValueObjectPropertyType.Simple(ValueObjectName);
-        
-        if(AsValueObject == "Email")
-            return ValueObjectPropertyType.Email(ValueObjectName);
-        
-        if(AsValueObject == "Percent")
-            return ValueObjectPropertyType.Percent(ValueObjectName);
-        
-        if(AsValueObject == "MonetaryAmount")
-            return ValueObjectPropertyType.MonetaryAmount(ValueObjectName);
-        
-        // if (!ValueObjectPropertyType.TryFromName(AsValueObject, true, out var parsed))
-        //     parsed = ValueObjectPropertyType.None(ValueObjectName);
-        
-        return parsed;
     }
 
     public bool IsChildRelationship { get; set; } = false;
