@@ -38,7 +38,7 @@ You can find some highlights below. I have some reminement items in the pipe and
 
 Have a request for something you don't see in the project? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
-### Upcoming in 0.24 
+### Some 0.24 highlights
 
 ✅ Logging enhancements and masking
 
