@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Helpers;
+using Humanizer;
 
 /// <summary>
 /// This represents a database entity for your project
@@ -32,7 +33,7 @@ public class Entity
     /// </summary>
     public string Plural
     {
-        get => _plural ?? $"{Name}s";
+        get => _plural ?? Name.Pluralize();
         set => _plural = value;
     }
 

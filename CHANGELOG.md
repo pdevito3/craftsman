@@ -16,11 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Github test action scaffolding. Can be excluded with `IncludeGithubTestActions = false` at the api template level
 * Support for `string[]` when using Postgres
 * `ValueObject` property scaffolding
-  * TODO docs
-    * `Name`
-    * `Plural`
-    * future: complex, property add with cli
-    * new marker in db config
+  * new marker in db config
 
 
 ### Updated
@@ -29,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Add missing HttpClientInstrumentation on OTel
 * `SortOrder` and `Filters` are nullable on list dto param
 * Remove old and unused fluent assertion options
+* Entity plural is more powerful with `Humanizer`
 
 ### Fixed
 
