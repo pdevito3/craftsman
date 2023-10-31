@@ -120,7 +120,7 @@ public static class SwaggerServiceExtension
         var authOptions = configuration.GetAuthOptions();
         services.AddSwaggerGen(config =>
         {{
-            config.CustomSchemaIds(type => type.ToString());
+            config.CustomSchemaIds(type => type.ToString().Replace(""+"", "".""));
             config.MapType<DateOnly>(() => new OpenApiSchema
             {{
                 Type = ""string"",

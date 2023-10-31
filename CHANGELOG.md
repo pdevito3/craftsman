@@ -9,7 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-* None yet!
+### Fixed
+
+* Swagger config can handle nested DTO classes: `config.CustomSchemaIds(type => type.ToString().Replace("+, "."));`
 
 ## [0.24.0] - 010/23/2023
 
