@@ -35,6 +35,7 @@ public static class Consts
 
     public static class HangfireQueues
     {{
+        public const string Default = ""default"";
         // public const string MyFirstQueue = ""my-first-queue"";
         
         public static string[] List()
