@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Swagger config can handle nested DTO classes: `config.CustomSchemaIds(type => type.ToString().Replace("+, "."));`
 * Don't ignore default hangfire queue
+* Smart value object scaffolding doesn't use old enum logic for entity or fakes
 
 ## [0.24.0] - 010/23/2023
 

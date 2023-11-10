@@ -64,10 +64,6 @@ public class EntityScaffoldingService
                 entity.Name, 
                 entity.Plural));
 
-            var smartProps = entity.Properties.Where(x => x.IsSmartEnum()).ToList();
-            foreach (var smartProp in smartProps)
-                _mediator.Send(new SmartEnumBuilder.SmartEnumBuilderCommand(smartProp, entity.Plural));
-
             var isProtected = entity.Features.Any(f => f.IsProtected); // <-- one more example of why it would be nice to have specific endpoints for each feature 😤
             if (entity.Features.Count > 0)
                 new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, isProtected);

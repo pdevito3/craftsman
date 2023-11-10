@@ -88,6 +88,11 @@ public sealed class FakesBuilder
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
 
         var rulesFor = "";
+
+        // this... is super fragile. Should really refactor this
+        var usingStatement = string.Empty;
+        if (objectToFakeClassName.Contains("DTO", StringComparison.InvariantCultureIgnoreCase))
+            usingStatement = @$"using {dtoClassPath.ClassNamespace};";
         foreach (var entityProperty in entity.Properties)
         {
             if (entityProperty.ValueObjectType.IsEmail)
@@ -95,17 +100,18 @@ public sealed class FakesBuilder
                 rulesFor += @$"
         RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.Person.Email);";
             }
-            
-            if(entityProperty.IsSmartEnum() && (dtoType is Dto.Creation or Dto.Update))
+
+            if (entityProperty.ValueObjectType.IsSmart)
+            {
                 rulesFor += @$"
-        RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.PickRandom<{entityProperty.SmartEnumPropName}>({entityProperty.SmartEnumPropName}.List).Name);";
+        RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.PickRandom({entityProperty.ValueObjectName}.ListNames()));";
+            
+            var voClassPath = ClassPathHelper.ValueObjectClassPath(srcDirectory, entityProperty.ValueObjectType.ClassName, entityProperty.ValueObjectPlural, projectBaseName);
+            usingStatement += $@"
+using {voClassPath.ClassNamespace};";
+            }
         }
-
-        // this... is super fragile. Should really refactor this
-        var usingStatement = string.Empty;
-        if (objectToFakeClassName.Contains("DTO", StringComparison.InvariantCultureIgnoreCase))
-            usingStatement = @$"using {dtoClassPath.ClassNamespace};";
-
+        
         return @$"namespace {classNamespace};
 
 using AutoBogus;
@@ -136,6 +142,8 @@ public sealed class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassNa
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, entity.Name, entity.Plural, null, projectBaseName);
 
         var rulesFor = "";
+
+        var usingStatement = @$"using {modelClassPath.ClassNamespace};";
         foreach (var entityProperty in entity.Properties)
         {
             if (entityProperty.ValueObjectType.IsEmail)
@@ -143,13 +151,17 @@ public sealed class Fake{objectToFakeClassName} : AutoFaker<{objectToFakeClassNa
                 rulesFor += @$"
         RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.Person.Email);";
             }
-            
-            if(entityProperty.IsSmartEnum())
-                rulesFor += @$"
-        RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.PickRandom<{entityProperty.SmartEnumPropName}>({entityProperty.SmartEnumPropName}.List).Name);";
-        }
 
-        var usingStatement = @$"using {modelClassPath.ClassNamespace};";
+            if (entityProperty.ValueObjectType.IsSmart)
+            {
+                rulesFor += @$"
+        RuleFor({entity.Lambda} => {entity.Lambda}.{entityProperty.Name}, f => f.PickRandom({entityProperty.ValueObjectName}.ListNames()));";
+            
+            var voClassPath = ClassPathHelper.ValueObjectClassPath(srcDirectory, entityProperty.ValueObjectType.ClassName, entityProperty.ValueObjectPlural, projectBaseName);
+            usingStatement += $@"
+using {voClassPath.ClassNamespace};";
+            }
+        }
 
         return @$"namespace {classNamespace};
 

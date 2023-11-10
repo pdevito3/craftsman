@@ -215,6 +215,8 @@ BoundedContexts:
       - Public
       - Friends Only
       - Private
+      ValueObjectName: RecipeVisibility
+      ValueObjectPlural: RecipeVisibilities
     - Name: Directions
     - Name: Rating
       Type: int?
