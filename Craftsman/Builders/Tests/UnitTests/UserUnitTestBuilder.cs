@@ -29,7 +29,7 @@ public class UserUnitTestBuilder
 
     private static string CreateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
     {
-        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+        var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         var emailClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Emails", projectBaseName);
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Users", projectBaseName);
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", "Users", projectBaseName);
@@ -42,7 +42,7 @@ public class UserUnitTestBuilder
 using {domainEventsClassPath.ClassNamespace};
 using {emailClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
-using {wrapperClassPath.ClassNamespace};
+using {resourcesClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using Bogus;
@@ -116,7 +116,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 
     private static string UpdateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
     {
-        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+        var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Users", projectBaseName);
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "User", "Users", null, projectBaseName);
@@ -129,7 +129,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 using {domainEventsClassPath.ClassNamespace};
 using {domainPolicyClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
-using {wrapperClassPath.ClassNamespace};
+using {resourcesClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {fakerClassPath.ClassNamespace};
 using Bogus;

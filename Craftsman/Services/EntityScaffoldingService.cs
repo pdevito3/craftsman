@@ -66,7 +66,7 @@ public class EntityScaffoldingService
 
             var isProtected = entity.Features.Any(f => f.IsProtected); // <-- one more example of why it would be nice to have specific endpoints for each feature 😤
             if (entity.Features.Count > 0)
-                new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, isProtected);
+                new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, entity.Plural, projectBaseName, isProtected);
 
             // TODO refactor to factory?
             foreach (var feature in entity.Features)
@@ -274,7 +274,7 @@ public class EntityScaffoldingService
             entity.Plural));
 
         if (entity.Features.Count > 0)
-            new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, true);
+            new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, entity.Plural, projectBaseName, true);
 
         // TODO refactor to factory?
         foreach (var feature in entity.Features)
@@ -344,7 +344,7 @@ public class EntityScaffoldingService
             userEntity.Name, 
             userEntity.Plural));
         
-        new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, userEntity.Name, userEntity.Plural, projectBaseName, true);
+        new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, userEntity.Plural, projectBaseName, true);
         new ControllerModifier(_fileSystem).AddCustomUserEndpoint(srcDirectory, projectBaseName);
         
         foreach (var feature in userEntity.Features)
@@ -383,7 +383,7 @@ public class EntityScaffoldingService
     {
         var controllerClassPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{FileNames.GetControllerName(entity.Plural)}.cs", projectBaseName);
         if (!File.Exists(controllerClassPath.FullClassPath))
-            new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, entity.Name, entity.Plural, projectBaseName, feature.IsProtected);
+            new ControllerBuilder(_utilities).CreateController(solutionDirectory, srcDirectory, entity.Plural, projectBaseName, feature.IsProtected);
 
         if (feature.IsProtected)
             new PermissionsModifier(_fileSystem).AddPermission(srcDirectory, feature.PermissionName, projectBaseName);

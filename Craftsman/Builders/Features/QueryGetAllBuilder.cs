@@ -30,7 +30,6 @@ public class QueryGetAllBuilder
         var repoInterfaceProp = $"{entity.Name.LowercaseFirstLetter()}Repository";
         
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
         var entityServicesClassPath = ClassPathHelper.EntityServicesClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
@@ -49,7 +48,6 @@ public class QueryGetAllBuilder
 
 using {dtoClassPath.ClassNamespace};
 using {entityServicesClassPath.ClassNamespace};
-using {wrapperClassPath.ClassNamespace};
 using {exceptionsClassPath.ClassNamespace};
 using {resourcesClassPath.ClassNamespace};{permissionsUsing}
 using Mappings;

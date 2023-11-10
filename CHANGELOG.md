@@ -9,7 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-* None yet!
+### Updated
+
+* Moved `PagedList` to `Resources` directory
 
 ## [0.24.1] - 11/09/2023
 

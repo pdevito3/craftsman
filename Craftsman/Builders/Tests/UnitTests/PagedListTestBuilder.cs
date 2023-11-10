@@ -22,11 +22,11 @@ public class PagedListTestBuilder
 
     private static string WriteTestFileText(string srcDirectory, ClassPath classPath, string projectBaseName)
     {
-        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+        var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
 
         return @$"namespace {classPath.ClassNamespace};
 
-using {wrapperClassPath.ClassNamespace};
+using {resourcesClassPath.ClassNamespace};
 
 public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 {{

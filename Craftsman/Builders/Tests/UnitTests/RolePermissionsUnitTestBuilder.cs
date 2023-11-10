@@ -29,7 +29,7 @@ public class RolePermissionsUnitTestBuilder
 
     private static string CreateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
     {
-        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+        var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
         var rolesClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Roles", projectBaseName);
@@ -40,7 +40,7 @@ public class RolePermissionsUnitTestBuilder
 
 using {domainPolicyClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
-using {wrapperClassPath.ClassNamespace};
+using {resourcesClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using Bogus;
@@ -106,7 +106,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 
     private static string UpdateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)
     {
-        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+        var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         var domainPolicyClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "RolePermissions", projectBaseName);
         var rolesClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", "Roles", projectBaseName);
@@ -117,7 +117,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
 
 using {domainPolicyClassPath.ClassNamespace};
 using {entityClassPath.ClassNamespace};
-using {wrapperClassPath.ClassNamespace};
+using {resourcesClassPath.ClassNamespace};
 using {modelClassPath.ClassNamespace};
 using {rolesClassPath.ClassNamespace};
 using Bogus;

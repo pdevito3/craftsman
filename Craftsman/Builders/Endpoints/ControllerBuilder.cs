@@ -13,21 +13,21 @@ public class ControllerBuilder
         _utilities = utilities;
     }
 
-    public void CreateController(string solutionDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName, bool isProtected)
+    public void CreateController(string solutionDirectory, string srcDirectory, string entityPlural, string projectBaseName, bool isProtected)
     {
         var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{FileNames.GetControllerName(entityPlural)}.cs", projectBaseName, "v1");
-        var fileText = GetControllerFileText(classPath.ClassNamespace, entityPlural, solutionDirectory, srcDirectory, projectBaseName, isProtected);
+        var fileText = GetControllerFileText(classPath.ClassNamespace, entityPlural, srcDirectory, projectBaseName, isProtected);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public static string GetControllerFileText(string classNamespace, string entityPlural, string solutionDirectory, string srcDirectory, string projectBaseName, bool usesJwtAuth)
+    public static string GetControllerFileText(string classNamespace, string entityPlural, string srcDirectory, string projectBaseName, bool usesJwtAuth)
     {
         // TODO create an attribute factory that can order them how i want and work more dynamically
 
         var endpointBase = FileNames.EndpointBaseGenerator(entityPlural);
 
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entityPlural, projectBaseName);
-        var wrapperClassPath = ClassPathHelper.WrappersClassPath(srcDirectory, "", projectBaseName);
+        var resourcesClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
         var featureClassPath = ClassPathHelper.FeaturesClassPath(srcDirectory, "", entityPlural, projectBaseName);
         var permissionsClassPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "", projectBaseName);
         var permissionsUsing = usesJwtAuth
@@ -38,7 +38,7 @@ public class ControllerBuilder
 
 using {featureClassPath.ClassNamespace};
 using {dtoClassPath.ClassNamespace};
-using {wrapperClassPath.ClassNamespace};{permissionsUsing}
+using {resourcesClassPath.ClassNamespace};{permissionsUsing}
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;

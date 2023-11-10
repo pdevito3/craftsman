@@ -14,7 +14,7 @@ public class PagedListBuilder
 
     public void CreatePagedList(string srcDirectory, string projectBaseName)
     {
-        var classPath = ClassPathHelper.WrappersClassPath(srcDirectory, $"PagedList.cs", projectBaseName);
+        var classPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, $"PagedList.cs", projectBaseName);
         var fileText = GetPagedListText(classPath.ClassNamespace);
         _utilities.CreateFile(classPath, fileText);
     }

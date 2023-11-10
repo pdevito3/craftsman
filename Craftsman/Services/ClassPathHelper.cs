@@ -354,11 +354,6 @@ public static class ClassPathHelper
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Exceptions"), className);
     }
 
-    public static ClassPath WrappersClassPath(string srcDirectory, string className, string projectBaseName)
-    {
-        return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Wrappers"), className);
-    }
-
     public static ClassPath WebApiResourcesClassPath(string srcDirectory, string className, string projectBaseName)
     {
         return new ClassPath(srcDirectory, Path.Combine($"{projectBaseName}", "Resources"), className);
