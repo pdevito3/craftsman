@@ -55,6 +55,12 @@ updates:
         update-types:
         - ""minor""
         - ""patch""
+      testcontainers:
+        patterns:
+          - ""Testcontainers*""
+        update-types:
+          - ""minor""
+          - ""patch""
     commit-message:      
       prefix: ""Package Dependencies""
     # Temporarily disable PR limit, till initial dependency update goes through
