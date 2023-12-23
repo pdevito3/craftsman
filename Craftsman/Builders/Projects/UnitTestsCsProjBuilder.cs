@@ -26,27 +26,27 @@ public class UnitTestsCsProjBuilder
         return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""7.0.11"" />
+    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Testing"" Version=""8.0.0"" />
     <PackageReference Include=""AutoBogusLifesupport"" Version=""2.14.0"" />
-    <PackageReference Include=""Bogus"" Version=""34.0.2"" />
+    <PackageReference Include=""Bogus"" Version=""35.0.1"" />
     <PackageReference Include=""FluentAssertions"" Version=""6.12.0"" />
-    <PackageReference Include=""Microsoft.EntityFrameworkCore.Relational"" Version=""7.0.11"" />
     <PackageReference Include=""MockQueryable.NSubstitute"" Version=""7.0.0"" />
+    <PackageReference Include=""NetArchTest.Rules"" Version=""1.3.2"" />
     <PackageReference Include=""NSubstitute"" Version=""5.1.0"" />
     <PackageReference Include=""NSubstitute.Analyzers.CSharp"" Version=""1.0.16"">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include=""xunit"" Version=""2.5.1"" />
-    <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.5.1"" />
-    <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.7.2"" />
+    <PackageReference Include=""xunit"" Version=""2.6.4"" />
+    <PackageReference Include=""xunit.runner.visualstudio"" Version=""2.5.6"" />
+    <PackageReference Include=""Microsoft.NET.Test.Sdk"" Version=""17.8.0"" />
   </ItemGroup>
 
   <ItemGroup>

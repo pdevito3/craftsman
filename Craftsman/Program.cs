@@ -21,7 +21,6 @@ serviceCollection.AddSingleton<IScaffoldingDirectoryStore, ScaffoldingDirectoryS
 serviceCollection.AddSingleton<IDbMigrator, DbMigrator>();
 serviceCollection.AddSingleton<IGitService, GitService>();
 serviceCollection.AddCraftsmanServices(typeof(Program));
-serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
 serviceCollection.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
 var registrar = new TypeRegistrar(serviceCollection);

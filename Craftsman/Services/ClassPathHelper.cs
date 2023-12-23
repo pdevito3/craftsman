@@ -70,9 +70,9 @@ public static class ClassPathHelper
         return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "Wrappers"), className);
     }
 
-    public static ClassPath UnitTestProjectGuardsTestsClassPath(string solutionDirectory, string className, string projectBaseName)
+    public static ClassPath UnitTestArchTestsClassPath(string solutionDirectory, string className, string projectBaseName)
     {
-        return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "ProjectGuards"), className);
+        return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}.{UnitTestProjectSuffix}", "Architecture"), className);
     }
 
     public static ClassPath WebApiHostExtensionsClassPath(string projectDirectory, string className, string projectBaseName)

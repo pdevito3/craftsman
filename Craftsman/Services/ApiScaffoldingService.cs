@@ -181,7 +181,6 @@ public class ApiScaffoldingService
             new UserPolicyHandlerUnitTests(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
 
         //services
-        _mediator.Send(new UnitTestUtilsBuilder.Command());
         _mediator.Send(new SharedTestUtilsBuilder.Command());
         _mediator.Send(new UnitOfWorkBuilder.UnitOfWorkBuilderCommand(template.DbContext.ContextName));
         _mediator.Send(new IBoundaryServiceInterfaceBuilder.IBoundaryServiceInterfaceBuilderCommand());
@@ -199,7 +198,6 @@ public class ApiScaffoldingService
         new RootConfigurationsExtensionBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
 
         new CurrentUserServiceBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);
-        new DateTimeProviderBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);
         new SwaggerBuilder(_utilities, _fileSystem).AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template?.Environment?.AuthSettings?.Audience, projectBaseName);
 
         if (template.Bus.AddBus)

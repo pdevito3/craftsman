@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>true</ImplicitUsings>
 
     <PackAsTool>true</PackAsTool>
@@ -13,7 +13,7 @@
     <Description>A .NET scaffolding tool to help you stop worrying about boilerplate and focus on your business logic. Go to https://wrapt.dev for the full documentation.</Description>
     <Company>Wrapt</Company>
     <Product>Craftsman</Product>
-    <PackageTags>webapi c-sharp dotnet-core vertical-slice-architecture asp-net-core docker net-7 ddd domain-driven-design web-dev cqrs mediatr masstransit event-driven-architecture</PackageTags>
+    <PackageTags>webapi c-sharp dotnet-core vertical-slice-architecture asp-net-core docker net-8 ddd domain-driven-design web-dev cqrs mediatr masstransit event-driven-architecture</PackageTags>
     <RepositoryUrl>https://github.com/pdevito3/craftsman</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <AssemblyVersion>0.24.1</AssemblyVersion>
@@ -25,19 +25,16 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.SmartEnum" Version="7.0.0" />
-    <PackageReference Include="AutoMapper" Version="12.0.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
-    <PackageReference Include="FluentAssertions" Version="6.9.0" />
-    <PackageReference Include="FluentValidation" Version="11.4.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <PackageReference Include="FluentValidation" Version="11.9.0" />
     <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0175" />
-    <PackageReference Include="MediatR" Version="12.1.1" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="Spectre.Console" Version="0.46.0" />
-    <PackageReference Include="Spectre.Console.Cli" Version="0.46.0" />
-    <PackageReference Include="System.IO.Abstractions" Version="19.1.14" />
+    <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
+    <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Spectre.Console" Version="0.48.0" />
+    <PackageReference Include="Spectre.Console.Cli" Version="0.48.0" />
+    <PackageReference Include="System.IO.Abstractions" Version="20.0.4" />
     <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
   </ItemGroup>
 

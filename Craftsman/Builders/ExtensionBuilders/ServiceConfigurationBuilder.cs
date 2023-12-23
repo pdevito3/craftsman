@@ -64,7 +64,7 @@ public static class {FileNames.WebAppServiceConfiguration()}
 {{
     public static void ConfigureServices(this WebApplicationBuilder builder)
     {{
-        builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+        builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton(Log.Logger);{hellangRegistration}
 
         // TODO update CORS for your env

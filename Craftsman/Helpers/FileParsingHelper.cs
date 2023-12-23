@@ -99,6 +99,6 @@ public class FileParsingHelper : IFileParsingHelper
         if (entities.Where(e => e.Name == projectName).ToList().Count > 0
             || entities.Where(e => e.Plural == projectName).ToList().Count > 0
         )
-            throw new SolutiuonNameEntityMatchException();
+            throw new SolutionNameEntityMatchException();
     }
 }

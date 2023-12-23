@@ -18,7 +18,7 @@ public static class EntityModelFileTextGenerator
 
 using Destructurama.Attributed;
 
-public sealed class {model.GetClassName(entity.Name)}
+public sealed record {model.GetClassName(entity.Name)}
 {{
 {propString}
 }}

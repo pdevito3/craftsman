@@ -15,20 +15,19 @@ public class AllEndpointsProtectedUnitTestBuilder
 
     public void CreateTests(string testDirectory, string projectBaseName)
     {
-        var classPath = ClassPathHelper.UnitTestProjectGuardsTestsClassPath(testDirectory, $"EndpointTests.cs", projectBaseName);
-        var fileText = WriteTestFileText(classPath, projectBaseName);
+        var classPath = ClassPathHelper.UnitTestArchTestsClassPath(testDirectory, $"EndpointTests.cs", projectBaseName);
+        var fileText = WriteTestFileText(classPath);
         _utilities.CreateFile(classPath, fileText);
     }
 
-    private static string WriteTestFileText(ClassPath classPath, string projectBaseName)
+    private static string WriteTestFileText(ClassPath classPath)
     {
         return @$"namespace {classPath.ClassNamespace};
 
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
-using TestHelpers;
+using NetArchTest.Rules;
 
 public sealed class EndpointTests
 {{
@@ -55,10 +54,14 @@ public sealed class EndpointTests
 
     private static IEnumerable<Endpoint> GetEndpointsFromProject()
     {{
-        var apiAssembly = UnitTestUtils.GetApiAssembly();
-        var controllers = apiAssembly
-            .GetTypes()
-            .Where(t => t.IsSubclassOf(typeof(Controller)) || t.IsSubclassOf(typeof(ControllerBase)));
+        var controllers = Types.InAssembly(Assembly.GetAssembly(typeof(Program)))
+            .That()
+            .AreClasses()
+            .And()
+            .HaveNameEndingWith(""Controller"")
+            .Or()
+            .HaveNameEndingWith(""ControllerBase"")
+            .GetTypes();
 
         var endpoints = controllers.SelectMany(controller => controller.GetMethods())
             .Where(method => method.IsPublic && method.IsDefined(typeof(HttpMethodAttribute)));
