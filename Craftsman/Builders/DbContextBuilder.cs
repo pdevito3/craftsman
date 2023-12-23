@@ -84,10 +84,10 @@ public sealed class {dbContextName} : DbContext
 {{
     private readonly ICurrentUserService _currentUserService;
     private readonly IMediator _mediator;
-    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly TimeProvider _dateTimeProvider;
 
     public {dbContextName}(
-        DbContextOptions<{dbContextName}> options, ICurrentUserService currentUserService, IMediator mediator, IDateTimeProvider dateTimeProvider) : base(options)
+        DbContextOptions<{dbContextName}> options, ICurrentUserService currentUserService, IMediator mediator, TimeProvider dateTimeProvider) : base(options)
     {{
         _currentUserService = currentUserService;
         _mediator = mediator;
@@ -139,7 +139,7 @@ public sealed class {dbContextName} : DbContext
         
     private void UpdateAuditFields()
     {{
-        var now = _dateTimeProvider.DateTimeUtcNow;
+        var now = _dateTimeProvider.GetUtcNow();
         foreach (var entry in ChangeTracker.Entries<BaseEntity>())
         {{
             switch (entry.State)

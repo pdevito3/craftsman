@@ -199,7 +199,6 @@ public class ApiScaffoldingService
         new RootConfigurationsExtensionBuilder(_utilities).CreateConfig(srcDirectory, projectBaseName);
 
         new CurrentUserServiceBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);
-        new DateTimeProviderBuilder(_utilities).GetCurrentUserService(srcDirectory, projectBaseName);
         new SwaggerBuilder(_utilities, _fileSystem).AddSwagger(srcDirectory, template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template?.Environment?.AuthSettings?.Audience, projectBaseName);
 
         if (template.Bus.AddBus)

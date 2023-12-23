@@ -188,24 +188,24 @@ public abstract class BaseEntity
     [Key]
     public Guid Id {{ get; private set; }} = Guid.NewGuid();
     
-    public DateTime CreatedOn {{ get; private set; }}
+    public DateTimeOffset CreatedOn {{ get; private set; }}
     
     public string CreatedBy {{ get; private set; }}
     
-    public DateTime? LastModifiedOn {{ get; private set; }}
+    public DateTimeOffset? LastModifiedOn {{ get; private set; }}
     
     public string LastModifiedBy {{ get; private set; }}{isDeletedProp}
     
     [NotMapped]
     public List<DomainEvent> DomainEvents {{ get; }} = new List<DomainEvent>();
 
-    public void UpdateCreationProperties(DateTime createdOn, string createdBy)
+    public void UpdateCreationProperties(DateTimeOffset createdOn, string createdBy)
     {{
         CreatedOn = createdOn;
         CreatedBy = createdBy;
     }}
     
-    public void UpdateModifiedProperties(DateTime? lastModifiedOn, string lastModifiedBy)
+    public void UpdateModifiedProperties(DateTimeOffset? lastModifiedOn, string lastModifiedBy)
     {{
         LastModifiedOn = lastModifiedOn;
         LastModifiedBy = lastModifiedBy;
