@@ -57,20 +57,6 @@ public class DbContextBuilder
 {SoftDeleteFilterClass()}"
             : "";
 
-        var valueConverterUsing = dbProvider == DbProvider.SqlServer
-            ? $@"{Environment.NewLine}using Microsoft.EntityFrameworkCore.Storage.ValueConversion;"
-            : null;
-        var dateOnlyConverterClass = dbProvider == DbProvider.SqlServer
-            ? $@"
-
-public class DateOnlyConverter : ValueConverter<DateOnly, DateTime>
-{{
-    public DateOnlyConverter() : base(
-        d => d.ToDateTime(TimeOnly.MinValue),
-        d => DateOnly.FromDateTime(d))
-    {{ }}
-}}" : null;
-
         var modelBuilderFilter = useSoftDelete
             ? $@"
         modelBuilder.FilterSoftDeletedRecords();
@@ -79,15 +65,6 @@ public class DateOnlyConverter : ValueConverter<DateOnly, DateTime>
                 https://github.com/dotnet/efcore/issues/10275
         */"
             : "";
-
-        var dateOnlyConverter = dbProvider == DbProvider.SqlServer ? $@"
-
-    protected override void ConfigureConventions(ModelConfigurationBuilder builder)
-    {{
-        builder.Properties<DateOnly>()
-            .HaveConversion<DateOnlyConverter>()
-            .HaveColumnType(""date"");
-    }}" : null;
 
         return @$"namespace {classNamespace};
 
@@ -101,7 +78,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Query;{valueConverterUsing}
+using Microsoft.EntityFrameworkCore.Query;
 
 public sealed class {dbContextName} : DbContext
 {{
@@ -126,7 +103,7 @@ public sealed class {dbContextName} : DbContext
 
         #region Entity Database Config Region - Only delete if you don't want to automatically add configurations
         #endregion Entity Database Config Region - Only delete if you don't want to automatically add configurations
-    }}{dateOnlyConverter}
+    }}
 
     public override int SaveChanges()
     {{
@@ -181,7 +158,7 @@ public sealed class {dbContextName} : DbContext
             }}
         }}
     }}
-}}{softDeleteFilterClass}{dateOnlyConverterClass}";
+}}{softDeleteFilterClass}";
     }
 
     private static string SoftDeleteFilterClass()
