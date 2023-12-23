@@ -117,10 +117,17 @@ public sealed class {valueObjectClassName} : ValueObject
             => $"        {propertyName} = {ClassName}.Of({updateModelVarName}.{propertyName});";
         
         public override string GetDbConfig(string propertyName)
+        //     => $@"
+        //             
+        // builder.OwnsOne(x => x.{propertyName}, opts =>
+        //     {{
+        //         opts.Property(x => x.Value);
+        //     }}).Navigation(x => x.{propertyName})
+        //     .IsRequired();";
             => $@"
 
-        builder.ComplexProperty(x => x.{propertyName},
-            y => y.Property(z => z.Value));";
+        builder.Property(x => x.{propertyName})
+            .HasConversion(x => x.Value, x => new {ClassName}(x));";
         
 
         public override string GetMapperAttribute(string entityName, string entityPropertyName)
@@ -236,10 +243,17 @@ public sealed class {valueObjectClassName} : ValueObject
             => $"        {propertyName} = {ClassName}.Of({updateModelVarName}.{propertyName});";
         
         public override string GetDbConfig(string propertyName)
+        //     => $@"
+        //             
+        // builder.OwnsOne(x => x.{propertyName}, opts =>
+        //     {{
+        //         opts.Property(x => x.Value);
+        //     }}).Navigation(x => x.{propertyName})
+        //     .IsRequired();";
             => $@"
 
-        builder.ComplexProperty(x => x.{propertyName},
-            y => y.Property(z => z.Value));";
+        builder.Property(x => x.{propertyName})
+            .HasConversion(x => x.Value, x => new {ClassName}(x));";
         
 
         public override string GetMapperAttribute(string entityName, string entityPropertyName)
@@ -301,10 +315,17 @@ public sealed class Email : ValueObject
             => $@"        {propertyName} = {ClassName}.Of({updateModelVarName}.{propertyName});";
 
         public override string GetDbConfig(string propertyName)
+            //     => $@"
+            //             
+            // builder.OwnsOne(x => x.{propertyName}, opts =>
+            //     {{
+            //         opts.Property(x => x.Value);
+            //     }}).Navigation(x => x.{propertyName})
+            //     .IsRequired();";
             => $@"
 
-        builder.ComplexProperty(x => x.{propertyName},
-            y => y.Property(z => z.Value));";
+        builder.Property(x => x.{propertyName})
+            .HasConversion(x => x.Value, x => new {ClassName}(x));";
         
 
         public override string GetMapperAttribute(string entityName, string entityPropertyName)
@@ -377,10 +398,17 @@ public static class PercentExtensions
             => $@"        {propertyName} = {ClassName}.Of({updateModelVarName}.{propertyName});";
         
         public override string GetDbConfig(string propertyName)
+        //     => $@"
+        //             
+        // builder.OwnsOne(x => x.{propertyName}, opts =>
+        //     {{
+        //         opts.Property(x => x.Value);
+        //     }}).Navigation(x => x.{propertyName})
+        //     .IsRequired();";
             => $@"
 
-        builder.ComplexProperty(x => x.{propertyName},
-            y => y.Property(z => z.Value));";
+        builder.Property(x => x.{propertyName})
+            .HasConversion(x => x.Value, x => new {ClassName}(x));";
         
         public override string GetMapperAttribute(string entityName, string entityPropertyName)
             => GetMapperAttributeValue(entityName, entityPropertyName, "Value");
@@ -456,10 +484,17 @@ public class MonetaryAmount : ValueObject
             => $@"        {propertyName} = {ClassName}.Of({updateModelVarName}.{propertyName});";
         
         public override string GetDbConfig(string propertyName)
+        //     => $@"
+        //             
+        // builder.OwnsOne(x => x.{propertyName}, opts =>
+        //     {{
+        //         opts.Property(x => x.Amount);
+        //     }}).Navigation(x => x.{propertyName})
+        //     .IsRequired();";
             => $@"
 
-        builder.ComplexProperty(x => x.{propertyName},
-            y => y.Property(z => z.Amount));";
+        builder.Property(x => x.{propertyName})
+            .HasConversion(x => x.Amount, x => new {ClassName}(x));";
         
         public override string GetMapperAttribute(string entityName, string entityPropertyName)
             => GetMapperAttributeValue(entityName, entityPropertyName, "Amount");

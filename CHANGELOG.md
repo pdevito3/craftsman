@@ -26,7 +26,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   * TODO: docs
 
 * Remove BFF from examples
-* Value Objects use new `ComplexType` setup
 
 ## [0.24.1] - 11/09/2023
 
