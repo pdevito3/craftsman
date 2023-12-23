@@ -38,6 +38,14 @@ You can find some highlights below. I have some reminement items in the pipe and
 
 Have a request for something you don't see in the project? Join [our discord](https://discord.gg/TBq2rVkSEj) and let's talk about it!
 
+### Coming in 0.25
+
+✅ .NET 8 scaffolding
+
+✅ Archicture test enhancement
+
+✅ Remove obsolete BFF commands 
+
 ### Some 0.24 highlights
 
 ✅ Logging enhancements and masking
