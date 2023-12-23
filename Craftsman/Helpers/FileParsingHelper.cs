@@ -5,9 +5,9 @@ using System.Data;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Text.Json;
 using Domain;
 using Exceptions;
-using Newtonsoft.Json;
 using Services;
 using YamlDotNet.Serialization;
 
@@ -56,7 +56,8 @@ public class FileParsingHelper : IFileParsingHelper
 
     public T ReadJson<T>(string jsonFile)
     {
-        return JsonConvert.DeserializeObject<T>(_fileSystem.File.ReadAllText(jsonFile));
+        var jsonString = _fileSystem.File.ReadAllText(jsonFile);
+        return JsonSerializer.Deserialize<T>(jsonString);
     }
 
     public bool IsJsonOrYaml(string filePath)

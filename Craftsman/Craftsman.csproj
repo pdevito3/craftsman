@@ -31,7 +31,6 @@
     <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
     <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Spectre.Console" Version="0.48.0" />
     <PackageReference Include="Spectre.Console.Cli" Version="0.48.0" />
     <PackageReference Include="System.IO.Abstractions" Version="20.0.4" />
