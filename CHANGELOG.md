@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Scaffolded projects use .NET 8
+  * TODO: docs
+
 * Bump Nuget packages
 * Bespoke `DateTimeProvider` removed in favor of the new built in `TimeProvider`
 * `BaseEntity` audit times use `DateTimeOffset`
@@ -20,6 +22,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Moved `PagedList` to `Resources` directory
 * Underlying craftsman code uses .NET 8
 * Bump underlying .NET packages and remove unused packages in craftsman
+* Remove BFF commands
+  * TODO: docs
+
+* Remove BFF from examples
 
 ## [0.24.1] - 11/09/2023
 
