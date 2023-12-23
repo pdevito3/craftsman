@@ -11,7 +11,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Updated
 
+* Scaffolded projects use .NET 8
+* Bump Nuget packages
+* Bespoke `DateTimeProvider` removed in favor of the new built in `TimeProvider`
+* `BaseEntity` audit times use `DateTimeOffset`
+* Model classes use `record` type
+* Remove `DateOnlyConverter` for `SqlServer` since it's built into .NET 8
 * Moved `PagedList` to `Resources` directory
+* Underlying craftsman code uses .NET 8
+* Bump underlying .NET packages and remove unused packages in craftsman
 
 ## [0.24.1] - 11/09/2023
 
