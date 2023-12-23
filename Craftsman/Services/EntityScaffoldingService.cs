@@ -5,11 +5,6 @@ using System.IO;
 using System.IO.Abstractions;
 using Builders;
 using Builders.Auth;
-using Builders.Bff.Components.Navigation;
-using Builders.Bff.Features.Dynamic;
-using Builders.Bff.Features.Dynamic.Api;
-using Builders.Bff.Features.Dynamic.Types;
-using Builders.Bff.Src;
 using Builders.Dtos;
 using Builders.Endpoints;
 using Builders.EntityModels;
@@ -25,20 +20,12 @@ using Domain.Enums;
 using Helpers;
 using MediatR;
 
-public class EntityScaffoldingService
+public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem fileSystem, IMediator mediator, IConsoleWriter consoleWriter)
 {
-    private readonly IFileSystem _fileSystem;
-    private readonly ICraftsmanUtilities _utilities;
-    private readonly IMediator _mediator;
-    private readonly IConsoleWriter _consoleWriter;
-
-    public EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem fileSystem, IMediator mediator, IConsoleWriter consoleWriter)
-    {
-        _fileSystem = fileSystem;
-        _mediator = mediator;
-        _consoleWriter = consoleWriter;
-        _utilities = utilities;
-    }
+    private readonly IFileSystem _fileSystem = fileSystem;
+    private readonly ICraftsmanUtilities _utilities = utilities;
+    private readonly IMediator _mediator = mediator;
+    private readonly IConsoleWriter _consoleWriter = consoleWriter;
 
     public void ScaffoldEntities(string solutionDirectory,
         string srcDirectory,
@@ -490,45 +477,6 @@ public class EntityScaffoldingService
         {
             _mediator.Send(new JobFeatureBuilder.Command(feature, entity.Plural));
             _mediator.Send(new JobFeatureIntegrationTestBuilder.Command(feature, entity.Plural));
-        }
-    }
-
-    public void ScaffoldBffEntities(List<BffEntity> entities, string spaDirectory)
-    {
-        foreach (var templateEntity in entities)
-        {
-            new DynamicFeatureBuilder(_utilities).CreateDynamicFeatureIndex(spaDirectory, templateEntity.Plural);
-            new DynamicFeatureRoutesBuilder(_utilities).CreateDynamicFeatureRoutes(spaDirectory, templateEntity.Name,
-                templateEntity.Plural);
-            new DynamicFeatureTypesBuilder(_utilities).CreateDynamicFeatureTypes(spaDirectory, templateEntity.Name, templateEntity.Plural,
-                templateEntity.Properties);
-            new NavigationComponentModifier(_fileSystem).AddFeatureListRouteToNav(spaDirectory, templateEntity.Plural);
-            new DynamicFeatureRoutesModifier(_fileSystem).AddRoute(spaDirectory, templateEntity.Name, templateEntity.Plural);
-
-            // apis
-            new DynamicFeatureKeysBuilder(_utilities).CreateDynamicFeatureKeys(spaDirectory, templateEntity.Name, templateEntity.Plural);
-            new DynamicFeatureApiIndexBuilder(_utilities).CreateDynamicFeatureApiIndex(spaDirectory, templateEntity.Name,
-                templateEntity.Plural);
-            foreach (var templateEntityFeature in templateEntity.Features)
-            {
-                new DynamicFeatureApiIndexModifier(_fileSystem).AddFeature(spaDirectory, templateEntity.Name, templateEntity.Plural,
-                    FeatureType.FromName(templateEntityFeature.Type));
-
-                if (templateEntityFeature.Type == FeatureType.AddRecord.Name)
-                    new DynamicFeatureAddEntityBuilder(_utilities).CreateApiFile(spaDirectory, templateEntity.Name,
-                        templateEntity.Plural);
-                if (templateEntityFeature.Type == FeatureType.GetList.Name)
-                    new DynamicFeatureGetListEntityBuilder(_utilities).CreateApiFile(spaDirectory, templateEntity.Name,
-                        templateEntity.Plural);
-                if (templateEntityFeature.Type == FeatureType.DeleteRecord.Name)
-                    new DynamicFeatureDeleteEntityBuilder(_utilities).CreateApiFile(spaDirectory, templateEntity.Name,
-                        templateEntity.Plural);
-                if (templateEntityFeature.Type == FeatureType.UpdateRecord.Name)
-                    new DynamicFeatureUpdateEntityBuilder(_utilities).CreateApiFile(spaDirectory, templateEntity.Name,
-                        templateEntity.Plural);
-                if (templateEntityFeature.Type == FeatureType.GetRecord.Name)
-                    new DynamicFeatureGetEntityBuilder(_utilities).CreateApiFile(spaDirectory, templateEntity.Name, templateEntity.Plural);
-            }
         }
     }
 }

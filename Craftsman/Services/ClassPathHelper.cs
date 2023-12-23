@@ -149,52 +149,6 @@ public static class ClassPathHelper
         return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}", "Properties"), className);
     }
 
-    public static ClassPath BffLaunchSettingsClassPath(string projectDirectory, string className, string projectName)
-    {
-        return new ClassPath(projectDirectory, Path.Combine("Properties"), className);
-    }
-
-    public static ClassPath BffSpaSrcClassPath(string spaDirectory, string className)
-    {
-        return new ClassPath(spaDirectory, "src", className);
-    }
-
-    public static ClassPath BffSpaFeatureClassPath(string spaDirectory, string featureName, BffFeatureCategory category, string className)
-    {
-        return category.Name switch
-        {
-            nameof(BffFeatureCategory.Routes) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "routes"), className),
-            nameof(BffFeatureCategory.Api) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "api"), className),
-            nameof(BffFeatureCategory.Types) => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter(), "types"), className),
-            _ => new ClassPath(spaDirectory, Path.Combine("src", "features", featureName.UppercaseFirstLetter()), className)
-        };
-    }
-
-    public static ClassPath BffSpaComponentClassPath(string spaDirectory, string componentName, string className)
-    {
-        return new ClassPath(spaDirectory, Path.Combine("src", "components", componentName.UppercaseFirstLetter()), className);
-    }
-
-    public static ClassPath BffSpaSrcAssetsClassPath(string spaDirectory, string className)
-    {
-        return new ClassPath(spaDirectory, Path.Combine("src", "assets"), className);
-    }
-
-    public static ClassPath BffSpaSrcApiTypesClassPath(string spaDirectory, string className)
-    {
-        return new ClassPath(spaDirectory, Path.Combine("src", "types", "api"), className);
-    }
-
-    public static ClassPath BffSpaSrcLibClassPath(string spaDirectory, string className)
-    {
-        return new ClassPath(spaDirectory, Path.Combine("src", "lib"), className);
-    }
-
-    public static ClassPath BffSpaRootClassPath(string spaDirectory, string className)
-    {
-        return new ClassPath(spaDirectory, "", className);
-    }
-
     public static ClassPath NextJsSideNavClassPath(string nextSrc)
     {
         return new ClassPath(nextSrc, Path.Combine("components"), "PrivateSideNav.tsx");

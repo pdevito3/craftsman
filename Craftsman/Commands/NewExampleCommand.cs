@@ -311,53 +311,6 @@ Messages:
   Properties:
   - Name: RecipeId
     Type: guid
-Bff:
-  ProjectName: RecipeManagementApp
-  ProxyPort: 4378
-  HeadTitle: Recipe Management App
-  Authority: http://localhost:3255/auth/realms/DevRealm
-  ClientId: recipe_management.bff
-  ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80688
-  RemoteEndpoints:
-    - LocalPath: /api/recipes
-      ApiAddress: https://localhost:5375/api/recipes
-    - LocalPath: /api/ingredients
-      ApiAddress: https://localhost:5375/api/ingredients
-  BoundaryScopes:
-    - the_kitchen_company
-  Entities:
-  - Name: Recipe
-    Features:
-    - Type: GetList
-    - Type: GetRecord
-    - Type: AddRecord
-    - Type: UpdateRecord
-    - Type: DeleteRecord
-    Properties:
-    - Name: Title
-      Type: string #optional if string
-    - Name: Directions
-    - Name: RecipeSourceLink
-    - Name: Visibility
-    - Name: Description
-    - Name: Rating
-      Type: number?
-    - Name: DateOfOrigin
-      Type: Date
-    - Name: HaveMadeItMyself
-      Type: boolean
-  - Name: Ingredient
-    Features:
-    - Type: GetList
-    - Type: GetRecord
-    - Type: AddRecord
-    - Type: UpdateRecord
-    - Type: DeleteRecord
-    Properties:
-    - Name: Name
-    - Name: Quantity
-    - Name: Measure
-    - Name: RecipeId
 AuthServer:
   Name: KeycloakPulumi
   RealmName: DevRealm
@@ -622,37 +575,6 @@ BoundedContexts:
       TokenUrl: http://localhost:3255/auth/realms/DevRealm/protocol/openid-connect/token
       ClientId: recipe_management.swagger
       ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
-Bff:
-  ProjectName: RecipeManagementApp
-  ProxyPort: 4378
-  HeadTitle: Recipe Management App
-  Authority: https://localhost:3385
-  ClientId: recipe_management.bff
-  ClientSecret: 974d6f71-d41b-4601-9a7a-a33081f80687
-  RemoteEndpoints:
-    - LocalPath: /api/recipes
-      ApiAddress: https://localhost:5375/api/recipes
-  BoundaryScopes:
-    - recipe_management
-  Entities:
-  - Name: Recipe
-    Features:
-    - Type: GetList
-    - Type: GetRecord
-    - Type: AddRecord
-    - Type: UpdateRecord
-    - Type: DeleteRecord
-    Properties:
-    - Name: Title
-      Type: string #optional if string
-    - Name: Directions
-    - Name: RecipeSourceLink
-    - Name: Visibility
-    - Name: Description
-    - Name: ImageLink
-    - Name: Visibility
-    - Name: Rating
-      Type: number?
 AuthServer:
   Name: KeycloakPulumi
   RealmName: DevRealm

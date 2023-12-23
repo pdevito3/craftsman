@@ -92,11 +92,6 @@ public class NewDomainCommand : Command<NewDomainCommand.Settings>
             new AddAuthServerCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _fileParsingHelper, _mediator, _console)
                 .AddAuthServer(solutionDirectory, domainProject.AuthServer);
 
-        // bff
-        if (domainProject.Bff != null)
-            new AddBffCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper, _mediator)
-                .AddBff(domainProject.Bff, solutionDirectory);
-
         // messages
         if (domainProject.Messages.Count > 0)
             new AddMessageCommand(_fileSystem, _consoleWriter, _utilities, _scaffoldingDirectoryStore, _console, _fileParsingHelper)

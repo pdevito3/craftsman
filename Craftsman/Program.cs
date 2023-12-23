@@ -95,20 +95,6 @@ app.Configure(config =>
             .WithExample(new[] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
             .WithExample(new[] { "add authserver", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
 
-        add.AddCommand<AddBffCommand>("bff")
-            .WithDescription(
-                "Add a bff to your solution along with a React client using a formatted yaml or json file that describes the bff you want to add.")
-            .WithExample(new[] { "add bff", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new[] { "add bff", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new[] { "add bff", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
-
-        add.AddCommand<AddBffEntityCommand>("bffentity")
-            .WithDescription(
-                "Adds one or more new entities to your BFF client using a formatted yaml or json file.")
-            .WithExample(new[] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yaml" })
-            .WithExample(new[] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.yml" })
-            .WithExample(new[] { "add bffentity", $"my{Path.DirectorySeparatorChar}file{Path.DirectorySeparatorChar}path.json" });
-
         add.AddCommand<AddConsumerCommand>("consumer")
             .WithDescription(
                 "Add a receive endpoint and register it with MassTransit using a formatted yaml or json file.")
