@@ -25,7 +25,7 @@ public class SharedTestsCsProjBuilder
         return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
@@ -33,7 +33,6 @@ public class SharedTestsCsProjBuilder
     <PackageReference Include=""Ardalis.SmartEnum"" Version=""7.0.0"" />
     <PackageReference Include=""AutoBogusLifesupport"" Version=""2.14.0"" />
     <PackageReference Include=""Bogus"" Version=""34.0.2"" />
-    <PackageReference Include=""Microsoft.EntityFrameworkCore.Relational"" Version=""7.0.11"" />
   </ItemGroup>
 
   <ItemGroup>
