@@ -73,7 +73,6 @@ public sealed class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntit
         //             => a.Property(p => p.Value).HasColumnName(""physical_address_postal_code""));
         //         y.Property(a => a.Country).HasColumnName(""physical_address_country"");
         //     }});
-        }});
     }}
 }}";
         }
