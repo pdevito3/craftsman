@@ -181,7 +181,6 @@ public class ApiScaffoldingService
             new UserPolicyHandlerUnitTests(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
 
         //services
-        _mediator.Send(new UnitTestUtilsBuilder.Command());
         _mediator.Send(new SharedTestUtilsBuilder.Command());
         _mediator.Send(new UnitOfWorkBuilder.UnitOfWorkBuilderCommand(template.DbContext.ContextName));
         _mediator.Send(new IBoundaryServiceInterfaceBuilder.IBoundaryServiceInterfaceBuilderCommand());

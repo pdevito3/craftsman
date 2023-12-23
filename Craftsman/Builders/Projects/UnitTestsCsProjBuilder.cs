@@ -38,6 +38,7 @@ public class UnitTestsCsProjBuilder
     <PackageReference Include=""Bogus"" Version=""35.0.1"" />
     <PackageReference Include=""FluentAssertions"" Version=""6.12.0"" />
     <PackageReference Include=""MockQueryable.NSubstitute"" Version=""7.0.0"" />
+    <PackageReference Include=""NetArchTest.Rules"" Version=""1.3.2"" />
     <PackageReference Include=""NSubstitute"" Version=""5.1.0"" />
     <PackageReference Include=""NSubstitute.Analyzers.CSharp"" Version=""1.0.16"">
       <PrivateAssets>all</PrivateAssets>
