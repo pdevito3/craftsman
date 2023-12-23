@@ -55,21 +55,25 @@ public sealed class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntit
 
         // Property Marker -- Deleting or modifying this comment could cause incomplete relationship scaffolding
         
+        // example for a simple 1:1 value object
+        // builder.ComplexProperty(x => x.Email,
+        //     y => y.Property(z => z.Value)
+        //         .HasColumnName(""email""));
+
         // example for a more complex value object
-        // builder.OwnsOne(x => x.PhysicalAddress, opts =>
-        // {{
-        //     opts.Property(x => x.Line1).HasColumnName(""physical_address_line1"");
-        //     opts.Property(x => x.Line2).HasColumnName(""physical_address_line2"");
-        //     opts.Property(x => x.City).HasColumnName(""physical_address_city"");
-        //     opts.Property(x => x.State).HasColumnName(""physical_address_state"");
-        //     opts.OwnsOne(x => x.PostalCode, o =>
-        //         {{
-        //             o.Property(x => x.Value).HasColumnName(""physical_address_postal_code"");
-        //         }}).Navigation(x => x.PostalCode)
-        //         .IsRequired();
-        //     opts.Property(x => x.Country).HasColumnName(""physical_address_country"");
-        // }}).Navigation(x => x.PhysicalAddress)
-        //     .IsRequired();
+        // builder.ComplexProperty(
+        //     x => x.PhysicalAddress,
+        //     y =>
+        //     {{
+        //         y.Property(a => a.Line1).HasColumnName(""physical_address_line1"");
+        //         y.Property(a => a.Line2).HasColumnName(""physical_address_line2"");
+        //         y.Property(a => a.City).HasColumnName(""physical_address_city"");
+        //         y.Property(a => a.State).HasColumnName(""physical_address_state"");
+        //         y.ComplexProperty(e => e.PostalCode, a
+        //             => a.Property(p => p.Value).HasColumnName(""physical_address_postal_code""));
+        //         y.Property(a => a.Country).HasColumnName(""physical_address_country"");
+        //     }});
+        }});
     }}
 }}";
         }

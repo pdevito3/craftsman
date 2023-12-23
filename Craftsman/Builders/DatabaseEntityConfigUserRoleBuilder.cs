@@ -51,9 +51,9 @@ public sealed class {FileNames.GetDatabaseEntityConfigName(entityName)} : IEntit
     {{
         // Relationship Marker -- Deleting or modifying this comment could cause incomplete relationship scaffolding
 
-        builder.Property(x => x.Role)
-            .HasConversion(x => x.Value, x => new Role(x))
-            .HasColumnName(""role"");
+        builder.ComplexProperty(x => x.Role,
+            y => y.Property(z => z.Value)
+                .HasColumnName(""role""));
     }}
 }}";
         }

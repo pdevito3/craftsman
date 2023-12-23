@@ -153,6 +153,8 @@ public class {ValueObjectEnum.Address.Name} : ValueObject
         PostalCode = postalCode;
         Country = country;
     }}
+
+    private Address() {{ }} // EF Core
 }}
 
 public class PostalCode : ValueObject
