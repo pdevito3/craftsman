@@ -29,7 +29,7 @@ updates:
     directory: ""/""
     schedule:
       interval: ""weekly""
-        day: ""wednesday"" 
+      day: ""wednesday"" 
     groups:
       microsoft:
         patterns:
