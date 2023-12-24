@@ -44,7 +44,7 @@ public class GithubTestActionsBuilder
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: ['7.0.x']
+        dotnet-version: ['8.0.x']
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Core SDK ${{{{ matrix.dotnet-version }}}}
@@ -68,7 +68,7 @@ public class GithubTestActionsBuilder
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: ['7.0.x']
+        dotnet-version: ['8.0.x']
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Core SDK ${{{{ matrix.dotnet-version }}}}
@@ -92,7 +92,7 @@ public class GithubTestActionsBuilder
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: ['7.0.x']
+        dotnet-version: ['8.0.x']
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Core SDK ${{{{ matrix.dotnet-version }}}}
