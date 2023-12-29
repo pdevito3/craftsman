@@ -9,11 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+* None yet!
+
+## [0.25.0] - 12/28/2023
+
 ### Updated
 
 * Scaffolded projects use .NET 8
-  * TODO: docs
-
+  
 * Bump Nuget packages
 * Bespoke `DateTimeProvider` removed in favor of the new built in `TimeProvider`
 * `BaseEntity` audit times use `DateTimeOffset`
@@ -23,8 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Underlying craftsman code uses .NET 8
 * Bump underlying .NET packages and remove unused packages in craftsman
 * Remove BFF commands
-  * TODO: docs
-
+  
 * Remove BFF from examples
 
 ### Fixed
