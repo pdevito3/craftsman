@@ -39,7 +39,11 @@ public class GithubTestActionsBuilder
 
     public static string GetUnitTestFileText(string projectBaseName)
     {
-        return @$"jobs:
+        return @$"name: Unit Tests
+
+on: [pull_request, workflow_dispatch]
+
+jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -63,7 +67,11 @@ public class GithubTestActionsBuilder
 
     public static string GetIntegrationTestFileText(string projectBaseName)
     {
-        return @$"jobs:
+        return @$"name: Integration Tests
+
+on: [pull_request, workflow_dispatch]
+
+jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -87,7 +95,11 @@ public class GithubTestActionsBuilder
 
     public static string GetFunctionalTestFileText(string projectBaseName)
     {
-        return @$"jobs:
+        return @$"name: Functional Tests
+
+on: [pull_request, workflow_dispatch]
+
+jobs:
   test:
     runs-on: ubuntu-latest
     strategy:

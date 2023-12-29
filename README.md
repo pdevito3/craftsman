@@ -46,6 +46,8 @@ Have a request for something you don't see in the project? Join [our discord](ht
 
 ✅ Remove obsolete BFF commands 
 
+✅ Fix test actions
+
 ### Some 0.24 highlights
 
 ✅ Logging enhancements and masking
