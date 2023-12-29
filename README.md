@@ -15,7 +15,7 @@ Craftsman is the workhorse behind the [Wrapt](https://wrapt.dev) framework and p
 
 ## Quickstart
 
-- Make sure you have the [.NET 7 SDK](https://dotnet.microsoft.com/download/dotnet-core/7.0) installed, along with [EF Core](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
+- Make sure you have the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet-core/8.0) installed, along with [EF Core](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
 - Install the craftsman tool
 
 ```bash
