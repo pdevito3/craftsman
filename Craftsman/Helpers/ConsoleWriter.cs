@@ -57,12 +57,12 @@ public class ConsoleWriter : IConsoleWriter
 
     public void StarGithubRequest()
     {
-        WriteHelpText(@$"{Environment.NewLine}Would you like to show some love by starring the repo? {Emoji.Known.Star} (y/n) [n]");
+        WriteHelpText(@$"{Environment.NewLine}Thanks for using Craftsman! If it's been helpful, consider showing your support for OSS or having your company/client chip in. Every contribution helps. {Emoji.Known.GrowingHeart} (y/n) [n]");
         var starRepo = Console.ReadKey();
         if (starRepo.Key == ConsoleKey.Y)
         {
             WriteHelpText($"{Environment.NewLine}Thanks, it means the world to me! {Emoji.Known.PartyingFace}");
-            var url = "https://github.com/pdevito3/craftsman";
+            var url = "https://github.com/sponsors/pdevito3";
             try
             {
                 Process.Start(url);
@@ -91,7 +91,7 @@ public class ConsoleWriter : IConsoleWriter
         }
         else
         {
-            WriteHelpText($"{Environment.NewLine}I understand, but am not going to pretend I'm not sad about it...");
+            WriteHelpText($"{Environment.NewLine}I understand, maybe next time. {Emoji.Known.BrokenHeart}");
         }
     }
 }
