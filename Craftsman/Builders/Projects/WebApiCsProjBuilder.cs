@@ -45,7 +45,7 @@ public class WebApiCsProjBuilder
   <ItemGroup>
     <PackageReference Include=""Ardalis.SmartEnum"" Version=""7.0.0"" />
     <PackageReference Include=""Destructurama.Attributed"" Version=""3.1.0"" />
-    <PackageReference Include=""EFCore.NamingConventions"" Version=""8.0.0-rc.2"" />
+    <PackageReference Include=""EFCore.NamingConventions"" Version=""8.0.1"" />
     <PackageReference Include=""FluentValidation.AspNetCore"" Version=""11.3.0"" />
     <PackageReference Include=""Hangfire"" Version=""1.8.6"" />
     <PackageReference Include=""Hangfire.MemoryStorage"" Version=""1.8.0"" />

@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 * Better exception for smart enum errors
 * Sponsorship request
+* Bump naming conventions
 
 ## [0.25.0] - 12/28/2023
 
