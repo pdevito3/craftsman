@@ -55,6 +55,12 @@ updates:
         update-types:
         - ""minor""
         - ""patch""
+      otel:
+        patterns:
+        - ""OpenTelemetry*""
+        update-types:
+        - ""minor""
+        - ""patch""
       testcontainers:
         patterns:
           - ""Testcontainers*""
