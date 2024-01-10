@@ -9,29 +9,13 @@ using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-public class AddEntityCommand : Command<AddEntityCommand.Settings>
-{
-    private readonly IFileSystem _fileSystem;
-    private readonly IConsoleWriter _consoleWriter;
-    private readonly ICraftsmanUtilities _utilities;
-    private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
-    private readonly IFileParsingHelper _fileParsingHelper;
-    private readonly IMediator _mediator;
-
-    public AddEntityCommand(IFileSystem fileSystem,
+public class AddEntityCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
         IScaffoldingDirectoryStore scaffoldingDirectoryStore,
         IFileParsingHelper fileParsingHelper, IMediator mediator)
-    {
-        _fileSystem = fileSystem;
-        _consoleWriter = consoleWriter;
-        _utilities = utilities;
-        _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
-        _fileParsingHelper = fileParsingHelper;
-        _mediator = mediator;
-    }
-
+    : Command<AddEntityCommand.Settings>
+{
     public class Settings : CommandSettings
     {
         [CommandArgument(0, "<Filepath>")]
@@ -40,40 +24,41 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
 
     public override int Execute(CommandContext context, Settings settings)
     {
-        var potentialBoundaryDirectory = _utilities.GetRootDir();
+        var potentialBoundaryDirectory = utilities.GetRootDir();
 
-        var solutionDirectory = _fileSystem.Directory.GetParent(potentialBoundaryDirectory)?.FullName;
-        _utilities.IsSolutionDirectoryGuard(solutionDirectory, true);
-        _scaffoldingDirectoryStore.SetSolutionDirectory(solutionDirectory);
+        var solutionDirectory = fileSystem.Directory.GetParent(potentialBoundaryDirectory)?.FullName;
+        utilities.IsSolutionDirectoryGuard(solutionDirectory, true);
+        scaffoldingDirectoryStore.SetSolutionDirectory(solutionDirectory);
 
         var projectName = new DirectoryInfo(potentialBoundaryDirectory).Name;
-        _scaffoldingDirectoryStore.SetBoundedContextDirectoryAndProject(projectName);
-        _utilities.IsBoundedContextDirectoryGuard();
+        scaffoldingDirectoryStore.SetBoundedContextDirectoryAndProject(projectName);
+        utilities.IsBoundedContextDirectoryGuard();
 
         // TODO make injectable
-        _fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
-        var template = _fileParsingHelper.GetTemplateFromFile<AddEntityTemplate>(settings.Filepath);
-        _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
+        fileParsingHelper.RunInitialTemplateParsingGuards(settings.Filepath);
+        var template = fileParsingHelper.GetTemplateFromFile<AddEntityTemplate>(settings.Filepath);
+        consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 
         FileParsingHelper.RunPrimaryKeyGuard(template.Entities);
 
-        RunEntityBuilders(solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory, template);
+        RunEntityBuilders(solutionDirectory, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.TestDirectory, template);
 
-        _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
+        consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your entities have been successfully added. Keep up the good work!");
+        consoleWriter.StarGithubRequest();
         return 0;
     }
 
     private void RunEntityBuilders(string solutionDirectory, string srcDirectory, string testDirectory, AddEntityTemplate template)
     {
-        template = GetDbContext(_scaffoldingDirectoryStore.SrcDirectory, template, _scaffoldingDirectoryStore.ProjectBaseName);
-        template.SolutionName = _scaffoldingDirectoryStore.ProjectBaseName;
-        var useSoftDelete = _utilities.ProjectUsesSoftDelete(srcDirectory, _scaffoldingDirectoryStore.ProjectBaseName);
+        template = GetDbContext(scaffoldingDirectoryStore.SrcDirectory, template, scaffoldingDirectoryStore.ProjectBaseName);
+        template.SolutionName = scaffoldingDirectoryStore.ProjectBaseName;
+        var useSoftDelete = utilities.ProjectUsesSoftDelete(srcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
 
         //entities
-        new EntityScaffoldingService(_utilities, _fileSystem, _mediator, _consoleWriter).ScaffoldEntities(solutionDirectory,
+        new EntityScaffoldingService(utilities, fileSystem, mediator, consoleWriter).ScaffoldEntities(solutionDirectory,
             srcDirectory,
             testDirectory,
-            _scaffoldingDirectoryStore.ProjectBaseName,
+            scaffoldingDirectoryStore.ProjectBaseName,
             template.Entities,
             template.DbContextName,
             template.AddSwaggerComments,
@@ -83,7 +68,7 @@ public class AddEntityCommand : Command<AddEntityCommand.Settings>
 
     private AddEntityTemplate GetDbContext(string srcDirectory, AddEntityTemplate template, string projectBaseName)
     {
-        template.DbContextName = _utilities.GetDbContext(srcDirectory, projectBaseName);
+        template.DbContextName = utilities.GetDbContext(srcDirectory, projectBaseName);
         return template;
     }
 }
