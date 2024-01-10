@@ -42,7 +42,6 @@ public static class ProblemDetailsConfigurationExtension
         options.MapToStatusCode<ForbiddenAccessException>(StatusCodes.Status401Unauthorized);
         options.MapToStatusCode<NoRolesAssignedException>(StatusCodes.Status403Forbidden);
         options.MapToStatusCode<NotFoundException>(StatusCodes.Status404NotFound);
-        options.MapToStatusCode<InvalidSmartEnumPropertyName>(StatusCodes.Status422UnprocessableEntity);
 
         // You can configure the middleware to re-throw certain types of exceptions, all exceptions or based on a predicate.
         // This is useful if you have upstream middleware that needs to do additional handling of exceptions.

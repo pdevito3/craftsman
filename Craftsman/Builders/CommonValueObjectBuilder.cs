@@ -242,7 +242,7 @@ public class Role : ValueObject
         private set
         {{
             if (!RoleEnum.TryFromName(value, true, out var parsed))
-                throw new InvalidSmartEnumPropertyName(nameof(Value), value);
+                throw new ValidationException($""Invalid Role. PLease use one of the following: {{string.Join("", "", ListNames())}}"");
 
             _role = parsed;
         }}

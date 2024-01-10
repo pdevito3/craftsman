@@ -85,7 +85,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         }});
 
         // Act + Assert
-        rolePermission.Should().Throw<InvalidSmartEnumPropertyName>();
+        rolePermission.Should().Throw<ValidationException>();
     }}
     
     [Fact]
@@ -172,7 +172,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)}
         }});
 
         // Act + Assert
-        updateRolePermission.Should().Throw<InvalidSmartEnumPropertyName>();
+        updateRolePermission.Should().Throw<ValidationException>();
     }}
     
     [Fact]

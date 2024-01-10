@@ -45,8 +45,7 @@ public sealed class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
                 {{ typeof(ValidationException), HandleValidationException }},
                 {{ typeof(NotFoundException), HandleNotFoundException }},
                 {{ typeof(ForbiddenAccessException), HandleForbiddenAccessException }},
-                {{ typeof(NoRolesAssignedException), HandleNoRolesAssignedException }},
-                {{ typeof(InvalidSmartEnumPropertyName), HandleInvalidSmartEnumException }}
+                {{ typeof(NoRolesAssignedException), HandleNoRolesAssignedException }}
             }};
     }}
 
@@ -86,17 +85,6 @@ public sealed class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
         var failures = exception.Errors
             .ToList();
         var proper = new ValidationException(failures);
-        
-        HandleErrors(context, proper.Errors);
-    }}
-    
-    private void HandleInvalidSmartEnumException(ExceptionContext context)
-    {{
-        var exception = (InvalidSmartEnumPropertyName)context.Exception;
-        var proper = new ValidationException(new List<ValidationFailure>()
-        {{
-            new ValidationFailure(exception.Source, exception.Message)
-        }});
         
         HandleErrors(context, proper.Errors);
     }}

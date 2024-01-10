@@ -43,7 +43,6 @@ public static class CoreExceptionBuilder
             CreateValidationException();
             CreateForbiddenException();
             CreateNoRolesAssignedException();
-            CreateInvalidSmartEnumPropertyNameException();
         }
 
         public void CreateValidationException()
@@ -82,15 +81,6 @@ public static class CoreExceptionBuilder
             _utilities.CreateFile(classPath, fileText);
         }
 
-        public void CreateInvalidSmartEnumPropertyNameException()
-        {
-            var classPath = ClassPathHelper.ExceptionsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
-                $"InvalidSmartEnumPropertyNameException.cs", 
-                _scaffoldingDirectoryStore.ProjectBaseName);
-            var fileText = GetInvalidSmartEnumPropertyNameExceptionFileText(classPath.ClassNamespace);
-            _utilities.CreateFile(classPath, fileText);
-        }
-
         public static string GetNotFoundExceptionFileText(string classNamespace)
         {
             return @$"namespace {classNamespace};
@@ -116,19 +106,6 @@ public class NotFoundException : Exception
         : base($""Entity \""{{name}}\"" ({{key}}) was not found."")
     {{
     }}
-}}";
-        }
-
-        public static string GetInvalidSmartEnumPropertyNameExceptionFileText(string classNamespace)
-        {
-            return @$"namespace {classNamespace};
-
-[Serializable]
-public class InvalidSmartEnumPropertyName : Exception
-{{
-    public InvalidSmartEnumPropertyName(string property, string enumVal)
-        : base($""The value `{{enumVal}}` is not valid for property `{{property}}`."")
-    {{ }}
 }}";
         }
 
