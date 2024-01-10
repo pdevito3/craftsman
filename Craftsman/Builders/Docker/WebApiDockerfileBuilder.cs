@@ -21,7 +21,7 @@ public class WebApiDockerfileBuilder
 
     private static string GetDockerfileText(string projectBaseName)
     {
-        return @$"FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+        return @$"FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
@@ -37,7 +37,7 @@ FROM build-env AS publish
 RUN dotnet publish ""{projectBaseName}/src/{projectBaseName}/{projectBaseName}.csproj"" -c Release -o /app/out
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=publish /app/out .
 
