@@ -48,11 +48,9 @@ public class CommandUpdateRecordBuilder
             projectBaseName, 
             isProtected, 
             permissionName, 
-            out string heimGuardSetter, 
             out string heimGuardCtor, 
             out string permissionCheck, 
-            out string permissionsUsing,
-            out string heimGuardField);
+            out string permissionsUsing);
 
         return @$"namespace {classNamespace};
 
@@ -69,25 +67,17 @@ public static class {className}
 {{
     public sealed record {updateCommandName}({primaryKeyPropType} {lowercasePrimaryKey}, {updateDto} {commandProp}) : IRequest;
 
-    public sealed class Handler : IRequestHandler<{updateCommandName}>
+    public sealed class Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
+        : IRequestHandler<{updateCommandName}>
     {{
-        private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly IUnitOfWork _unitOfWork;{heimGuardField}
-
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
-        {{
-            _{repoInterfaceProp} = {repoInterfaceProp};
-            _unitOfWork = unitOfWork;{heimGuardSetter}
-        }}
-
         public async Task Handle({updateCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            var {updatedEntityProp} = await _{repoInterfaceProp}.GetById(request.{lowercasePrimaryKey}, cancellationToken: cancellationToken);
+            var {updatedEntityProp} = await {repoInterfaceProp}.GetById(request.{lowercasePrimaryKey}, cancellationToken: cancellationToken);
             var {modelToUpdateVariableName} = request.{commandProp}.To{EntityModel.Update.GetClassName(entity.Name)}();
             {updatedEntityProp}.Update({modelToUpdateVariableName});
 
-            _{repoInterfaceProp}.Update({updatedEntityProp});
-            await _unitOfWork.CommitChanges(cancellationToken);
+            {repoInterfaceProp}.Update({updatedEntityProp});
+            await unitOfWork.CommitChanges(cancellationToken);
         }}
     }}
 }}";

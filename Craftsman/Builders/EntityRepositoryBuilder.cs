@@ -20,41 +20,34 @@ public static class EntityRepositoryBuilder
         }
     }
 
-    public class Handler : IRequestHandler<Command, bool>
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command, bool>
     {
-        private readonly ICraftsmanUtilities _utilities;
-        private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
-
-        public Handler(ICraftsmanUtilities utilities,
-            IScaffoldingDirectoryStore scaffoldingDirectoryStore)
-        {
-            _utilities = utilities;
-            _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
-        }
-
         public Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {
-            var classPath = ClassPathHelper.EntityServicesClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+            var classPath = ClassPathHelper.EntityServicesClassPath(scaffoldingDirectoryStore.SrcDirectory, 
                 $"{FileNames.EntityRepository(request.EntityName)}.cs", 
                 request.EntityPlural, 
-                _scaffoldingDirectoryStore.ProjectBaseName);
+                scaffoldingDirectoryStore.ProjectBaseName);
             var fileText = GetFileText(classPath.ClassNamespace, request.EntityName, request.EntityPlural, request.DbContextName);
-            _utilities.CreateFile(classPath, fileText);
+            utilities.CreateFile(classPath, fileText);
             return Task.FromResult(true);
         }
 
         private string GetFileText(string classNamespace, string entityName, string entityPlural, string dbContextName)
         {
-            var entityClassPath = ClassPathHelper.EntityClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+            var entityClassPath = ClassPathHelper.EntityClassPath(scaffoldingDirectoryStore.SrcDirectory, 
                 "", 
                 entityPlural, 
-                _scaffoldingDirectoryStore.ProjectBaseName);
-            var contextClassPath = ClassPathHelper.DbContextClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                scaffoldingDirectoryStore.ProjectBaseName);
+            var contextClassPath = ClassPathHelper.DbContextClassPath(scaffoldingDirectoryStore.SrcDirectory, 
                 "", 
-                _scaffoldingDirectoryStore.ProjectBaseName);
-            var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(_scaffoldingDirectoryStore.SrcDirectory,
+                scaffoldingDirectoryStore.ProjectBaseName);
+            var servicesClassPath = ClassPathHelper.WebApiServicesClassPath(scaffoldingDirectoryStore.SrcDirectory,
                 "", 
-                _scaffoldingDirectoryStore.ProjectBaseName);
+                scaffoldingDirectoryStore.ProjectBaseName);
 
             var genericRepositoryInterface = FileNames.GenericRepositoryInterface();
             var genericRepoName = FileNames.GenericRepository();
@@ -71,14 +64,8 @@ public interface {repoInterface} : {genericRepositoryInterface}<{entityName}>
 {{
 }}
 
-public sealed class {repoName} : {genericRepoName}<{entityName}>, {repoInterface}
+public sealed class {repoName}({dbContextName} dbContext) : {genericRepoName}<{entityName}>(dbContext), {repoInterface}
 {{
-    private readonly {dbContextName} _dbContext;
-
-    public {repoName}({dbContextName} dbContext) : base(dbContext)
-    {{
-        _dbContext = dbContext;
-    }}
 }}
 ";
         }

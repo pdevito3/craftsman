@@ -51,11 +51,9 @@ public class AddUserFeatureOverrideModifier
             projectBaseName, 
             true, 
             permissionName, 
-            out string heimGuardSetter, 
             out string heimGuardCtor, 
-            out string _, 
-            out string permissionsUsing,
-            out string heimGuardField);
+            out string permissionCheck, 
+            out string permissionsUsing);
 
         var tempPath = $"{classPath.FullClassPath}temp";
         using var output = _fileSystem.File.CreateText(tempPath);
@@ -75,29 +73,21 @@ public static class {className}
 {{
     public sealed record {addCommandName}({createDto} {commandProp}, bool SkipPermissions = false) : IRequest<{readDto}>;
 
-    public sealed class Handler : IRequestHandler<{addCommandName}, {readDto}>
+    public sealed class Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
+        : IRequestHandler<{addCommandName}, {readDto}>
     {{
-        private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly IUnitOfWork _unitOfWork;{heimGuardField}
-
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
-        {{
-            _{repoInterfaceProp} = {repoInterfaceProp};
-            _unitOfWork = unitOfWork;{heimGuardSetter}
-        }}
-
-        public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
+        public async Task<{readDto}> Handle(Command request, CancellationToken cancellationToken)
         {{
             if(!request.SkipPermissions)
-                await _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.{permissionName});
+                await heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.{permissionName});
 
             var {modelToCreateVariableName} = request.{commandProp}.To{EntityModel.Creation.GetClassName(entityName)}();
             var {entityNameLowercase} = {entityName}.Create({modelToCreateVariableName});
-            await _{repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
+            await {repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
 
-            await _unitOfWork.CommitChanges(cancellationToken);
+            await unitOfWork.CommitChanges(cancellationToken);
 
-            var {entityNameLowercase}Added = await _{repoInterfaceProp}.GetById({entityNameLowercase}.Id, cancellationToken: cancellationToken);
+            var {entityNameLowercase}Added = await {repoInterfaceProp}.GetById({entityNameLowercase}.Id, cancellationToken: cancellationToken);
             return {entityNameLowercase}Added.To{readDto}();
         }}
     }}

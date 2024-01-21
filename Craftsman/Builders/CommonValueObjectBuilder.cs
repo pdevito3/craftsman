@@ -8,53 +8,37 @@ using Services;
 
 public static class CommonValueObjectBuilder
 {
-    public class Command : IRequest<bool>
+    public sealed record Command(bool HasAuth) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        public readonly bool HasAuth;
-
-        public Command(bool hasAuth)
+        public Task Handle(Command request, CancellationToken cancellationToken)
         {
-            HasAuth = hasAuth;
-        }
-    }
-
-    public class Handler : IRequestHandler<Command, bool>
-    {
-        private readonly ICraftsmanUtilities _utilities;
-        private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
-
-        public Handler(ICraftsmanUtilities utilities,
-            IScaffoldingDirectoryStore scaffoldingDirectoryStore)
-        {
-            _utilities = utilities;
-            _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
-        }
-
-        public Task<bool> Handle(Command request, CancellationToken cancellationToken)
-        {
-            var addressClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+            var addressClassPath = ClassPathHelper.WebApiValueObjectsClassPath(scaffoldingDirectoryStore.SrcDirectory, 
                 $"{ValueObjectEnum.Address.Name}.cs",
                 ValueObjectEnum.Address.Plural(),
-                _scaffoldingDirectoryStore.ProjectBaseName);
+                scaffoldingDirectoryStore.ProjectBaseName);
             var addressFileText = GetAddressFileText(addressClassPath.ClassNamespace);
-            _utilities.CreateFile(addressClassPath, addressFileText);
+            utilities.CreateFile(addressClassPath, addressFileText);
 
             if (request.HasAuth)
             {
-                var roleClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+                var roleClassPath = ClassPathHelper.WebApiValueObjectsClassPath(scaffoldingDirectoryStore.SrcDirectory, 
                     $"{ValueObjectEnum.Role.Name}.cs",
                     ValueObjectEnum.Role.Plural(),
-                    _scaffoldingDirectoryStore.ProjectBaseName);
+                    scaffoldingDirectoryStore.ProjectBaseName);
                 var roleFileText = GetRoleFileText(roleClassPath.ClassNamespace);
-                _utilities.CreateFile(roleClassPath, roleFileText);
+                utilities.CreateFile(roleClassPath, roleFileText);
             }
 
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         }
         
         private string GetPercentFileText(string classNamespace)
         {
-            
             return @$"namespace {classNamespace};
 
 using FluentValidation;
@@ -170,10 +154,10 @@ public class PostalCode : ValueObject
         
         private string GetMonetaryAmountFileText(string classNamespace)
         {
-            var percentClassPath = ClassPathHelper.WebApiValueObjectsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+            var percentClassPath = ClassPathHelper.WebApiValueObjectsClassPath(scaffoldingDirectoryStore.SrcDirectory, 
                 $"{ValueObjectEnum.Percent.Name}.cs",
                 ValueObjectEnum.Percent.Plural(),
-                _scaffoldingDirectoryStore.ProjectBaseName);
+                scaffoldingDirectoryStore.ProjectBaseName);
             
             return @$"namespace {classNamespace};
 
@@ -226,7 +210,7 @@ public class {ValueObjectEnum.MonetaryAmount.Name} : ValueObject
         
         private string GetRoleFileText(string classNamespace)
         {
-            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(_scaffoldingDirectoryStore.SrcDirectory, "", _scaffoldingDirectoryStore.ProjectBaseName);
+            var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(scaffoldingDirectoryStore.SrcDirectory, "", scaffoldingDirectoryStore.ProjectBaseName);
             
             return @$"namespace {classNamespace};
 
@@ -252,10 +236,6 @@ public class Role : ValueObject
     {{
         Value = value;
     }}
-    public Role(RoleEnum value)
-    {{
-        Value = value.Name;
-    }}
     
     public static Role Of(string value) => new Role(value);
     public static implicit operator string(Role value) => value.Value;
@@ -265,29 +245,15 @@ public class Role : ValueObject
     public static Role SuperAdmin() => new Role(RoleEnum.SuperAdmin.Name);
 
     protected Role() {{ }} // EF Core
-}}
 
-public abstract class RoleEnum : SmartEnum<RoleEnum>
-{{
-    public static readonly RoleEnum User = new UserType();
-    public static readonly RoleEnum SuperAdmin = new SuperAdminType();
-
-    protected RoleEnum(string name, int value) : base(name, value)
+    private abstract class RoleEnum(string name, int value)
+        : SmartEnum<RoleEnum>(name, value)
     {{
-    }}
+        public static readonly RoleEnum User = new UserType();
+        public static readonly RoleEnum SuperAdmin = new SuperAdminType();
 
-    private class UserType : RoleEnum
-    {{
-        public UserType() : base(""User"", 0)
-        {{
-        }}
-    }}
-
-    private class SuperAdminType : RoleEnum
-    {{
-        public SuperAdminType() : base(""Super Admin"", 1)
-        {{
-        }}
+        private class UserType() : RoleEnum(""User"", 0);
+        private class SuperAdminType() : RoleEnum(""Super Admin"", 1);
     }}
 }}";
         }

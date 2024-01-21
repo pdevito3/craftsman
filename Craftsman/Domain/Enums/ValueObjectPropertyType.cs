@@ -215,21 +215,12 @@ public sealed class {valueObjectClassName} : ValueObject
         {
             var staticProps =
                 smartNames.Select(s => $@"      public static readonly {valueObjectClassName}Enum {NormalizeSmartName(s)} = new {NormalizeSmartName(s)}Type();");
-            var eachEnum = smartNames.Select(s => $@"       private class {NormalizeSmartName(s)}Type : {valueObjectClassName}Enum
-        {{
-            public {NormalizeSmartName(s)}Type() : base(""{s}"", {smartNames.IndexOf(s)})
-            {{
-            }}
-        }}"
-            );
+            var eachEnum = smartNames.Select(s => $@"       private class {NormalizeSmartName(s)}Type() : {valueObjectClassName}Enum(""{s}"", {smartNames.IndexOf(s)});");
 
-            return $@"    private abstract class {valueObjectClassName}Enum : SmartEnum<{valueObjectClassName}Enum>
+            return $@"    private abstract class {valueObjectClassName}Enum(string name, int value)
+        : SmartEnum<{valueObjectClassName}Enum>(name, value)
     {{
 {string.Join($"{Environment.NewLine}", staticProps)}
-
-       protected {valueObjectClassName}Enum(string name, int value) : base(name, value)
-       {{
-       }}
 
 {string.Join($"{Environment.NewLine}{Environment.NewLine}", eachEnum)}
     }}";

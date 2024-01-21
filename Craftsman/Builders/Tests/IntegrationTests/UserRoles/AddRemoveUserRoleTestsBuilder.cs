@@ -52,7 +52,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
         var user = await testingServiceScope.ExecuteDbContextAsync(db => db.Users
             .FirstOrDefaultAsync(u => u.Id == fakeUserOne.Id));
         var id = user.Id;
-        var role = faker.PickRandom<RoleEnum>(RoleEnum.List).Name;
+        var role = faker.PickRandom(Role.ListNames());
 
         // Act - Add
         var command = new AddUserRole.Command(id, role);

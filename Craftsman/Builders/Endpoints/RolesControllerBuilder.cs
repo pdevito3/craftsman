@@ -35,15 +35,8 @@ using {exceptionClassPath.ClassNamespace};
 [ApiController]
 [Route(""api/roles"")]
 [ApiVersion(""1.0"")]
-public sealed class RolesController: ControllerBase
+public sealed class RolesController(IHeimGuardClient heimGuard): ControllerBase
 {{
-    private readonly IHeimGuardClient _heimGuard;
-
-    public RolesController(IHeimGuardClient heimGuard)
-    {{
-        _heimGuard = heimGuard;
-    }}
-
     /// <summary>
     /// Gets a list of all available roles.
     /// </summary>
@@ -51,7 +44,7 @@ public sealed class RolesController: ControllerBase
     [HttpGet(Name = ""GetRoles"")]
     public List<string> GetRoles()
     {{
-        _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanGetRoles);
+        heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanGetRoles);
         return Role.ListNames();
     }}
 }}";

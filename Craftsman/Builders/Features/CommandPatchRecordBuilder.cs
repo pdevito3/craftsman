@@ -46,11 +46,9 @@ public class CommandPatchRecordBuilder
             projectBaseName, 
             isProtected, 
             permissionName, 
-            out string heimGuardSetter, 
             out string heimGuardCtor, 
             out string permissionCheck, 
-            out string permissionsUsing,
-            out string heimGuardField);
+            out string permissionsUsing);
 
         return @$"namespace {classNamespace};
 
@@ -64,30 +62,13 @@ using Microsoft.AspNetCore.JsonPatch;
 
 public static class {className}
 {{
-    public sealed class {patchCommandName} : IRequest<bool>
+    public sealed record {patchCommandName}({primaryKeyPropType} {primaryKeyPropName}, JsonPatchDocument<{updateDto}> PatchDoc) : IRequest;
+
+    public sealed class Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
+        : IRequestHandler<{patchCommandName}>
     {{
-        public readonly {primaryKeyPropType} {primaryKeyPropName};
-        public readonly JsonPatchDocument<{updateDto}> PatchDoc;
 
-        public {patchCommandName}({primaryKeyPropType} {primaryKeyPropNameLowercase}, JsonPatchDocument<{updateDto}> patchDoc)
-        {{
-            {primaryKeyPropName} = {primaryKeyPropNameLowercase};
-            PatchDoc = patchDoc;
-        }}
-    }}
-
-    public sealed class Handler : IRequestHandler<{patchCommandName}, bool>
-    {{
-        private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly IUnitOfWork _unitOfWork;{heimGuardField}
-
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
-        {{
-            _{repoInterfaceProp} = {repoInterfaceProp};
-            _unitOfWork = unitOfWork;{heimGuardSetter}
-        }}
-
-        public async Task<bool> Handle({patchCommandName} request, CancellationToken cancellationToken)
+        public async Task Handle({patchCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
             if (request.PatchDoc == null)
                 throw new ValidationException(
@@ -96,13 +77,13 @@ public static class {className}
                         new ValidationFailure(""Patch Document"",""Invalid patch doc."")
                     }});
 
-            var {updatedEntityProp} = await _{repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
+            var {updatedEntityProp} = await {repoInterfaceProp}.GetById(request.Id, cancellationToken: cancellationToken);
 
             var {patchedEntityProp} = {updatedEntityProp}.To{updateDto}();
             request.PatchDoc.ApplyTo({patchedEntityProp});
 
             {updatedEntityProp}.Update({patchedEntityProp});
-            await _unitOfWork.CommitChanges(cancellationToken);
+            await unitOfWork.CommitChanges(cancellationToken);
 
             return true;
         }}

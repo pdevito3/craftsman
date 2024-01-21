@@ -40,11 +40,9 @@ public class QueryGetRecordBuilder
             projectBaseName, 
             isProtected, 
             permissionName, 
-            out string heimGuardSetter, 
             out string heimGuardCtor, 
             out string permissionCheck, 
-            out string permissionsUsing,
-            out string heimGuardField);
+            out string permissionsUsing);
 
         return @$"namespace {classNamespace};
 
@@ -58,18 +56,12 @@ public static class {className}
 {{
     public sealed record {queryRecordName}({primaryKeyPropType} {lowercasePrimaryKey}) : IRequest<{readDto}>;
 
-    public sealed class Handler : IRequestHandler<{queryRecordName}, {readDto}>
+    public sealed class Handler({repoInterface} {repoInterfaceProp}{heimGuardCtor})
+        : IRequestHandler<{queryRecordName}, {readDto}>
     {{
-        private readonly {repoInterface} _{repoInterfaceProp};{heimGuardField}
-
-        public Handler({repoInterface} {repoInterfaceProp}{heimGuardCtor})
-        {{
-            _{repoInterfaceProp} = {repoInterfaceProp};{heimGuardSetter}
-        }}
-
         public async Task<{readDto}> Handle({queryRecordName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            var result = await _{repoInterfaceProp}.GetById(request.{lowercasePrimaryKey}, cancellationToken: cancellationToken);
+            var result = await {repoInterfaceProp}.GetById(request.{lowercasePrimaryKey}, cancellationToken: cancellationToken);
             return result.To{readDto}();
         }}
     }}

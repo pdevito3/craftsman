@@ -38,11 +38,9 @@ public class QueryGetAllBuilder
             projectBaseName, 
             isProtected, 
             permissionName, 
-            out string heimGuardSetter, 
             out string heimGuardCtor, 
             out string permissionCheck, 
-            out string permissionsUsing,
-            out string heimGuardField);
+            out string permissionsUsing);
 
         return @$"namespace {classNamespace};
 
@@ -60,18 +58,12 @@ public static class {className}
 {{
     public sealed record {queryListName}() : IRequest<List<{readDto}>>;
 
-    public sealed class Handler : IRequestHandler<{queryListName}, List<{readDto}>>
+    public sealed class Handler({repoInterface} {repoInterfaceProp}{heimGuardCtor})
+        : IRequestHandler<{queryListName}, List<{readDto}>>
     {{
-        private readonly {repoInterface} _{repoInterfaceProp};{heimGuardField}
-
-        public Handler({repoInterface} {repoInterfaceProp}{heimGuardCtor})
-        {{
-            _{repoInterfaceProp} = {repoInterfaceProp};{heimGuardSetter}
-        }}
-
         public async Task<List<{readDto}>> Handle({queryListName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            return _{repoInterfaceProp}.Query()
+            return {repoInterfaceProp}.Query()
                 .AsNoTracking()
                 .To{FileNames.GetDtoName(entity.Name, Dto.Read)}Queryable()
                 .ToList();

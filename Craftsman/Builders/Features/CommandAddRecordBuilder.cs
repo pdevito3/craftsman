@@ -48,11 +48,9 @@ public class CommandAddRecordBuilder
             projectBaseName, 
             isProtected, 
             permissionName, 
-            out string heimGuardSetter, 
             out string heimGuardCtor, 
             out string permissionCheck, 
-            out string permissionsUsing,
-            out string heimGuardField);
+            out string permissionsUsing);
 
         return @$"namespace {classNamespace};
 
@@ -69,24 +67,16 @@ public static class {className}
 {{
     public sealed record {addCommandName}({createDto} {commandProp}) : IRequest<{readDto}>;
 
-    public sealed class Handler : IRequestHandler<{addCommandName}, {readDto}>
+    public sealed class Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
+        : IRequestHandler<{addCommandName}, {readDto}>
     {{
-        private readonly {repoInterface} _{repoInterfaceProp};
-        private readonly IUnitOfWork _unitOfWork;{heimGuardField}
-
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{heimGuardCtor})
-        {{
-            _{repoInterfaceProp} = {repoInterfaceProp};
-            _unitOfWork = unitOfWork;{heimGuardSetter}
-        }}
-
         public async Task<{readDto}> Handle({addCommandName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
             var {modelToCreateVariableName} = request.{commandProp}.To{EntityModel.Creation.GetClassName(entity.Name)}();
             var {entityNameLowercase} = {entityName}.Create({modelToCreateVariableName});
 
-            await _{repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
-            await _unitOfWork.CommitChanges(cancellationToken);
+            await {repoInterfaceProp}.Add({entityNameLowercase}, cancellationToken);
+            await unitOfWork.CommitChanges(cancellationToken);
 
             return {entityNameLowercase}.To{readDto}();
         }}

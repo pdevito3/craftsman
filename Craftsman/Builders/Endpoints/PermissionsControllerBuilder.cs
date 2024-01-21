@@ -34,17 +34,8 @@ using {exceptionClassPath.ClassNamespace};
 [ApiController]
 [Route(""api/permissions"")]
 [ApiVersion(""1.0"")]
-public sealed class PermissionsController: ControllerBase
+public sealed class PermissionsController(IHeimGuardClient heimGuard, IUserPolicyHandler userPolicyHandler) : ControllerBase
 {{
-    private readonly IHeimGuardClient _heimGuard;
-    private readonly IUserPolicyHandler _userPolicyHandler;
-
-    public PermissionsController(IHeimGuardClient heimGuard, IUserPolicyHandler userPolicyHandler)
-    {{
-        _heimGuard = heimGuard;
-        _userPolicyHandler = userPolicyHandler;
-    }}
-
     /// <summary>
     /// Gets a list of all available permissions.
     /// </summary>
@@ -52,7 +43,7 @@ public sealed class PermissionsController: ControllerBase
     [HttpGet(Name = ""GetPermissions"")]
     public List<string> GetPermissions()
     {{
-        _heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanGetPermissions);
+        heimGuard.MustHavePermission<ForbiddenAccessException>(Permissions.CanGetPermissions);
         return Permissions.List();
     }}
 
@@ -63,7 +54,7 @@ public sealed class PermissionsController: ControllerBase
     [HttpGet(""mine"", Name = ""GetAssignedPermissions"")]
     public async Task<List<string>> GetAssignedPermissions()
     {{
-        var permissions = await _userPolicyHandler.GetUserPermissions();
+        var permissions = await userPolicyHandler.GetUserPermissions();
         return permissions.ToList();
     }}
 }}";

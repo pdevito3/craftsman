@@ -17,7 +17,7 @@ public class CustomUserEndpointsBuilder
     public async Task<IActionResult> AddRole([FromRoute] Guid userId, [FromBody] string role)
     {{
         var command = new AddUserRole.Command(userId, role);
-        await _mediator.Send(command);
+        await mediator.Send(command);
         return NoContent();
     }}";
     }
@@ -31,7 +31,7 @@ public class CustomUserEndpointsBuilder
     public async Task<ActionResult> RemoveRole([FromRoute] Guid userId, [FromBody] string role)
     {{
         var command = new RemoveUserRole.Command(userId, role);
-        await _mediator.Send(command);
+        await mediator.Send(command);
         return NoContent();
     }}";
     }

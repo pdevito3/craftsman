@@ -56,27 +56,19 @@ public class CommandAddListBuilder
             projectBaseName, 
             isProtected, 
             permissionName, 
-            out string heimGuardSetter, 
             out string heimGuardCtor, 
             out string permissionCheck, 
-            out string permissionsUsing,
-            out string heimGuardField);
+            out string permissionsUsing);
 
         var batchFkCheck = !string.IsNullOrEmpty(feature.BatchPropertyName)
             ? @$"
-            var {parentEntityNameLowercaseFirst} = await _{repoInterfacePropBatchFk}.GetById(command.{feature.BatchPropertyName}, cancellationToken: cancellationToken);{Environment.NewLine}{Environment.NewLine}            "
+            var {parentEntityNameLowercaseFirst} = await {repoInterfacePropBatchFk}.GetById(command.{feature.BatchPropertyName}, cancellationToken: cancellationToken);{Environment.NewLine}{Environment.NewLine}            "
             : "";
         var batchFkUsingRepo =  !string.IsNullOrEmpty(feature.BatchPropertyName)
             ? @$"{Environment.NewLine}using {entityServicesClassPathBatchFk.ClassNamespace};"
             : "";
-        var batchFkDiReadonly =  !string.IsNullOrEmpty(feature.BatchPropertyName)
-            ? @$"{Environment.NewLine}        private readonly {repoInterfaceBatchFk} _{repoInterfacePropBatchFk};"
-            : "";
         var batchFkDiProp =  !string.IsNullOrEmpty(feature.BatchPropertyName)
             ? @$", {repoInterfaceBatchFk} {repoInterfacePropBatchFk}"
-            : "";
-        var batchFkDiPropSetter =  !string.IsNullOrEmpty(feature.BatchPropertyName)
-            ? @$"{Environment.NewLine}            _{repoInterfacePropBatchFk} = {repoInterfacePropBatchFk};"
             : "";
 
         return @$"namespace {classNamespace};
@@ -94,17 +86,9 @@ public static class {className}
 {{
     public sealed record Command({createDto} {commandProp}, {feature.BatchPropertyType} {feature.BatchPropertyName}) : IRequest<{readDtoAsList}>;
 
-    public sealed class Handler : IRequestHandler<Command, {readDtoAsList}>
+    public sealed class Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{batchFkDiProp}{heimGuardCtor})
+        : IRequestHandler<Command, {readDtoAsList}>
     {{
-        private readonly {repoInterface} _{repoInterfaceProp};{batchFkDiReadonly}
-        private readonly IUnitOfWork _unitOfWork;{heimGuardField}
-
-        public Handler({repoInterface} {repoInterfaceProp}, IUnitOfWork unitOfWork{batchFkDiProp}{heimGuardCtor})
-        {{
-            _{repoInterfaceProp} = {repoInterfaceProp};
-            _unitOfWork = unitOfWork;{batchFkDiPropSetter}{heimGuardSetter}
-        }}
-
         public async Task<{readDtoAsList}> Handle(Command command, CancellationToken cancellationToken)
         {{{permissionCheck}
             {batchFkCheck}var {entityNameLowercaseListVar}ToAdd = command.{commandProp}.ToList();
@@ -120,8 +104,8 @@ public static class {className}
             // if you have large datasets to add in bulk and have performance concerns, there 
             // are additional methods that could be leveraged in your repository instead (e.g. SqlBulkCopy)
             // https://timdeschryver.dev/blog/faster-sql-bulk-inserts-with-csharp#table-valued-parameter 
-            await _{repoInterfaceProp}.AddRange({entityNameLowercaseListVar}, cancellationToken);
-            await _unitOfWork.CommitChanges(cancellationToken);
+            await {repoInterfaceProp}.AddRange({entityNameLowercaseListVar}, cancellationToken);
+            await unitOfWork.CommitChanges(cancellationToken);
 
             return {entityNameLowercaseListVar}
                 .Select({entity.Lambda} => {entity.Lambda}.To{readDto}())

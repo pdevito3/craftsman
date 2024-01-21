@@ -22,7 +22,7 @@ public class GetAllEndpointBuilder
     public async Task<IActionResult> {getListEndpointName}()
     {{
         var query = new {getListEndpointName}.{queryListMethodName}();
-        var queryResponse = await _mediator.Send(query);
+        var queryResponse = await mediator.Send(query);
         return Ok(queryResponse);
     }}";
     }

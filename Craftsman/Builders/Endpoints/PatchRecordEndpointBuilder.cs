@@ -22,7 +22,7 @@ public class PatchRecordEndpointBuilder
     public async Task<IActionResult> PartiallyUpdate{entityName}({pkPropertyType} {lowercasePrimaryKey}, JsonPatchDocument<{updateDto}> patchDoc)
     {{
         var command = new {FileNames.PatchEntityFeatureClassName(entity.Name)}.{patchRecordCommandMethodName}({lowercasePrimaryKey}, patchDoc);
-        await _mediator.Send(command);
+        await mediator.Send(command);
 
         return NoContent();
     }}";

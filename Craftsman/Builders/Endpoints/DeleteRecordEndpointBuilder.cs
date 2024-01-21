@@ -20,7 +20,7 @@ public class DeleteRecordEndpointBuilder
     public async Task<ActionResult> Delete{entityName}({pkPropertyType} {lowercasePrimaryKey})
     {{
         var command = new {FileNames.DeleteEntityFeatureClassName(entity.Name)}.{deleteRecordCommandMethodName}({lowercasePrimaryKey});
-        await _mediator.Send(command);
+        await mediator.Send(command);
         return NoContent();
     }}";
     }

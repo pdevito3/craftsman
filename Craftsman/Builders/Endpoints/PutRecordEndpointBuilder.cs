@@ -23,7 +23,7 @@ public class PutRecordEndpointBuilder
     public async Task<IActionResult> Update{entityName}({pkPropertyType} {lowercasePrimaryKey}, {updateDto} {lowercaseEntityVariable})
     {{
         var command = new {FileNames.UpdateEntityFeatureClassName(entity.Name)}.{updateRecordCommandMethodName}({lowercasePrimaryKey}, {lowercaseEntityVariable});
-        await _mediator.Send(command);
+        await mediator.Send(command);
         return NoContent();
     }}";
     }

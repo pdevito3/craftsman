@@ -24,7 +24,7 @@ public class GetListEndpointBuilder
     public async Task<IActionResult> Get{entityNamePlural}([FromQuery] {readParamDto} {lowercaseEntityVariable}ParametersDto)
     {{
         var query = new {FileNames.GetEntityListFeatureClassName(entity.Name)}.{queryListMethodName}({lowercaseEntityVariable}ParametersDto);
-        var queryResponse = await _mediator.Send(query);
+        var queryResponse = await mediator.Send(query);
 
         var paginationMetadata = new
         {{

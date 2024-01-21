@@ -50,15 +50,8 @@ using MediatR;
 [ApiController]
 [Route(""{endpointBase}"")]
 [ApiVersion(""1.0"")]
-public sealed class {entityPlural}Controller: ControllerBase
-{{
-    private readonly IMediator _mediator;
-
-    public {entityPlural}Controller(IMediator mediator)
-    {{
-        _mediator = mediator;
-    }}
-    
+public sealed class {entityPlural}Controller(IMediator mediator): ControllerBase
+{{    
     // endpoint marker - do not delete this comment
 }}";
     }

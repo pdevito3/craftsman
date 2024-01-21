@@ -40,11 +40,9 @@ public class QueryGetListBuilder
             projectBaseName, 
             isProtected, 
             permissionName, 
-            out string heimGuardSetter, 
             out string heimGuardCtor, 
             out string permissionCheck, 
-            out string permissionsUsing,
-            out string heimGuardField);
+            out string permissionsUsing);
 
         return @$"namespace {classNamespace};
 
@@ -62,18 +60,12 @@ public static class {className}
 {{
     public sealed record {queryListName}({paramsDto} QueryParameters) : IRequest<PagedList<{readDto }>>;
 
-    public sealed class Handler : IRequestHandler<{queryListName}, PagedList<{readDto}>>
+    public sealed class Handler({repoInterface} {repoInterfaceProp}{heimGuardCtor})
+        : IRequestHandler<{queryListName}, PagedList<{readDto}>>
     {{
-        private readonly {repoInterface} _{repoInterfaceProp};{heimGuardField}
-
-        public Handler({repoInterface} {repoInterfaceProp}{heimGuardCtor})
-        {{
-            _{repoInterfaceProp} = {repoInterfaceProp};{heimGuardSetter}
-        }}
-
         public async Task<PagedList<{readDto}>> Handle({queryListName} request, CancellationToken cancellationToken)
         {{{permissionCheck}
-            var collection = _{repoInterfaceProp}.Query().AsNoTracking();
+            var collection = {repoInterfaceProp}.Query().AsNoTracking();
 
             var queryKitConfig = new CustomQueryKitConfiguration();
             var queryKitData = new QueryKitData()

@@ -53,40 +53,35 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;{usingStatement}
+using Serilog;{usingStatement}
 
-public class {FileNames.GetMigrationHostedServiceFileName()}<TDbContext> : IHostedService
+public class {FileNames.GetMigrationHostedServiceFileName()}<TDbContext>(
+    IServiceScopeFactory scopeFactory)
+    : IHostedService
     where TDbContext : DbContext
 {{
-    private readonly ILogger<{FileNames.GetMigrationHostedServiceFileName()}<TDbContext>> _logger;
-    private readonly IServiceScopeFactory _scopeFactory;
-
-    public {FileNames.GetMigrationHostedServiceFileName()}(IServiceScopeFactory scopeFactory, ILogger<{FileNames.GetMigrationHostedServiceFileName()}<TDbContext>> logger)
-    {{
-        _scopeFactory = scopeFactory;
-        _logger = logger;
-    }}
+    private readonly ILogger _logger = Log.ForContext<{FileNames.GetMigrationHostedServiceFileName()}<TDbContext>>();
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {{
         try
         {{
-            _logger.LogInformation(""Applying migrations for {{DbContext}}"", typeof(TDbContext).Name);
+            _logger.Information(""Applying migrations for {{DbContext}}"", typeof(TDbContext).Name);
 
-            await using var scope = _scopeFactory.CreateAsyncScope();
+            await using var scope = scopeFactory.CreateAsyncScope();
             var context = scope.ServiceProvider.GetRequiredService<TDbContext>();
             await context.Database.MigrateAsync(cancellationToken);
 
-            _logger.LogInformation(""Migrations complete for {{DbContext}}"", typeof(TDbContext).Name);
+            _logger.Information(""Migrations complete for {{DbContext}}"", typeof(TDbContext).Name);
         }}
         {catchStatement}
         {{
-            _logger.LogError(ex, ""Could not connect to the database. Please check the connection string and make sure the database is running."");
+            _logger.Error(ex, ""Could not connect to the database. Please check the connection string and make sure the database is running."");
             throw;
         }}
         catch (Exception ex)
         {{
-            _logger.LogError(ex, ""An error occurred while applying the database migrations."");
+            _logger.Error(ex, ""An error occurred while applying the database migrations."");
             throw;
         }}
     }}

@@ -48,7 +48,7 @@ public class DbContextBuilder
         var softDelete = useSoftDelete
             ? $@"
                     entry.State = EntityState.Modified;
-                    entry.Entity.UpdateModifiedProperties(now, _currentUserService?.UserId);
+                    entry.Entity.UpdateModifiedProperties(now, currentUserService?.UserId);
                     entry.Entity.UpdateIsDeleted(true);"
             : "";
         var softDeleteFilterClass = useSoftDelete
@@ -80,20 +80,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
 
-public sealed class {dbContextName} : DbContext
+public sealed class {dbContextName}(DbContextOptions<{dbContextName}> options, 
+    ICurrentUserService currentUserService, 
+    IMediator mediator, 
+    TimeProvider dateTimeProvider)
+    : DbContext(options)
 {{
-    private readonly ICurrentUserService _currentUserService;
-    private readonly IMediator _mediator;
-    private readonly TimeProvider _dateTimeProvider;
-
-    public {dbContextName}(
-        DbContextOptions<{dbContextName}> options, ICurrentUserService currentUserService, IMediator mediator, TimeProvider dateTimeProvider) : base(options)
-    {{
-        _currentUserService = currentUserService;
-        _mediator = mediator;
-        _dateTimeProvider = dateTimeProvider;
-    }}
-
     #region DbSet Region - Do Not Delete
     #endregion DbSet Region - Do Not Delete
 
@@ -133,24 +125,24 @@ public sealed class {dbContextName} : DbContext
             var events = entity.DomainEvents.ToArray();
             entity.DomainEvents.Clear();
             foreach (var entityDomainEvent in events)
-                await _mediator.Publish(entityDomainEvent);
+                await mediator.Publish(entityDomainEvent);
         }}
     }}
         
     private void UpdateAuditFields()
     {{
-        var now = _dateTimeProvider.GetUtcNow();
+        var now = dateTimeProvider.GetUtcNow();
         foreach (var entry in ChangeTracker.Entries<BaseEntity>())
         {{
             switch (entry.State)
             {{
                 case EntityState.Added:
-                    entry.Entity.UpdateCreationProperties(now, _currentUserService?.UserId);
-                    entry.Entity.UpdateModifiedProperties(now, _currentUserService?.UserId);
+                    entry.Entity.UpdateCreationProperties(now, currentUserService?.UserId);
+                    entry.Entity.UpdateModifiedProperties(now, currentUserService?.UserId);
                     break;
 
                 case EntityState.Modified:
-                    entry.Entity.UpdateModifiedProperties(now, _currentUserService?.UserId);
+                    entry.Entity.UpdateModifiedProperties(now, currentUserService?.UserId);
                     break;
                 
                 case EntityState.Deleted:{softDelete}

@@ -26,7 +26,7 @@ public class GetRecordEndpointBuilder
     public async Task<ActionResult<{readDto}>> {getRecordEndpointName}({pkPropertyType} {lowercasePrimaryKey})
     {{
         var query = new {FileNames.GetEntityFeatureClassName(entity.Name)}.{queryRecordMethodName}({lowercasePrimaryKey});
-        var queryResponse = await _mediator.Send(query);
+        var queryResponse = await mediator.Send(query);
         return Ok(queryResponse);
     }}";
     }
