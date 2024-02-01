@@ -25,6 +25,7 @@ public class RolesControllerBuilder
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         return @$"namespace {classNamespace};
 
+using Asp.Versioning;
 using Domain;
 using Domain.Roles;
 using HeimGuard;
@@ -33,7 +34,7 @@ using Microsoft.AspNetCore.Mvc;
 using {exceptionClassPath.ClassNamespace};
 
 [ApiController]
-[Route(""api/roles"")]
+[Route(""api/v{{v:apiVersion}}/roles"")]
 [ApiVersion(""1.0"")]
 public sealed class RolesController(IHeimGuardClient heimGuard): ControllerBase
 {{

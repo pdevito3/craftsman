@@ -88,49 +88,17 @@ public static class FileNames
     public static string AddUserRoleFeatureClassName() => $"AddUserRole";
     public static string RemoveUserRoleFeatureClassName() => $"RemoveUserRole";
 
-    public static string QueryListName()
-    {
-        return $"Query";
-    }
+    public static string QueryListName() => $"Query";
+    public static string QueryRecordName() => $"Query";
+    public static string QueryAllName() => $"Query";
+    public static string CommandAddName() => $"Command";
+    public static string CommandDeleteName() => $"Command";
+    public static string CommandUpdateName() => $"Command";
+    public static string CommandPatchName() => $"Command";
+    public static string FakerName(string objectToFakeName) => $"Fake{objectToFakeName}";
 
-    public static string QueryRecordName()
-    {
-        return $"Query";
-    }
-
-    public static string QueryAllName()
-    {
-        return $"Query";
-    }
-
-    public static string CommandAddName()
-    {
-        return $"Command";
-    }
-
-    public static string CommandDeleteName()
-    {
-        return $"Command";
-    }
-
-    public static string CommandUpdateName()
-    {
-        return $"Command";
-    }
-
-    public static string CommandPatchName()
-    {
-        return $"Command";
-    }
-
-    public static string FakerName(string objectToFakeName)
-        => $"Fake{objectToFakeName}";
-
-    public static string UnitTestUtilsName()
-    {
-        return $"UnitTestUtils";
-    } 
-    
+    public static string UnitTestUtilsName() => $"UnitTestUtils";
+   
     public static string GetDtoName(string entityName, Dto dto)
     {
         return dto switch
@@ -144,20 +112,5 @@ public static class FileNames
     }
 
     public static string EndpointBaseGenerator(string entityNamePlural)
-    {
-        return $@"api/{entityNamePlural.ToLower()}";
-    }
-
-    public static string GetBffApiFilenameBase(string entityName, FeatureType type)
-    {
-        return type.Name switch
-        {
-            nameof(FeatureType.AddRecord) => $"add{entityName.UppercaseFirstLetter()}",
-            nameof(FeatureType.GetList) => $"get{entityName.UppercaseFirstLetter()}List",
-            nameof(FeatureType.GetRecord) => $"get{entityName.UppercaseFirstLetter()}",
-            nameof(FeatureType.UpdateRecord) => $"update{entityName.UppercaseFirstLetter()}",
-            nameof(FeatureType.DeleteRecord) => $"delete{entityName.UppercaseFirstLetter()}",
-            _ => throw new Exception($"The '{type.Name}' feature is not supported in bff api scaffolding.")
-        };
-    }
+        => $@"api/v{{v:apiVersion}}/{entityNamePlural.ToLower()}";
 }

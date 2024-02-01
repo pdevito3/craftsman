@@ -43,6 +43,8 @@ public class WebApiCsProjBuilder
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include=""Asp.Versioning.Mvc"" Version=""8.0.0"" />
+    <PackageReference Include=""Asp.Versioning.Mvc.ApiExplorer"" Version=""8.0.0"" />
     <PackageReference Include=""Ardalis.SmartEnum"" Version=""7.0.0"" />
     <PackageReference Include=""Destructurama.Attributed"" Version=""3.1.0"" />
     <PackageReference Include=""EFCore.NamingConventions"" Version=""8.0.1"" />
@@ -52,7 +54,6 @@ public class WebApiCsProjBuilder
     <PackageReference Include=""HeimGuard"" Version=""1.0.0"" />{errorPackages}
     <PackageReference Include=""MediatR"" Version=""12.2.0"" />
     <PackageReference Include=""Microsoft.AspNetCore.Authentication.OpenIdConnect"" Version=""8.0.0"" />
-    <PackageReference Include=""Microsoft.AspNetCore.Mvc.Versioning"" Version=""5.1.0"" />
     <PackageReference Include=""Microsoft.EntityFrameworkCore"" Version=""8.0.0"" />
     {dbProvider.ApiPackageInclusionString("8.0.0")}
     <PackageReference Include=""Microsoft.Extensions.Configuration.Binder"" Version=""8.0.0"" />

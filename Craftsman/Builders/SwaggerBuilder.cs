@@ -42,36 +42,21 @@ public class SwaggerBuilder
 
 using {envServiceClassPath.ClassNamespace};
 using Configurations;
-using FluentValidation.AspNetCore;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Reflection;
+using Asp.Versioning.ApiExplorer;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
-public static class SwaggerServiceExtension
-{{
-    {GetSwaggerServiceExtensionText(swaggerConfig, projectName, addJwtAuthentication, audience)}
-}}";
+{GetSwaggerServiceExtensionText(swaggerConfig, projectName, addJwtAuthentication, audience)}";
     }
 
     private static string GetSwaggerServiceExtensionText(SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string audience)
     {
-        var contactUrlLine = IsCleanUri(swaggerConfig.ApiContact.Url)
-            ? $@"
-                            Url = new Uri(""{ swaggerConfig.ApiContact.Url }""),"
-            : "";
-
-        var licenseUrlLine = IsCleanUri(swaggerConfig.LicenseUrl)
-            ? $@"Url = new Uri(""{ swaggerConfig.LicenseUrl }""),"
-            : "";
-
-        var licenseText = GetLicenseText(swaggerConfig.LicenseName, licenseUrlLine);
-
         var swaggerAuth = addJwtAuthentication ? $@"
 
             config.AddSecurityDefinition(""oauth2"", new OpenApiSecurityScheme
@@ -115,9 +100,13 @@ public static class SwaggerServiceExtension
 
             config.IncludeXmlComments(string.Format(@$""{{AppDomain.CurrentDomain.BaseDirectory}}{{Path.DirectorySeparatorChar}}{projectName}.WebApi.xml""));";
 
-        var swaggerText = $@"public static void AddSwaggerExtension(this IServiceCollection services, IConfiguration configuration)
+        var swaggerText = $@"public static class SwaggerServiceExtension
+{{
+    public static void AddSwaggerExtension(this IServiceCollection services, 
+        IConfiguration configuration)
     {{
         var authOptions = configuration.GetAuthOptions();
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         services.AddSwaggerGen(config =>
         {{
             config.CustomSchemaIds(type => type.ToString().Replace(""+"", "".""));
@@ -125,37 +114,29 @@ public static class SwaggerServiceExtension
             {{
                 Type = ""string"",
                 Format = ""date""
-            }});
-
-            config.SwaggerDoc(
-                ""v1"",
-                new OpenApiInfo
-                {{
-                    Version = ""v1"",
-                    Title = ""{swaggerConfig.Title}"",
-                    Description = ""{swaggerConfig.Description}"",
-                    Contact = new OpenApiContact
-                    {{
-                        Name = ""{swaggerConfig.ApiContact.Name}"",
-                        Email = ""{swaggerConfig.ApiContact.Email}"",{contactUrlLine}
-                    }},{licenseText}
-                }});{swaggerAuth}{swaggerXmlComments}
+            }});{swaggerAuth}{swaggerXmlComments}
         }});
-    }}";
+    }}
+}}
+
+public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) : IConfigureOptions<SwaggerGenOptions>
+{{
+    public void Configure(SwaggerGenOptions options)
+    {{
+        foreach (var description in provider.ApiVersionDescriptions)
+        {{
+            options.SwaggerDoc(description.GroupName, new OpenApiInfo
+            {{
+                Version = description.ApiVersion.ToString(),
+                Title = ""{swaggerConfig.Title}"",
+                Description = ""{swaggerConfig.Description}""
+            }});
+        }}
+    }}
+}}
+";
 
         return swaggerText;
-    }
-
-    private static string GetLicenseText(string licenseName, string licenseUrlLine)
-    {
-        if (licenseName?.Length > 0 || licenseUrlLine?.Length > 0)
-            return $@"
-                        License = new OpenApiLicense()
-                        {{
-                            Name = ""{licenseName}"",
-                            Url = ""{licenseUrlLine}"",
-                        }}";
-        return "";
     }
 
     private static bool IsCleanUri(string uri)

@@ -25,6 +25,7 @@ public class PermissionsControllerBuilder
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         return @$"namespace {classNamespace};
 
+using Asp.Versioning;
 using Domain;
 using HeimGuard;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +33,7 @@ using Microsoft.AspNetCore.Mvc;
 using {exceptionClassPath.ClassNamespace};
 
 [ApiController]
-[Route(""api/permissions"")]
+[Route(""api/v{{v:apiVersion}}/permissions"")]
 [ApiVersion(""1.0"")]
 public sealed class PermissionsController(IHeimGuardClient heimGuard, IUserPolicyHandler userPolicyHandler) : ControllerBase
 {{

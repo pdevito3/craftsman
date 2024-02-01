@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 * Refactor to primary ctors
+* Removed depricated (and partial) api versioning in favor of new versioning
+  * Added versioning to controller routes
+  * Updated versioning service
+  * Updated swagger to support versioning
+
 
 ## [0.25.1] - 01/09/2024
 

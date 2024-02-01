@@ -26,8 +26,6 @@ public class WebApiAppExtensionsBuilder
         var envServiceClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         return @$"namespace {classNamespace};
 
-using {webApiClassPath.ClassNamespace};
-using {envServiceClassPath.ClassNamespace};
 using Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -36,26 +34,33 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 
 public static class SwaggerAppExtension
 {{
-    {GetSwaggerAppExtensionText(swaggerConfig, addJwtAuthentication)}
+    {GetSwaggerAppExtensionText(addJwtAuthentication)}
 }}";
     }
 
-    private static string GetSwaggerAppExtensionText(SwaggerConfig swaggerConfig, bool addJwtAuthentication)
+    private static string GetSwaggerAppExtensionText(bool addJwtAuthentication)
     {
         var swaggerAuth = addJwtAuthentication ? $@"
-            var authOptions = configuration.GetAuthOptions();
-            config.OAuthClientId(authOptions.ClientId);
-            config.OAuthClientSecret(authOptions.ClientSecret);
-            config.OAuthUsePkce();" : "";
+                var authOptions = configuration.GetAuthOptions();
+                config.OAuthClientId(authOptions.ClientId);
+                config.OAuthClientSecret(authOptions.ClientSecret);
+                config.OAuthUsePkce();" : "";
 
-        var swaggerText = $@"public static void UseSwaggerExtension(this IApplicationBuilder app, IConfiguration configuration, IWebHostEnvironment env)
+        var swaggerText = $@"public static void UseSwaggerExtension(this WebApplication app, IConfiguration configuration, IWebHostEnvironment env)
     {{
         if (!env.IsEnvironment(Consts.Testing.FunctionalTestingEnvName))
         {{
             app.UseSwagger();
-            app.UseSwaggerUI(config =>
+            app.UseSwaggerUI(
+            config =>
             {{
-                config.SwaggerEndpoint(""{swaggerConfig.SwaggerEndpointUrl}"", ""{swaggerConfig.SwaggerEndpointName}"");
+                var descriptions = app.DescribeApiVersions();
+                foreach (var description in descriptions)
+                {{
+                    var url = $""/swagger/{{description.GroupName}}/swagger.json"";
+                    var name = description.GroupName.ToUpperInvariant();
+                    config.SwaggerEndpoint(url, name);
+                }}
                 config.DocExpansion(DocExpansion.None);{swaggerAuth}
             }});
         }}
