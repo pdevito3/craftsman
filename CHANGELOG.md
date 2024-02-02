@@ -9,14 +9,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-* None yet!
+### Updated
+
+* Remove unused swagger props
 
 ## [0.26.0] - 02/01/2024
 
 ### Updated
 
 * Refactor to primary ctors
-* Removed depricated (and partial) api versioning in favor of new versioning
+* Removed deprecated (and partial) api versioning in favor of new versioning
   * Added versioning to controller routes
   * Updated versioning service
   * Updated swagger to support versioning
