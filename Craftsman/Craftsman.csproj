@@ -16,15 +16,15 @@
     <PackageTags>webapi c-sharp dotnet-core vertical-slice-architecture asp-net-core docker net-8 ddd domain-driven-design web-dev cqrs mediatr masstransit event-driven-architecture</PackageTags>
     <RepositoryUrl>https://github.com/pdevito3/craftsman</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>0.25.1</AssemblyVersion>
-    <FileVersion>0.25.1</FileVersion>
-    <Version>0.25.1</Version>
+    <AssemblyVersion>0.26.0</AssemblyVersion>
+    <FileVersion>0.26.0</FileVersion>
+    <Version>0.26.0</Version>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/pdevito3/craftsman</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ardalis.SmartEnum" Version="7.0.0" />
+    <PackageReference Include="Ardalis.SmartEnum" Version="8.0.0" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="FluentValidation" Version="11.9.0" />
     <PackageReference Include="Humanizer.Core" Version="2.14.1" />

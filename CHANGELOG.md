@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+* None yet!
+
+## [0.26.0] - 02/01/2024
+
 ### Updated
 
 * Refactor to primary ctors
