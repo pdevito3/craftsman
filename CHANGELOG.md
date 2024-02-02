@@ -9,9 +9,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+## [0.26.1] - 02/01/2024
+
 ### Updated
 
 * Remove unused swagger props
+
+### Fixed
+
+* Route builder includes version
 
 ## [0.26.0] - 02/01/2024
 
