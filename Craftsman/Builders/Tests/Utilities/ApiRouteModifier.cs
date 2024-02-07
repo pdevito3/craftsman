@@ -99,13 +99,13 @@ public class ApiRouteModifier
 
         entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}    public static class {entity.Plural}
     {{
-        public static string GetList => $""{{Base}}/{lowercaseEntityPluralName}"";
-        public static string GetAll => $""{{Base}}/{lowercaseEntityPluralName}/all"";
-        public static string GetRecord(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
-        public static string Delete(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
-        public static string Put(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
-        public static string Create => $""{{Base}}/{lowercaseEntityPluralName}"";
-        public static string CreateBatch => $""{{Base}}/{lowercaseEntityPluralName}/batch"";
+        public static string GetList(string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}"";
+        public static string GetAll(string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/all"";
+        public static string GetRecord(Guid id, string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Delete(Guid id, string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Put(Guid id, string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Create(string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}"";
+        public static string CreateBatch(string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/batch"";
     }}";
 
         return entityRouteClasses;
@@ -120,14 +120,14 @@ public class ApiRouteModifier
 
         entityRouteClasses += $@"{Environment.NewLine}{Environment.NewLine}    public static class Users
     {{
-        public static string GetList => $""{{Base}}/{lowercaseEntityPluralName}"";
-        public static string GetRecord(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
-        public static string Delete(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
-        public static string Put(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}"";
-        public static string Create => $""{{Base}}/{lowercaseEntityPluralName}"";
-        public static string CreateBatch => $""{{Base}}/{lowercaseEntityPluralName}/batch"";
-        public static string AddRole(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}/addRole"";
-        public static string RemoveRole(Guid id) => $""{{Base}}/{lowercaseEntityPluralName}/{{id}}/removeRole"";
+        public static string GetList(string version = ""v1"")  => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}"";
+        public static string GetRecord(Guid id, string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Delete(Guid id, string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Put(Guid id, string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/{{id}}"";
+        public static string Create(string version = ""v1"")  => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}"";
+        public static string CreateBatch(string version = ""v1"")  => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/batch"";
+        public static string AddRole(Guid id, string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/{{id}}/addRole"";
+        public static string RemoveRole(Guid id, string version = ""v1"") => $""{{Base}}/{{version}}/{lowercaseEntityPluralName}/{{id}}/removeRole"";
     }}";
 
         return entityRouteClasses;

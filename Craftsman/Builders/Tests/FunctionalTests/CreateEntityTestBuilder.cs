@@ -71,7 +71,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeEntityVariableName} = new {fakeCreationDto}().Generate();{clientAuth}
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.Create;
+        var route = ApiRoutes.{entity.Plural}.Create();
         var result = await FactoryClient.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
         // Assert
@@ -92,7 +92,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeEntityVariableName} = new {fakeCreationDto} {{ }}.Generate();
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.Create;
+        var route = ApiRoutes.{entity.Plural}.Create();
         var result = await FactoryClient.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
         // Assert
@@ -114,7 +114,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         FactoryClient.AddAuth();
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.Create;
+        var route = ApiRoutes.{entity.Plural}.Create();
         var result = await FactoryClient.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
         // Assert

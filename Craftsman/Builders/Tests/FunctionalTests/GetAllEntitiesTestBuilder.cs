@@ -65,7 +65,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         {clientAuth ?? "// N/A"}
 
         // Act
-        var result = await FactoryClient.GetRequestAsync(ApiRoutes.{entity.Plural}.GetAll);
+        var result = await FactoryClient.GetRequestAsync(ApiRoutes.{entity.Plural}.GetAll());
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -82,7 +82,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         // N/A
 
         // Act
-        var result = await FactoryClient.GetRequestAsync(ApiRoutes.{entity.Plural}.GetAll);
+        var result = await FactoryClient.GetRequestAsync(ApiRoutes.{entity.Plural}.GetAll());
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -99,7 +99,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         FactoryClient.AddAuth();
 
         // Act
-        var result = await FactoryClient.GetRequestAsync(ApiRoutes.{entity.Plural}.GetAll);
+        var result = await FactoryClient.GetRequestAsync(ApiRoutes.{entity.Plural}.GetAll());
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Forbidden);

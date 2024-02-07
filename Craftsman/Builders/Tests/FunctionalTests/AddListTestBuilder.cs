@@ -81,7 +81,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.CreateBatch;
+        var route = ApiRoutes.{entity.Plural}.CreateBatch();
         var result = await FactoryClient.PostJsonRequestAsync($""{{route}}?{feature.BatchPropertyName.ToLower()}={{{fakeParentEntity}.Id}}"", {fakeEntityVariableName});
 
         // Assert
@@ -109,7 +109,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.CreateBatch;
+        var route = ApiRoutes.{entity.Plural}.CreateBatch();
         var result = await FactoryClient.PostJsonRequestAsync($""{{route}}?{feature.BatchPropertyName.ToLower()}={{Guid.NewGuid()}}"", {fakeEntityVariableName});
 
         // Assert
@@ -137,7 +137,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         var {fakeEntityVariableName} = new List<{createDto}> {{new {fakeEntityForCreation} {{ }}.Generate()}};{clientAuth}
 
         // Act
-        var result = await FactoryClient.PostJsonRequestAsync(ApiRoutes.{entity.Plural}.CreateBatch, {fakeEntityVariableName});
+        var result = await FactoryClient.PostJsonRequestAsync(ApiRoutes.{entity.Plural}.CreateBatch(), {fakeEntityVariableName});
 
         // Assert
         result.StatusCode.Should()
@@ -160,7 +160,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableName});
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.CreateBatch;
+        var route = ApiRoutes.{entity.Plural}.CreateBatch();
         var result = await FactoryClient.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
         // Assert
@@ -184,7 +184,7 @@ public class {Path.GetFileNameWithoutExtension(classPath.FullClassPath)} : TestB
         await InsertAsync({fakeEntityVariableName});
 
         // Act
-        var route = ApiRoutes.{entity.Plural}.CreateBatch;
+        var route = ApiRoutes.{entity.Plural}.CreateBatch();
         var result = await FactoryClient.PostJsonRequestAsync(route, {fakeEntityVariableName});
 
         // Assert
