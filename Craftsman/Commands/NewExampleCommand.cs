@@ -271,6 +271,8 @@ BoundedContexts:
       Type: string
     - Name: ExpiresOn
       Type: DateTime?
+    - Name: BestTimeOfDay
+      Type: DateTimeOffset?
     - Name: Measure
       Type: string
     - Name: AverageCost

@@ -140,6 +140,7 @@ public class EntityProperty
                 or "dateonly"
                 or "timeonly"
                 or "datetime"
+                or "datetimeoffset"
                 or "object"
                 or "guid";
         }
