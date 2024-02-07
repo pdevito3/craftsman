@@ -169,7 +169,7 @@ public sealed class {valueObjectClassName} : ValueObject
         private set
         {{
             if (!{enumClassName}.TryFromName(value, true, out var parsed))
-                throw new ValidationException($""Invalid {valueObjectClassName.Humanize()}. PLease use one of the following: {{string.Join("", "", ListNames())}}"");
+                throw new ValidationException($""Invalid {valueObjectClassName.Humanize()}. Please use one of the following: {{string.Join("", "", ListNames())}}"");
 
             _{valueObjectClassNameLower} = parsed;
         }}

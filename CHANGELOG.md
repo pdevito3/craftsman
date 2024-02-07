@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+### Fixed
+
+* Fix typo on smart enum error
+
 ## [0.26.1] - 02/01/2024
 
 ### Updated

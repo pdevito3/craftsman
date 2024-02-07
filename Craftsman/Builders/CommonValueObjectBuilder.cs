@@ -226,7 +226,7 @@ public class Role : ValueObject
         private set
         {{
             if (!RoleEnum.TryFromName(value, true, out var parsed))
-                throw new ValidationException($""Invalid Role. PLease use one of the following: {{string.Join("", "", ListNames())}}"");
+                throw new ValidationException($""Invalid Role. Please use one of the following: {{string.Join("", "", ListNames())}}"");
 
             _role = parsed;
         }}
