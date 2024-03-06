@@ -39,7 +39,7 @@ public class GetListEndpointBuilder
             hasNext = queryResponse.HasNext
         }};
 
-        Response.Headers.Add(""X-Pagination"",
+        Response.Headers.Append(""X-Pagination"",
             JsonSerializer.Serialize(paginationMetadata));
 
         return Ok(queryResponse);
