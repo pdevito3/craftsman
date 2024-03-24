@@ -214,8 +214,8 @@ public sealed class {valueObjectClassName} : ValueObject
         private static string GetSmartEnum(string valueObjectClassName, List<string> smartNames)
         {
             var staticProps =
-                smartNames.Select(s => $@"      public static readonly {valueObjectClassName}Enum {NormalizeSmartName(s)} = new {NormalizeSmartName(s)}Type();");
-            var eachEnum = smartNames.Select(s => $@"       private class {NormalizeSmartName(s)}Type() : {valueObjectClassName}Enum(""{s}"", {smartNames.IndexOf(s)});");
+                smartNames.Select(s => $@"        public static readonly {valueObjectClassName}Enum {NormalizeSmartName(s)} = new {NormalizeSmartName(s)}Type();");
+            var eachEnum = smartNames.Select(s => $@"        private class {NormalizeSmartName(s)}Type() : {valueObjectClassName}Enum(""{s}"", {smartNames.IndexOf(s)});");
 
             return $@"    private abstract class {valueObjectClassName}Enum(string name, int value)
         : SmartEnum<{valueObjectClassName}Enum>(name, value)
