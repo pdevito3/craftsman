@@ -26,6 +26,10 @@ public class AuthServerTemplate
 
     public string Password { get; set; } = "admin";
 
+    public string Admin { get; set; } = "superadmin";
+
+    public string AdminPassword { get; set; } = "superadmin";
+
     public List<AuthClient> Clients { get; set; } = new List<AuthClient>();
 
     /// <summary>

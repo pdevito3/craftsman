@@ -19,10 +19,10 @@ public class PulumiYamlBuilders
         _utilities.CreateFile(classPath, fileText);
     }
 
-    public void CreateDevConfig(string solutionDirectory, string projectBaseName, int? port, string username, string password)
+    public void CreateDevConfig(string solutionDirectory, string projectBaseName, int? port, string admin, string adminPassword)
     {
         var classPath = ClassPathHelper.AuthServerProjectRootClassPath(solutionDirectory, "Pulumi.dev.yaml", projectBaseName);
-        var fileText = GetDevConfigText(port, username, password);
+        var fileText = GetDevConfigText(port, admin, adminPassword);
         _utilities.CreateFile(classPath, fileText);
     }
 
@@ -34,13 +34,13 @@ description: Local setup for {projectBaseName}
 ";
     }
 
-    private static string GetDevConfigText(int? port, string username, string password)
+    private static string GetDevConfigText(int? port, string admin, string adminPassword)
     {
         return @$"config:
   keycloak:url: http://localhost:{port}
   keycloak:clientId: admin-cli
-  keycloak:username: {username}
-  keycloak:password: {password}
+  keycloak:username: {admin}
+  keycloak:password: {adminPassword}
 ";
     }
 }

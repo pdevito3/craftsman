@@ -73,7 +73,7 @@ public class AddAuthServerCommand : Command<AddAuthServerCommand.Settings>
 
                 var pulumiYamlBuilder = new PulumiYamlBuilders(_utilities);
                 pulumiYamlBuilder.CreateBaseFile(solutionDirectory, projectBaseName);
-                pulumiYamlBuilder.CreateDevConfig(solutionDirectory, projectBaseName, template.Port, template.Username, template.Password);
+                pulumiYamlBuilder.CreateDevConfig(solutionDirectory, projectBaseName, template.Port, template.Admin, template.AdminPassword);
 
                 new Builders.AuthServer.ProgramBuilder(_utilities).CreateAuthServerProgram(solutionDirectory, projectBaseName);
         

@@ -333,7 +333,7 @@ volumes:
       - keycloak-data:/var/lib/postgresql/data
   
   keycloak:
-    image: sleighzy/keycloak:latest
+    image: quay.io/keycloak/keycloak:latest
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: keycloakdb
@@ -344,6 +344,8 @@ volumes:
       KEYCLOAK_USER: {template.Username}
       KEYCLOAK_PASSWORD: {template.Password}
       KEYCLOAK_HTTP_PORT: 8080
+      KEYCLOAK_ADMIN: {template.Admin}
+      KEYCLOAK_ADMIN_PASSWORD: {template.AdminPassword}
       # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, 
       # and it shouldn't be used in production without knowledge. It is highly recommended that you read the 
       # PostgreSQL JDBC driver documentation in order to use it.
@@ -352,6 +354,9 @@ volumes:
       - {template.Port}:8080
     depends_on:
       - keycloakdb
+    command:
+      - start-dev
+      - --features admin-fine-grained-authz
 ";
 
         var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"docker-compose.yaml");
