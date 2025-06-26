@@ -5,6 +5,7 @@ using Builders;
 using Enums;
 using Helpers;
 using Services;
+using MediatR;
 
 public abstract class DbRelationship : SmartEnum<DbRelationship>
 {
@@ -40,9 +41,9 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
 
     public abstract string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural);
     public abstract string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural, string foreignEntityName);
-    public abstract void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+    public abstract Task UpdateEntityPropertiesAsync(IMediator mediator, string srcDirectory, string entityName,
         string entityPlural, string foreignEntityName, string foreignEntityPlural, string propertyName, string projectBaseName);
-    public abstract void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+    public abstract Task UpdateEntityManagementMethodsAsync(IMediator mediator, string srcDirectory, string entityName,
         string entityPlural, EntityProperty entityProperty, string projectBaseName);
 
     private class NoneType : DbRelationship
@@ -52,16 +53,18 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
         public override string GetEntityDbConfig(string entityName, string entityPlural, string propertyName, string foreignEntityPlural, string foreignEntityName)
             => null;
 
-        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override Task UpdateEntityPropertiesAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, string foreignEntityName, string foreignEntityPlural, string propertyName, string projectBaseName)
         {
             // no op
+            return Task.CompletedTask;
         }
         
-        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override Task UpdateEntityManagementMethodsAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, EntityProperty entityProperty, string projectBaseName)
         {
             // no op
+            return Task.CompletedTask;
         }
 
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural) 
@@ -95,38 +98,36 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
     public IReadOnlyCollection<{foreignEntityName}> {foreignEntityPlural} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}";
         }
 
-        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override async Task UpdateEntityPropertiesAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, string foreignEntityName, string foreignEntityPlural, string propertyName, string projectBaseName)
         {
             if (IsChildRelationship)
             {
-                entityModifier.AddManyRelationshipEntity(srcDirectory,
+                await mediator.Send(new EntityModifier.AddManyRelationshipEntityCommand(
                     entityName,
                     entityPlural,
                     foreignEntityName,
-                    foreignEntityPlural,
-                    projectBaseName);
+                    foreignEntityPlural));
                 return;
             }
 
-            entityModifier.AddSingularRelationshipEntity(srcDirectory,
+            await mediator.Send(new EntityModifier.AddSingularRelationshipEntityCommand(
                     foreignEntityName,
                     foreignEntityPlural,
                     entityName,
                     entityPlural,
-                    entityName,
-                    projectBaseName);
+                    entityName));
         }
         
-        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override async Task UpdateEntityManagementMethodsAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, EntityProperty entityProperty, string projectBaseName)
         {
             if (IsChildRelationship)
             {
-                entityModifier.AddEntitySingularManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
+                await mediator.Send(new EntityModifier.AddEntitySingularManagementMethodsCommand(entityProperty, entityName, entityPlural));
                 return;
             }
-            entityModifier.AddEntityManyManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
+            await mediator.Send(new EntityModifier.AddEntityManyManagementMethodsCommand(entityProperty, entityName, entityPlural));
         }
     }
 
@@ -158,38 +159,36 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             return $@"    public {foreignEntityName} {propertyName} {{ get; private set; }}{Environment.NewLine}";
         }
 
-        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override async Task UpdateEntityPropertiesAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, string foreignEntityName, string foreignEntityPlural, string propertyName, string projectBaseName)
         {
             if (IsChildRelationship)
             {
-                entityModifier.AddSingularRelationshipEntity(srcDirectory,
+                await mediator.Send(new EntityModifier.AddSingularRelationshipEntityCommand(
                     entityName,
                     entityPlural,
                     foreignEntityName,
                     foreignEntityPlural,
-                    propertyName,
-                    projectBaseName);
+                    propertyName));
                 return;
             }
-            entityModifier.AddManyRelationshipEntity(srcDirectory,
+            await mediator.Send(new EntityModifier.AddManyRelationshipEntityCommand(
                 foreignEntityName,
                 foreignEntityPlural,
                 entityName,
-                entityPlural,
-                projectBaseName);
+                entityPlural));
             
         }
         
-        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override async Task UpdateEntityManagementMethodsAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, EntityProperty entityProperty, string projectBaseName)
         {
             if (IsChildRelationship)
             {
-                entityModifier.AddEntityManyManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
+                await mediator.Send(new EntityModifier.AddEntityManyManagementMethodsCommand(entityProperty, entityName, entityPlural));
                 return;
             }
-            entityModifier.AddEntitySingularManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
+            await mediator.Send(new EntityModifier.AddEntitySingularManagementMethodsCommand(entityProperty, entityName, entityPlural));
         }
     }
     
@@ -210,35 +209,34 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
             .HasForeignKey<{entityName}>(s => s.Id);";
         }
 
-        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override async Task UpdateEntityPropertiesAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, string foreignEntityName, string foreignEntityPlural, string propertyName, string projectBaseName)
         {
             if (IsChildRelationship)
             {
             
-                entityModifier.AddSingularRelationshipEntity(srcDirectory,
+                await mediator.Send(new EntityModifier.AddSingularRelationshipEntityCommand(
                     entityName,
                     entityPlural,
                     foreignEntityName,
                     foreignEntityPlural,
-                    propertyName,
-                    projectBaseName);
+                    propertyName));
                 return;
             }
             
-            entityModifier.AddSingularRelationshipEntity(srcDirectory,
+            await mediator.Send(new EntityModifier.AddSingularRelationshipEntityCommand(
                 foreignEntityName,
                 foreignEntityPlural,
                 entityName,
                 entityPlural,
-                entityName,
-                projectBaseName);
+                entityName));
         }
         
-        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override Task UpdateEntityManagementMethodsAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, EntityProperty entityProperty, string projectBaseName)
         {
-            // entityModifier.AddEntitySingularManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
+            // await mediator.Send(new EntityModifier.AddEntitySingularManagementMethodsCommand(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName));
+            return Task.CompletedTask;
         }
 
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue,
@@ -278,32 +276,30 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
     public IReadOnlyCollection<{foreignEntityName}> {propertyName} => _{lowerPropName}.AsReadOnly();{Environment.NewLine}";
         }
 
-        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override async Task UpdateEntityPropertiesAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, string foreignEntityName, string foreignEntityPlural, string propertyName, string projectBaseName)
         {
             if (IsChildRelationship)
             {
-                entityModifier.AddManyRelationshipEntity(srcDirectory,
+                await mediator.Send(new EntityModifier.AddManyRelationshipEntityCommand(
                     entityName,
                     entityPlural,
                     foreignEntityName,
-                    foreignEntityPlural,
-                    projectBaseName);
+                    foreignEntityPlural));
                 return;
             }
 
-            entityModifier.AddManyRelationshipEntity(srcDirectory,
+            await mediator.Send(new EntityModifier.AddManyRelationshipEntityCommand(
                 foreignEntityName,
                 foreignEntityPlural,
                 entityName,
-                entityPlural,
-                projectBaseName);
+                entityPlural));
         }
         
-        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override async Task UpdateEntityManagementMethodsAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, EntityProperty entityProperty, string projectBaseName)
         {
-            entityModifier.AddEntityManyManagementMethods(srcDirectory, entityProperty, entityName, entityPlural, projectBaseName);
+            await mediator.Send(new EntityModifier.AddEntityManyManagementMethodsCommand(entityProperty, entityName, entityPlural));
         }
     }
     
@@ -315,16 +311,18 @@ public abstract class DbRelationship : SmartEnum<DbRelationship>
         public override string GetPrincipalPropString(string propertyType, string propertyName, string defaultValue, string foreignEntityName, string foreignEntityPlural, string entityName, string entityPlural) 
             => $@"    public {foreignEntityName} {propertyName} {{ get; private set; }}{Environment.NewLine}";
 
-        public override void UpdateEntityProperties(EntityModifier entityModifier, string srcDirectory,
+        public override Task UpdateEntityPropertiesAsync(IMediator mediator, string srcDirectory,
             string entityName, string entityPlural, string foreignEntityName, string foreignEntityPlural, string propertyName, string projectBaseName)
         {
             // no op
+            return Task.CompletedTask;
         }
         
-        public override void UpdateEntityManagementMethods(EntityModifier entityModifier, string srcDirectory, string entityName,
+        public override Task UpdateEntityManagementMethodsAsync(IMediator mediator, string srcDirectory, string entityName,
             string entityPlural, EntityProperty entityProperty, string projectBaseName)
         {
             // no op
+            return Task.CompletedTask;
         }
     }
 }

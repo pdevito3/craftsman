@@ -1,18 +1,24 @@
 ﻿namespace Craftsman.Builders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class ReadmeBuilder(ICraftsmanUtilities utilities)
+public static class ReadmeBuilder
 {
-    public void CreateReadme(string solutionDirectory, string domainName)
-    {
-        var classPath = ClassPathHelper.SolutionClassPath(solutionDirectory, $"README.md");
-        var fileText = GetReadmeFileText(domainName);
-        utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record ReadmeBuilderCommand(string SolutionDirectory, string DomainName) : IRequest;
 
-    public static string GetReadmeFileText(string domainName)
+    public class Handler(ICraftsmanUtilities utilities) : IRequestHandler<ReadmeBuilderCommand>
+    {
+        public Task Handle(ReadmeBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.SolutionClassPath(request.SolutionDirectory, $"README.md");
+            var fileText = GetReadmeFileText(request.DomainName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+
+        public static string GetReadmeFileText(string domainName)
     {
         return @$"# {domainName}
 
@@ -88,5 +94,6 @@ cd YourBoundedContextName/src/YourBoundedContextName
 dotnet ef database update
 ```
 ";
+        }
     }
 }

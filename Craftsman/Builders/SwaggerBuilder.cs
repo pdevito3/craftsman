@@ -6,27 +6,33 @@ using System.IO.Abstractions;
 using Domain;
 using Helpers;
 using Humanizer;
+using MediatR;
 using Services;
 
-public class SwaggerBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+public static class SwaggerBuilder
 {
-    public void AddSwagger(string srcDirectory, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string audience, string projectBaseName)
+    public sealed record SwaggerBuilderCommand(SwaggerConfig SwaggerConfig, string ProjectName, bool AddJwtAuthentication, string Audience) : IRequest;
+
+    public class Handler(ICraftsmanUtilities utilities, IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<SwaggerBuilderCommand>
     {
-        if (swaggerConfig.Equals(new SwaggerConfig())) return;
+        public Task Handle(SwaggerBuilderCommand request, CancellationToken cancellationToken)
+        {
+            if (request.SwaggerConfig.Equals(new SwaggerConfig())) return Task.CompletedTask;
 
-        AddSwaggerServiceExtension(srcDirectory, projectBaseName, swaggerConfig, projectName, addJwtAuthentication, audience);
-        new WebApiAppExtensionsBuilder(utilities).CreateSwaggerWebApiAppExtension(srcDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
-        UpdateWebApiCsProjSwaggerSettings(srcDirectory, projectBaseName);
-    }
+            AddSwaggerServiceExtension(scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.SwaggerConfig, request.ProjectName, request.AddJwtAuthentication, request.Audience);
+            new WebApiAppExtensionsBuilder(utilities).CreateSwaggerWebApiAppExtension(scaffoldingDirectoryStore.SrcDirectory, request.SwaggerConfig, request.AddJwtAuthentication, scaffoldingDirectoryStore.ProjectBaseName);
+            UpdateWebApiCsProjSwaggerSettings(scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            return Task.CompletedTask;
+        }
 
-    public void AddSwaggerServiceExtension(string srcDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string audience)
-    {
-        var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetSwaggerServiceExtensionName()}.cs", projectBaseName);
-        var fileText = GetSwaggerServiceExtensionText(classPath.ClassNamespace, swaggerConfig, projectName, addJwtAuthentication, audience, srcDirectory, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
-    }
+        private void AddSwaggerServiceExtension(string srcDirectory, string projectBaseName, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string audience)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetSwaggerServiceExtensionName()}.cs", projectBaseName);
+            var fileText = GetSwaggerServiceExtensionText(classPath.ClassNamespace, swaggerConfig, projectName, addJwtAuthentication, audience, srcDirectory, projectBaseName);
+            utilities.CreateFile(classPath, fileText);
+        }
 
-    public static string GetSwaggerServiceExtensionText(string classNamespace, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string audience, string srcDirectory, string projectBaseName)
+        public static string GetSwaggerServiceExtensionText(string classNamespace, SwaggerConfig swaggerConfig, string projectName, bool addJwtAuthentication, string audience, string srcDirectory, string projectBaseName)
     {
         var envServiceClassPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "", projectBaseName);
         return @$"namespace {classNamespace};
@@ -130,12 +136,12 @@ public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) : 
         return swaggerText;
     }
 
-    private static bool IsCleanUri(string uri)
+        private static bool IsCleanUri(string uri)
     {
         return Uri.TryCreate(uri, UriKind.Absolute, out var outUri) && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps);
     }
 
-    public void UpdateWebApiCsProjSwaggerSettings(string solutionDirectory, string projectBaseName)
+        private void UpdateWebApiCsProjSwaggerSettings(string solutionDirectory, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
 
@@ -171,5 +177,6 @@ public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) : 
         // delete the old file and set the name of the new one to the original name
         fileSystem.File.Delete(classPath.FullClassPath);
         fileSystem.File.Move(tempPath, classPath.FullClassPath);
+        }
     }
 }

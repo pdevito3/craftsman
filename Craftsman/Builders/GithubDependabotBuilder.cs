@@ -1,18 +1,24 @@
 ﻿namespace Craftsman.Builders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class GithubDependabotBuilder(ICraftsmanUtilities utilities)
+public static class GithubDependabotBuilder
 {
-    public void CreateFile(string solutionDirectory)
-    {
-        var classPath = ClassPathHelper.GithubClassPath(solutionDirectory, $"dependabot.yaml");
-        var fileText = GetFileText();
-        utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record GithubDependabotBuilderCommand(string SolutionDirectory) : IRequest;
 
-    public static string GetFileText()
+    public class Handler(ICraftsmanUtilities utilities) : IRequestHandler<GithubDependabotBuilderCommand>
+    {
+        public Task Handle(GithubDependabotBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.GithubClassPath(request.SolutionDirectory, $"dependabot.yaml");
+            var fileText = GetFileText();
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+
+        public static string GetFileText()
     {
         return @$"version: 2
 
@@ -64,5 +70,6 @@ updates:
       prefix: ""Package Dependencies""
     # Temporarily disable PR limit, till initial dependency update goes through
     open-pull-requests-limit: 1000";
+        }
     }
 }

@@ -2,22 +2,23 @@
 
 using System;
 using Helpers;
+using MediatR;
 using Services;
 
-public class ControllerBuilder
+public static class ControllerBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record ControllerBuilderCommand(string EntityPlural, string ProjectBaseName, bool IsProtected) : IRequest;
 
-    public ControllerBuilder(ICraftsmanUtilities utilities)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<ControllerBuilderCommand>
     {
-        _utilities = utilities;
-    }
-
-    public void CreateController(string solutionDirectory, string srcDirectory, string entityPlural, string projectBaseName, bool isProtected)
-    {
-        var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{FileNames.GetControllerName(entityPlural)}.cs", projectBaseName, "v1");
-        var fileText = GetControllerFileText(classPath.ClassNamespace, entityPlural, srcDirectory, projectBaseName, isProtected);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(ControllerBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.ControllerClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{FileNames.GetControllerName(request.EntityPlural)}.cs", request.ProjectBaseName, "v1");
+            var fileText = GetControllerFileText(classPath.ClassNamespace, request.EntityPlural, scaffoldingDirectoryStore.SrcDirectory, request.ProjectBaseName, request.IsProtected);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetControllerFileText(string classNamespace, string entityPlural, string srcDirectory, string projectBaseName, bool usesJwtAuth)

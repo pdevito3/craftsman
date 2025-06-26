@@ -2,26 +2,29 @@
 
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 
-public class AppSettingsDevelopmentBuilder(ICraftsmanUtilities utilities)
+public static class AppSettingsDevelopmentBuilder
 {
-    /// <summary>
-    /// this build will create environment based app settings files.
-    /// </summary>
-    public void CreateWebApiAppSettings(string srcDirectory, ApiEnvironment env, DockerConfig dockerConfig, string projectBaseName)
-    {
-        var appSettingFilename = FileNames.GetAppSettingsName(true);
-        var classPath = ClassPathHelper.WebApiAppSettingsClassPath(srcDirectory, $"{appSettingFilename}", projectBaseName);
-        var fileText = GetAppSettingsText(env, dockerConfig, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record AppSettingsDevelopmentBuilderCommand(ApiEnvironment Env, DockerConfig DockerConfig) : IRequest;
 
-    private static string GetAppSettingsText(ApiEnvironment env, DockerConfig dockerConfig, string projectBaseName)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AppSettingsDevelopmentBuilderCommand>
     {
-        var cleanName = CraftsmanUtilities.GetCleanProjectName(projectBaseName);
-        // language=json
-        return 
+        public Task Handle(AppSettingsDevelopmentBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var appSettingFilename = FileNames.GetAppSettingsName(true);
+            var classPath = ClassPathHelper.WebApiAppSettingsClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{appSettingFilename}", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetAppSettingsText(request.Env, request.DockerConfig, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+
+        private static string GetAppSettingsText(ApiEnvironment env, DockerConfig dockerConfig, string projectBaseName)
+        {
+            var cleanName = CraftsmanUtilities.GetCleanProjectName(projectBaseName);
+            // lang=json
+            return 
 $$"""
 {
   "AllowedHosts": "*",
@@ -48,5 +51,6 @@ $$"""
   }
 }
 """;
+        }
     }
 }

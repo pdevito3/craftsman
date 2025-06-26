@@ -2,22 +2,23 @@ namespace Craftsman.Builders.ExtensionBuilders;
 
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 
-public class OpenTelemetryExtensionsBuilder
+public static class OpenTelemetryExtensionsBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record OpenTelemetryExtensionsBuilderCommand(DbProvider DbProvider, int OtelAgentPort) : IRequest;
 
-    public OpenTelemetryExtensionsBuilder(ICraftsmanUtilities utilities)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<OpenTelemetryExtensionsBuilderCommand>
     {
-        _utilities = utilities;
-    }
-
-    public void CreateOTelServiceExtension(string srcDirectory, string projectBaseName, DbProvider dbProvider, int otelAgentPort)
-    {
-        var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"OpenTelemetryServiceExtension.cs", projectBaseName);
-        var fileText = GetOtelText(classPath.ClassNamespace, dbProvider, otelAgentPort, srcDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(OpenTelemetryExtensionsBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(scaffoldingDirectoryStore.SrcDirectory, $"OpenTelemetryServiceExtension.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetOtelText(classPath.ClassNamespace, request.DbProvider, request.OtelAgentPort, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetOtelText(string classNamespace, DbProvider dbProvider, int otelAgentPort, string srcDirectory, string projectBaseName)

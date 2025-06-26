@@ -1,22 +1,23 @@
 namespace Craftsman.Builders.ExtensionBuilders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class CorsExtensionsBuilder
+public static class CorsExtensionsBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record CorsExtensionsBuilderCommand : IRequest;
 
-    public CorsExtensionsBuilder(ICraftsmanUtilities utilities)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CorsExtensionsBuilderCommand>
     {
-        _utilities = utilities;
-    }
-
-    public void CreateCorsServiceExtension(string srcDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"CorsServiceExtension.cs", projectBaseName);
-        var fileText = GetCorsServiceExtensionText(classPath.ClassNamespace, srcDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(CorsExtensionsBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(scaffoldingDirectoryStore.SrcDirectory, $"CorsServiceExtension.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetCorsServiceExtensionText(classPath.ClassNamespace, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetCorsServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName)

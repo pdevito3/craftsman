@@ -1,42 +1,53 @@
-﻿namespace Craftsman.Builders.Dtos;
+namespace Craftsman.Builders.Dtos;
 
 using System.IO.Abstractions;
 using Domain;
 using Domain.Enums;
 using Helpers;
 using Services;
+using MediatR;
 
-public class DtoBuilder
+public static class DtoBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
-    private readonly IFileSystem _fileSystem;
+    public sealed record CreateDtosCommand(Entity Entity) : IRequest;
 
-    public DtoBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+    public class CreateDtosHandler(ICraftsmanUtilities utilities, IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateDtosCommand>
     {
-        _utilities = utilities;
-        _fileSystem = fileSystem;
+        public Task Handle(CreateDtosCommand request, CancellationToken cancellationToken)
+        {
+            // ****this class path will have an invalid FullClassPath. just need the directory
+            var classPath = ClassPathHelper.DtoClassPath(scaffoldingDirectoryStore.SrcDirectory, "", request.Entity.Plural, scaffoldingDirectoryStore.ProjectBaseName);
+
+            if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+                fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+
+            CreateDtoFile(scaffoldingDirectoryStore.SrcDirectory, request.Entity, Dto.Read, scaffoldingDirectoryStore.ProjectBaseName, utilities);
+            CreateDtoFile(scaffoldingDirectoryStore.SrcDirectory, request.Entity, Dto.Creation, scaffoldingDirectoryStore.ProjectBaseName, utilities);
+            CreateDtoFile(scaffoldingDirectoryStore.SrcDirectory, request.Entity, Dto.Update, scaffoldingDirectoryStore.ProjectBaseName, utilities);
+            CreateDtoFile(scaffoldingDirectoryStore.SrcDirectory, request.Entity, Dto.ReadParamaters, scaffoldingDirectoryStore.ProjectBaseName, utilities);
+            return Task.CompletedTask;
+        }
     }
 
-    public void CreateDtos(string srcDirectory, Entity entity, string projectBaseName)
+    public sealed record CreateDtoFileCommand(Entity Entity, Dto Dto) : IRequest;
+
+    public class CreateDtoFileHandler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateDtoFileCommand>
     {
-        // ****this class path will have an invalid FullClassPath. just need the directory
-        var classPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);
-
-        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
-            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
-
-        CreateDtoFile(srcDirectory, entity, Dto.Read, projectBaseName);
-        CreateDtoFile(srcDirectory, entity, Dto.Creation, projectBaseName);
-        CreateDtoFile(srcDirectory, entity, Dto.Update, projectBaseName);
-        CreateDtoFile(srcDirectory, entity, Dto.ReadParamaters, projectBaseName);
+        public Task Handle(CreateDtoFileCommand request, CancellationToken cancellationToken)
+        {
+            CreateDtoFile(scaffoldingDirectoryStore.SrcDirectory, request.Entity, request.Dto, scaffoldingDirectoryStore.ProjectBaseName, utilities);
+            return Task.CompletedTask;
+        }
     }
 
-    public void CreateDtoFile(string srcDirectory, Entity entity, Dto dto, string projectBaseName)
+    private static void CreateDtoFile(string srcDirectory, Entity entity, Dto dto, string projectBaseName, ICraftsmanUtilities utilities)
     {
         var dtoFileName = $"{FileNames.GetDtoName(entity.Name, dto)}.cs";
         var classPath = ClassPathHelper.DtoClassPath(srcDirectory, dtoFileName, entity.Plural, projectBaseName);
         var fileText = GetDtoFileText(srcDirectory, classPath, entity, dto, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        utilities.CreateFile(classPath, fileText);
     }
 
     public static string GetDtoFileText(string srcDirectory, ClassPath classPath, Entity entity, Dto dto, string projectBaseName)

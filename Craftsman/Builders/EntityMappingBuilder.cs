@@ -3,15 +3,23 @@
 using Domain;
 using Domain.Enums;
 using Helpers;
+using MediatR;
 using Services;
 
-public class EntityMappingBuilder(ICraftsmanUtilities utilities)
+public static class EntityMappingBuilder
 {
-    public void CreateMapping(string srcDirectory, string entityName, string entityPlural, string projectBaseName)
+    public sealed record EntityMappingBuilderCommand(string EntityName, string EntityPlural) : IRequest;
+
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<EntityMappingBuilderCommand>
     {
-        var classPath = ClassPathHelper.EntityMappingClassPath(srcDirectory, $"{FileNames.GetMappingName(entityName)}.cs", entityPlural, projectBaseName);
-        var fileText = GetMappingFileText(classPath.ClassNamespace, entityName, entityPlural, srcDirectory, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(EntityMappingBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.EntityMappingClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{FileNames.GetMappingName(request.EntityName)}.cs", request.EntityPlural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetMappingFileText(classPath.ClassNamespace, request.EntityName, request.EntityPlural, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetMappingFileText(string classNamespace, string entityName, string entityPlural, string srcDirectory, string projectBaseName)

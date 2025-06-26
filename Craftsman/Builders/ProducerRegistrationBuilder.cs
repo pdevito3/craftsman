@@ -3,26 +3,32 @@
 using Domain;
 using Domain.Enums;
 using Helpers;
+using MediatR;
 using Services;
 
-public class ProducerRegistrationBuilder(ICraftsmanUtilities utilities)
+public static class ProducerRegistrationBuilder
 {
-    public void CreateProducerRegistration(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
+    public sealed record ProducerRegistrationBuilderCommand(string SolutionDirectory, string SrcDirectory, Producer Producer, string ProjectBaseName) : IRequest;
+
+    public class Handler(ICraftsmanUtilities utilities) : IRequestHandler<ProducerRegistrationBuilderCommand>
     {
-        var className = $@"{producer.EndpointRegistrationMethodName}Registration";
-        var classPath = ClassPathHelper.WebApiProducersServiceExtensionsClassPath(srcDirectory, $"{className}.cs", projectBaseName);
-        var fileText = "";
+        public Task Handle(ProducerRegistrationBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var className = $@"{request.Producer.EndpointRegistrationMethodName}Registration";
+            var classPath = ClassPathHelper.WebApiProducersServiceExtensionsClassPath(request.SrcDirectory, $"{className}.cs", request.ProjectBaseName);
+            var fileText = "";
 
-        if (ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct
-            || ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Topic)
-            fileText = GetDirectOrTopicProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
-        else
-            fileText = GetFanoutProducerRegistration(solutionDirectory, classPath.ClassNamespace, className, producer);
+            if (ExchangeTypeEnum.FromName(request.Producer.ExchangeType) == ExchangeTypeEnum.Direct
+                || ExchangeTypeEnum.FromName(request.Producer.ExchangeType) == ExchangeTypeEnum.Topic)
+                fileText = GetDirectOrTopicProducerRegistration(request.SolutionDirectory, classPath.ClassNamespace, className, request.Producer);
+            else
+                fileText = GetFanoutProducerRegistration(request.SolutionDirectory, classPath.ClassNamespace, className, request.Producer);
 
-        utilities.CreateFile(classPath, fileText);
-    }
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
 
-    public static string GetDirectOrTopicProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)
+        public static string GetDirectOrTopicProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)
     {
         var exchangeType = ExchangeTypeEnum.FromName(producer.ExchangeType) == ExchangeTypeEnum.Direct
             ? "ExchangeType.Direct"
@@ -62,9 +68,9 @@ public static class {className}
         }});
     }}
 }}";
-    }
+        }
 
-    public static string GetFanoutProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)
+        public static string GetFanoutProducerRegistration(string solutionDirectory, string classNamespace, string className, Producer producer)
     {
         var messagesClassPath = ClassPathHelper.MessagesClassPath(solutionDirectory, "");
 
@@ -83,5 +89,6 @@ public static class {className}
         cfg.Publish<{producer.MessageName}>(e => e.ExchangeType = ExchangeType.Fanout); // primary exchange type
     }}
 }}";
+        }
     }
 }

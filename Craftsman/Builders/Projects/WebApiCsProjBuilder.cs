@@ -2,14 +2,22 @@
 
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 
-public class WebApiCsProjBuilder(ICraftsmanUtilities utilities)
+public static class WebApiCsProjBuilder
 {
-    public void CreateWebApiCsProj(string solutionDirectory, string projectBaseName, DbProvider dbProvider, bool useCustomErrorHandler)
+    public sealed record WebApiCsProjBuilderCommand(string SolutionDirectory, string ProjectBaseName, DbProvider DbProvider, bool UseCustomErrorHandler) : IRequest;
+
+    public class Handler(ICraftsmanUtilities utilities)
+        : IRequestHandler<WebApiCsProjBuilderCommand>
     {
-        var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-        utilities.CreateFile(classPath, GetWebApiCsProjFileText(dbProvider, useCustomErrorHandler));
+        public Task Handle(WebApiCsProjBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiProjectClassPath(request.SolutionDirectory, request.ProjectBaseName);
+            utilities.CreateFile(classPath, GetWebApiCsProjFileText(request.DbProvider, request.UseCustomErrorHandler));
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetWebApiCsProjFileText(DbProvider dbProvider, bool useCustomErrorHandler)

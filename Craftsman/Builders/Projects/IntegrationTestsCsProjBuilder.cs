@@ -2,14 +2,22 @@
 
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 
-public class IntegrationTestsCsProjBuilder(ICraftsmanUtilities utilities)
+public static class IntegrationTestsCsProjBuilder
 {
-    public void CreateTestsCsProj(string solutionDirectory, string projectBaseName, DbProvider provider)
+    public sealed record IntegrationTestsCsProjBuilderCommand(string SolutionDirectory, DbProvider Provider) : IRequest;
+
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<IntegrationTestsCsProjBuilderCommand>
     {
-        var classPath = ClassPathHelper.IntegrationTestProjectClassPath(solutionDirectory, projectBaseName);
-        utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName, provider));
+        public Task Handle(IntegrationTestsCsProjBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.IntegrationTestProjectClassPath(request.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, GetTestsCsProjFileText(request.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.Provider));
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName, DbProvider provider)

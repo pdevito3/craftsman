@@ -44,8 +44,8 @@ public class NewExampleCommand(
         var domainCommand = new NewDomainCommand(console, fileSystem, consoleWriter, utilities, scaffoldingDirectoryStore, dbMigrator, gitService, fileParsingHelper, mediator);
         domainCommand.CreateNewDomainProject(domainProject);
 
-        new ExampleTemplateBuilder(utilities).CreateYamlFile(scaffoldingDirectoryStore.SolutionDirectory,
-            templateString);
+        mediator.Send(new ExampleTemplateBuilder.CreateYamlFileCommand(scaffoldingDirectoryStore.SolutionDirectory,
+            templateString)).GetAwaiter().GetResult();
         console.MarkupLine($"{Environment.NewLine}[bold yellow1]Your example project is project is ready![/]");
 
         consoleWriter.StarGithubRequest();

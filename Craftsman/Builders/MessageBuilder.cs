@@ -4,18 +4,24 @@ using System;
 using System.Collections.Generic;
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 
-public class MessageBuilder(ICraftsmanUtilities utilities)
+public static class MessageBuilder
 {
-    public void CreateMessage(string solutionDirectory, Message message)
-    {
-        var classPath = ClassPathHelper.MessagesClassPath(solutionDirectory, $"{FileNames.MessageClassName(message.Name)}.cs");
-        var fileText = GetMessageFileText(classPath.ClassNamespace, message);
-        utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record MessageBuilderCommand(string SolutionDirectory, Message Message) : IRequest;
 
-    public static string GetMessageFileText(string classNamespace, Message message)
+    public class Handler(ICraftsmanUtilities utilities) : IRequestHandler<MessageBuilderCommand>
+    {
+        public Task Handle(MessageBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.MessagesClassPath(request.SolutionDirectory, $"{FileNames.MessageClassName(request.Message.Name)}.cs");
+            var fileText = GetMessageFileText(classPath.ClassNamespace, request.Message);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+
+        public static string GetMessageFileText(string classNamespace, Message message)
     {
         var propString = MessagePropBuilder(message.Properties);
 
@@ -34,17 +40,18 @@ public class MessageBuilder(ICraftsmanUtilities utilities)
         {propString}
     }}
 }}";
-    }
-
-    public static string MessagePropBuilder(List<MessageProperty> props)
-    {
-        var propString = "";
-        for (var eachProp = 0; eachProp < props.Count; eachProp++)
-        {
-            string newLine = eachProp == props.Count - 1 ? "" : $"{Environment.NewLine}{Environment.NewLine}";
-            propString += $@"public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
         }
 
-        return propString;
+        public static string MessagePropBuilder(List<MessageProperty> props)
+        {
+            var propString = "";
+            for (var eachProp = 0; eachProp < props.Count; eachProp++)
+            {
+                string newLine = eachProp == props.Count - 1 ? "" : $"{Environment.NewLine}{Environment.NewLine}";
+                propString += $@"public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{newLine}";
+            }
+
+            return propString;
+        }
     }
 }

@@ -19,22 +19,22 @@ public class SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSyst
         BuildSharedKernelProject(solutionDirectory);
     }
 
-    public void AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, DbProvider dbProvider, string projectBaseName, bool addJwtAuth, int otelAgentPort, bool useCustomErrorHandler)
+    public async Task AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, DbProvider dbProvider, string projectBaseName, bool addJwtAuth, int otelAgentPort, bool useCustomErrorHandler)
     {
         // add webapi first so it is default project
-        BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, otelAgentPort, useCustomErrorHandler);
-        BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName, dbProvider);
+        await BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, otelAgentPort, useCustomErrorHandler);
+        await BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName, dbProvider);
         BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName, dbProvider);
         BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName);
         BuildUnitTestProject(solutionDirectory, testDirectory, projectBaseName);
     }
 
-    private void BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, DbProvider dbProvider, int otelAgentPort, bool useCustomErrorHandler)
+    private async Task BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, DbProvider dbProvider, int otelAgentPort, bool useCustomErrorHandler)
     {
         var solutionFolder = srcDirectory.GetSolutionFolder(solutionDirectory);
         var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
 
-        new WebApiCsProjBuilder(utilities).CreateWebApiCsProj(srcDirectory, projectBaseName, dbProvider, useCustomErrorHandler);
+        await mediator.Send(new WebApiCsProjBuilder.WebApiCsProjBuilderCommand(srcDirectory, projectBaseName, dbProvider, useCustomErrorHandler));
         utilities.ExecuteProcess("dotnet", $@"sln add ""{webApiProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
 
         // base folders
@@ -48,38 +48,38 @@ public class SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSyst
         fileSystem.Directory.CreateDirectory(ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
         fileSystem.Directory.CreateDirectory(ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName).ClassDirectory);
 
-        new ApiVersioningExtensionsBuilder(utilities).CreateApiVersioningServiceExtension(srcDirectory, projectBaseName);
-        new CorsExtensionsBuilder(utilities).CreateCorsServiceExtension(srcDirectory, projectBaseName);
-        new OpenTelemetryExtensionsBuilder(utilities).CreateOTelServiceExtension(srcDirectory, projectBaseName, dbProvider, otelAgentPort);
-        new WebApiLaunchSettingsBuilder(utilities).CreateLaunchSettings(srcDirectory, projectBaseName);
-        new ProgramBuilder(utilities).CreateWebApiProgram(srcDirectory, useJwtAuth, projectBaseName, useCustomErrorHandler);
-        new ServiceConfigurationBuilder(utilities).CreateWebAppServiceConfiguration(srcDirectory, projectBaseName, useCustomErrorHandler);
-        new ConstsResourceBuilder(utilities).CreateLocalConfig(srcDirectory, projectBaseName);
-        new QueryKitConfigBuilder(utilities).CreateConfig(srcDirectory, projectBaseName);
-        new InfrastructureServiceRegistrationBuilder(utilities).CreateInfrastructureServiceExtension(srcDirectory, projectBaseName);
+        await mediator.Send(new ApiVersioningExtensionsBuilder.ApiVersioningExtensionsBuilderCommand());
+        await mediator.Send(new CorsExtensionsBuilder.CorsExtensionsBuilderCommand());
+        await mediator.Send(new OpenTelemetryExtensionsBuilder.OpenTelemetryExtensionsBuilderCommand(dbProvider, otelAgentPort));
+        await mediator.Send(new WebApiLaunchSettingsBuilder.WebApiLaunchSettingsBuilderCommand());
+        await mediator.Send(new ProgramBuilder.ProgramBuilderCommand(useJwtAuth, useCustomErrorHandler));
+        await mediator.Send(new ServiceConfigurationBuilder.ServiceConfigurationBuilderCommand(useCustomErrorHandler));
+        await mediator.Send(new ConstsResourceBuilder.ConstsResourceBuilderCommand());
+        await mediator.Send(new QueryKitConfigBuilder.QueryKitConfigBuilderCommand());
+        await mediator.Send(new InfrastructureServiceRegistrationBuilder.InfrastructureServiceRegistrationBuilderCommand(srcDirectory, projectBaseName));
 
         if (useCustomErrorHandler)
         {
-            new ErrorHandlerFilterAttributeBuilder(utilities).CreateErrorHandlerFilterAttribute(srcDirectory, projectBaseName);
+            await mediator.Send(new ErrorHandlerFilterAttributeBuilder.ErrorHandlerFilterAttributeBuilderCommand());
         }
         else
         {
             new ErrorHandlerWithHellang(utilities).CreateErrorHandler(srcDirectory, projectBaseName);
         }
 
-        new BasePaginationParametersBuilder(utilities).CreateBasePaginationParameters(srcDirectory, projectBaseName);
-        new PagedListBuilder(utilities).CreatePagedList(srcDirectory, projectBaseName);
-        mediator.Send(new CoreExceptionBuilder.CoreExceptionBuilderCommand());
+        await mediator.Send(new BasePaginationParametersBuilder.BasePaginationParametersBuilderCommand());
+        await mediator.Send(new PagedListBuilder.PagedListBuilderCommand());
+        await mediator.Send(new CoreExceptionBuilder.CoreExceptionBuilderCommand());
 
         utilities.AddProjectReference(webApiProjectClassPath, @"..\..\..\SharedKernel\SharedKernel.csproj");
     }
 
-    private void BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName, DbProvider dbProvider)
+    private async Task BuildIntegrationTestProject(string solutionDirectory, string testDirectory, string projectBaseName, DbProvider dbProvider)
     {
         var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
         var testProjectClassPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "", projectBaseName);
 
-        new IntegrationTestsCsProjBuilder(utilities).CreateTestsCsProj(testDirectory, projectBaseName, dbProvider);
+        await mediator.Send(new IntegrationTestsCsProjBuilder.IntegrationTestsCsProjBuilderCommand(testDirectory, dbProvider));
         utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
     }
 

@@ -1,22 +1,23 @@
 namespace Craftsman.Builders.ExtensionBuilders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class ApiVersioningExtensionsBuilder
+public static class ApiVersioningExtensionsBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record ApiVersioningExtensionsBuilderCommand : IRequest;
 
-    public ApiVersioningExtensionsBuilder(ICraftsmanUtilities utilities)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<ApiVersioningExtensionsBuilderCommand>
     {
-        _utilities = utilities;
-    }
-
-    public void CreateApiVersioningServiceExtension(string solutionDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"ApiVersioningServiceExtension.cs", projectBaseName);
-        var fileText = GetApiVersioningServiceExtensionText(classPath.ClassNamespace);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(ApiVersioningExtensionsBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(scaffoldingDirectoryStore.SrcDirectory, $"ApiVersioningServiceExtension.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetApiVersioningServiceExtensionText(classPath.ClassNamespace);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetApiVersioningServiceExtensionText(string classNamespace)

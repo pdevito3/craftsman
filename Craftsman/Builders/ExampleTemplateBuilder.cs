@@ -3,20 +3,32 @@
 using System.Text.Json;
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 
-public class ExampleTemplateBuilder(ICraftsmanUtilities utilities)
+public static class ExampleTemplateBuilder
 {
-    public void CreateFile(string solutionDirectory, DomainProject domainProject)
+    public sealed record CreateFileCommand(string SolutionDirectory, DomainProject DomainProject) : IRequest;
+    public sealed record CreateYamlFileCommand(string SolutionDirectory, string DomainProject) : IRequest;
+
+    public class CreateFileHandler(ICraftsmanUtilities utilities) : IRequestHandler<CreateFileCommand>
     {
-        var classPath = ClassPathHelper.ExampleYamlRootClassPath(solutionDirectory, "exampleTemplate.json");
-        var fileText = JsonSerializer.Serialize(domainProject);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateFileCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.ExampleYamlRootClassPath(request.SolutionDirectory, "exampleTemplate.json");
+            var fileText = JsonSerializer.Serialize(request.DomainProject);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
-    public void CreateYamlFile(string solutionDirectory, string domainProject)
+    public class CreateYamlFileHandler(ICraftsmanUtilities utilities) : IRequestHandler<CreateYamlFileCommand>
     {
-        var classPath = ClassPathHelper.ExampleYamlRootClassPath(solutionDirectory, "exampleTemplate.yaml");
-        utilities.CreateFile(classPath, domainProject);
+        public Task Handle(CreateYamlFileCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.ExampleYamlRootClassPath(request.SolutionDirectory, "exampleTemplate.yaml");
+            utilities.CreateFile(classPath, request.DomainProject);
+            return Task.CompletedTask;
+        }
     }
 }

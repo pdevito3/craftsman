@@ -1,18 +1,24 @@
 ﻿namespace Craftsman.Builders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class ProgramBuilder(ICraftsmanUtilities utilities)
+public static class ProgramBuilder
 {
-    public void CreateWebApiProgram(string srcDirectory, bool useJwtAuth, string projectBaseName, bool useCustomErrorHandler)
-    {
-        var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Program.cs", projectBaseName);
-        var fileText = GetWebApiProgramText(srcDirectory, useJwtAuth, projectBaseName, useCustomErrorHandler);
-        utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record ProgramBuilderCommand(bool UseJwtAuth, bool UseCustomErrorHandler) : IRequest;
 
-    public static string GetWebApiProgramText(string srcDirectory, bool useJwtAuth, string projectBaseName, bool useCustomErrorHandler)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<ProgramBuilderCommand>
+    {
+        public Task Handle(ProgramBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiProjectRootClassPath(scaffoldingDirectoryStore.SrcDirectory, $"Program.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetWebApiProgramText(scaffoldingDirectoryStore.SrcDirectory, request.UseJwtAuth, scaffoldingDirectoryStore.ProjectBaseName, request.UseCustomErrorHandler);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+
+        public static string GetWebApiProgramText(string srcDirectory, bool useJwtAuth, string projectBaseName, bool useCustomErrorHandler)
     {
         var hostExtClassPath = ClassPathHelper.WebApiHostExtensionsClassPath(srcDirectory, $"", projectBaseName);
         var apiAppExtensionsClassPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(srcDirectory, "", projectBaseName);
@@ -96,5 +102,6 @@ finally
 
 // Make the implicit Program class public so the functional test project can access it
 public partial class Program {{ }}";
+        }
     }
 }

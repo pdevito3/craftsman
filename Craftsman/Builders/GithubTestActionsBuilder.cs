@@ -2,32 +2,49 @@
 
 using Helpers;
 using Humanizer;
+using MediatR;
 using Services;
 
-public class GithubTestActionsBuilder(ICraftsmanUtilities utilities)
+public static class GithubTestActionsBuilder
 {
-    public void CreateUnitTestAction(string solutionDirectory, string projectBaseName)
+    public sealed record CreateUnitTestActionCommand(string SolutionDirectory, string ProjectBaseName) : IRequest;
+    public sealed record CreateIntegrationTestActionCommand(string SolutionDirectory, string ProjectBaseName) : IRequest;
+    public sealed record CreateFunctionalTestActionCommand(string SolutionDirectory, string ProjectBaseName) : IRequest;
+
+    public class CreateUnitTestActionHandler(ICraftsmanUtilities utilities) : IRequestHandler<CreateUnitTestActionCommand>
     {
-        var humanized = $"{projectBaseName}UnitTests".Kebaberize();
-        var classPath = ClassPathHelper.GithubWorkflowsClassPath(solutionDirectory, $"{humanized}.yaml");
-        var fileText = GetUnitTestFileText(projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateUnitTestActionCommand request, CancellationToken cancellationToken)
+        {
+            var humanized = $"{request.ProjectBaseName}UnitTests".Kebaberize();
+            var classPath = ClassPathHelper.GithubWorkflowsClassPath(request.SolutionDirectory, $"{humanized}.yaml");
+            var fileText = GetUnitTestFileText(request.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
     
-    public void CreateIntegrationTestAction(string solutionDirectory, string projectBaseName)
+    public class CreateIntegrationTestActionHandler(ICraftsmanUtilities utilities) : IRequestHandler<CreateIntegrationTestActionCommand>
     {
-        var humanized = $"{projectBaseName}IntegrationTests".Kebaberize();
-        var classPath = ClassPathHelper.GithubWorkflowsClassPath(solutionDirectory, $"{humanized}.yaml");
-        var fileText = GetIntegrationTestFileText(projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateIntegrationTestActionCommand request, CancellationToken cancellationToken)
+        {
+            var humanized = $"{request.ProjectBaseName}IntegrationTests".Kebaberize();
+            var classPath = ClassPathHelper.GithubWorkflowsClassPath(request.SolutionDirectory, $"{humanized}.yaml");
+            var fileText = GetIntegrationTestFileText(request.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
     
-    public void CreateFunctionalTestAction(string solutionDirectory, string projectBaseName)
+    public class CreateFunctionalTestActionHandler(ICraftsmanUtilities utilities) : IRequestHandler<CreateFunctionalTestActionCommand>
     {
-        var humanized = $"{projectBaseName}FunctionalTests".Kebaberize();
-        var classPath = ClassPathHelper.GithubWorkflowsClassPath(solutionDirectory, $"{humanized}.yaml");
-        var fileText = GetFunctionalTestFileText(projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateFunctionalTestActionCommand request, CancellationToken cancellationToken)
+        {
+            var humanized = $"{request.ProjectBaseName}FunctionalTests".Kebaberize();
+            var classPath = ClassPathHelper.GithubWorkflowsClassPath(request.SolutionDirectory, $"{humanized}.yaml");
+            var fileText = GetFunctionalTestFileText(request.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetUnitTestFileText(string projectBaseName)

@@ -7,6 +7,7 @@ using Builders.ExtensionBuilders;
 using Builders.Tests.Utilities;
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -16,7 +17,8 @@ public class AddBusCommand(
     IConsoleWriter consoleWriter,
     ICraftsmanUtilities utilities,
     IScaffoldingDirectoryStore scaffoldingDirectoryStore,
-    IFileParsingHelper fileParsingHelper)
+    IFileParsingHelper fileParsingHelper,
+    IMediator mediator)
     : Command<AddBusCommand.Settings>
 {
     public class Settings : CommandSettings
@@ -67,7 +69,7 @@ public class AddBusCommand(
         var webApiClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
         utilities.AddPackages(webApiClassPath, massTransitPackages);
 
-        new MassTransitExtensionsBuilder(utilities).CreateMassTransitServiceExtension(solutionDirectory, srcDirectory, projectBaseName);
+        mediator.Send(new MassTransitExtensionsBuilder.MassTransitExtensionsBuilderCommand(solutionDirectory)).GetAwaiter().GetResult();
         new WebApiLaunchSettingsModifier(fileSystem).UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_HOST", template.Environment.BrokerSettings.Host, projectBaseName);
         new WebApiLaunchSettingsModifier(fileSystem).UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_VIRTUAL_HOST", template.Environment.BrokerSettings.VirtualHost, projectBaseName);
         new WebApiLaunchSettingsModifier(fileSystem).UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_USERNAME", template.Environment.BrokerSettings.Username, projectBaseName);

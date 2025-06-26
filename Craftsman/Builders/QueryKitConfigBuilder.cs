@@ -1,18 +1,24 @@
 namespace Craftsman.Builders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class QueryKitConfigBuilder(ICraftsmanUtilities utilities)
+public static class QueryKitConfigBuilder
 {
-    public void CreateConfig(string srcDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "CustomQueryKitConfiguration.cs", projectBaseName);
-        var fileText = GetConfigText(classPath.ClassNamespace);
-        utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record QueryKitConfigBuilderCommand : IRequest;
 
-    private static string GetConfigText(string classNamespace)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<QueryKitConfigBuilderCommand>
+    {
+        public Task Handle(QueryKitConfigBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiResourcesClassPath(scaffoldingDirectoryStore.SrcDirectory, "CustomQueryKitConfiguration.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetConfigText(classPath.ClassNamespace);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+
+        private static string GetConfigText(string classNamespace)
     {
         return @$"namespace {classNamespace};
 
@@ -31,5 +37,6 @@ public class CustomQueryKitConfiguration : QueryKitConfiguration
     {{
     }}
 }}";
+        }
     }
 }

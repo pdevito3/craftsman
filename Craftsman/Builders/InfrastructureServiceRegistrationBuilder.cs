@@ -1,18 +1,24 @@
 ﻿namespace Craftsman.Builders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class InfrastructureServiceRegistrationBuilder(ICraftsmanUtilities utilities)
+public static class InfrastructureServiceRegistrationBuilder
 {
-    public void CreateInfrastructureServiceExtension(string srcDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetInfraRegistrationName()}.cs", projectBaseName);
-        var fileText = GetServiceRegistrationText(srcDirectory, projectBaseName, classPath.ClassNamespace);
-        utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record InfrastructureServiceRegistrationBuilderCommand(string SrcDirectory, string ProjectBaseName) : IRequest;
 
-    public static string GetServiceRegistrationText(string srcDirectory, string projectBaseName, string classNamespace)
+    public class Handler(ICraftsmanUtilities utilities) : IRequestHandler<InfrastructureServiceRegistrationBuilderCommand>
+    {
+        public Task Handle(InfrastructureServiceRegistrationBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(request.SrcDirectory, $"{FileNames.GetInfraRegistrationName()}.cs", request.ProjectBaseName);
+            var fileText = GetServiceRegistrationText(request.SrcDirectory, request.ProjectBaseName, classPath.ClassNamespace);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+
+        public static string GetServiceRegistrationText(string srcDirectory, string projectBaseName, string classNamespace)
     {
         var dbContextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);
         var utilsClassPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, "", projectBaseName);
@@ -78,5 +84,6 @@ public static class HangfireConfig
 
     }}
 }}";
+        }
     }
 }

@@ -8,6 +8,7 @@ using Builders.Tests.Utilities;
 using Domain;
 using Exceptions;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console.Cli;
 using Validators;
@@ -19,17 +20,21 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
     private readonly ICraftsmanUtilities _utilities;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
     private readonly IFileParsingHelper _fileParsingHelper;
+    private readonly IMediator _mediator;
 
     public AddConsumerCommand(IFileSystem fileSystem,
         IConsoleWriter consoleWriter,
         ICraftsmanUtilities utilities,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore, IFileParsingHelper fileParsingHelper)
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore, 
+        IFileParsingHelper fileParsingHelper,
+        IMediator mediator)
     {
         _fileSystem = fileSystem;
         _consoleWriter = consoleWriter;
         _utilities = utilities;
         _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
         _fileParsingHelper = fileParsingHelper;
+        _mediator = mediator;
     }
 
     public class Settings : CommandSettings
@@ -54,13 +59,13 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
         var template = _fileParsingHelper.GetTemplateFromFile<ConsumerTemplate>(settings.Filepath);
         _consoleWriter.WriteLogMessage($"Your template file was parsed successfully");
 
-        AddConsumers(template.Consumers, _scaffoldingDirectoryStore.ProjectBaseName, solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory);
+        AddConsumers(template.Consumers, _scaffoldingDirectoryStore.ProjectBaseName, solutionDirectory, _scaffoldingDirectoryStore.SrcDirectory, _scaffoldingDirectoryStore.TestDirectory).GetAwaiter().GetResult();
 
         _consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your consumer has been successfully added. Keep up the good work!");
         return 0;
     }
 
-    public void AddConsumers(List<Consumer> consumers, string projectBaseName, string solutionDirectory, string srcDirectory, string testDirectory)
+    public async Task AddConsumers(List<Consumer> consumers, string projectBaseName, string solutionDirectory, string srcDirectory, string testDirectory)
     {
         var validator = new ConsumerValidator();
         foreach (var consumer in consumers)
@@ -70,13 +75,13 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
                 throw new DataValidationErrorException(results.Errors);
         }
 
-        consumers.ForEach(consumer =>
+        foreach (var consumer in consumers)
         {
             new ConsumerBuilder(_utilities).CreateConsumerFeature(solutionDirectory, srcDirectory, consumer, projectBaseName);
-            new ConsumerRegistrationBuilder(_utilities).CreateConsumerRegistration(srcDirectory, consumer, projectBaseName);
+            await _mediator.Send(new ConsumerRegistrationBuilder.ConsumerRegistrationBuilderCommand(srcDirectory, consumer, projectBaseName));
             new MassTransitModifier(_fileSystem).AddConsumerRegistration(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
 
             new IntegrationTestFixtureModifier(_fileSystem, _consoleWriter).AddMasstransitConsumer(testDirectory, consumer.ConsumerName, consumer.DomainDirectory, projectBaseName, srcDirectory);
-        });
+        }
     }
 }

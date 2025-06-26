@@ -8,28 +8,34 @@ using System.IO.Abstractions;
 using System.Linq;
 using Domain;
 using Helpers;
+using MediatR;
 using Services;
 
-public class DbContextBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem)
+public static class DbContextBuilder
 {
-    public void CreateDbContext(string srcDirectory,
-        List<Entity> entities,
-        string dbContextName,
-        DbProvider dbProvider,
-        string dbName,
-        string localDbConnection,
-        NamingConventionEnum namingConventionEnum,
-        bool useSoftDelete,
-        string projectBaseName,
-        bool usesAuth
-    )
-    {
-        var classPath = ClassPathHelper.DbContextClassPath(srcDirectory, $"{dbContextName}.cs", projectBaseName);
-        var data = GetContextFileText(classPath.ClassNamespace, entities, dbContextName, srcDirectory, useSoftDelete, projectBaseName, usesAuth);
-        utilities.CreateFile(classPath, data);
+    public sealed record DbContextBuilderCommand(
+        string SrcDirectory,
+        List<Entity> Entities,
+        string DbContextName,
+        DbProvider DbProvider,
+        string DbName,
+        string LocalDbConnection,
+        NamingConventionEnum NamingConventionEnum,
+        bool UseSoftDelete,
+        string ProjectBaseName,
+        bool UsesAuth) : IRequest;
 
-        RegisterContext(srcDirectory, dbProvider, dbContextName, dbName, localDbConnection, namingConventionEnum, projectBaseName);
-    }
+    public class Handler(ICraftsmanUtilities utilities, IFileSystem fileSystem) : IRequestHandler<DbContextBuilderCommand>
+    {
+        public Task Handle(DbContextBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.DbContextClassPath(request.SrcDirectory, $"{request.DbContextName}.cs", request.ProjectBaseName);
+            var data = GetContextFileText(classPath.ClassNamespace, request.Entities, request.DbContextName, request.SrcDirectory, request.UseSoftDelete, request.ProjectBaseName, request.UsesAuth);
+            utilities.CreateFile(classPath, data);
+
+            RegisterContext(request.SrcDirectory, request.DbProvider, request.DbContextName, request.DbName, request.LocalDbConnection, request.NamingConventionEnum, request.ProjectBaseName);
+            return Task.CompletedTask;
+        }
 
     public static string GetContextFileText(string classNamespace, List<Entity> entities, string dbContextName, string srcDirectory, bool useSoftDelete, string projectBaseName, bool usesAuth)
     {
@@ -225,8 +231,8 @@ public static void FilterSoftDeletedRecords(this ModelBuilder modelBuilder)
                  """;
     }
 
-    private void RegisterContext(string srcDirectory, DbProvider dbProvider, string dbContextName, string dbName, 
-        string localDbConnection, NamingConventionEnum namingConventionEnum, string projectBaseName)
+        private void RegisterContext(string srcDirectory, DbProvider dbProvider, string dbContextName, string dbName, 
+            string localDbConnection, NamingConventionEnum namingConventionEnum, string projectBaseName)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetInfraRegistrationName()}.cs", projectBaseName);
 
@@ -281,7 +287,7 @@ public static void FilterSoftDeletedRecords(this ModelBuilder modelBuilder)
         fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 
-    private static void InstallDbProviderNugetPackages(DbProvider provider, string srcDirectory)
+        private static void InstallDbProviderNugetPackages(DbProvider provider, string srcDirectory)
     {
         var installCommand = $"add Infrastructure.Persistence{Path.DirectorySeparatorChar}Infrastructure.Persistence.csproj package Microsoft.EntityFrameworkCore.SqlServer --version 5.0.0";
 
@@ -306,5 +312,6 @@ public static void FilterSoftDeletedRecords(this ModelBuilder modelBuilder)
 
         process.Start();
         process.WaitForExit();
+        }
     }
 }

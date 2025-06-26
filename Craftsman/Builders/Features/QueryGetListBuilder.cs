@@ -4,18 +4,33 @@ using Domain;
 using Domain.Enums;
 using Helpers;
 using Services;
+using MediatR;
 
-public class QueryGetListBuilder(ICraftsmanUtilities utilities)
+public static class QueryGetListBuilder
 {
-    public void CreateQuery(string srcDirectory, Entity entity, string projectBaseName, bool isProtected, string permissionName, string dbContextName)
+    public class Command(Entity entity, bool isProtected, string permissionName, string dbContextName) : IRequest<bool>
     {
-        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{FileNames.GetEntityListFeatureClassName(entity.Name)}.cs", entity.Plural, projectBaseName);
-        var fileText = GetQueryFileText(classPath.ClassNamespace, entity, srcDirectory, projectBaseName, isProtected, permissionName, dbContextName);
-        utilities.CreateFile(classPath, fileText);
+        public Entity Entity { get; set; } = entity;
+        public bool IsProtected { get; set; } = isProtected;
+        public string PermissionName { get; set; } = permissionName;
+        public string DbContextName { get; set; } = dbContextName;
     }
 
-    public static string GetQueryFileText(string classNamespace, Entity entity, string srcDirectory,
-        string projectBaseName, bool isProtected, string permissionName, string dbContextName)
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command, bool>
+    {
+        public Task<bool> Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FeaturesClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{FileNames.GetEntityListFeatureClassName(request.Entity.Name)}.cs", request.Entity.Plural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetFileText(classPath.ClassNamespace, request.Entity, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.IsProtected, request.PermissionName, request.DbContextName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.FromResult(true);
+        }
+
+        private static string GetFileText(string classNamespace, Entity entity, string srcDirectory,
+            string projectBaseName, bool isProtected, string permissionName, string dbContextName)
     {
         var className = FileNames.GetEntityListFeatureClassName(entity.Name);
         var queryListName = FileNames.QueryListName();
@@ -39,7 +54,8 @@ public class QueryGetListBuilder(ICraftsmanUtilities utilities)
             out string permissionCheck, 
             out string permissionsUsing);
 
-        return @$"namespace {classNamespace};
+            // lang=csharp
+            return $@"namespace {classNamespace};
 
 using {dtoClassPath.ClassNamespace};
 using {dbContextClassPath.ClassNamespace};
@@ -79,5 +95,6 @@ public static class {className}
         }}
     }}
 }}";
+        }
     }
 }

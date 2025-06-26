@@ -35,17 +35,17 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         foreach (var entity in entities)
         {
             // not worrying about DTOs, profiles, validators, fakers - they are all added by default
-            new EntityBuilder(utilities).CreateEntity(solutionDirectory, srcDirectory, entity, projectBaseName);
-            new DtoBuilder(utilities, fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
-            new EntityModelBuilder(utilities, fileSystem).CreateEntityModels(srcDirectory, entity, projectBaseName);
-            new EntityMappingBuilder(utilities).CreateMapping(srcDirectory, entity.Name, entity.Plural, projectBaseName);
+            mediator.Send(new EntityBuilder.CreateEntityCommand(solutionDirectory, entity));
+            mediator.Send(new DtoBuilder.CreateDtosCommand(entity));
+            mediator.Send(new EntityModelBuilder.EntityModelBuilderCommand(entity));
+            mediator.Send(new EntityMappingBuilder.EntityMappingBuilderCommand(entity.Name, entity.Plural));
             new ApiRouteModifier(fileSystem, consoleWriter).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
             mediator.Send(new DatabaseEntityConfigBuilder.Command(entity.Name, entity.Plural, entity.Properties));
 
             var isProtected = entity.Features.Any(f => f.IsProtected); // <-- one more example of why it would be nice to have specific endpoints for each feature 😤
             if (entity.Features.Count > 0)
-                new ControllerBuilder(utilities).CreateController(solutionDirectory, srcDirectory, entity.Plural, projectBaseName, isProtected);
+                mediator.Send(new ControllerBuilder.ControllerBuilderCommand(entity.Plural, projectBaseName, isProtected));
 
             // TODO refactor to factory?
             foreach (var feature in entity.Features)
@@ -64,23 +64,22 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
             mediator.Send(new UpdatedDomainEventBuilder.UpdatedDomainEventBuilderCommand(entity.Name, entity.Plural));
         }
 
-        AddRelationships(srcDirectory, projectBaseName, entities);
-        AddStringArrayItems(srcDirectory, projectBaseName, entities, dbProvider);
+        AddRelationshipsAsync(srcDirectory, projectBaseName, entities).Wait();
+        AddStringArrayItemsAsync(srcDirectory, projectBaseName, entities, dbProvider).Wait();
         AddValueObjects(srcDirectory, projectBaseName, entities);
 
         new DbContextModifier(fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);
     }
 
-    private void AddRelationships(string srcDirectory, string projectBaseName, List<Entity> entities)
+    private async Task AddRelationshipsAsync(string srcDirectory, string projectBaseName, List<Entity> entities)
     {
         // reloop once all bases are added for relationships to mod on top -- could push into the earlier loop if perf becomes an issue
         foreach (var entity in entities)
         {
-            var entityModifier = new EntityModifier(fileSystem, consoleWriter);
             var allPropsNotNone = entity.Properties.Where(x => !x.GetDbRelationship.IsNone).ToList();
             foreach (var entityProperty in allPropsNotNone)
             {
-                entityProperty.GetDbRelationship.UpdateEntityProperties(entityModifier, 
+                await entityProperty.GetDbRelationship.UpdateEntityPropertiesAsync(mediator, 
                     srcDirectory,
                     entity.Name,
                     entity.Plural,
@@ -89,18 +88,17 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
                     entityProperty.Name,
                     projectBaseName);
                 
-                entityProperty.GetDbRelationship.UpdateEntityManagementMethods(entityModifier, 
+                await entityProperty.GetDbRelationship.UpdateEntityManagementMethodsAsync(mediator, 
                     srcDirectory,
                     entity.Name,
                     entity.Plural,
                     entityProperty,
                     projectBaseName);
                 
-                entityModifier.AddParentRelationshipEntity(srcDirectory,
+                await mediator.Send(new EntityModifier.AddParentRelationshipEntityCommand(
                     entityProperty, 
                     entity.Name, 
-                    entity.Plural, 
-                    projectBaseName);
+                    entity.Plural));
                 
                 new DatabaseEntityConfigModifier(fileSystem, consoleWriter).AddRelationships(srcDirectory, 
                     entity.Name,
@@ -192,19 +190,17 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         }
     }
 
-    public void AddStringArrayItems(string srcDirectory, string projectBaseName, List<Entity> entities, DbProvider dbProvider)
+    public async Task AddStringArrayItemsAsync(string srcDirectory, string projectBaseName, List<Entity> entities, DbProvider dbProvider)
     {
         foreach (var entity in entities)
         {
-            var entityModifier = new EntityModifier(fileSystem, consoleWriter);
             var stringArrayProps = entity.Properties.Where(x => x.IsStringArray).ToList();
             foreach (var stringArrayProp in stringArrayProps)
             {
-                entityModifier.AddStringArrayManagement(srcDirectory,
+                await mediator.Send(new EntityModifier.AddStringArrayManagementCommand(
                     stringArrayProp,
                     entity.Name,
-                    entity.Plural,
-                    projectBaseName);
+                    entity.Plural));
                 
                 new DatabaseEntityConfigModifier(fileSystem, consoleWriter).AddStringArrayProperty(srcDirectory, 
                     entity.Name,
@@ -243,15 +239,15 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
                 }
         };
 
-        new EntityBuilder(utilities).CreateRolePermissionsEntity(srcDirectory, entity, projectBaseName);
-        new DtoBuilder(utilities, fileSystem).CreateDtos(srcDirectory, entity, projectBaseName);
-        new EntityModelBuilder(utilities, fileSystem).CreateEntityModels(srcDirectory, entity, projectBaseName);
-        new EntityMappingBuilder(utilities).CreateMapping(srcDirectory, entity.Name, entity.Plural, projectBaseName);
+        mediator.Send(new EntityBuilder.CreateRolePermissionsEntityCommand(entity));
+        mediator.Send(new DtoBuilder.CreateDtosCommand(entity));
+        mediator.Send(new EntityModelBuilder.EntityModelBuilderCommand(entity));
+        mediator.Send(new EntityMappingBuilder.EntityMappingBuilderCommand(entity.Name, entity.Plural));
         new ApiRouteModifier(fileSystem, consoleWriter).AddRoutes(testDirectory, entity, projectBaseName);
         mediator.Send(new DatabaseEntityConfigRolePermissionBuilder.Command());
 
         if (entity.Features.Count > 0)
-            new ControllerBuilder(utilities).CreateController(solutionDirectory, srcDirectory, entity.Plural, projectBaseName, true);
+            mediator.Send(new ControllerBuilder.ControllerBuilderCommand(entity.Plural, projectBaseName, true));
 
         // TODO refactor to factory?
         foreach (var feature in entity.Features)
@@ -304,28 +300,27 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
             ]
         };
 
-        var entityBuilder = new EntityBuilder(utilities);
-        entityBuilder.CreateUserEntity(srcDirectory, userEntity, projectBaseName);
-        entityBuilder.CreateUserRoleEntity(srcDirectory, projectBaseName);
+        mediator.Send(new EntityBuilder.CreateUserEntityCommand(userEntity));
+        mediator.Send(new EntityBuilder.CreateUserRoleEntityCommand());
         
         // TODO custom dto for roles
-        new DtoBuilder(utilities, fileSystem).CreateDtos(srcDirectory, userEntity, projectBaseName);
+        mediator.Send(new DtoBuilder.CreateDtosCommand(userEntity));
         
-        new EntityModelBuilder(utilities, fileSystem).CreateEntityModels(srcDirectory, userEntity, projectBaseName);
-        new EntityMappingBuilder(utilities).CreateMapping(srcDirectory, "User", "Users", projectBaseName);
+        mediator.Send(new EntityModelBuilder.EntityModelBuilderCommand(userEntity));
+        mediator.Send(new EntityMappingBuilder.EntityMappingBuilderCommand("User", "Users"));
         new ApiRouteModifier(fileSystem, consoleWriter).AddRoutesForUser(testDirectory, projectBaseName);
         mediator.Send(new DatabaseEntityConfigUserBuilder.Command());
         mediator.Send(new DatabaseEntityConfigUserRoleBuilder.Command());
         
-        new ControllerBuilder(utilities).CreateController(solutionDirectory, srcDirectory, userEntity.Plural, projectBaseName, true);
+        mediator.Send(new ControllerBuilder.ControllerBuilderCommand(userEntity.Plural, projectBaseName, true));
         new ControllerModifier(fileSystem).AddCustomUserEndpoint(srcDirectory, projectBaseName);
         
         foreach (var feature in userEntity.Features)
         {
             AddFeatureToProject(solutionDirectory, srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, userEntity, useSoftDelete);
         }
-        new CommandAddUserRoleBuilder(utilities).CreateCommand(srcDirectory, userEntity, projectBaseName, dbContextName);
-        new CommandRemoveUserRoleBuilder(utilities).CreateCommand(srcDirectory, userEntity, projectBaseName, dbContextName);
+        mediator.Send(new CommandAddUserRoleBuilder.CommandAddUserRoleBuilderCommand(userEntity, dbContextName));
+        mediator.Send(new CommandRemoveUserRoleBuilder.CommandRemoveUserRoleBuilderCommand(userEntity, dbContextName));
         // new AddUserFeatureBuilder(_utilities).AddFeature(srcDirectory, projectBaseName);
         new AddUserFeatureOverrideModifier(fileSystem).UpdateAddUserFeature(srcDirectory, projectBaseName, dbContextName);
 
@@ -354,14 +349,14 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
     {
         var controllerClassPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{FileNames.GetControllerName(entity.Plural)}.cs", projectBaseName);
         if (!File.Exists(controllerClassPath.FullClassPath))
-            new ControllerBuilder(utilities).CreateController(solutionDirectory, srcDirectory, entity.Plural, projectBaseName, feature.IsProtected);
+            mediator.Send(new ControllerBuilder.ControllerBuilderCommand(entity.Plural, projectBaseName, feature.IsProtected));
 
         if (feature.IsProtected)
             new PermissionsModifier(fileSystem).AddPermission(srcDirectory, feature.PermissionName, projectBaseName);
 
         if (feature.Type == FeatureType.AddRecord.Name)
         {
-            new CommandAddRecordBuilder(utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName, dbContextName);
+            mediator.Send(new CommandAddRecordBuilder.CommandAddRecordBuilderCommand(entity, feature.IsProtected, feature.PermissionName, dbContextName));
             switch (entity.Name)
             {
                 case "RolePermission":
@@ -381,7 +376,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
 
         if (feature.Type == FeatureType.GetRecord.Name)
         {
-            new QueryGetRecordBuilder(utilities).CreateQuery(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName, dbContextName);
+            mediator.Send(new QueryGetRecordBuilder.Command(entity, feature.IsProtected, feature.PermissionName, dbContextName));
             switch (entity.Name)
             {
                 case "RolePermission":
@@ -401,7 +396,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
 
         if (feature.Type == FeatureType.GetList.Name)
         {
-            new QueryGetListBuilder(utilities).CreateQuery(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName, dbContextName);
+            mediator.Send(new QueryGetListBuilder.Command(entity, feature.IsProtected, feature.PermissionName, dbContextName));
             new GetListQueryTestBuilder(utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName, feature.PermissionName, feature.IsProtected);
             new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments,
                 feature, projectBaseName);
@@ -409,7 +404,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
 
         if (feature.Type == FeatureType.GetAll.Name)
         {
-            new QueryGetAllBuilder(utilities).CreateQuery(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName, dbContextName);
+            mediator.Send(new QueryGetAllBuilder.Command(entity, feature.IsProtected, feature.PermissionName, dbContextName));
             new GetAllQueryTestBuilder(utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName, feature.PermissionName, feature.IsProtected);
             new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.GetAll, entity, addSwaggerComments,
                 feature, projectBaseName);
@@ -417,7 +412,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
 
         if (feature.Type == FeatureType.DeleteRecord.Name)
         {
-            new CommandDeleteRecordBuilder(utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName, dbContextName);
+            mediator.Send(new CommandDeleteRecordBuilder.CommandDeleteRecordBuilderCommand(entity, feature.IsProtected, feature.PermissionName, dbContextName));
             new DeleteCommandTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName, useSoftDelete, feature.PermissionName, feature.IsProtected);
             new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments,
                 feature, projectBaseName);
@@ -425,7 +420,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
 
         if (feature.Type == FeatureType.UpdateRecord.Name)
         {
-            new CommandUpdateRecordBuilder(utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName, dbContextName);
+            mediator.Send(new CommandUpdateRecordBuilder.Command(entity, feature.IsProtected, feature.PermissionName, dbContextName));
             
             switch (entity.Name)
             {

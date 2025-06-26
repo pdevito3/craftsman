@@ -3,22 +3,29 @@
 using System.IO.Abstractions;
 using System.Text;
 using Exceptions;
+using MediatR;
+using Services;
 
-public class GitBuilder(IFileSystem fileSystem)
+public static class GitBuilder
 {
-    public void CreateGitIgnore(string solutionDirectory)
+    public sealed record GitBuilderCommand() : IRequest;
+
+    public class Handler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<GitBuilderCommand>
     {
-        var filePath = fileSystem.Path.Combine(solutionDirectory, ".gitignore");
+        public Task Handle(GitBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var filePath = fileSystem.Path.Combine(scaffoldingDirectoryStore.SolutionDirectory, ".gitignore");
 
-        if (fileSystem.File.Exists(filePath))
-            throw new FileAlreadyExistsException(filePath);
+            if (fileSystem.File.Exists(filePath))
+                throw new FileAlreadyExistsException(filePath);
 
-        var data = GetGitIgnoreFileText();
-        using var fs = fileSystem.File.Create(filePath);
-        fs.Write(Encoding.UTF8.GetBytes(data));
-    }
+            var data = GetGitIgnoreFileText();
+            using var fs = fileSystem.File.Create(filePath);
+            fs.Write(Encoding.UTF8.GetBytes(data));
+            return Task.CompletedTask;
+        }
 
-    public static string GetGitIgnoreFileText()
+        public static string GetGitIgnoreFileText()
     {
         return @"/.build/
 /global.json
@@ -324,6 +331,8 @@ __pycache__/
 #ENV
 .env
 
+
 ";
+        }
     }
 }

@@ -7,6 +7,7 @@ using Builders.Tests.IntegrationTests;
 using Domain;
 using Exceptions;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -18,7 +19,8 @@ public class AddProducerCommand(
     IConsoleWriter consoleWriter,
     ICraftsmanUtilities utilities,
     IScaffoldingDirectoryStore scaffoldingDirectoryStore,
-    IFileParsingHelper fileParsingHelper)
+    IFileParsingHelper fileParsingHelper,
+    IMediator mediator)
     : Command<AddProducerCommand.Settings>
 {
     private readonly IAnsiConsole _console = console;
@@ -62,11 +64,11 @@ public class AddProducerCommand(
                 throw new DataValidationErrorException(results.Errors);
         }
 
-        producers.ForEach(producer =>
+        foreach (var producer in producers)
         {
             new ProducerBuilder(utilities).CreateProducerFeature(solutionDirectory, srcDirectory, producer, projectBaseName);
-            new ProducerRegistrationBuilder(utilities).CreateProducerRegistration(solutionDirectory, srcDirectory, producer, projectBaseName);
+            mediator.Send(new ProducerRegistrationBuilder.ProducerRegistrationBuilderCommand(solutionDirectory, srcDirectory, producer, projectBaseName)).GetAwaiter().GetResult();
             new MassTransitModifier(fileSystem).AddProducerRegistration(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
-        });
+        }
     }
 }

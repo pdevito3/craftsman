@@ -1,22 +1,34 @@
 namespace Craftsman.Builders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class LoggingConfigurationBuilder(ICraftsmanUtilities utilities)
+public static class LoggingConfigurationBuilder
 {
-    public void CreateWebApiConfigFile(string projectDirectory, string authServerProjectName)
+    public sealed record CreateWebApiConfigFileCommand(string ProjectDirectory, string AuthServerProjectName) : IRequest;
+    public sealed record CreateBffConfigFileCommand(string SolutionDirectory, string ProjectBaseName) : IRequest;
+
+    public class CreateWebApiConfigFileHandler(ICraftsmanUtilities utilities) : IRequestHandler<CreateWebApiConfigFileCommand>
     {
-        var classPath = ClassPathHelper.WebApiHostExtensionsClassPath(projectDirectory, "LoggingConfiguration.cs", authServerProjectName);
-        var fileText = GetConfigTextForHostBuilder(classPath.ClassNamespace);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateWebApiConfigFileCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiHostExtensionsClassPath(request.ProjectDirectory, "LoggingConfiguration.cs", request.AuthServerProjectName);
+            var fileText = GetConfigTextForHostBuilder(classPath.ClassNamespace);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
-    public void CreateBffConfigFile(string solutionDirectory, string projectBaseName)
+    public class CreateBffConfigFileHandler(ICraftsmanUtilities utilities) : IRequestHandler<CreateBffConfigFileCommand>
     {
-        var classPath = ClassPathHelper.BffHostExtensionsClassPath(solutionDirectory, "LoggingConfiguration.cs", projectBaseName);
-        var fileText = GetConfigTextForHostBuilder(classPath.ClassNamespace);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateBffConfigFileCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.BffHostExtensionsClassPath(request.SolutionDirectory, "LoggingConfiguration.cs", request.ProjectBaseName);
+            var fileText = GetConfigTextForHostBuilder(classPath.ClassNamespace);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetConfigTextForHostBuilder(string classNamespace)

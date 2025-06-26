@@ -1,22 +1,27 @@
 ﻿namespace Craftsman.Builders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class EditorConfigBuilder(ICraftsmanUtilities utilities)
+public static class EditorConfigBuilder
 {
-    public void CreateEditorConfig(string srcDirectory, string projectBaseName)
-    {
-        var appSettingFilename = FileNames.GetAppSettingsName();
-        var classPath = ClassPathHelper.WebApiEditorConfigClassPath(srcDirectory, projectBaseName);
-        var fileText = FetFileText();
-        utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record EditorConfigBuilderCommand : IRequest;
 
-    private static string FetFileText()
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<EditorConfigBuilderCommand>
     {
-        return @$"[*.cs]
-dotnet_diagnostic.RMG012.severity = error # Unmapped or non-automappable target member for Mapperly
-";
+        public Task Handle(EditorConfigBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var appSettingFilename = FileNames.GetAppSettingsName();
+            var classPath = ClassPathHelper.WebApiEditorConfigClassPath(scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetFileText();
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+
+        private static string GetFileText()
+        {
+            return "[*.cs]\ndotnet_diagnostic.RMG012.severity = error # Unmapped or non-automappable target member for Mapperly\n";
+        }
     }
 }

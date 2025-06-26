@@ -75,7 +75,7 @@ public class NewDomainCommand(
 
         // messages
         if (domainProject.Messages.Count > 0)
-            new AddMessageCommand(fileSystem, consoleWriter, utilities, scaffoldingDirectoryStore, console, fileParsingHelper)
+            new AddMessageCommand(fileSystem, consoleWriter, utilities, scaffoldingDirectoryStore, console, fileParsingHelper, mediator)
                 .AddMessages(solutionDirectory, domainProject.Messages);
 
         // migrations
@@ -84,11 +84,11 @@ public class NewDomainCommand(
         // github
         if (domainProject.IncludeDependabot)
         {
-            new GithubDependabotBuilder(utilities).CreateFile(solutionDirectory);
+            mediator.Send(new GithubDependabotBuilder.GithubDependabotBuilderCommand(solutionDirectory)).GetAwaiter().GetResult();
         }
         
         //final
-        new ReadmeBuilder(utilities).CreateReadme(solutionDirectory, domainProject.DomainName);
+        mediator.Send(new ReadmeBuilder.ReadmeBuilderCommand(solutionDirectory, domainProject.DomainName)).GetAwaiter().GetResult();
 
         if (domainProject.AddGit)
             gitService.GitSetup(solutionDirectory, domainProject.UseSystemGitUser);

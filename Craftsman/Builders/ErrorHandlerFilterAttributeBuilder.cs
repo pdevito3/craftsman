@@ -1,18 +1,24 @@
 ﻿namespace Craftsman.Builders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class ErrorHandlerFilterAttributeBuilder(ICraftsmanUtilities utilities)
+public static class ErrorHandlerFilterAttributeBuilder
 {
-    public void CreateErrorHandlerFilterAttribute(string srcDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, $"ErrorHandlerFilterAttribute.cs", projectBaseName);
-        var fileText = GetErrorHandlerFilterAttributeText(srcDirectory, classPath.ClassNamespace, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record ErrorHandlerFilterAttributeBuilderCommand : IRequest;
 
-    public static string GetErrorHandlerFilterAttributeText(string srcDirectory, string classNamespace, string projectBaseName)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<ErrorHandlerFilterAttributeBuilderCommand>
+    {
+        public Task Handle(ErrorHandlerFilterAttributeBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiMiddlewareClassPath(scaffoldingDirectoryStore.SrcDirectory, $"ErrorHandlerFilterAttribute.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetErrorHandlerFilterAttributeText(scaffoldingDirectoryStore.SrcDirectory, classPath.ClassNamespace, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+
+        public static string GetErrorHandlerFilterAttributeText(string srcDirectory, string classNamespace, string projectBaseName)
     {
         var exceptionsClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
 
@@ -174,5 +180,6 @@ public sealed class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
         context.ExceptionHandled = true;
     }}
 }}";
+        }
     }
 }

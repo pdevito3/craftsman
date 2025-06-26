@@ -1,22 +1,23 @@
 ﻿namespace Craftsman.Builders.ExtensionBuilders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class ServiceConfigurationBuilder
+public static class ServiceConfigurationBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record ServiceConfigurationBuilderCommand(bool UseCustomErrorHandler) : IRequest;
 
-    public ServiceConfigurationBuilder(ICraftsmanUtilities utilities)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<ServiceConfigurationBuilderCommand>
     {
-        _utilities = utilities;
-    }
-
-    public void CreateWebAppServiceConfiguration(string srcDirectory, string projectBaseName, bool useCustomErrorHandler)
-    {
-        var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.WebAppServiceConfiguration()}.cs", projectBaseName);
-        var fileText = GetWebApiServiceExtensionText(classPath.ClassNamespace, srcDirectory, projectBaseName, useCustomErrorHandler);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(ServiceConfigurationBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{FileNames.WebAppServiceConfiguration()}.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetWebApiServiceExtensionText(classPath.ClassNamespace, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.UseCustomErrorHandler);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetWebApiServiceExtensionText(string classNamespace, string srcDirectory, string projectBaseName, bool useCustomErrorHandler)

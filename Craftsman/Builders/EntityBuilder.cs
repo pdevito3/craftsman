@@ -1,4 +1,4 @@
-﻿namespace Craftsman.Builders;
+namespace Craftsman.Builders;
 
 using System;
 using System.Collections.Generic;
@@ -6,21 +6,79 @@ using Domain;
 using Domain.Enums;
 using Helpers;
 using Services;
+using MediatR;
 
-public class EntityBuilder(ICraftsmanUtilities utilities)
+public static class EntityBuilder
 {
-    public void CreateEntity(string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName)
+    public sealed record CreateEntityCommand(string SolutionDirectory, Entity Entity) : IRequest;
+
+    public class CreateEntityHandler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateEntityCommand>
     {
-        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
-        var fileText = GetEntityFileText(classPath.ClassNamespace, solutionDirectory, srcDirectory, entity, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateEntityCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.EntityClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{request.Entity.Name}.cs", request.Entity.Plural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetEntityFileText(classPath.ClassNamespace, request.SolutionDirectory, scaffoldingDirectoryStore.SrcDirectory, request.Entity, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
-    public void CreateBaseEntity(string srcDirectory, string projectBaseName, bool useSoftDelete)
+    public sealed record CreateBaseEntityCommand(bool UseSoftDelete) : IRequest;
+
+    public class CreateBaseEntityHandler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateBaseEntityCommand>
     {
-        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"BaseEntity.cs", "", projectBaseName);
-        var fileText = GetBaseEntityFileText(classPath.ClassNamespace, useSoftDelete);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateBaseEntityCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.EntityClassPath(scaffoldingDirectoryStore.SrcDirectory, $"BaseEntity.cs", "", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetBaseEntityFileText(classPath.ClassNamespace, request.UseSoftDelete);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+    }
+
+    public sealed record CreateUserEntityCommand(Entity Entity) : IRequest;
+
+    public class CreateUserEntityHandler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateUserEntityCommand>
+    {
+        public Task Handle(CreateUserEntityCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.EntityClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{request.Entity.Name}.cs", request.Entity.Plural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetUserEntityFileText(classPath.ClassNamespace, scaffoldingDirectoryStore.SrcDirectory, request.Entity, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+    }
+
+    public sealed record CreateUserRoleEntityCommand() : IRequest;
+
+    public class CreateUserRoleEntityHandler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateUserRoleEntityCommand>
+    {
+        public Task Handle(CreateUserRoleEntityCommand request, CancellationToken cancellationToken)
+        {
+            var entityName = "UserRole";
+            var classPath = ClassPathHelper.EntityClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{entityName}.cs", "Users", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetUserRoleEntityFileText(classPath.ClassNamespace, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+    }
+
+    public sealed record CreateRolePermissionsEntityCommand(Entity Entity) : IRequest;
+
+    public class CreateRolePermissionsEntityHandler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateRolePermissionsEntityCommand>
+    {
+        public Task Handle(CreateRolePermissionsEntityCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.EntityClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{request.Entity.Name}.cs", request.Entity.Plural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetRolePermissionsEntityFileText(classPath.ClassNamespace, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetEntityFileText(string classNamespace, string solutionDirectory, string srcDirectory, Entity entity, string projectBaseName)
@@ -63,44 +121,47 @@ using {voClassPath.ClassNamespace};";
         var createPropsAssignment = GetCreatePropsAssignment(entity, createEntityVar, creationModelVarName, creationModelClassName);
         var updatePropsAssignment = GetUpdatePropsAssignment(entity, updateClassName, updateModelVarName);
         
-        return @$"namespace {classNamespace};
+        // lang=csharp
+        return $$"""
+                 namespace {{classNamespace}};
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Destructurama.Attributed;
-using {exceptionClassPath.ClassNamespace};
-using {modelClassPath.ClassNamespace};
-using {domainEventsClassPath.ClassNamespace};{foreignEntityUsings}{valueObjectUsings}
+                 using System.ComponentModel.DataAnnotations;
+                 using System.ComponentModel.DataAnnotations.Schema;
+                 using Destructurama.Attributed;
+                 using {{exceptionClassPath.ClassNamespace}};
+                 using {{modelClassPath.ClassNamespace}};
+                 using {{domainEventsClassPath.ClassNamespace}};{{foreignEntityUsings}}{{valueObjectUsings}}
 
-{tableAnnotation}
-public class {entity.Name} : BaseEntity
-{{
-{propString}    // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
+                 {{tableAnnotation}}
+                 public class {{entity.Name}} : BaseEntity
+                 {
+                 {{propString}}    // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
 
 
-    public static {entity.Name} Create({creationModelClassName} {creationModelClassName.LowercaseFirstLetter()})
-    {{
-        var {createEntityVar} = new {entity.Name}();
+                     public static {{entity.Name}} Create({{creationModelClassName}} {{creationModelClassName.LowercaseFirstLetter()}})
+                     {
+                         var {{createEntityVar}} = new {{entity.Name}}();
 
-{createPropsAssignment}
+                 {{createPropsAssignment}}
 
-        {createEntityVar}.QueueDomainEvent(new {entityCreatedDomainMessage}(){{ {entity.Name} = {createEntityVar} }});
-        
-        return {createEntityVar};
-    }}
+                         {{createEntityVar}}.QueueDomainEvent(new {{entityCreatedDomainMessage}}(){ {{entity.Name}} = {{createEntityVar}} });
+                         
+                         return {{createEntityVar}};
+                     }
 
-    public {entity.Name} Update({updateClassName} {updateClassName.LowercaseFirstLetter()})
-    {{
-{updatePropsAssignment}
+                     public {{entity.Name}} Update({{updateClassName}} {{updateClassName.LowercaseFirstLetter()}})
+                     {
+                 {{updatePropsAssignment}}
 
-        QueueDomainEvent(new {entityUpdatedDomainMessage}(){{ Id = Id }});
-        return this;
-    }}
+                         QueueDomainEvent(new {{entityUpdatedDomainMessage}}(){ Id = Id });
+                         return this;
+                     }
 
-    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
-    
-    protected {entity.Name}() {{ }} // For EF + Mocking
-}}";
+                     // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
+                     
+                     protected {{entity.Name}}() { } // For EF + Mocking
+                 }
+                 """;
     }
 
     private static string GetUpdatePropsAssignment(Entity entity, string updateClassName, string updateModelVarName)
@@ -171,45 +232,48 @@ public class {entity.Name} : BaseEntity
     }}"
             : "";
 
-        return @$"namespace {classNamespace};
+        // lang=csharp
+        return $$"""
+                 namespace {{classNamespace}};
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+                 using System.ComponentModel.DataAnnotations;
+                 using System.ComponentModel.DataAnnotations.Schema;
 
-public abstract class BaseEntity
-{{
-    [Key]
-    public Guid Id {{ get; private set; }} = Guid.NewGuid();
-    
-    public DateTimeOffset CreatedOn {{ get; private set; }}
-    
-    public string CreatedBy {{ get; private set; }}
-    
-    public DateTimeOffset? LastModifiedOn {{ get; private set; }}
-    
-    public string LastModifiedBy {{ get; private set; }}{isDeletedProp}
-    
-    [NotMapped]
-    public List<DomainEvent> DomainEvents {{ get; }} = new List<DomainEvent>();
+                 public abstract class BaseEntity
+                 {
+                     [Key]
+                     public Guid Id { get; private set; } = Guid.NewGuid();
+                     
+                     public DateTimeOffset CreatedOn { get; private set; }
+                     
+                     public string CreatedBy { get; private set; }
+                     
+                     public DateTimeOffset? LastModifiedOn { get; private set; }
+                     
+                     public string LastModifiedBy { get; private set; }{{isDeletedProp}}
+                     
+                     [NotMapped]
+                     public List<DomainEvent> DomainEvents { get; } = new List<DomainEvent>();
 
-    public void UpdateCreationProperties(DateTimeOffset createdOn, string createdBy)
-    {{
-        CreatedOn = createdOn;
-        CreatedBy = createdBy;
-    }}
-    
-    public void UpdateModifiedProperties(DateTimeOffset? lastModifiedOn, string lastModifiedBy)
-    {{
-        LastModifiedOn = lastModifiedOn;
-        LastModifiedBy = lastModifiedBy;
-    }}{isDeletedMethod}
-    
-    public void QueueDomainEvent(DomainEvent @event)
-    {{
-        if(!DomainEvents.Contains(@event))
-            DomainEvents.Add(@event);
-    }}
-}}";
+                     public void UpdateCreationProperties(DateTimeOffset createdOn, string createdBy)
+                     {
+                         CreatedOn = createdOn;
+                         CreatedBy = createdBy;
+                     }
+                     
+                     public void UpdateModifiedProperties(DateTimeOffset? lastModifiedOn, string lastModifiedBy)
+                     {
+                         LastModifiedOn = lastModifiedOn;
+                         LastModifiedBy = lastModifiedBy;
+                     }{{isDeletedMethod}}
+                     
+                     public void QueueDomainEvent(DomainEvent @event)
+                     {
+                         if(!DomainEvents.Contains(@event))
+                             DomainEvents.Add(@event);
+                     }
+                 }
+                 """;
     }
 
     public static string EntityAnnotationBuilder(Entity entity)
@@ -305,13 +369,6 @@ public abstract class BaseEntity
         return "";
     }
 
-    public void CreateUserEntity(string srcDirectory, Entity entity, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
-        var fileText = GetUserEntityFileText(classPath.ClassNamespace, srcDirectory, entity, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
-    }
-
     public static string GetUserEntityFileText(string classNamespace, string srcDirectory, Entity entity, string projectBaseName)
     {
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, $"", entity.Plural, projectBaseName);
@@ -320,217 +377,212 @@ public abstract class BaseEntity
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "User", "Users", null, projectBaseName);
 
-        return @$"namespace {classNamespace};
+        // lang=csharp
+        return $$"""
+                 namespace {{classNamespace}};
 
-using {exceptionClassPath.ClassNamespace};
-using {dtoClassPath.ClassNamespace};
-using {domainEventsClassPath.ClassNamespace};
-using {emailsClassPath.ClassNamespace};
-using {modelClassPath.ClassNamespace};
-using Roles;
-using System.Text.Json.Serialization;
-using System.Runtime.Serialization;
+                 using {{exceptionClassPath.ClassNamespace}};
+                 using {{dtoClassPath.ClassNamespace}};
+                 using {{domainEventsClassPath.ClassNamespace}};
+                 using {{emailsClassPath.ClassNamespace}};
+                 using {{modelClassPath.ClassNamespace}};
+                 using Roles;
+                 using System.Text.Json.Serialization;
+                 using System.Runtime.Serialization;
 
-public class User : BaseEntity
-{{
-    public string Identifier {{ get; private set; }}
+                 public class User : BaseEntity
+                 {
+                     public string Identifier { get; private set; }
 
-    public string FirstName {{ get; private set; }}
+                     public string FirstName { get; private set; }
 
-    public string LastName {{ get; private set; }}
+                     public string LastName { get; private set; }
 
-    public Email Email {{ get; private set; }}
+                     public Email Email { get; private set; }
 
-    public string Username {{ get; private set; }}
+                     public string Username { get; private set; }
 
-    [JsonIgnore]
-    [IgnoreDataMember]
-    public ICollection<UserRole> Roles {{ get; private set; }} = new List<UserRole>();
+                     [JsonIgnore]
+                     [IgnoreDataMember]
+                     public ICollection<UserRole> Roles { get; private set; } = new List<UserRole>();
 
-    // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
+                     // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
 
 
-    public static User Create(UserForCreation userForCreation)
-    {{
-        ValidationException.ThrowWhenNullOrWhitespace(userForCreation.Identifier, 
-            ""Please provide an identifier."");
+                     public static User Create(UserForCreation userForCreation)
+                     {
+                         ValidationException.ThrowWhenNullOrWhitespace(userForCreation.Identifier, 
+                             "Please provide an identifier.");
 
-        var newUser = new User();
+                         var newUser = new User();
 
-        newUser.Identifier = userForCreation.Identifier;
-        newUser.FirstName = userForCreation.FirstName;
-        newUser.LastName = userForCreation.LastName;
-        newUser.Email = new Email(userForCreation.Email);
-        newUser.Username = userForCreation.Username;
+                         newUser.Identifier = userForCreation.Identifier;
+                         newUser.FirstName = userForCreation.FirstName;
+                         newUser.LastName = userForCreation.LastName;
+                         newUser.Email = new Email(userForCreation.Email);
+                         newUser.Username = userForCreation.Username;
 
-        newUser.QueueDomainEvent(new UserCreated(){{ User = newUser }});
-        
-        return newUser;
-    }}
+                         newUser.QueueDomainEvent(new UserCreated(){ User = newUser });
+                         
+                         return newUser;
+                     }
 
-    public User Update(UserForUpdate userForUpdate)
-    {{
-        ValidationException.ThrowWhenNullOrWhitespace(userForUpdate.Identifier, 
-            ""Please provide an identifier."");
+                     public User Update(UserForUpdate userForUpdate)
+                     {
+                         ValidationException.ThrowWhenNullOrWhitespace(userForUpdate.Identifier, 
+                             "Please provide an identifier.");
 
-        Identifier = userForUpdate.Identifier;
-        FirstName = userForUpdate.FirstName;
-        LastName = userForUpdate.LastName;
-        Email = new Email(userForUpdate.Email);
-        Username = userForUpdate.Username;
+                         Identifier = userForUpdate.Identifier;
+                         FirstName = userForUpdate.FirstName;
+                         LastName = userForUpdate.LastName;
+                         Email = new Email(userForUpdate.Email);
+                         Username = userForUpdate.Username;
 
-        QueueDomainEvent(new UserUpdated(){{ Id = Id }});
-        return this;
-    }}
+                         QueueDomainEvent(new UserUpdated(){ Id = Id });
+                         return this;
+                     }
 
-    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
+                     // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
 
-    public UserRole AddRole(Role role)
-    {{
-        var newList = Roles.ToList();
-        var userRole = UserRole.Create(this, role);
-        newList.Add(userRole);
-        UpdateRoles(newList);
-        return userRole;
-    }}
+                     public UserRole AddRole(Role role)
+                     {
+                         var newList = Roles.ToList();
+                         var userRole = UserRole.Create(this, role);
+                         newList.Add(userRole);
+                         UpdateRoles(newList);
+                         return userRole;
+                     }
 
-    public UserRole RemoveRole(Role role)
-    {{
-        var newList = Roles.ToList();
-        var roleToRemove = Roles.FirstOrDefault(x => x.Role == role);
-        newList.Remove(roleToRemove);
-        UpdateRoles(newList);
-        return roleToRemove;
-    }}
+                     public UserRole RemoveRole(Role role)
+                     {
+                         var newList = Roles.ToList();
+                         var roleToRemove = Roles.FirstOrDefault(x => x.Role == role);
+                         newList.Remove(roleToRemove);
+                         UpdateRoles(newList);
+                         return roleToRemove;
+                     }
 
-    private void UpdateRoles(IList<UserRole> updates)
-    {{
-        var additions = updates.Where(userRole => Roles.All(x => x.Role != userRole.Role)).ToList();
-        var removals = Roles.Where(userRole => updates.All(x => x.Role != userRole.Role)).ToList();
-    
-        var newList = Roles.ToList();
-        removals.ForEach(toRemove => newList.Remove(toRemove));
-        additions.ForEach(newRole => newList.Add(newRole));
-        Roles = newList;
-        QueueDomainEvent(new UserRolesUpdated(){{ UserId = Id }});
-    }}
-    
-    protected User() {{ }} // For EF + Mocking
-}}";
+                     private void UpdateRoles(IList<UserRole> updates)
+                     {
+                         var additions = updates.Where(userRole => Roles.All(x => x.Role != userRole.Role)).ToList();
+                         var removals = Roles.Where(userRole => updates.All(x => x.Role != userRole.Role)).ToList();
+                     
+                         var newList = Roles.ToList();
+                         removals.ForEach(toRemove => newList.Remove(toRemove));
+                         additions.ForEach(newRole => newList.Add(newRole));
+                         Roles = newList;
+                         QueueDomainEvent(new UserRolesUpdated(){ UserId = Id });
+                     }
+                     
+                     protected User() { } // For EF + Mocking
+                 }
+                 """;
     }
     
-
-    public void CreateUserRoleEntity(string srcDirectory, string projectBaseName)
-    {
-        var entityName = "UserRole";
-        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entityName}.cs", "Users", projectBaseName);
-        var fileText = GetUserRoleEntityFileText(classPath.ClassNamespace, srcDirectory, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
-    }
 
     public static string GetUserRoleEntityFileText(string classNamespace, string srcDirectory, string projectBaseName)
     {
         var domainEventsClassPath = ClassPathHelper.DomainEventsClassPath(srcDirectory, "", "Users", projectBaseName);
 
-        return @$"namespace {classNamespace};
+        // lang=csharp
+        return $$"""
+                 namespace {{classNamespace}};
 
-using {domainEventsClassPath.ClassNamespace};
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-using Roles;
+                 using {{domainEventsClassPath.ClassNamespace}};
+                 using System.ComponentModel.DataAnnotations.Schema;
+                 using System.Runtime.Serialization;
+                 using System.Text.Json.Serialization;
+                 using Roles;
 
-public class UserRole : BaseEntity
-{{
-    public User User {{ get; private set; }}
-    public Role Role {{ get; private set; }}
+                 public class UserRole : BaseEntity
+                 {
+                     public User User { get; private set; }
+                     public Role Role { get; private set; }
 
-    // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
-    
+                     // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
+                     
 
-    public static UserRole Create(User user, Role role)
-    {{
-        var newUserRole = new UserRole
-        {{
-            User = user,
-            Role = role
-        }};
+                     public static UserRole Create(User user, Role role)
+                     {
+                         var newUserRole = new UserRole
+                         {
+                             User = user,
+                             Role = role
+                         };
 
-        newUserRole.QueueDomainEvent(new UserRolesUpdated(){{ UserId = user.Id }});
-        
-        return newUserRole;
-    }}
+                         newUserRole.QueueDomainEvent(new UserRolesUpdated(){ UserId = user.Id });
+                         
+                         return newUserRole;
+                     }
 
-    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
-    
-    protected UserRole() {{ }} // For EF + Mocking
-}}";
+                     // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
+                     
+                     protected UserRole() { } // For EF + Mocking
+                 }
+                 """;
     }
     
-
-    public void CreateRolePermissionsEntity(string srcDirectory, Entity entity, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.EntityClassPath(srcDirectory, $"{entity.Name}.cs", entity.Plural, projectBaseName);
-        var fileText = GetRolePermissionsEntityFileText(classPath.ClassNamespace, srcDirectory, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
-    }
 
     public static string GetRolePermissionsEntityFileText(string classNamespace, string srcDirectory, string projectBaseName)
     {
         var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(srcDirectory, "", projectBaseName);
         var modelClassPath = ClassPathHelper.EntityModelClassPath(srcDirectory, "RolePermission", "RolePermissions", null, projectBaseName);
-        return @$"namespace {classNamespace};
-
-using Dtos;
-using DomainEvents;
-using Roles;
-using Domain;
-using {exceptionClassPath.ClassNamespace};
-using {modelClassPath.ClassNamespace};
-
-public class RolePermission : BaseEntity
-{{
-    public Role Role {{ get; private set; }}
-    public string Permission {{ get; private set; }}
-
-    // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
-
-
-    public static RolePermission Create(RolePermissionForCreation rolePermissionForCreation)
-    {{
-        ValidationException.Must(BeAnExistingPermission(rolePermissionForCreation.Permission), 
-            ""Please use a valid permission."");
-
-        var newRolePermission = new RolePermission();
-
-        newRolePermission.Role = new Role(rolePermissionForCreation.Role);
-        newRolePermission.Permission = rolePermissionForCreation.Permission;
-
-        newRolePermission.QueueDomainEvent(new RolePermissionCreated(){{ RolePermission = newRolePermission }});
         
-        return newRolePermission;
-    }}
+        // lang=csharp
+        return $$"""
+                 namespace {{classNamespace}};
 
-    public RolePermission Update(RolePermissionForUpdate rolePermissionForUpdate)
-    {{
-        ValidationException.Must(BeAnExistingPermission(rolePermissionForUpdate.Permission), 
-            ""Please use a valid permission."");
+                 using Dtos;
+                 using DomainEvents;
+                 using Roles;
+                 using Domain;
+                 using {{exceptionClassPath.ClassNamespace}};
+                 using {{modelClassPath.ClassNamespace}};
 
-        Role = new Role(rolePermissionForUpdate.Role);
-        Permission = rolePermissionForUpdate.Permission;
+                 public class RolePermission : BaseEntity
+                 {
+                     public Role Role { get; private set; }
+                     public string Permission { get; private set; }
 
-        QueueDomainEvent(new RolePermissionUpdated(){{ Id = Id }});
-        return this;
-    }}
+                     // Add Props Marker -- Deleting this comment will cause the add props utility to be incomplete
 
-    // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
-    
-    private static bool BeAnExistingPermission(string permission)
-    {{
-        return Permissions.List().Contains(permission, StringComparer.InvariantCultureIgnoreCase);
-    }}
-    
-    protected RolePermission() {{ }} // For EF + Mocking
-}}";
+
+                     public static RolePermission Create(RolePermissionForCreation rolePermissionForCreation)
+                     {
+                         ValidationException.Must(BeAnExistingPermission(rolePermissionForCreation.Permission), 
+                             "Please use a valid permission.");
+
+                         var newRolePermission = new RolePermission();
+
+                         newRolePermission.Role = new Role(rolePermissionForCreation.Role);
+                         newRolePermission.Permission = rolePermissionForCreation.Permission;
+
+                         newRolePermission.QueueDomainEvent(new RolePermissionCreated(){ RolePermission = newRolePermission });
+                         
+                         return newRolePermission;
+                     }
+
+                     public RolePermission Update(RolePermissionForUpdate rolePermissionForUpdate)
+                     {
+                         ValidationException.Must(BeAnExistingPermission(rolePermissionForUpdate.Permission), 
+                             "Please use a valid permission.");
+
+                         Role = new Role(rolePermissionForUpdate.Role);
+                         Permission = rolePermissionForUpdate.Permission;
+
+                         QueueDomainEvent(new RolePermissionUpdated(){ Id = Id });
+                         return this;
+                     }
+
+                     // Add Prop Methods Marker -- Deleting this comment will cause the add props utility to be incomplete
+                     
+                     private static bool BeAnExistingPermission(string permission)
+                     {
+                         return Permissions.List().Contains(permission, StringComparer.InvariantCultureIgnoreCase);
+                     }
+                     
+                     protected RolePermission() { } // For EF + Mocking
+                 }
+                 """;
     }
 }

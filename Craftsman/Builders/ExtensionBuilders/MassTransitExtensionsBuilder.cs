@@ -1,22 +1,23 @@
 namespace Craftsman.Builders.ExtensionBuilders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class MassTransitExtensionsBuilder
+public static class MassTransitExtensionsBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record MassTransitExtensionsBuilderCommand(string SolutionDirectory) : IRequest;
 
-    public MassTransitExtensionsBuilder(ICraftsmanUtilities utilities)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<MassTransitExtensionsBuilderCommand>
     {
-        _utilities = utilities;
-    }
-
-    public void CreateMassTransitServiceExtension(string solutionDirectory, string srcDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetMassTransitRegistrationName()}.cs", projectBaseName);
-        var fileText = GetMassTransitServiceExtensionText(classPath.ClassNamespace, solutionDirectory, srcDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(MassTransitExtensionsBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{FileNames.GetMassTransitRegistrationName()}.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetMassTransitServiceExtensionText(classPath.ClassNamespace, request.SolutionDirectory, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetMassTransitServiceExtensionText(string classNamespace, string solutionDirectory, string srcDirectory, string projectBaseName)

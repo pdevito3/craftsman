@@ -1,47 +1,52 @@
 ﻿namespace Craftsman.Builders;
 
 using Helpers;
+using MediatR;
 using Services;
 
-public class AppSettingsBuilder(ICraftsmanUtilities utilities)
+public static class AppSettingsBuilder
 {
-    /// <summary>
-    /// this build will create environment based app settings files.
-    /// </summary>
-    public void CreateWebApiAppSettings(string srcDirectory, string dbName, string projectBaseName)
-    {
-        var appSettingFilename = FileNames.GetAppSettingsName();
-        var classPath = ClassPathHelper.WebApiAppSettingsClassPath(srcDirectory, $"{appSettingFilename}", projectBaseName);
-        var fileText = GetAppSettingsText();
-        utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record AppSettingsBuilderCommand(string DbName) : IRequest;
 
-    private static string GetAppSettingsText()
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AppSettingsBuilderCommand>
     {
-        // won't build properly if it has an empty string
-        return @$"{{
-  ""AllowedHosts"": ""*"",
-  ""Serilog"": {{
-    ""MinimumLevel"": {{
-      ""Default"": ""Information"",
-      ""Override"": {{
-        ""Microsoft.Hosting.Lifetime"": ""Information"",
-        ""Microsoft.AspNetCore.Authentication"": ""Information""
-      }}
-    }},
-    ""Enrich"": [
-      ""FromLogContext"", 
-      ""WithExceptionDetails"",
-      ""WithMachineName"",
-      ""WithThreadId""
-    ],
-    ""WriteTo"": [
-      {{
-        ""Name"": ""Console""
-      }}
-    ]
-  }}
-}}
-";
+        public Task Handle(AppSettingsBuilderCommand request, CancellationToken cancellationToken)
+        {
+            var appSettingFilename = FileNames.GetAppSettingsName();
+            var classPath = ClassPathHelper.WebApiAppSettingsClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{appSettingFilename}", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetAppSettingsText();
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
+
+        private static string GetAppSettingsText()
+        {
+            // lang=json
+            return $$"""
+                     {
+                       "AllowedHosts": "*",
+                       "Serilog": {
+                         "MinimiumLevel": {
+                           "Default": "Information",
+                           "Override": {
+                             "Microsoft.Hosting.Lifetime": "Information",
+                             "Microsoft.AspNetCore.Authentication": "Information"
+                           }
+                         },
+                         "Enrich": [
+                           "FromLogContext", 
+                           "WithExceptionDetails",
+                           "WithMachineName",
+                           "WithThreadId"
+                         ],
+                         "WriteTo": [
+                           {
+                             "Name": "Console"
+                           }
+                         ]
+                       }
+                     }
+                     """;
+        }
     }
 }

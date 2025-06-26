@@ -5,6 +5,7 @@ using Builders;
 using Domain;
 using Domain.Enums;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -14,7 +15,8 @@ public class RegisterProducerCommand(
     IConsoleWriter consoleWriter,
     ICraftsmanUtilities utilities,
     IScaffoldingDirectoryStore scaffoldingDirectoryStore,
-    IAnsiConsole console)
+    IAnsiConsole console,
+    IMediator mediator)
     : Command<RegisterProducerCommand.Settings>
 {
     public class Settings : CommandSettings
@@ -34,7 +36,7 @@ public class RegisterProducerCommand(
         utilities.IsBoundedContextDirectoryGuard();
 
         var producer = RunPrompt();
-        new ProducerRegistrationBuilder(utilities).CreateProducerRegistration(potentialBoundaryDirectory, scaffoldingDirectoryStore.SrcDirectory, producer, scaffoldingDirectoryStore.ProjectBaseName);
+        mediator.Send(new ProducerRegistrationBuilder.ProducerRegistrationBuilderCommand(potentialBoundaryDirectory, scaffoldingDirectoryStore.SrcDirectory, producer, scaffoldingDirectoryStore.ProjectBaseName)).GetAwaiter().GetResult();
         new MassTransitModifier(fileSystem).AddProducerRegistration(scaffoldingDirectoryStore.SrcDirectory, producer.EndpointRegistrationMethodName, scaffoldingDirectoryStore.ProjectBaseName);
 
         consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your producer has been successfully registered. Keep up the good work!");

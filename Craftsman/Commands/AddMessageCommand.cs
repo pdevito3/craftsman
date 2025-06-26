@@ -5,6 +5,7 @@ using Builders;
 using Domain;
 using Exceptions;
 using Helpers;
+using MediatR;
 using Services;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -16,7 +17,8 @@ public class AddMessageCommand(
     ICraftsmanUtilities utilities,
     IScaffoldingDirectoryStore scaffoldingDirectoryStore,
     IAnsiConsole console,
-    IFileParsingHelper fileParsingHelper)
+    IFileParsingHelper fileParsingHelper,
+    IMediator mediator)
     : Command<AddMessageCommand.Settings>
 {
     private readonly IFileSystem _fileSystem = fileSystem;
@@ -55,6 +57,9 @@ public class AddMessageCommand(
                 throw new DataValidationErrorException(results.Errors);
         }
 
-        messages.ForEach(message => new MessageBuilder(utilities).CreateMessage(solutionDirectory, message));
+        foreach (var message in messages)
+        {
+            mediator.Send(new MessageBuilder.MessageBuilderCommand(solutionDirectory, message)).GetAwaiter().GetResult();
+        }
     }
 }
