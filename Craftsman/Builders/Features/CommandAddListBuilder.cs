@@ -28,11 +28,7 @@ public class CommandAddListBuilder(ICraftsmanUtilities utilities)
         var entityNameLowercase = entity.Name.LowercaseFirstLetter();
         var parentEntityNameLowercaseFirst = feature.ParentEntity.LowercaseFirstLetter();
         var entityNameLowercaseListVar = $"{entity.Name.LowercaseFirstLetter()}List";
-        var primaryKeyPropName = Entity.PrimaryKeyProperty.Name;
         var commandProp = $"{entityName}ListToAdd";
-        var newEntityProp = $"{entityNameLowercaseListVar}ListToAdd";
-        var repoInterface = FileNames.EntityRepositoryInterface(entityName);
-        var modelToCreateVariableName = $"{entityName.LowercaseFirstLetter()}ToAdd";
 
         var entityClassPath = ClassPathHelper.EntityClassPath(srcDirectory, "", entity.Plural, projectBaseName);
         var dtoClassPath = ClassPathHelper.DtoClassPath(srcDirectory, "", entity.Plural, projectBaseName);

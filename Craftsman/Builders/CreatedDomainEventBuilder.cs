@@ -30,13 +30,16 @@ public static class CreatedDomainEventBuilder
 
         private static string GetFileText(string classNamespace, string entityName)
         {
-            return @$"namespace {classNamespace};
+            // lang=csharp
+            return $$"""
+                     namespace {{classNamespace}};
 
-public sealed class {FileNames.EntityCreatedDomainMessage(entityName)} : DomainEvent
-{{
-    public {entityName} {entityName} {{ get; set; }} 
-}}
-            ";
+                     public sealed class {{FileNames.EntityCreatedDomainMessage(entityName)}} : DomainEvent
+                     {
+                         public {{entityName}} {{entityName}} { get; set; } 
+                     }
+                                 
+                     """;
         }
     }
 }
