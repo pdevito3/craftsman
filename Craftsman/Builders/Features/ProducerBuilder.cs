@@ -4,17 +4,27 @@ using System;
 using Domain;
 using Helpers;
 using Services;
+using MediatR;
 
-public class ProducerBuilder(ICraftsmanUtilities utilities)
+public static class ProducerBuilder
 {
-    public void CreateProducerFeature(string solutionDirectory, string srcDirectory, Producer producer, string projectBaseName)
+    public sealed record Command(Producer Producer) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.ProducerFeaturesClassPath(srcDirectory, $"{producer.ProducerName}.cs", producer.DomainDirectory, projectBaseName);
-        var fileText = GetProducerRegistration(classPath.ClassNamespace, producer, solutionDirectory, srcDirectory, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.ProducerFeaturesClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{request.Producer.ProducerName}.cs", request.Producer.DomainDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetProducerRegistration(classPath.ClassNamespace, request.Producer, scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, utilities);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
-    public string GetProducerRegistration(string classNamespace, Producer producer, string solutionDirectory, string srcDirectory, string projectBaseName)
+    private static string GetProducerRegistration(string classNamespace, Producer producer, string solutionDirectory, string srcDirectory, string projectBaseName, ICraftsmanUtilities utilities)
     {
         var context = utilities.GetDbContext(srcDirectory, projectBaseName);
         var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);

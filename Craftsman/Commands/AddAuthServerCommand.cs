@@ -61,13 +61,13 @@ public class AddAuthServerCommand(
                 pulumiYamlBuilder.CreateBaseFile(solutionDirectory, projectBaseName);
                 pulumiYamlBuilder.CreateDevConfig(solutionDirectory, projectBaseName, template.Port, template.Username, template.Password);
 
-                new Builders.AuthServer.ProgramBuilder(utilities).CreateAuthServerProgram(solutionDirectory, projectBaseName);
+                mediator.Send(new Builders.AuthServer.ProgramBuilder.Command(projectBaseName)).GetAwaiter().GetResult();
         
-                new UserExtensionsBuilder(utilities).Create(solutionDirectory, projectBaseName);
-                new ClientExtensionsBuilder(utilities).Create(solutionDirectory, projectBaseName);
-                new ClientFactoryBuilder(utilities).Create(solutionDirectory, projectBaseName);
-                new ScopeFactoryBuilder(utilities).Create(solutionDirectory, projectBaseName);
-                new RealmBuildBuilder(utilities).Create(solutionDirectory, projectBaseName, template.RealmName, template.Clients);
+                mediator.Send(new UserExtensionsBuilder.Command(projectBaseName)).GetAwaiter().GetResult();
+                mediator.Send(new ClientExtensionsBuilder.Command(projectBaseName)).GetAwaiter().GetResult();
+                mediator.Send(new ClientFactoryBuilder.Command(projectBaseName)).GetAwaiter().GetResult();
+                mediator.Send(new ScopeFactoryBuilder.Command(projectBaseName)).GetAwaiter().GetResult();
+                mediator.Send(new RealmBuildBuilder.Command(projectBaseName, template.RealmName, template.Clients)).GetAwaiter().GetResult();
 
                 new DockerComposeBuilders(utilities, fileSystem).AddAuthServerToDockerCompose(solutionDirectory, template);
                 

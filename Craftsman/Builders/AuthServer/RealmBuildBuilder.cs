@@ -4,21 +4,24 @@ using Craftsman.Helpers;
 using Craftsman.Services;
 using Domain;
 using Domain.Enums;
+using MediatR;
 
-public class RealmBuildBuilder
+public static class RealmBuildBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record Command(string ProjectBaseName, string TemplateName, List<AuthServerTemplate.AuthClient> Clients) : IRequest;
 
-    public RealmBuildBuilder(ICraftsmanUtilities utilities)
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        _utilities = utilities;
-    }
-
-    public void Create(string solutionDirectory, string projectBaseName, string templateName, List<AuthServerTemplate.AuthClient> clients)
-    {
-        var classPath = ClassPathHelper.AuthServerProjectRootClassPath(solutionDirectory, "RealmBuild.cs", projectBaseName);
-        var fileText = GetFileText(classPath.ClassNamespace, templateName, clients, solutionDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.AuthServerProjectRootClassPath(scaffoldingDirectoryStore.SolutionDirectory, "RealmBuild.cs", request.ProjectBaseName);
+            var fileText = GetFileText(classPath.ClassNamespace, request.TemplateName, request.Clients, scaffoldingDirectoryStore.SolutionDirectory, request.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetFileText(string classNamespace, string realmName, List<AuthServerTemplate.AuthClient> clients, string solutionDirectory, string projectBaseName)

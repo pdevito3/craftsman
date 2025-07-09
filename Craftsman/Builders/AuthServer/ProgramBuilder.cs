@@ -2,21 +2,24 @@
 
 using Craftsman.Helpers;
 using Craftsman.Services;
+using MediatR;
 
-public class ProgramBuilder
+public static class ProgramBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record Command(string AuthServerProjectName) : IRequest;
 
-    public ProgramBuilder(ICraftsmanUtilities utilities)
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        _utilities = utilities;
-    }
-
-    public void CreateAuthServerProgram(string solutionDirectory, string authServerProjectName)
-    {
-        var classPath = ClassPathHelper.WebApiProjectRootClassPath(solutionDirectory, $"Program.cs", authServerProjectName);
-        var fileText = GetAuthServerProgramText(classPath.ClassNamespace);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiProjectRootClassPath(scaffoldingDirectoryStore.SolutionDirectory, $"Program.cs", request.AuthServerProjectName);
+            var fileText = GetAuthServerProgramText(classPath.ClassNamespace);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetAuthServerProgramText(string classNamespace)

@@ -6,29 +6,35 @@ using Domain;
 using Domain.Enums;
 using Helpers;
 using Services;
+using MediatR;
 
-public class FakeEntityBuilderBuilder
+public static class FakeEntityBuilderBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record Command(Entity Entity) : IRequest;
 
-    public FakeEntityBuilderBuilder(ICraftsmanUtilities utilities) => _utilities = utilities;
-
-    public void CreateFakeBuilder(string srcDirectory, string testDirectory, string projectBaseName, Entity entity)
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        // ****this class path will have an invalid FullClassPath. just need the directory
-        var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"", entity.Name, projectBaseName);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            // ****this class path will have an invalid FullClassPath. just need the directory
+            var classPath = ClassPathHelper.TestFakesClassPath(scaffoldingDirectoryStore.TestDirectory, $"", request.Entity.Name, scaffoldingDirectoryStore.ProjectBaseName);
 
-        if (!Directory.Exists(classPath.ClassDirectory))
-            Directory.CreateDirectory(classPath.ClassDirectory);
+            if (!Directory.Exists(classPath.ClassDirectory))
+                Directory.CreateDirectory(classPath.ClassDirectory);
 
-        CreateFakeBuilderFile(srcDirectory, testDirectory, entity, projectBaseName);
-    }
+            CreateFakeBuilderFile(request.Entity);
+            return Task.CompletedTask;
+        }
 
-    private void CreateFakeBuilderFile(string srcDirectory, string testDirectory, Entity entity, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.TestFakesClassPath(testDirectory, $"{FileNames.FakeBuilderName(entity.Name)}.cs", entity.Name, projectBaseName);
-        var fileText = GetCreateFakeBuilderFileText(classPath.ClassNamespace, entity, srcDirectory, testDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        private void CreateFakeBuilderFile(Entity entity)
+        {
+            var classPath = ClassPathHelper.TestFakesClassPath(scaffoldingDirectoryStore.TestDirectory, $"{FileNames.FakeBuilderName(entity.Name)}.cs", entity.Name, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetCreateFakeBuilderFileText(classPath.ClassNamespace, entity, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+        }
     }
 
     private static string GetCreateFakeBuilderFileText(string classNamespace, Entity entity, string srcDirectory, string testDirectory, string projectBaseName)

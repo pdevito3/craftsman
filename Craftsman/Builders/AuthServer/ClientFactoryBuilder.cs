@@ -2,21 +2,24 @@ namespace Craftsman.Builders.AuthServer;
 
 using Craftsman.Helpers;
 using Craftsman.Services;
+using MediatR;
 
-public class ClientFactoryBuilder
+public static class ClientFactoryBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record Command(string ProjectBaseName) : IRequest;
 
-    public ClientFactoryBuilder(ICraftsmanUtilities utilities)
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        _utilities = utilities;
-    }
-
-    public void Create(string solutionDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.AuthServerFactoriesClassPath(solutionDirectory, "ClientFactory.cs", projectBaseName);
-        var fileText = GetFileText(classPath.ClassNamespace);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.AuthServerFactoriesClassPath(scaffoldingDirectoryStore.SolutionDirectory, "ClientFactory.cs", request.ProjectBaseName);
+            var fileText = GetFileText(classPath.ClassNamespace);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetFileText(string classNamespace)

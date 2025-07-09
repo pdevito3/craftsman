@@ -101,7 +101,7 @@ public class ApiScaffoldingService(
 
         if (template.AddJwtAuthentication)
         {
-            new PermissionsBuilder(utilities).GetPermissions(srcDirectory, projectBaseName, template.AddJwtAuthentication); // <-- needs to run before entity features
+            mediator.Send(new PermissionsBuilder.Command(template.AddJwtAuthentication)).GetAwaiter().GetResult(); // <-- needs to run before entity features
             new UserPolicyHandlerBuilder(utilities).CreatePolicyBuilder(srcDirectory, projectBaseName, template.DbContext.ContextName);
             new InfrastructureServiceRegistrationModifier(fileSystem).InitializeAuthServices(srcDirectory, projectBaseName);
             new EntityScaffoldingService(utilities, fileSystem, mediator, consoleWriter).ScaffoldRolePermissions(solutionDirectory,
@@ -153,7 +153,7 @@ public class ApiScaffoldingService(
         new WebAppFactoryBuilder(utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ProviderEnum, template.AddJwtAuthentication);
         new FunctionalTestBaseBuilder(utilities).CreateBase(srcDirectory, testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
         new HealthTestBuilder(utilities).CreateTests(testDirectory, projectBaseName);
-        new HttpClientExtensionsBuilder(utilities).Create(testDirectory, projectBaseName);
+        mediator.Send(new HttpClientExtensionsBuilder.Command(projectBaseName)).GetAwaiter().GetResult();
         mediator.Send(new EntityBuilder.CreateBaseEntityCommand(template.UseSoftDelete));
         new CurrentUserServiceTestBuilder(utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
         mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
@@ -205,8 +205,8 @@ public class ApiScaffoldingService(
             mediator.Send(new GithubTestActionsBuilder.CreateFunctionalTestActionCommand(solutionDirectory, projectBaseName)).GetAwaiter().GetResult();
         }
         
-        new WebApiDockerfileBuilder(utilities).CreateStandardDotNetDockerfile(srcDirectory, projectBaseName);
-        new DockerIgnoreBuilder(utilities).CreateDockerIgnore(srcDirectory, projectBaseName);
+        mediator.Send(new WebApiDockerfileBuilder.Command()).GetAwaiter().GetResult();
+        mediator.Send(new DockerIgnoreBuilder.Command()).GetAwaiter().GetResult();
         // new DockerComposeBuilders(_utilities, _fileSystem).AddBoundaryToDockerCompose(solutionDirectory,
         //     template.DockerConfig,
         //     template.Environment.AuthSettings.ClientId,

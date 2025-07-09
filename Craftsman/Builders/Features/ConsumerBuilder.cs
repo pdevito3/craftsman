@@ -4,17 +4,27 @@ using System;
 using Domain;
 using Helpers;
 using Services;
+using MediatR;
 
-public class ConsumerBuilder(ICraftsmanUtilities utilities)
+public static class ConsumerBuilder
 {
-    public void CreateConsumerFeature(string solutionDirectory, string srcDirectory, Consumer consumer, string projectBaseName)
+    public sealed record Command(Consumer Consumer) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.ConsumerFeaturesClassPath(srcDirectory, $"{consumer.ConsumerName}.cs", consumer.DomainDirectory, projectBaseName);
-        var fileText = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, consumer, solutionDirectory, srcDirectory, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.ConsumerFeaturesClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{request.Consumer.ConsumerName}.cs", request.Consumer.DomainDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetDirectOrTopicConsumerRegistration(classPath.ClassNamespace, request.Consumer, scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, utilities);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
-    public string GetDirectOrTopicConsumerRegistration(string classNamespace, Consumer consumer, string solutionDirectory, string srcDirectory, string projectBaseName)
+    private static string GetDirectOrTopicConsumerRegistration(string classNamespace, Consumer consumer, string solutionDirectory, string srcDirectory, string projectBaseName, ICraftsmanUtilities utilities)
     {
         var context = utilities.GetDbContext(srcDirectory, projectBaseName);
         var contextClassPath = ClassPathHelper.DbContextClassPath(srcDirectory, "", projectBaseName);

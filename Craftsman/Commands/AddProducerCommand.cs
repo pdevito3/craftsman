@@ -66,7 +66,7 @@ public class AddProducerCommand(
 
         foreach (var producer in producers)
         {
-            new ProducerBuilder(utilities).CreateProducerFeature(solutionDirectory, srcDirectory, producer, projectBaseName);
+            mediator.Send(new ProducerBuilder.Command(producer)).GetAwaiter().GetResult();
             mediator.Send(new ProducerRegistrationBuilder.ProducerRegistrationBuilderCommand(solutionDirectory, srcDirectory, producer, projectBaseName)).GetAwaiter().GetResult();
             new MassTransitModifier(fileSystem).AddProducerRegistration(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
         }

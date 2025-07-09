@@ -2,21 +2,24 @@ namespace Craftsman.Builders.Docker;
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class WebApiDockerfileBuilder
+public static class WebApiDockerfileBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record Command : IRequest;
 
-    public WebApiDockerfileBuilder(ICraftsmanUtilities utilities)
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        _utilities = utilities;
-    }
-
-    public void CreateStandardDotNetDockerfile(string srcDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $"Dockerfile", projectBaseName);
-        var fileText = GetDockerfileText(projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiProjectRootClassPath(scaffoldingDirectoryStore.SrcDirectory, $"Dockerfile", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetDockerfileText(scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetDockerfileText(string projectBaseName)

@@ -2,21 +2,24 @@
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class PermissionsBuilder
+public static class PermissionsBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record Command(bool HasAuth) : IRequest;
 
-    public PermissionsBuilder(ICraftsmanUtilities utilities)
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        _utilities = utilities;
-    }
-
-    public void GetPermissions(string srcDirectory, string projectBaseName, bool hasAuth)
-    {
-        var classPath = ClassPathHelper.PolicyDomainClassPath(srcDirectory, "Permissions.cs", projectBaseName);
-        var fileText = GetPermissionsText(classPath.ClassNamespace, hasAuth);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.PolicyDomainClassPath(scaffoldingDirectoryStore.SrcDirectory, "Permissions.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetPermissionsText(classPath.ClassNamespace, request.HasAuth);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetPermissionsText(string classNamespace, bool hasAuth)

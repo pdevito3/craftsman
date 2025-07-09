@@ -2,21 +2,24 @@ namespace Craftsman.Builders.Docker;
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class DockerIgnoreBuilder
+public static class DockerIgnoreBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record Command : IRequest;
 
-    public DockerIgnoreBuilder(ICraftsmanUtilities utilities)
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        _utilities = utilities;
-    }
-
-    public void CreateDockerIgnore(string srcDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.WebApiProjectRootClassPath(srcDirectory, $".dockerignore", projectBaseName);
-        var fileText = GetDockerIgnoreText();
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiProjectRootClassPath(scaffoldingDirectoryStore.SrcDirectory, $".dockerignore", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetDockerIgnoreText();
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetDockerIgnoreText()

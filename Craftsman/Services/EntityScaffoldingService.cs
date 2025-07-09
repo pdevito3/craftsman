@@ -53,7 +53,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
 
             // Shared Tests
             new FakesBuilder(utilities).CreateFakes(srcDirectory, testDirectory, projectBaseName, entity);
-            new FakeEntityBuilderBuilder(utilities).CreateFakeBuilder(srcDirectory, testDirectory, projectBaseName, entity);
+            mediator.Send(new FakeEntityBuilderBuilder.Command(entity)).GetAwaiter().GetResult();
             new CreateEntityUnitTestBuilder(utilities)
                 .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, entity.Properties, projectBaseName);
             new UpdateEntityUnitTestBuilder(utilities)
@@ -259,7 +259,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         new FakesBuilder(utilities).CreateRolePermissionFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, entity);
         new RolePermissionsUnitTestBuilder(utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new RolePermissionsUnitTestBuilder(utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        new FakeEntityBuilderBuilder(utilities).CreateFakeBuilder(srcDirectory, testDirectory, projectBaseName, entity);
+        mediator.Send(new FakeEntityBuilderBuilder.Command(entity)).GetAwaiter().GetResult();
         
         // need to do db modifier
         new DbContextModifier(fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { entity }, dbContextName, projectBaseName);
@@ -330,7 +330,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         new AddRemoveUserRoleTestsBuilder(utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
         new UserUnitTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
         new UserUnitTestBuilder(utilities).UpdateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        new FakeEntityBuilderBuilder(utilities).CreateFakeBuilder(srcDirectory, testDirectory, projectBaseName, userEntity);
+        mediator.Send(new FakeEntityBuilderBuilder.Command(userEntity)).GetAwaiter().GetResult();
         
         // need to do db modifier
         new DbContextModifier(fileSystem).AddDbSetAndConfig(srcDirectory, [userEntity], dbContextName, projectBaseName);

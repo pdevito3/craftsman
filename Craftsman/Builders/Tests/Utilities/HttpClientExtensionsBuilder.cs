@@ -2,14 +2,24 @@
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class HttpClientExtensionsBuilder(ICraftsmanUtilities utilities)
+public static class HttpClientExtensionsBuilder
 {
-    public void Create(string solutionDirectory, string projectName)
+    public sealed record Command(string ProjectName) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(solutionDirectory, projectName, $"HttpClientExtensions.cs");
-        var fileText = CreateHttpClientExtensionsText(classPath);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(scaffoldingDirectoryStore.SolutionDirectory, request.ProjectName, $"HttpClientExtensions.cs");
+            var fileText = CreateHttpClientExtensionsText(classPath);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string CreateHttpClientExtensionsText(ClassPath classPath)

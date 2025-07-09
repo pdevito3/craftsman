@@ -77,7 +77,7 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
 
         foreach (var consumer in consumers)
         {
-            new ConsumerBuilder(_utilities).CreateConsumerFeature(solutionDirectory, srcDirectory, consumer, projectBaseName);
+            await _mediator.Send(new ConsumerBuilder.Command(consumer));
             await _mediator.Send(new ConsumerRegistrationBuilder.ConsumerRegistrationBuilderCommand(srcDirectory, consumer, projectBaseName));
             new MassTransitModifier(_fileSystem).AddConsumerRegistration(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
 
