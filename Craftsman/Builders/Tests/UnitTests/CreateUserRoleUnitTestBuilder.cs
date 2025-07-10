@@ -4,16 +4,26 @@ using System.IO;
 using Domain.Enums;
 using Helpers;
 using Services;
+using MediatR;
 
-public class CreateUserRoleUnitTestBuilder(ICraftsmanUtilities utilities)
+public static class CreateUserRoleUnitTestBuilder
 {
-    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var entityName = "User";
-        var entityPlural = "Users";
-        var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"CreateUserRoleTests.cs", entityPlural, projectBaseName);
-        var fileText = WriteTestFileText(solutionDirectory, srcDirectory, classPath, entityName, entityPlural, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var entityName = "User";
+            var entityPlural = "Users";
+            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(scaffoldingDirectoryStore.TestDirectory, $"CreateUserRoleTests.cs", entityPlural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = WriteTestFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.SrcDirectory, classPath, entityName, entityPlural, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string entityName, string entityPlural, string projectBaseName)

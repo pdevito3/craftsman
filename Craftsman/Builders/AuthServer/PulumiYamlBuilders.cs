@@ -2,28 +2,40 @@ namespace Craftsman.Builders.AuthServer;
 
 using Craftsman.Helpers;
 using Craftsman.Services;
+using MediatR;
 
-public class PulumiYamlBuilders
+public static class PulumiYamlBuilders
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record CreateBaseFileCommand(string ProjectBaseName) : IRequest;
 
-    public PulumiYamlBuilders(ICraftsmanUtilities utilities)
+    public class CreateBaseFileHandler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateBaseFileCommand>
     {
-        _utilities = utilities;
+        public Task Handle(CreateBaseFileCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.AuthServerProjectRootClassPath(scaffoldingDirectoryStore.SolutionDirectory, "Pulumi.yaml", request.ProjectBaseName);
+            var fileText = GetBaseFileText(request.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
-    public void CreateBaseFile(string solutionDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.AuthServerProjectRootClassPath(solutionDirectory, "Pulumi.yaml", projectBaseName);
-        var fileText = GetBaseFileText(projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
-    }
+    public sealed record CreateDevConfigCommand(string ProjectBaseName, int? Port, string Username, string Password) : IRequest;
 
-    public void CreateDevConfig(string solutionDirectory, string projectBaseName, int? port, string username, string password)
+    public class CreateDevConfigHandler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateDevConfigCommand>
     {
-        var classPath = ClassPathHelper.AuthServerProjectRootClassPath(solutionDirectory, "Pulumi.dev.yaml", projectBaseName);
-        var fileText = GetDevConfigText(port, username, password);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateDevConfigCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.AuthServerProjectRootClassPath(scaffoldingDirectoryStore.SolutionDirectory, "Pulumi.dev.yaml", request.ProjectBaseName);
+            var fileText = GetDevConfigText(request.Port, request.Username, request.Password);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetBaseFileText(string projectBaseName)

@@ -2,14 +2,24 @@
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class ErrorHandlerWithHellang(ICraftsmanUtilities utilities)
+public static class ErrorHandlerWithHellang
 {
-    public void CreateErrorHandler(string srcDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.WebApiMiddlewareClassPath(srcDirectory, $"ProblemDetailsConfigurationExtension.cs", projectBaseName);
-        var fileText = GetErrorHandlerText(srcDirectory, classPath.ClassNamespace, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiMiddlewareClassPath(scaffoldingDirectoryStore.SrcDirectory, $"ProblemDetailsConfigurationExtension.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetErrorHandlerText(scaffoldingDirectoryStore.SrcDirectory, classPath.ClassNamespace, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetErrorHandlerText(string srcDirectory, string classNamespace, string projectBaseName)

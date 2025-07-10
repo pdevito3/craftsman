@@ -3,21 +3,24 @@
 using System;
 using Helpers;
 using Services;
+using MediatR;
 
-public class RolesControllerBuilder
+public static class RolesControllerBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record Command : IRequest;
 
-    public RolesControllerBuilder(ICraftsmanUtilities utilities)
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        _utilities = utilities;
-    }
-
-    public void CreateController(string srcDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"RolesController.cs", projectBaseName, "v1");
-        var fileText = GetControllerFileText(classPath.ClassNamespace, srcDirectory, projectBaseName);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.ControllerClassPath(scaffoldingDirectoryStore.SrcDirectory, $"RolesController.cs", scaffoldingDirectoryStore.ProjectBaseName, "v1");
+            var fileText = GetControllerFileText(classPath.ClassNamespace, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetControllerFileText(string classNamespace, string srcDirectory, string projectBaseName)

@@ -4,14 +4,24 @@ using System;
 using Craftsman.Domain.Enums;
 using Craftsman.Helpers;
 using Craftsman.Services;
+using MediatR;
 
-public class AddRemoveUserRoleTestsBuilder(ICraftsmanUtilities utilities)
+public static class AddRemoveUserRoleTestsBuilder
 {
-    public void CreateTests(string testDirectory, string srcDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"AddRemoveUserRoleTests.cs", "Users", projectBaseName);
-        var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FeatureTestClassPath(scaffoldingDirectoryStore.TestDirectory, $"AddRemoveUserRoleTests.cs", "Users", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = WriteTestFileText(scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.SrcDirectory, classPath, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)

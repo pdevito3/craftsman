@@ -1,16 +1,26 @@
-﻿namespace Craftsman.Builders.Tests.Utilities;
+namespace Craftsman.Builders.Tests.Utilities;
 
 using Domain;
 using Helpers;
 using Services;
+using MediatR;
 
-public class IntegrationTestFixtureBuilder(ICraftsmanUtilities utilities)
+public static class IntegrationTestFixtureBuilder
 {
-    public void CreateFixture(string testDirectory, string srcDirectory, string projectBaseName, string dbContextName, DbProvider provider, bool isProtected)
+    public sealed record Command(string DbContextName, DbProvider Provider, bool IsProtected) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
-        var fileText = GetFixtureText(classPath.ClassNamespace, srcDirectory, testDirectory, projectBaseName, dbContextName, provider, isProtected);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(scaffoldingDirectoryStore.TestDirectory, "TestFixture.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetFixtureText(classPath.ClassNamespace, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.DbContextName, request.Provider, request.IsProtected);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetFixtureText(string classNamespace, string srcDirectory, string testDirectory, string projectBaseName, string dbContextName, DbProvider provider, bool isProtected)
@@ -27,7 +37,7 @@ public class IntegrationTestFixtureBuilder(ICraftsmanUtilities utilities)
             ? $@"{Environment.NewLine}using HeimGuard;" 
             : null;
 
-        return @$"namespace {classNamespace};
+        return $@"namespace {classNamespace};
 
 using {configClassPath.ClassNamespace};
 using {contextClassPath.ClassNamespace};
@@ -111,7 +121,6 @@ public static class ServiceCollectionServiceExtensions
         services.AddSingleton(_ => Substitute.For<TService>());
         return services;
     }}
-}}
-";
+}}";
     }
 }

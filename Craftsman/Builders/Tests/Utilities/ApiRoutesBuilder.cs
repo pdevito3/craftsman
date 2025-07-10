@@ -1,15 +1,25 @@
-﻿namespace Craftsman.Builders.Tests.Utilities;
+namespace Craftsman.Builders.Tests.Utilities;
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class ApiRoutesBuilder(ICraftsmanUtilities utilities)
+public static class ApiRoutesBuilder
 {
-    public void CreateClass(string testDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "ApiRoutes.cs");
-        var fileText = GetBaseText(classPath.ClassNamespace);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.ProjectBaseName, "ApiRoutes.cs");
+            var fileText = GetBaseText(classPath.ClassNamespace);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetBaseText(string classNamespace)

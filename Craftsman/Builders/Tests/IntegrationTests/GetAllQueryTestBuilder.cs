@@ -1,4 +1,4 @@
-﻿namespace Craftsman.Builders.Tests.IntegrationTests;
+namespace Craftsman.Builders.Tests.IntegrationTests;
 
 using System;
 using System.IO;
@@ -7,15 +7,24 @@ using Domain;
 using Domain.Enums;
 using Helpers;
 using Services;
+using MediatR;
 
-public class GetAllQueryTestBuilder(ICraftsmanUtilities utilities)
+public static class GetAllQueryTestBuilder
 {
-    public void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName,
-        string permission, bool featureIsProtected)
+    public sealed record Command(Entity Entity, string Permission, bool FeatureIsProtected) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"GetAll{entity.Plural}QueryTests.cs", entity.Plural, projectBaseName);
-        var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName, permission, featureIsProtected);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FeatureTestClassPath(scaffoldingDirectoryStore.TestDirectory, $"GetAll{request.Entity.Plural}QueryTests.cs", request.Entity.Plural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = WriteTestFileText(scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.SrcDirectory, classPath, request.Entity, scaffoldingDirectoryStore.ProjectBaseName, request.Permission, request.FeatureIsProtected);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath,
@@ -89,7 +98,7 @@ public class {classPath.ClassNameWithoutExt} : TestBase
 
         // Act
         var query = new {FileNames.GetAllEntitiesFeatureClassName(entityPlural)}.{queryName}();
-        Func<Task> act = () => testingServiceScope.SendAsync(command);
+        Func<Task> act = () => testingServiceScope.SendAsync(query);
 
         // Assert
         await act.Should().ThrowAsync<ForbiddenAccessException>();

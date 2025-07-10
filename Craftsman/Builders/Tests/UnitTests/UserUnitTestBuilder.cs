@@ -3,21 +3,39 @@
 using System.IO;
 using Helpers;
 using Services;
+using MediatR;
 
-public class UserUnitTestBuilder(ICraftsmanUtilities utilities)
+public static class UserUnitTestBuilder
 {
-    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
+    public sealed record CreateTestsCommand : IRequest;
+    public sealed record UpdateTestsCommand : IRequest;
+
+    public class CreateTestsHandler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateTestsCommand>
     {
-        var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"CreateUserTests.cs", "Users", projectBaseName);
-        var fileText = CreateFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateTestsCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(scaffoldingDirectoryStore.TestDirectory, $"CreateUserTests.cs", "Users", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = CreateFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.SrcDirectory, classPath, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
-    public void UpdateTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
+    public class UpdateTestsHandler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<UpdateTestsCommand>
     {
-        var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"UpdateUserTests.cs", "Users", projectBaseName);
-        var fileText = UpdateFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(UpdateTestsCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(scaffoldingDirectoryStore.TestDirectory, $"UpdateUserTests.cs", "Users", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = UpdateFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.SrcDirectory, classPath, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string CreateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)

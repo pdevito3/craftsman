@@ -7,14 +7,14 @@ using Services;
 
 public static class WebApiCsProjBuilder
 {
-    public sealed record WebApiCsProjBuilderCommand(string SolutionDirectory, string ProjectBaseName, DbProvider DbProvider, bool UseCustomErrorHandler) : IRequest;
+    public sealed record WebApiCsProjBuilderCommand(DbProvider DbProvider, bool UseCustomErrorHandler) : IRequest;
 
-    public class Handler(ICraftsmanUtilities utilities)
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
         : IRequestHandler<WebApiCsProjBuilderCommand>
     {
         public Task Handle(WebApiCsProjBuilderCommand request, CancellationToken cancellationToken)
         {
-            var classPath = ClassPathHelper.WebApiProjectClassPath(request.SolutionDirectory, request.ProjectBaseName);
+            var classPath = ClassPathHelper.WebApiProjectClassPath(scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
             utilities.CreateFile(classPath, GetWebApiCsProjFileText(request.DbProvider, request.UseCustomErrorHandler));
             return Task.CompletedTask;
         }

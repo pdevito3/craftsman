@@ -5,14 +5,24 @@ using Domain;
 using Domain.Enums;
 using Helpers;
 using Services;
+using MediatR;
 
-public class UpdateEntityUnitTestBuilder(ICraftsmanUtilities utilities)
+public static class UpdateEntityUnitTestBuilder
 {
-    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, string entityName, string entityPlural, List<EntityProperty> properties, string projectBaseName)
+    public sealed record Command(string EntityName, string EntityPlural, List<EntityProperty> Properties) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"{FileNames.UpdateEntityUnitTestName(entityName)}.cs", entityPlural, projectBaseName);
-        var fileText = WriteTestFileText(solutionDirectory, srcDirectory, classPath, entityName, entityPlural, properties, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(scaffoldingDirectoryStore.TestDirectory, $"{FileNames.UpdateEntityUnitTestName(request.EntityName)}.cs", request.EntityPlural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = WriteTestFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.SrcDirectory, classPath, request.EntityName, request.EntityPlural, request.Properties, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string entityName, string entityPlural, List<EntityProperty> properties, string projectBaseName)

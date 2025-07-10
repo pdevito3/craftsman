@@ -7,15 +7,15 @@ using Services;
 
 public static class IntegrationTestsCsProjBuilder
 {
-    public sealed record IntegrationTestsCsProjBuilderCommand(string SolutionDirectory, DbProvider Provider) : IRequest;
+    public sealed record IntegrationTestsCsProjBuilderCommand(DbProvider Provider) : IRequest;
 
     public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
         : IRequestHandler<IntegrationTestsCsProjBuilderCommand>
     {
         public Task Handle(IntegrationTestsCsProjBuilderCommand request, CancellationToken cancellationToken)
         {
-            var classPath = ClassPathHelper.IntegrationTestProjectClassPath(request.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName);
-            utilities.CreateFile(classPath, GetTestsCsProjFileText(request.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.Provider));
+            var classPath = ClassPathHelper.IntegrationTestProjectClassPath(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, GetTestsCsProjFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.Provider));
             return Task.CompletedTask;
         }
     }

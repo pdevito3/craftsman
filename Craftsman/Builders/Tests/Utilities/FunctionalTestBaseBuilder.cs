@@ -1,15 +1,25 @@
-﻿namespace Craftsman.Builders.Tests.Utilities;
+namespace Craftsman.Builders.Tests.Utilities;
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class FunctionalTestBaseBuilder(ICraftsmanUtilities utilities)
+public static class FunctionalTestBaseBuilder
 {
-    public void CreateBase(string srcDirectory, string testDirectory, string projectBaseName, string dbContextName, bool hasAuth)
+    public sealed record Command(string DbContextName, bool HasAuth) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(testDirectory, "TestBase.cs", projectBaseName);
-        var fileText = GetBaseText(classPath.ClassNamespace, srcDirectory, testDirectory, projectBaseName, dbContextName, hasAuth);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(scaffoldingDirectoryStore.TestDirectory, "TestBase.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetBaseText(classPath.ClassNamespace, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.DbContextName, request.HasAuth);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetBaseText(string classNamespace, string srcDirectory, string testDirectory, string projectBaseName, string dbContextName, bool hasAuth)

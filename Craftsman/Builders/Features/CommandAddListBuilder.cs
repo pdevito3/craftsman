@@ -1,18 +1,28 @@
-﻿namespace Craftsman.Builders.Features;
+namespace Craftsman.Builders.Features;
 
 using System;
 using Domain;
 using Domain.Enums;
 using Helpers;
 using Services;
+using MediatR;
 
-public class CommandAddListBuilder(ICraftsmanUtilities utilities)
+public static class CommandAddListBuilder
 {
-    public void CreateCommand(string srcDirectory, Entity entity, string projectBaseName, Feature feature, bool isProtected, string permissionName, string dbContextName)
+    public sealed record Command(Entity Entity, Feature Feature, bool IsProtected, string PermissionName, string DbContextName) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{feature.Name}.cs", entity.Plural, projectBaseName);
-        var fileText = GetCommandFileText(classPath.ClassNamespace, entity, srcDirectory, feature, projectBaseName, isProtected, permissionName, dbContextName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FeaturesClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{request.Feature.Name}.cs", request.Entity.Plural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetCommandFileText(classPath.ClassNamespace, request.Entity, scaffoldingDirectoryStore.SrcDirectory, request.Feature, scaffoldingDirectoryStore.ProjectBaseName, request.IsProtected, request.PermissionName, request.DbContextName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetCommandFileText(string classNamespace, Entity entity, string srcDirectory, Feature feature, string projectBaseName, bool isProtected, string permissionName, string dbContextName)

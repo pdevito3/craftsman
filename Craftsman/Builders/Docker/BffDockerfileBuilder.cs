@@ -2,22 +2,24 @@ namespace Craftsman.Builders.Docker;
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class BffDockerfileBuilder
+public static class BffDockerfileBuilder
 {
-    private readonly ICraftsmanUtilities _utilities;
+    public sealed record Command : IRequest;
 
-    public BffDockerfileBuilder(ICraftsmanUtilities utilities)
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        _utilities = utilities;
-    }
-
-
-    public void CreateBffDotNetDockerfile(string projectDirectory, string projectBaseName)
-    {
-        var classPath = ClassPathHelper.BffProjectRootClassPath(projectDirectory, $"Dockerfile");
-        var fileText = GetDockerfileText(projectBaseName, true, false);
-        _utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.BffProjectRootClassPath(scaffoldingDirectoryStore.SolutionDirectory, $"Dockerfile");
+            var fileText = GetDockerfileText(scaffoldingDirectoryStore.ProjectBaseName, true, false);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetDockerfileText(string projectBaseName, bool addNodeInstall, bool addSharedKernel)

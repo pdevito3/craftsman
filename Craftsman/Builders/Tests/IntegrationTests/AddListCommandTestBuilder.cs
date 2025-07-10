@@ -4,15 +4,24 @@ using Craftsman.Services;
 using Domain;
 using Domain.Enums;
 using Helpers;
+using MediatR;
 
-public class AddListCommandTestBuilder(ICraftsmanUtilities utilities)
+public static class AddListCommandTestBuilder
 {
-    public void CreateTests(string solutionDirectory, string testDirectory, string srcDirectory, Entity entity, Feature feature, string projectBaseName, string permission,
-        bool featureIsProtected)
+    public sealed record Command(Entity Entity, Feature Feature, string Permission, bool FeatureIsProtected) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"AddList{entity.Name}CommandTests.cs", entity.Plural, projectBaseName);
-        var fileText = WriteTestFileText(solutionDirectory, testDirectory, srcDirectory, classPath, entity, feature, projectBaseName, permission, featureIsProtected);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FeatureTestClassPath(scaffoldingDirectoryStore.TestDirectory, $"AddList{request.Entity.Name}CommandTests.cs", request.Entity.Plural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = WriteTestFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.SrcDirectory, classPath, request.Entity, request.Feature, scaffoldingDirectoryStore.ProjectBaseName, request.Permission, request.FeatureIsProtected);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string solutionDirectory, string testDirectory, string srcDirectory,

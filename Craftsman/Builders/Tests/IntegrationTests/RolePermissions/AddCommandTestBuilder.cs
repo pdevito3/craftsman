@@ -5,14 +5,21 @@ using Craftsman.Domain;
 using Craftsman.Domain.Enums;
 using Craftsman.Helpers;
 using Craftsman.Services;
+using MediatR;
 
-public class AddCommandTestBuilder(ICraftsmanUtilities utilities)
+public static class AddCommandTestBuilder
 {
-    public void CreateTests(string testDirectory, string srcDirectory, Entity entity, string projectBaseName)
+    public sealed record CreateTestsCommand(string TestDirectory, string SrcDirectory, Entity Entity, string ProjectBaseName) : IRequest;
+
+    public class Handler(ICraftsmanUtilities utilities) : IRequestHandler<CreateTestsCommand>
     {
-        var classPath = ClassPathHelper.FeatureTestClassPath(testDirectory, $"Add{entity.Name}CommandTests.cs", entity.Plural, projectBaseName);
-        var fileText = WriteTestFileText(testDirectory, srcDirectory, classPath, entity, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateTestsCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FeatureTestClassPath(request.TestDirectory, $"Add{request.Entity.Name}CommandTests.cs", request.Entity.Plural, request.ProjectBaseName);
+            var fileText = WriteTestFileText(request.TestDirectory, request.SrcDirectory, classPath, request.Entity, request.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string testDirectory, string srcDirectory, ClassPath classPath, Entity entity, string projectBaseName)

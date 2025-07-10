@@ -3,21 +3,39 @@
 using System.IO;
 using Helpers;
 using Services;
+using MediatR;
 
-public class RolePermissionsUnitTestBuilder(ICraftsmanUtilities utilities)
+public static class RolePermissionsUnitTestBuilder
 {
-    public void CreateRolePermissionTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
+    public sealed record CreateRolePermissionTestsCommand : IRequest;
+    public sealed record UpdateRolePermissionTestsCommand : IRequest;
+
+    public class CreateRolePermissionTestsHandler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<CreateRolePermissionTestsCommand>
     {
-        var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"CreateRolePermissionTests.cs", "RolePermissions", projectBaseName);
-        var fileText = CreateFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateRolePermissionTestsCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(scaffoldingDirectoryStore.TestDirectory, $"CreateRolePermissionTests.cs", "RolePermissions", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = CreateFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.SrcDirectory, classPath, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
-    public void UpdateRolePermissionTests(string solutionDirectory, string testDirectory, string srcDirectory, string projectBaseName)
+    public class UpdateRolePermissionTestsHandler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<UpdateRolePermissionTestsCommand>
     {
-        var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"UpdateRolePermissionTests.cs", "RolePermissions", projectBaseName);
-        var fileText = UpdateFileText(solutionDirectory, srcDirectory, classPath, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(UpdateRolePermissionTestsCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(scaffoldingDirectoryStore.TestDirectory, $"UpdateRolePermissionTests.cs", "RolePermissions", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = UpdateFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.SrcDirectory, classPath, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string CreateFileText(string solutionDirectory, string srcDirectory, ClassPath classPath, string projectBaseName)

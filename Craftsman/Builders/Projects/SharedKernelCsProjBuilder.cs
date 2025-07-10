@@ -2,14 +2,24 @@
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class SharedKernelCsProjBuilder(ICraftsmanUtilities utilities)
+public static class SharedKernelCsProjBuilder
 {
-    public void CreateSharedKernelCsProj(string solutionDirectory)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.SharedKernelProjectClassPath(solutionDirectory);
-        var fileText = GetMessagesCsProjFileText();
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.SharedKernelProjectClassPath(scaffoldingDirectoryStore.SolutionDirectory);
+            var fileText = GetMessagesCsProjFileText();
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetMessagesCsProjFileText()

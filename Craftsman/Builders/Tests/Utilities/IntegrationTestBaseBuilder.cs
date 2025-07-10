@@ -1,15 +1,25 @@
-﻿namespace Craftsman.Builders.Tests.Utilities;
+namespace Craftsman.Builders.Tests.Utilities;
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class IntegrationTestBaseBuilder(ICraftsmanUtilities utilities)
+public static class IntegrationTestBaseBuilder
 {
-    public void CreateBase(string solutionDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, "TestBase.cs", projectBaseName);
-        var fileText = GetBaseText(classPath.ClassNamespace);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(scaffoldingDirectoryStore.SolutionDirectory, "TestBase.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetBaseText(classPath.ClassNamespace);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetBaseText(string classNamespace)

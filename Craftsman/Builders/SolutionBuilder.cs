@@ -10,31 +10,52 @@ using MediatR;
 using Projects;
 using Services;
 
-public class SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSystem, IMediator mediator)
+public static class SolutionBuilder
 {
-    public void BuildSolution(string solutionDirectory, string projectName)
+    public sealed record BuildSolutionCommand(string SolutionDirectory, string ProjectName) : IRequest;
+    public sealed record AddProjectsCommand(string SolutionDirectory, string SrcDirectory, string TestDirectory, DbProvider DbProvider, string ProjectBaseName, bool AddJwtAuth, int OtelAgentPort, bool UseCustomErrorHandler) : IRequest;
+    public sealed record BuildSharedKernelProjectCommand(string SolutionDirectory) : IRequest;
+    public sealed record BuildAuthServerProjectCommand(string SolutionDirectory, string AuthServerProjectName) : IRequest;
+    public sealed record BuildBffProjectCommand(string SolutionDirectory, string ProjectName, int? ProxyPort) : IRequest;
+
+    public class BuildSolutionHandler(
+        ICraftsmanUtilities utilities,
+        IFileSystem fileSystem,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore,
+        IMediator mediator)
+        : IRequestHandler<BuildSolutionCommand>
     {
-        fileSystem.Directory.CreateDirectory(solutionDirectory);
-        utilities.ExecuteProcess("dotnet", @$"new sln -n {projectName}", solutionDirectory);
-        BuildSharedKernelProject(solutionDirectory);
+        public async Task Handle(BuildSolutionCommand request, CancellationToken cancellationToken)
+        {
+            fileSystem.Directory.CreateDirectory(request.SolutionDirectory);
+            utilities.ExecuteProcess("dotnet", @$"new sln -n {request.ProjectName}", request.SolutionDirectory);
+            await mediator.Send(new BuildSharedKernelProjectCommand(request.SolutionDirectory), cancellationToken);
+        }
     }
 
-    public async Task AddProjects(string solutionDirectory, string srcDirectory, string testDirectory, DbProvider dbProvider, string projectBaseName, bool addJwtAuth, int otelAgentPort, bool useCustomErrorHandler)
+    public class AddProjectsHandler(
+        ICraftsmanUtilities utilities,
+        IFileSystem fileSystem,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore,
+        IMediator mediator)
+        : IRequestHandler<AddProjectsCommand>
     {
-        // add webapi first so it is default project
-        await BuildWebApiProject(solutionDirectory, srcDirectory, projectBaseName, addJwtAuth, dbProvider, otelAgentPort, useCustomErrorHandler);
-        await BuildIntegrationTestProject(solutionDirectory, testDirectory, projectBaseName, dbProvider);
-        BuildFunctionalTestProject(solutionDirectory, testDirectory, projectBaseName, dbProvider);
-        BuildSharedTestProject(solutionDirectory, testDirectory, projectBaseName);
-        BuildUnitTestProject(solutionDirectory, testDirectory, projectBaseName);
-    }
+        public async Task Handle(AddProjectsCommand request, CancellationToken cancellationToken)
+        {
+            // add webapi first so it is default project
+            await BuildWebApiProject(request.SolutionDirectory, request.SrcDirectory, request.ProjectBaseName, request.AddJwtAuth, request.DbProvider, request.OtelAgentPort, request.UseCustomErrorHandler);
+            await BuildIntegrationTestProject(request.SolutionDirectory, request.TestDirectory, request.ProjectBaseName, request.DbProvider);
+            BuildFunctionalTestProject(request.SolutionDirectory, request.TestDirectory, request.ProjectBaseName, request.DbProvider);
+            BuildSharedTestProject(request.SolutionDirectory, request.TestDirectory, request.ProjectBaseName);
+            BuildUnitTestProject(request.SolutionDirectory, request.TestDirectory, request.ProjectBaseName);
+        }
 
     private async Task BuildWebApiProject(string solutionDirectory, string srcDirectory, string projectBaseName, bool useJwtAuth, DbProvider dbProvider, int otelAgentPort, bool useCustomErrorHandler)
     {
         var solutionFolder = srcDirectory.GetSolutionFolder(solutionDirectory);
         var webApiProjectClassPath = ClassPathHelper.WebApiProjectClassPath(srcDirectory, projectBaseName);
 
-        await mediator.Send(new WebApiCsProjBuilder.WebApiCsProjBuilderCommand(srcDirectory, projectBaseName, dbProvider, useCustomErrorHandler));
+        await mediator.Send(new WebApiCsProjBuilder.WebApiCsProjBuilderCommand(dbProvider, useCustomErrorHandler));
         utilities.ExecuteProcess("dotnet", $@"sln add ""{webApiProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
 
         // base folders
@@ -64,7 +85,7 @@ public class SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSyst
         }
         else
         {
-            new ErrorHandlerWithHellang(utilities).CreateErrorHandler(srcDirectory, projectBaseName);
+            await mediator.Send(new ErrorHandlerWithHellang.Command());
         }
 
         await mediator.Send(new BasePaginationParametersBuilder.BasePaginationParametersBuilderCommand());
@@ -79,7 +100,7 @@ public class SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSyst
         var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
         var testProjectClassPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "", projectBaseName);
 
-        await mediator.Send(new IntegrationTestsCsProjBuilder.IntegrationTestsCsProjBuilderCommand(testDirectory, dbProvider));
+        await mediator.Send(new IntegrationTestsCsProjBuilder.IntegrationTestsCsProjBuilderCommand(dbProvider));
         utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
     }
 
@@ -88,7 +109,7 @@ public class SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSyst
         var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
         var testProjectClassPath = ClassPathHelper.FunctionalTestProjectRootClassPath(testDirectory, "", projectBaseName);
 
-        new FunctionalTestsCsProjBuilder(utilities).CreateTestsCsProj(testDirectory, projectBaseName, dbProvider);
+        mediator.Send(new FunctionalTestsCsProjBuilder.Command(dbProvider)).GetAwaiter().GetResult();
         utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
     }
 
@@ -97,7 +118,7 @@ public class SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSyst
         var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
         var testProjectClassPath = ClassPathHelper.SharedTestProjectRootClassPath(testDirectory, "", projectBaseName);
 
-        new SharedTestsCsProjBuilder(utilities).CreateTestsCsProj(testDirectory, projectBaseName);
+        mediator.Send(new SharedTestsCsProjBuilder.Command()).GetAwaiter().GetResult();
         utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
     }
 
@@ -106,38 +127,60 @@ public class SolutionBuilder(ICraftsmanUtilities utilities, IFileSystem fileSyst
         var solutionFolder = testDirectory.GetSolutionFolder(solutionDirectory);
         var testProjectClassPath = ClassPathHelper.UnitTestProjectRootClassPath(testDirectory, "", projectBaseName);
 
-        new UnitTestsCsProjBuilder(utilities).CreateTestsCsProj(testDirectory, projectBaseName);
+        mediator.Send(new UnitTestsCsProjBuilder.Command()).GetAwaiter().GetResult();
         utilities.ExecuteProcess("dotnet", $@"sln add ""{testProjectClassPath.FullClassPath}"" --solution-folder {solutionFolder}", solutionDirectory);
     }
-
-    public void BuildSharedKernelProject(string solutionDirectory)
-    {
-        var projectExists = File.Exists(Path.Combine(solutionDirectory, "SharedKernel", "SharedKernel.csproj"));
-        if (projectExists) return;
-
-        var projectClassPath = ClassPathHelper.SharedKernelProjectRootClassPath(solutionDirectory, "");
-        new SharedKernelCsProjBuilder(utilities).CreateSharedKernelCsProj(solutionDirectory);
-        utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
     }
 
-    public void BuildAuthServerProject(string solutionDirectory, string authServerProjectName)
+    public class BuildSharedKernelProjectHandler(
+        ICraftsmanUtilities utilities,
+        IFileSystem fileSystem,
+        IMediator mediator)
+        : IRequestHandler<BuildSharedKernelProjectCommand>
     {
-        var projectExists = File.Exists(Path.Combine(solutionDirectory, authServerProjectName, $"{authServerProjectName}.csproj"));
-        if (projectExists) return;
+        public async Task Handle(BuildSharedKernelProjectCommand request, CancellationToken cancellationToken)
+        {
+            var projectExists = File.Exists(Path.Combine(request.SolutionDirectory, "SharedKernel", "SharedKernel.csproj"));
+            if (projectExists) return;
 
-        var projectClassPath = ClassPathHelper.AuthServerProjectClassPath(solutionDirectory, authServerProjectName);
-        new AuthServerProjBuilder(utilities).CreateProject(solutionDirectory, authServerProjectName);
-        utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
+            var projectClassPath = ClassPathHelper.SharedKernelProjectRootClassPath(request.SolutionDirectory, "");
+            await mediator.Send(new SharedKernelCsProjBuilder.Command(), cancellationToken);
+            utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", request.SolutionDirectory);
+        }
     }
 
-    public void BuildBffProject(string solutionDirectory, string projectName, int? proxyPort)
+    public class BuildAuthServerProjectHandler(
+        ICraftsmanUtilities utilities,
+        IFileSystem fileSystem,
+        IMediator mediator)
+        : IRequestHandler<BuildAuthServerProjectCommand>
     {
-        var projectExists = File.Exists(Path.Combine(solutionDirectory, projectName, $"{projectName}.csproj"));
-        if (projectExists) return;
+        public async Task Handle(BuildAuthServerProjectCommand request, CancellationToken cancellationToken)
+        {
+            var projectExists = File.Exists(Path.Combine(request.SolutionDirectory, request.AuthServerProjectName, $"{request.AuthServerProjectName}.csproj"));
+            if (projectExists) return;
 
-        var projectClassPath = ClassPathHelper.BffProjectClassPath(solutionDirectory, projectName);
-        new BffProjBuilder(utilities).CreateProject(solutionDirectory, projectName, proxyPort);
-        utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", solutionDirectory);
+            var projectClassPath = ClassPathHelper.AuthServerProjectClassPath(request.SolutionDirectory, request.AuthServerProjectName);
+            await mediator.Send(new AuthServerProjBuilder.Command(request.AuthServerProjectName), cancellationToken);
+            utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", request.SolutionDirectory);
+        }
+    }
+
+    public class BuildBffProjectHandler(
+        ICraftsmanUtilities utilities,
+        IFileSystem fileSystem,
+        IMediator mediator)
+        : IRequestHandler<BuildBffProjectCommand>
+    {
+        public async Task Handle(BuildBffProjectCommand request, CancellationToken cancellationToken)
+        {
+            var projectExists = File.Exists(Path.Combine(request.SolutionDirectory, request.ProjectName, $"{request.ProjectName}.csproj"));
+            if (projectExists) return;
+
+            var projectClassPath = ClassPathHelper.BffProjectClassPath(request.SolutionDirectory, request.ProjectName);
+            await mediator.Send(new BffProjBuilder.Command(request.ProjectName, request.ProxyPort), cancellationToken);
+            utilities.ExecuteProcess("dotnet", $@"sln add ""{projectClassPath.FullClassPath}""", request.SolutionDirectory);
+        }
     }
 }
 

@@ -2,14 +2,24 @@
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class AuthServerProjBuilder(ICraftsmanUtilities utilities)
+public static class AuthServerProjBuilder
 {
-    public void CreateProject(string solutionDirectory, string projectBaseName)
+    public sealed record Command(string ProjectBaseName) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-        var fileText = ProjectFileText();
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiProjectClassPath(scaffoldingDirectoryStore.SolutionDirectory, request.ProjectBaseName);
+            var fileText = ProjectFileText();
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string ProjectFileText()

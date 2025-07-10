@@ -55,11 +55,10 @@ public class AddAuthServerCommand(
                 ctx.Status($"[bold blue]Scaffolding files for Auth Server [/]");
                 var projectBaseName = template.Name;
         
-                new SolutionBuilder(utilities, fileSystem, mediator).BuildAuthServerProject(solutionDirectory, projectBaseName);
+                mediator.Send(new SolutionBuilder.BuildAuthServerProjectCommand(solutionDirectory, projectBaseName)).GetAwaiter().GetResult();
 
-                var pulumiYamlBuilder = new PulumiYamlBuilders(utilities);
-                pulumiYamlBuilder.CreateBaseFile(solutionDirectory, projectBaseName);
-                pulumiYamlBuilder.CreateDevConfig(solutionDirectory, projectBaseName, template.Port, template.Username, template.Password);
+                mediator.Send(new PulumiYamlBuilders.CreateBaseFileCommand(projectBaseName)).GetAwaiter().GetResult();
+                mediator.Send(new PulumiYamlBuilders.CreateDevConfigCommand(projectBaseName, template.Port, template.Username, template.Password)).GetAwaiter().GetResult();
 
                 mediator.Send(new Builders.AuthServer.ProgramBuilder.Command(projectBaseName)).GetAwaiter().GetResult();
         

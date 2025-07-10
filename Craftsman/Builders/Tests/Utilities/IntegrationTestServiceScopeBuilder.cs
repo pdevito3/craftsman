@@ -1,15 +1,25 @@
-﻿namespace Craftsman.Builders.Tests.Utilities;
+namespace Craftsman.Builders.Tests.Utilities;
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class IntegrationTestServiceScopeBuilder(ICraftsmanUtilities utilities)
+public static class IntegrationTestServiceScopeBuilder
 {
-    public void CreateBase(string solutionDirectory, string projectBaseName, string dbContextName, bool isProtected)
+    public sealed record Command(string DbContextName, bool IsProtected) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(solutionDirectory, $"{FileNames.TestingServiceScope()}.cs", projectBaseName);
-        var fileText = GetBaseText(classPath.ClassNamespace, dbContextName, isProtected);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(scaffoldingDirectoryStore.SolutionDirectory, $"{FileNames.TestingServiceScope()}.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetBaseText(classPath.ClassNamespace, request.DbContextName, request.IsProtected);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetBaseText(string classNamespace, string dbContextName, bool isProtected)

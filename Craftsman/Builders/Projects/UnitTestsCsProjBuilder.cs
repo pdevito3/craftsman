@@ -2,13 +2,23 @@
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class UnitTestsCsProjBuilder(ICraftsmanUtilities utilities)
+public static class UnitTestsCsProjBuilder
 {
-    public void CreateTestsCsProj(string solutionDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.UnitTestProjectClassPath(solutionDirectory, projectBaseName);
-        utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName));
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestProjectClassPath(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, GetTestsCsProjFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName));
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName)

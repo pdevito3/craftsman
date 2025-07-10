@@ -3,14 +3,24 @@
 using System.IO;
 using Helpers;
 using Services;
+using MediatR;
 
-public class AllEndpointsProtectedUnitTestBuilder(ICraftsmanUtilities utilities)
+public static class AllEndpointsProtectedUnitTestBuilder
 {
-    public void CreateTests(string testDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.UnitTestArchTestsClassPath(testDirectory, $"EndpointTests.cs", projectBaseName);
-        var fileText = WriteTestFileText(classPath);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestArchTestsClassPath(scaffoldingDirectoryStore.TestDirectory, $"EndpointTests.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = WriteTestFileText(classPath);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(ClassPath classPath)

@@ -3,13 +3,23 @@
 using Domain;
 using Helpers;
 using Services;
+using MediatR;
 
-public class FunctionalTestsCsProjBuilder(ICraftsmanUtilities utilities)
+public static class FunctionalTestsCsProjBuilder
 {
-    public void CreateTestsCsProj(string solutionDirectory, string projectBaseName, DbProvider provider)
+    public sealed record Command(DbProvider Provider) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FunctionalTestProjectClassPath(solutionDirectory, projectBaseName);
-        utilities.CreateFile(classPath, GetTestsCsProjFileText(solutionDirectory, projectBaseName, provider));
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FunctionalTestProjectClassPath(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, GetTestsCsProjFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.Provider));
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetTestsCsProjFileText(string solutionDirectory, string projectBaseName, DbProvider provider)

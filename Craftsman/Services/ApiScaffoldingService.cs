@@ -45,15 +45,14 @@ public class ApiScaffoldingService(
 
                 ctx.Spinner(Spinner.Known.BouncingBar);
                 ctx.Status($"[bold blue]Building {projectName} Projects [/]");
-                await new SolutionBuilder(utilities, fileSystem, mediator)
-                    .AddProjects(buildSolutionDirectory,
-                        scaffoldingDirectoryStore.SrcDirectory,
-                        scaffoldingDirectoryStore.TestDirectory,
-                        template.DbContext.ProviderEnum,
-                        projectName, 
-                        template.AddJwtAuthentication, 
-                        template.DockerConfig.OTelAgentPort,
-                        template.UseCustomErrorHandler);
+                await mediator.Send(new SolutionBuilder.AddProjectsCommand(buildSolutionDirectory,
+                    scaffoldingDirectoryStore.SrcDirectory,
+                    scaffoldingDirectoryStore.TestDirectory,
+                    template.DbContext.ProviderEnum,
+                    projectName, 
+                    template.AddJwtAuthentication, 
+                    template.DockerConfig.OTelAgentPort,
+                    template.UseCustomErrorHandler));
 
                 // add all files based on the given template config
                 ctx.Status($"[bold blue]Scaffolding Files for {projectName} [/]");
@@ -96,13 +95,13 @@ public class ApiScaffoldingService(
             projectBaseName,
             template.AddJwtAuthentication
         )).GetAwaiter().GetResult();
-        new ApiRoutesBuilder(utilities).CreateClass(testDirectory, projectBaseName);
+        mediator.Send(new ApiRoutesBuilder.Command()).GetAwaiter().GetResult();
         mediator.Send(new DbMigrationsHostedServiceBuilder.Command(template.DbContext.ProviderEnum)).GetAwaiter().GetResult();
 
         if (template.AddJwtAuthentication)
         {
             mediator.Send(new PermissionsBuilder.Command(template.AddJwtAuthentication)).GetAwaiter().GetResult(); // <-- needs to run before entity features
-            new UserPolicyHandlerBuilder(utilities).CreatePolicyBuilder(srcDirectory, projectBaseName, template.DbContext.ContextName);
+            mediator.Send(new UserPolicyHandlerBuilder.Command(template.DbContext.ContextName)).GetAwaiter().GetResult();
             new InfrastructureServiceRegistrationModifier(fileSystem).InitializeAuthServices(srcDirectory, projectBaseName);
             new EntityScaffoldingService(utilities, fileSystem, mediator, consoleWriter).ScaffoldRolePermissions(solutionDirectory,
                 srcDirectory,
@@ -119,8 +118,8 @@ public class ApiScaffoldingService(
                 template.DbContext.ContextName,
                 template.SwaggerConfig.AddSwaggerComments,
                 template.UseSoftDelete);
-            new RolesControllerBuilder(utilities).CreateController(srcDirectory, projectBaseName);
-            new PermissionsControllerBuilder(utilities).CreateController(srcDirectory, projectBaseName);
+            mediator.Send(new RolesControllerBuilder.Command()).GetAwaiter().GetResult();
+            mediator.Send(new PermissionsControllerBuilder.Command()).GetAwaiter().GetResult();
         }
 
         //entities
@@ -141,32 +140,23 @@ public class ApiScaffoldingService(
         new WebApiLaunchSettingsModifier(fileSystem).AddProfile(srcDirectory, template.Environment, template.Port, projectBaseName);
         
         // unit tests, test utils, and one offs
-        new PagedListTestBuilder(utilities).CreateTests(srcDirectory, testDirectory, projectBaseName);
-        new IntegrationTestFixtureBuilder(utilities).CreateFixture(testDirectory,
-            srcDirectory,
-            projectBaseName,
-            template.DbContext.ContextName,
-            template.DbContext.ProviderEnum,
-            template.AddJwtAuthentication);
-        new IntegrationTestBaseBuilder(utilities).CreateBase(testDirectory, projectBaseName);
-        new IntegrationTestServiceScopeBuilder(utilities).CreateBase(testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
-        new WebAppFactoryBuilder(utilities).CreateWebAppFactory(testDirectory, projectBaseName, template.DbContext.ProviderEnum, template.AddJwtAuthentication);
-        new FunctionalTestBaseBuilder(utilities).CreateBase(srcDirectory, testDirectory, projectBaseName, template.DbContext.ContextName, template.AddJwtAuthentication);
-        new HealthTestBuilder(utilities).CreateTests(testDirectory, projectBaseName);
+        mediator.Send(new PagedListTestBuilder.Command()).GetAwaiter().GetResult();
+        mediator.Send(new IntegrationTestFixtureBuilder.Command(template.DbContext.ContextName, template.DbContext.ProviderEnum, template.AddJwtAuthentication)).GetAwaiter().GetResult();
+        mediator.Send(new IntegrationTestBaseBuilder.Command()).GetAwaiter().GetResult();
+        mediator.Send(new IntegrationTestServiceScopeBuilder.Command(template.DbContext.ContextName, template.AddJwtAuthentication)).GetAwaiter().GetResult();
+        mediator.Send(new WebAppFactoryBuilder.Command(template.DbContext.ProviderEnum, template.AddJwtAuthentication)).GetAwaiter().GetResult();
+        mediator.Send(new FunctionalTestBaseBuilder.Command(template.DbContext.ContextName, template.AddJwtAuthentication)).GetAwaiter().GetResult();
+        mediator.Send(new HealthTestBuilder.Command()).GetAwaiter().GetResult();
         mediator.Send(new HttpClientExtensionsBuilder.Command(projectBaseName)).GetAwaiter().GetResult();
         mediator.Send(new EntityBuilder.CreateBaseEntityCommand(template.UseSoftDelete));
-        new CurrentUserServiceTestBuilder(utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
+        mediator.Send(new CurrentUserServiceTestBuilder.Command()).GetAwaiter().GetResult();
         mediator.Send(new ValueObjectBuilder.ValueObjectBuilderCommand());
         mediator.Send(new CommonValueObjectBuilder.Command(template.AddJwtAuthentication));
-        new FakesBuilder(utilities).CreateAddressFakes(srcDirectory, testDirectory, projectBaseName);
+        mediator.Send(new FakesBuilder.CreateAddressFakesCommand()).GetAwaiter().GetResult();
         mediator.Send(new ValueObjectDtoBuilder.ValueObjectDtoBuilderCommand());
         mediator.Send(new DomainEventBuilder.DomainEventBuilderCommand());
-        new EmailUnitTestBuilder(utilities).CreateTests(testDirectory,
-            srcDirectory,
-            ValueObjectEnum.Email.Name,
-            ValueObjectEnum.Email.Plural(),
-            projectBaseName);
-        new AllEndpointsProtectedUnitTestBuilder(utilities).CreateTests(testDirectory, projectBaseName);
+        mediator.Send(new EmailUnitTestBuilder.Command(ValueObjectEnum.Email.Name, ValueObjectEnum.Email.Plural())).GetAwaiter().GetResult();
+        mediator.Send(new AllEndpointsProtectedUnitTestBuilder.Command()).GetAwaiter().GetResult();
         
         // if(template.AddJwtAuthentication)
         //     new UserPolicyHandlerUnitTests(_utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
@@ -181,7 +171,7 @@ public class ApiScaffoldingService(
         mediator.Send(new HangfireAuthorizationFilterBuilder.Command());
         mediator.Send(new JobWithUserContextBuilder.Command());
         mediator.Send(new ServiceJobActivatorScopeBuilder.Command());
-        new OptionsConfigurationsBuilder(utilities).CreateConfig(srcDirectory, projectBaseName);
+        mediator.Send(new OptionsConfigurationsBuilder.Command()).GetAwaiter().GetResult();
 
         mediator.Send(new CurrentUserServiceBuilder.CurrentUserServiceBuilderCommand()).GetAwaiter().GetResult();
         mediator.Send(new SwaggerBuilder.SwaggerBuilderCommand(template.SwaggerConfig, template.ProjectName, template.AddJwtAuthentication, template?.Environment?.AuthSettings?.Audience)).GetAwaiter().GetResult();

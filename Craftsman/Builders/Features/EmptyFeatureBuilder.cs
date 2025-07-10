@@ -1,16 +1,26 @@
-﻿namespace Craftsman.Builders.Features;
+namespace Craftsman.Builders.Features;
 
 using Domain;
 using Helpers;
 using Services;
+using MediatR;
 
-public class EmptyFeatureBuilder(ICraftsmanUtilities utilities)
+public static class EmptyFeatureBuilder
 {
-    public void CreateCommand(string srcDirectory, string contextName, string projectBaseName, Feature newFeature)
+    public sealed record Command(string ContextName, Feature NewFeature) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FeaturesClassPath(srcDirectory, $"{newFeature.Name}.cs", newFeature.EntityPlural, projectBaseName);
-        var fileText = GetCommandFileText(classPath.ClassNamespace, contextName, srcDirectory, projectBaseName, newFeature);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FeaturesClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{request.NewFeature.Name}.cs", request.NewFeature.EntityPlural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetCommandFileText(classPath.ClassNamespace, request.ContextName, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.NewFeature);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetCommandFileText(string classNamespace, string contextName, string srcDirectory,

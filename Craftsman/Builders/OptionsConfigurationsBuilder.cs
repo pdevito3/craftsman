@@ -2,14 +2,24 @@ namespace Craftsman.Builders;
 
 using Craftsman.Helpers;
 using Craftsman.Services;
+using MediatR;
 
-public class OptionsConfigurationsBuilder(ICraftsmanUtilities utilities)
+public static class OptionsConfigurationsBuilder
 {
-    public void CreateConfig(string srcDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.WebApiResourcesClassPath(srcDirectory, $"{FileNames.OptionsClassName(projectBaseName)}.cs", projectBaseName);
-        var fileText = GetConfigText(classPath.ClassNamespace, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiResourcesClassPath(scaffoldingDirectoryStore.SrcDirectory, $"{FileNames.OptionsClassName(scaffoldingDirectoryStore.ProjectBaseName)}.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetConfigText(classPath.ClassNamespace, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetConfigText(string classNamespace, string projectBaseName)

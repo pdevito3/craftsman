@@ -4,14 +4,24 @@ using System.IO;
 using Domain.Enums;
 using Helpers;
 using Services;
+using MediatR;
 
-public class EmailUnitTestBuilder(ICraftsmanUtilities utilities)
+public static class EmailUnitTestBuilder
 {
-    public void CreateTests(string testDirectory, string srcDirectory, string entityName, string entityPlural, string projectBaseName)
+    public sealed record Command(string EntityName, string EntityPlural) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(testDirectory, $"{FileNames.CreateEntityUnitTestName(entityName)}.cs", entityPlural, projectBaseName);
-        var fileText = WriteTestFileText(srcDirectory, classPath, entityPlural, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestEntityTestsClassPath(scaffoldingDirectoryStore.TestDirectory, $"{FileNames.CreateEntityUnitTestName(request.EntityName)}.cs", request.EntityPlural, scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = WriteTestFileText(scaffoldingDirectoryStore.SrcDirectory, classPath, request.EntityPlural, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string srcDirectory, ClassPath classPath, string entityPlural, string projectBaseName)

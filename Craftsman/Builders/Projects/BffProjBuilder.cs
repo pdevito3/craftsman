@@ -2,14 +2,24 @@
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class BffProjBuilder(ICraftsmanUtilities utilities)
+public static class BffProjBuilder
 {
-    public void CreateProject(string solutionDirectory, string projectBaseName, int? proxyPort)
+    public sealed record Command(string ProjectBaseName, int? ProxyPort) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
-        var fileText = ProjectFileText(proxyPort, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiProjectClassPath(scaffoldingDirectoryStore.SolutionDirectory, request.ProjectBaseName);
+            var fileText = ProjectFileText(request.ProxyPort, request.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string ProjectFileText(int? proxyPort, string projectBaseName)

@@ -13,14 +13,14 @@ public static class SwaggerBuilder
 {
     public sealed record SwaggerBuilderCommand(SwaggerConfig SwaggerConfig, string ProjectName, bool AddJwtAuthentication, string Audience) : IRequest;
 
-    public class Handler(ICraftsmanUtilities utilities, IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<SwaggerBuilderCommand>
+    public class Handler(ICraftsmanUtilities utilities, IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore, IMediator mediator) : IRequestHandler<SwaggerBuilderCommand>
     {
         public Task Handle(SwaggerBuilderCommand request, CancellationToken cancellationToken)
         {
             if (request.SwaggerConfig.Equals(new SwaggerConfig())) return Task.CompletedTask;
 
             AddSwaggerServiceExtension(scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.SwaggerConfig, request.ProjectName, request.AddJwtAuthentication, request.Audience);
-            new WebApiAppExtensionsBuilder(utilities).CreateSwaggerWebApiAppExtension(scaffoldingDirectoryStore.SrcDirectory, request.SwaggerConfig, request.AddJwtAuthentication, scaffoldingDirectoryStore.ProjectBaseName);
+            mediator.Send(new WebApiAppExtensionsBuilder.Command(request.SwaggerConfig, request.AddJwtAuthentication)).GetAwaiter().GetResult();
             UpdateWebApiCsProjSwaggerSettings(scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName);
             return Task.CompletedTask;
         }

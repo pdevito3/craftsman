@@ -50,7 +50,7 @@ public class NewDomainCommand(
     {
         var solutionDirectory = scaffoldingDirectoryStore.SolutionDirectory;
         fileSystem.Directory.CreateDirectory(solutionDirectory);
-        new SolutionBuilder(utilities, fileSystem, mediator).BuildSolution(solutionDirectory, domainProject.DomainName);
+        mediator.Send(new SolutionBuilder.BuildSolutionCommand(solutionDirectory, domainProject.DomainName)).GetAwaiter().GetResult();
 
         // need this before boundaries to give them something to build against
         new DockerComposeBuilders(utilities, fileSystem).CreateDockerComposeSkeleton(solutionDirectory);

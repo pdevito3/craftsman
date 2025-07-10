@@ -2,14 +2,24 @@
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class UserPolicyHandlerBuilder(ICraftsmanUtilities utilities)
+public static class UserPolicyHandlerBuilder
 {
-    public void CreatePolicyBuilder(string srcDirectory, string projectBaseName, string dbContextName)
+    public sealed record Command(string DbContextName) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.WebApiServicesClassPath(srcDirectory, "UserPolicyHandler.cs", projectBaseName);
-        var fileText = GetPolicyBuilderText(classPath.ClassNamespace, srcDirectory, projectBaseName, dbContextName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiServicesClassPath(scaffoldingDirectoryStore.SrcDirectory, "UserPolicyHandler.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetPolicyBuilderText(classPath.ClassNamespace, scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.DbContextName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetPolicyBuilderText(string classNamespace, string srcDirectory, string projectBaseName,

@@ -1,16 +1,26 @@
-﻿namespace Craftsman.Builders.Tests.FunctionalTests;
+namespace Craftsman.Builders.Tests.FunctionalTests;
 
 using System.IO;
 using Helpers;
 using Services;
+using MediatR;
 
-public class HealthTestBuilder(ICraftsmanUtilities utilities)
+public static class HealthTestBuilder
 {
-    public void CreateTests(string solutionDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FunctionalTestClassPath(solutionDirectory, $"HealthCheckTests.cs", "HealthChecks", projectBaseName);
-        var fileText = WriteTestFileText(solutionDirectory, classPath, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FunctionalTestClassPath(scaffoldingDirectoryStore.SolutionDirectory, $"HealthCheckTests.cs", "HealthChecks", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = WriteTestFileText(scaffoldingDirectoryStore.SolutionDirectory, classPath, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string solutionDirectory, ClassPath classPath, string projectBaseName)

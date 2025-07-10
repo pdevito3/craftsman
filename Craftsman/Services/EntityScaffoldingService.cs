@@ -52,12 +52,10 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
                 AddFeatureToProject(solutionDirectory, srcDirectory, testDirectory, projectBaseName, dbContextName, addSwaggerComments, feature, entity, useSoftDelete);
 
             // Shared Tests
-            new FakesBuilder(utilities).CreateFakes(srcDirectory, testDirectory, projectBaseName, entity);
+            mediator.Send(new FakesBuilder.CreateFakesCommand(entity)).GetAwaiter().GetResult();
             mediator.Send(new FakeEntityBuilderBuilder.Command(entity)).GetAwaiter().GetResult();
-            new CreateEntityUnitTestBuilder(utilities)
-                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, entity.Properties, projectBaseName);
-            new UpdateEntityUnitTestBuilder(utilities)
-                .CreateTests(solutionDirectory, testDirectory, srcDirectory, entity.Name, entity.Plural, entity.Properties, projectBaseName);
+            mediator.Send(new CreateEntityUnitTestBuilder.Command(entity.Name, entity.Plural, entity.Properties)).GetAwaiter().GetResult();
+            mediator.Send(new UpdateEntityUnitTestBuilder.Command(entity.Name, entity.Plural, entity.Properties)).GetAwaiter().GetResult();
 
             // domain events
             mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
@@ -256,9 +254,9 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         }
 
         // Shared Tests
-        new FakesBuilder(utilities).CreateRolePermissionFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, entity);
-        new RolePermissionsUnitTestBuilder(utilities).CreateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        new RolePermissionsUnitTestBuilder(utilities).UpdateRolePermissionTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        mediator.Send(new FakesBuilder.CreateRolePermissionFakesCommand(entity)).GetAwaiter().GetResult();
+        mediator.Send(new RolePermissionsUnitTestBuilder.CreateRolePermissionTestsCommand()).GetAwaiter().GetResult();
+        mediator.Send(new RolePermissionsUnitTestBuilder.UpdateRolePermissionTestsCommand()).GetAwaiter().GetResult();
         mediator.Send(new FakeEntityBuilderBuilder.Command(entity)).GetAwaiter().GetResult();
         
         // need to do db modifier
@@ -325,11 +323,11 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         new AddUserFeatureOverrideModifier(fileSystem).UpdateAddUserFeature(srcDirectory, projectBaseName, dbContextName);
 
         // extra testing
-        new FakesBuilder(utilities).CreateUserFakes(srcDirectory, solutionDirectory, testDirectory, projectBaseName, userEntity);
-        new CreateUserRoleUnitTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        new AddRemoveUserRoleTestsBuilder(utilities).CreateTests(testDirectory, srcDirectory, projectBaseName);
-        new UserUnitTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
-        new UserUnitTestBuilder(utilities).UpdateTests(solutionDirectory, testDirectory, srcDirectory, projectBaseName);
+        mediator.Send(new FakesBuilder.CreateUserFakesCommand(userEntity)).GetAwaiter().GetResult();
+        mediator.Send(new CreateUserRoleUnitTestBuilder.Command()).GetAwaiter().GetResult();
+        mediator.Send(new AddRemoveUserRoleTestsBuilder.Command()).GetAwaiter().GetResult();
+        mediator.Send(new UserUnitTestBuilder.CreateTestsCommand()).GetAwaiter().GetResult();
+        mediator.Send(new UserUnitTestBuilder.UpdateTestsCommand()).GetAwaiter().GetResult();
         mediator.Send(new FakeEntityBuilderBuilder.Command(userEntity)).GetAwaiter().GetResult();
         
         // need to do db modifier
@@ -360,13 +358,13 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
             switch (entity.Name)
             {
                 case "RolePermission":
-                    new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.AddCommandTestBuilder(utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
+                    mediator.Send(new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.AddCommandTestBuilder.CreateTestsCommand(testDirectory, srcDirectory, entity, projectBaseName)).GetAwaiter().GetResult();
                     break;
                 case "User":
-                    new Craftsman.Builders.Tests.IntegrationTests.Users.AddCommandTestBuilder(utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName);
+                    mediator.Send(new Craftsman.Builders.Tests.IntegrationTests.Users.AddCommandTestBuilder.CreateTestsCommand(testDirectory, srcDirectory, entity, projectBaseName)).GetAwaiter().GetResult();
                     break;
                 default:
-                    new AddCommandTestBuilder(utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName, feature.PermissionName, feature.IsProtected);
+                    mediator.Send(new AddCommandTestBuilder.Command(entity, feature.PermissionName, feature.IsProtected)).GetAwaiter().GetResult();
                     break;
             }
 
@@ -380,13 +378,13 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
             switch (entity.Name)
             {
                 case "RolePermission":
-                    new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.GetRecordQueryTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+                    mediator.Send(new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.GetRecordQueryTestBuilder.CreateTestsCommand(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName)).GetAwaiter().GetResult();
                     break;
                 case "User":
-                    new Craftsman.Builders.Tests.IntegrationTests.Users.GetRecordQueryTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+                    mediator.Send(new Craftsman.Builders.Tests.IntegrationTests.Users.GetRecordQueryTestBuilder.CreateTestsCommand(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName)).GetAwaiter().GetResult();
                     break;
                 default:
-                    new GetRecordQueryTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName, feature.PermissionName, feature.IsProtected);
+                    mediator.Send(new GetRecordQueryTestBuilder.Command(entity, feature.PermissionName, feature.IsProtected)).GetAwaiter().GetResult();
                     break;
             }
 
@@ -397,7 +395,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         if (feature.Type == FeatureType.GetList.Name)
         {
             mediator.Send(new QueryGetListBuilder.Command(entity, feature.IsProtected, feature.PermissionName, dbContextName));
-            new GetListQueryTestBuilder(utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName, feature.PermissionName, feature.IsProtected);
+            mediator.Send(new GetListQueryTestBuilder.Command(entity, feature.PermissionName, feature.IsProtected)).GetAwaiter().GetResult();
             new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments,
                 feature, projectBaseName);
         }
@@ -405,7 +403,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         if (feature.Type == FeatureType.GetAll.Name)
         {
             mediator.Send(new QueryGetAllBuilder.Command(entity, feature.IsProtected, feature.PermissionName, dbContextName));
-            new GetAllQueryTestBuilder(utilities).CreateTests(testDirectory, srcDirectory, entity, projectBaseName, feature.PermissionName, feature.IsProtected);
+            mediator.Send(new GetAllQueryTestBuilder.Command(entity, feature.PermissionName, feature.IsProtected)).GetAwaiter().GetResult();
             new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.GetAll, entity, addSwaggerComments,
                 feature, projectBaseName);
         }
@@ -413,7 +411,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         if (feature.Type == FeatureType.DeleteRecord.Name)
         {
             mediator.Send(new CommandDeleteRecordBuilder.CommandDeleteRecordBuilderCommand(entity, feature.IsProtected, feature.PermissionName, dbContextName));
-            new DeleteCommandTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName, useSoftDelete, feature.PermissionName, feature.IsProtected);
+            mediator.Send(new DeleteCommandTestBuilder.Command(entity, useSoftDelete, feature.PermissionName, feature.IsProtected)).GetAwaiter().GetResult();
             new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments,
                 feature, projectBaseName);
         }
@@ -425,13 +423,13 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
             switch (entity.Name)
             {
                 case "RolePermission":
-                    new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.PutCommandTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+                    mediator.Send(new Craftsman.Builders.Tests.IntegrationTests.RolePermissions.PutCommandTestBuilder.CreateTestsCommand(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName)).GetAwaiter().GetResult();
                     break;
                 case "User":
-                    new Craftsman.Builders.Tests.IntegrationTests.Users.PutCommandTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName);
+                    mediator.Send(new Craftsman.Builders.Tests.IntegrationTests.Users.PutCommandTestBuilder.CreateTestsCommand(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName)).GetAwaiter().GetResult();
                     break;
                 default:
-                    new PutCommandTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, projectBaseName, feature.IsProtected, feature.PermissionName);
+                    mediator.Send(new PutCommandTestBuilder.Command(entity, feature.IsProtected, feature.PermissionName)).GetAwaiter().GetResult();
                     break;
             }
             
@@ -450,15 +448,15 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
 
         if (feature.Type == FeatureType.AddListByFk.Name)
         {
-            new CommandAddListBuilder(utilities).CreateCommand(srcDirectory, entity, projectBaseName, feature, feature.IsProtected, feature.PermissionName, dbContextName);
-            new AddListCommandTestBuilder(utilities).CreateTests(solutionDirectory, testDirectory, srcDirectory, entity, feature, projectBaseName, feature.PermissionName, feature.IsProtected);
+            mediator.Send(new CommandAddListBuilder.Command(entity, feature, feature.IsProtected, feature.PermissionName, dbContextName)).GetAwaiter().GetResult();
+            mediator.Send(new AddListCommandTestBuilder.Command(entity, feature, feature.PermissionName, feature.IsProtected)).GetAwaiter().GetResult();
             new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.AddListByFk, entity, addSwaggerComments,
                 feature, projectBaseName);
         }
 
         if (feature.Type == FeatureType.AdHoc.Name)
         {
-            new EmptyFeatureBuilder(utilities).CreateCommand(srcDirectory, dbContextName, projectBaseName, feature);
+            mediator.Send(new EmptyFeatureBuilder.Command(dbContextName, feature)).GetAwaiter().GetResult();
             // TODO ad hoc feature endpoint
             // TODO empty failing test to promote test writing?
         }

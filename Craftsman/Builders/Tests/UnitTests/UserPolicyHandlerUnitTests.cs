@@ -2,14 +2,21 @@
 
 using Helpers;
 using Services;
+using MediatR;
 
-public class UserPolicyHandlerUnitTests(ICraftsmanUtilities utilities)
+public static class UserPolicyHandlerUnitTests
 {
-    public void CreateTests(string testDirectory, string srcDirectory, string projectBaseName)
+    public sealed record CreateTestsCommand(string TestDirectory, string SrcDirectory, string ProjectBaseName) : IRequest;
+
+    public class Handler(ICraftsmanUtilities utilities) : IRequestHandler<CreateTestsCommand>
     {
-        var classPath = ClassPathHelper.UnitTestServiceTestsClassPath(testDirectory, "UserPolicyHandlerTests.cs", projectBaseName);
-        var fileText = WriteTestFileText(srcDirectory, testDirectory, classPath, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(CreateTestsCommand request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestServiceTestsClassPath(request.TestDirectory, "UserPolicyHandlerTests.cs", request.ProjectBaseName);
+            var fileText = WriteTestFileText(request.SrcDirectory, request.TestDirectory, classPath, request.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string srcDirectory, string testDirectory, ClassPath classPath, string projectBaseName)

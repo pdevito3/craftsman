@@ -3,14 +3,24 @@
 using System.IO;
 using Helpers;
 using Services;
+using MediatR;
 
-public class CurrentUserServiceTestBuilder(ICraftsmanUtilities utilities)
+public static class CurrentUserServiceTestBuilder
 {
-    public void CreateTests(string testDirectory, string srcDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.UnitTestServiceTestsClassPath(testDirectory, $"CurrentUserServiceTests.cs", projectBaseName);
-        var fileText = WriteTestFileText(srcDirectory, classPath, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestServiceTestsClassPath(scaffoldingDirectoryStore.TestDirectory, $"CurrentUserServiceTests.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = WriteTestFileText(scaffoldingDirectoryStore.SrcDirectory, classPath, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string srcDirectory, ClassPath classPath, string projectBaseName)

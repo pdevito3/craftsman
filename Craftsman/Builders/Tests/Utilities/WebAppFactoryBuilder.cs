@@ -1,17 +1,27 @@
-﻿namespace Craftsman.Builders.Tests.Utilities;
+namespace Craftsman.Builders.Tests.Utilities;
 
 using System.IO;
 using Domain;
 using Helpers;
 using Services;
+using MediatR;
 
-public class WebAppFactoryBuilder(ICraftsmanUtilities utilities)
+public static class WebAppFactoryBuilder
 {
-    public void CreateWebAppFactory(string testDirectory, string projectName, DbProvider provider, bool addJwtAuthentication)
+    public sealed record Command(DbProvider Provider, bool AddJwtAuthentication) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(testDirectory, $"{FileNames.GetWebHostFactoryName()}.cs", projectName);
-        var fileText = GetWebAppFactoryFileText(classPath, testDirectory, projectName, provider, addJwtAuthentication);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.FunctionalTestProjectRootClassPath(scaffoldingDirectoryStore.TestDirectory, $"{FileNames.GetWebHostFactoryName()}.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetWebAppFactoryFileText(classPath, scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.Provider, request.AddJwtAuthentication);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string GetWebAppFactoryFileText(ClassPath classPath, string testDirectory, string projectBaseName, DbProvider provider, bool addJwtAuthentication)

@@ -3,14 +3,24 @@
 using System.IO;
 using Helpers;
 using Services;
+using MediatR;
 
-public class PagedListTestBuilder(ICraftsmanUtilities utilities)
+public static class PagedListTestBuilder
 {
-    public void CreateTests(string srcDirectory, string testDirectory, string projectBaseName)
+    public sealed record Command : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(testDirectory, $"PagedListTests.cs", projectBaseName);
-        var fileText = WriteTestFileText(srcDirectory, classPath, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.UnitTestWrapperTestsClassPath(scaffoldingDirectoryStore.TestDirectory, $"PagedListTests.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = WriteTestFileText(scaffoldingDirectoryStore.SrcDirectory, classPath, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     private static string WriteTestFileText(string srcDirectory, ClassPath classPath, string projectBaseName)

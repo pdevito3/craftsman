@@ -15,31 +15,21 @@ public static class TestUsingsBuilder
     
     public record Command(TestingTarget TestingTarget) : IRequest;
 
-    public class Handler : IRequestHandler<Command>
+    public class Handler(ICraftsmanUtilities utilities, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<Command>
     {
-        private readonly ICraftsmanUtilities _utilities;
-        private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
-
-        public Handler(ICraftsmanUtilities utilities,
-            IScaffoldingDirectoryStore scaffoldingDirectoryStore)
-        {
-            _utilities = utilities;
-            _scaffoldingDirectoryStore = scaffoldingDirectoryStore;
-        }
-
         public Task Handle(Command request, CancellationToken cancellationToken)
         {
             var classPath = GetTestingClassPath(request.TestingTarget);
             var fileText = GetFileText();
-            _utilities.CreateFile(classPath, fileText);
+            utilities.CreateFile(classPath, fileText);
             return Task.CompletedTask;
         }
 
         private string GetFileText()
         {
-            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(_scaffoldingDirectoryStore.SrcDirectory, 
+            var exceptionClassPath = ClassPathHelper.ExceptionsClassPath(scaffoldingDirectoryStore.SrcDirectory, 
                 "", 
-                _scaffoldingDirectoryStore.ProjectBaseName);
+                scaffoldingDirectoryStore.ProjectBaseName);
             return @$"global using Xunit;
 global using FluentAssertions;
 global using {exceptionClassPath.ClassNamespace};";
@@ -50,11 +40,11 @@ global using {exceptionClassPath.ClassNamespace};";
             return testingTarget switch
             {
                 TestingTarget.Unit => ClassPathHelper.UnitTestProjectRootClassPath(
-                    _scaffoldingDirectoryStore.TestDirectory, "Usings.cs", _scaffoldingDirectoryStore.ProjectBaseName),
+                    scaffoldingDirectoryStore.TestDirectory, "Usings.cs", scaffoldingDirectoryStore.ProjectBaseName),
                 TestingTarget.Integration => ClassPathHelper.IntegrationTestProjectRootClassPath(
-                    _scaffoldingDirectoryStore.TestDirectory, "Usings.cs", _scaffoldingDirectoryStore.ProjectBaseName),
+                    scaffoldingDirectoryStore.TestDirectory, "Usings.cs", scaffoldingDirectoryStore.ProjectBaseName),
                 TestingTarget.Functional => ClassPathHelper.FunctionalTestProjectRootClassPath(
-                    _scaffoldingDirectoryStore.TestDirectory, "Usings.cs", _scaffoldingDirectoryStore.ProjectBaseName),
+                    scaffoldingDirectoryStore.TestDirectory, "Usings.cs", scaffoldingDirectoryStore.ProjectBaseName),
                 _ => throw new ArgumentOutOfRangeException(nameof(testingTarget), testingTarget, null)
             };
         }

@@ -1,16 +1,26 @@
-﻿namespace Craftsman.Builders;
+namespace Craftsman.Builders;
 
 using Domain;
 using Helpers;
 using Services;
+using MediatR;
 
-public class WebApiAppExtensionsBuilder(ICraftsmanUtilities utilities)
+public static class WebApiAppExtensionsBuilder
 {
-    public void CreateSwaggerWebApiAppExtension(string srcDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication, string projectBaseName)
+    public sealed record Command(SwaggerConfig SwaggerConfig, bool AddJwtAuthentication) : IRequest;
+
+    public class Handler(
+        ICraftsmanUtilities utilities,
+        IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+        : IRequestHandler<Command>
     {
-        var classPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(srcDirectory, $"SwaggerAppExtension.cs", projectBaseName);
-        var fileText = GetSwaggerAppExtensionText(classPath.ClassNamespace, srcDirectory, swaggerConfig, addJwtAuthentication, projectBaseName);
-        utilities.CreateFile(classPath, fileText);
+        public Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var classPath = ClassPathHelper.WebApiApplicationExtensionsClassPath(scaffoldingDirectoryStore.SrcDirectory, $"SwaggerAppExtension.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var fileText = GetSwaggerAppExtensionText(classPath.ClassNamespace, scaffoldingDirectoryStore.SrcDirectory, request.SwaggerConfig, request.AddJwtAuthentication, scaffoldingDirectoryStore.ProjectBaseName);
+            utilities.CreateFile(classPath, fileText);
+            return Task.CompletedTask;
+        }
     }
 
     public static string GetSwaggerAppExtensionText(string classNamespace, string srcDirectory, SwaggerConfig swaggerConfig, bool addJwtAuthentication, string projectBaseName)
