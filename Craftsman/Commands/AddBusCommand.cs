@@ -70,11 +70,11 @@ public class AddBusCommand(
         utilities.AddPackages(webApiClassPath, massTransitPackages);
 
         mediator.Send(new MassTransitExtensionsBuilder.MassTransitExtensionsBuilderCommand(solutionDirectory)).GetAwaiter().GetResult();
-        new WebApiLaunchSettingsModifier(fileSystem).UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_HOST", template.Environment.BrokerSettings.Host, projectBaseName);
-        new WebApiLaunchSettingsModifier(fileSystem).UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_VIRTUAL_HOST", template.Environment.BrokerSettings.VirtualHost, projectBaseName);
-        new WebApiLaunchSettingsModifier(fileSystem).UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_USERNAME", template.Environment.BrokerSettings.Username, projectBaseName);
-        new WebApiLaunchSettingsModifier(fileSystem).UpdateLaunchSettingEnvVar(srcDirectory, "RMQ_PASSWORD", template.Environment.BrokerSettings.Password, projectBaseName);
-        new ProgramModifier(fileSystem).RegisterMassTransitService(srcDirectory, projectBaseName);
+        mediator.Send(new WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVarCommand("RMQ_HOST", template.Environment.BrokerSettings.Host)).GetAwaiter().GetResult();
+        mediator.Send(new WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVarCommand("RMQ_VIRTUAL_HOST", template.Environment.BrokerSettings.VirtualHost)).GetAwaiter().GetResult();
+        mediator.Send(new WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVarCommand("RMQ_USERNAME", template.Environment.BrokerSettings.Username)).GetAwaiter().GetResult();
+        mediator.Send(new WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVarCommand("RMQ_PASSWORD", template.Environment.BrokerSettings.Password)).GetAwaiter().GetResult();
+        mediator.Send(new ProgramModifier.RegisterMassTransitServiceCommand()).GetAwaiter().GetResult();
 
         new IntegrationTestFixtureModifier(fileSystem, consoleWriter).AddMassTransit(testDirectory, projectBaseName);
         new DockerComposeBuilders(utilities, fileSystem).AddRmqToDockerCompose(solutionDirectory, template.Environment.BrokerSettings);

@@ -3,10 +3,22 @@
 using System.IO;
 using System.IO.Abstractions;
 using Services;
+using MediatR;
 
-public class InfrastructureServiceRegistrationModifier(IFileSystem fileSystem)
+public static class InfrastructureServiceRegistrationModifier
 {
-    public void InitializeAuthServices(string srcDirectory, string projectBaseName)
+    public sealed record InitializeAuthServicesCommand() : IRequest;
+
+    public class InitializeAuthServicesHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<InitializeAuthServicesCommand>
+    {
+        public Task Handle(InitializeAuthServicesCommand request, CancellationToken cancellationToken)
+        {
+            InitializeAuthServices(scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void InitializeAuthServices(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.GetInfraRegistrationName()}.cs", projectBaseName);
 

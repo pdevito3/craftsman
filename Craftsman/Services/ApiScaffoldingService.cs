@@ -102,7 +102,7 @@ public class ApiScaffoldingService(
         {
             mediator.Send(new PermissionsBuilder.Command(template.AddJwtAuthentication)).GetAwaiter().GetResult(); // <-- needs to run before entity features
             mediator.Send(new UserPolicyHandlerBuilder.Command(template.DbContext.ContextName)).GetAwaiter().GetResult();
-            new InfrastructureServiceRegistrationModifier(fileSystem).InitializeAuthServices(srcDirectory, projectBaseName);
+            mediator.Send(new InfrastructureServiceRegistrationModifier.InitializeAuthServicesCommand()).GetAwaiter().GetResult();
             new EntityScaffoldingService(utilities, fileSystem, mediator, consoleWriter).ScaffoldRolePermissions(solutionDirectory,
                 srcDirectory,
                 testDirectory,
@@ -137,7 +137,7 @@ public class ApiScaffoldingService(
         mediator.Send(new EditorConfigBuilder.EditorConfigBuilderCommand()).GetAwaiter().GetResult();
         mediator.Send(new AppSettingsBuilder.AppSettingsBuilderCommand(template.DbContext.DatabaseName)).GetAwaiter().GetResult();
         mediator.Send(new AppSettingsDevelopmentBuilder.AppSettingsDevelopmentBuilderCommand(template.Environment, template.DockerConfig)).GetAwaiter().GetResult();
-        new WebApiLaunchSettingsModifier(fileSystem).AddProfile(srcDirectory, template.Environment, template.Port, projectBaseName);
+        mediator.Send(new WebApiLaunchSettingsModifier.AddProfileCommand(template.Environment, template.Port)).GetAwaiter().GetResult();
         
         // unit tests, test utils, and one offs
         mediator.Send(new PagedListTestBuilder.Command()).GetAwaiter().GetResult();
@@ -214,6 +214,6 @@ public class ApiScaffoldingService(
         string projectBaseName,
         DockerConfig dockerConfig)
     {
-        new WebApiLaunchSettingsModifier(fileSystem).AddProfile(srcDirectory, environment, port, projectBaseName);
+        mediator.Send(new WebApiLaunchSettingsModifier.AddProfileCommand(environment, port)).GetAwaiter().GetResult();
     }
 }

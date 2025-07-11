@@ -4,10 +4,22 @@ using System.IO;
 using System.IO.Abstractions;
 using Domain;
 using Services;
+using MediatR;
 
-public class WebApiLaunchSettingsModifier(IFileSystem fileSystem)
+public static class WebApiLaunchSettingsModifier
 {
-    public void AddProfile(string srcDirectory, ApiEnvironment env, int port, string projectBaseName)
+    public sealed record AddProfileCommand(ApiEnvironment Env, int Port) : IRequest;
+
+    public class AddProfileHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddProfileCommand>
+    {
+        public Task Handle(AddProfileCommand request, CancellationToken cancellationToken)
+        {
+            AddProfile(scaffoldingDirectoryStore.SrcDirectory, request.Env, request.Port, scaffoldingDirectoryStore.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void AddProfile(string srcDirectory, ApiEnvironment env, int port, string projectBaseName, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchSettings.json", projectBaseName); // hard coding webapi here not great
 
@@ -55,12 +67,23 @@ public class WebApiLaunchSettingsModifier(IFileSystem fileSystem)
     }}";
     }
 
-    public void UpdateLaunchSettingEnvVar(string srcDirectory, string envVarName, string envVarVal, string projectBaseName)
+    public sealed record UpdateLaunchSettingEnvVarCommand(string EnvVarName, string EnvVarVal) : IRequest;
+
+    public class UpdateLaunchSettingEnvVarHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<UpdateLaunchSettingEnvVarCommand>
+    {
+        public Task Handle(UpdateLaunchSettingEnvVarCommand request, CancellationToken cancellationToken)
+        {
+            UpdateLaunchSettingEnvVar(scaffoldingDirectoryStore.SrcDirectory, request.EnvVarName, request.EnvVarVal, scaffoldingDirectoryStore.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void UpdateLaunchSettingEnvVar(string srcDirectory, string envVarName, string envVarVal, string projectBaseName, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.WebApiLaunchSettingsClassPath(srcDirectory, $"launchSettings.json", projectBaseName); // hard coding webapi here not great
 
         if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
-            Directory.CreateDirectory(classPath.ClassDirectory);
+            fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
         if (!fileSystem.File.Exists(classPath.FullClassPath))
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");

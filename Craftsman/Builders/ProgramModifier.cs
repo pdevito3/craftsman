@@ -4,10 +4,22 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using Services;
+using MediatR;
 
-public class ProgramModifier(IFileSystem fileSystem)
+public static class ProgramModifier
 {
-    public void RegisterMassTransitService(string srcDirectory, string projectBaseName)
+    public sealed record RegisterMassTransitServiceCommand() : IRequest;
+
+    public class RegisterMassTransitServiceHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<RegisterMassTransitServiceCommand>
+    {
+        public Task Handle(RegisterMassTransitServiceCommand request, CancellationToken cancellationToken)
+        {
+            RegisterMassTransitService(scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void RegisterMassTransitService(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(srcDirectory, $"{FileNames.WebAppServiceConfiguration()}.cs", projectBaseName);
 
