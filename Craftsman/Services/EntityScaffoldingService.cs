@@ -66,7 +66,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         AddStringArrayItemsAsync(srcDirectory, projectBaseName, entities, dbProvider).Wait();
         AddValueObjects(srcDirectory, projectBaseName, entities);
 
-        new DbContextModifier(fileSystem).AddDbSetAndConfig(srcDirectory, entities, dbContextName, projectBaseName);
+        mediator.Send(new DbContextModifier.AddDbSetAndConfigCommand(entities, dbContextName)).GetAwaiter().GetResult();
     }
 
     private async Task AddRelationshipsAsync(string srcDirectory, string projectBaseName, List<Entity> entities)
@@ -260,7 +260,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         mediator.Send(new FakeEntityBuilderBuilder.Command(entity)).GetAwaiter().GetResult();
         
         // need to do db modifier
-        new DbContextModifier(fileSystem).AddDbSetAndConfig(srcDirectory, new List<Entity>() { entity }, dbContextName, projectBaseName);
+        mediator.Send(new DbContextModifier.AddDbSetAndConfigCommand(new List<Entity>() { entity }, dbContextName)).GetAwaiter().GetResult();
 
         // domain events
         mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(entity.Name, entity.Plural));
@@ -311,7 +311,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         mediator.Send(new DatabaseEntityConfigUserRoleBuilder.Command());
         
         mediator.Send(new ControllerBuilder.ControllerBuilderCommand(userEntity.Plural, projectBaseName, true));
-        new ControllerModifier(fileSystem).AddCustomUserEndpoint(srcDirectory, projectBaseName);
+        mediator.Send(new ControllerModifier.AddCustomUserEndpointCommand()).GetAwaiter().GetResult();
         
         foreach (var feature in userEntity.Features)
         {
@@ -331,10 +331,10 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         mediator.Send(new FakeEntityBuilderBuilder.Command(userEntity)).GetAwaiter().GetResult();
         
         // need to do db modifier
-        new DbContextModifier(fileSystem).AddDbSetAndConfig(srcDirectory, [userEntity], dbContextName, projectBaseName);
-        new DbContextModifier(fileSystem).AddDbSetAndConfig(srcDirectory, [
+        mediator.Send(new DbContextModifier.AddDbSetAndConfigCommand([userEntity], dbContextName)).GetAwaiter().GetResult();
+        mediator.Send(new DbContextModifier.AddDbSetAndConfigCommand([
             new Entity() { Name = "UserRole", Plural = "UserRoles" }
-        ], dbContextName, projectBaseName);
+        ], dbContextName)).GetAwaiter().GetResult();
 
         // domain events
         mediator.Send(new CreatedDomainEventBuilder.CreatedDomainEventBuilderCommand(userEntity.Name, userEntity.Plural));
@@ -368,8 +368,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
                     break;
             }
 
-            new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.AddRecord, entity, addSwaggerComments,
-                feature, projectBaseName);
+            mediator.Send(new ControllerModifier.AddEndpointCommand(FeatureType.AddRecord, entity, addSwaggerComments, feature)).GetAwaiter().GetResult();
         }
 
         if (feature.Type == FeatureType.GetRecord.Name)
@@ -388,32 +387,28 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
                     break;
             }
 
-            new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.GetRecord, entity, addSwaggerComments,
-                feature, projectBaseName);
+            mediator.Send(new ControllerModifier.AddEndpointCommand(FeatureType.GetRecord, entity, addSwaggerComments, feature)).GetAwaiter().GetResult();
         }
 
         if (feature.Type == FeatureType.GetList.Name)
         {
             mediator.Send(new QueryGetListBuilder.Command(entity, feature.IsProtected, feature.PermissionName, dbContextName));
             mediator.Send(new GetListQueryTestBuilder.Command(entity, feature.PermissionName, feature.IsProtected)).GetAwaiter().GetResult();
-            new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.GetList, entity, addSwaggerComments,
-                feature, projectBaseName);
+            mediator.Send(new ControllerModifier.AddEndpointCommand(FeatureType.GetList, entity, addSwaggerComments, feature)).GetAwaiter().GetResult();
         }
 
         if (feature.Type == FeatureType.GetAll.Name)
         {
             mediator.Send(new QueryGetAllBuilder.Command(entity, feature.IsProtected, feature.PermissionName, dbContextName));
             mediator.Send(new GetAllQueryTestBuilder.Command(entity, feature.PermissionName, feature.IsProtected)).GetAwaiter().GetResult();
-            new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.GetAll, entity, addSwaggerComments,
-                feature, projectBaseName);
+            mediator.Send(new ControllerModifier.AddEndpointCommand(FeatureType.GetAll, entity, addSwaggerComments, feature)).GetAwaiter().GetResult();
         }
 
         if (feature.Type == FeatureType.DeleteRecord.Name)
         {
             mediator.Send(new CommandDeleteRecordBuilder.CommandDeleteRecordBuilderCommand(entity, feature.IsProtected, feature.PermissionName, dbContextName));
             mediator.Send(new DeleteCommandTestBuilder.Command(entity, useSoftDelete, feature.PermissionName, feature.IsProtected)).GetAwaiter().GetResult();
-            new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.DeleteRecord, entity, addSwaggerComments,
-                feature, projectBaseName);
+            mediator.Send(new ControllerModifier.AddEndpointCommand(FeatureType.DeleteRecord, entity, addSwaggerComments, feature)).GetAwaiter().GetResult();
         }
 
         if (feature.Type == FeatureType.UpdateRecord.Name)
@@ -433,8 +428,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
                     break;
             }
             
-            new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.UpdateRecord, entity, addSwaggerComments,
-                feature, projectBaseName);
+            mediator.Send(new ControllerModifier.AddEndpointCommand(FeatureType.UpdateRecord, entity, addSwaggerComments, feature)).GetAwaiter().GetResult();
         }
 
         // if (feature.Type == FeatureType.PatchRecord.Name)
@@ -450,8 +444,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         {
             mediator.Send(new CommandAddListBuilder.Command(entity, feature, feature.IsProtected, feature.PermissionName, dbContextName)).GetAwaiter().GetResult();
             mediator.Send(new AddListCommandTestBuilder.Command(entity, feature, feature.PermissionName, feature.IsProtected)).GetAwaiter().GetResult();
-            new ControllerModifier(fileSystem).AddEndpoint(srcDirectory, FeatureType.AddListByFk, entity, addSwaggerComments,
-                feature, projectBaseName);
+            mediator.Send(new ControllerModifier.AddEndpointCommand(FeatureType.AddListByFk, entity, addSwaggerComments, feature)).GetAwaiter().GetResult();
         }
 
         if (feature.Type == FeatureType.AdHoc.Name)

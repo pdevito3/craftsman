@@ -4,10 +4,32 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using Services;
+using MediatR;
 
-public class MassTransitModifier(IFileSystem fileSystem)
+public static class MassTransitModifier
 {
-    public void AddConsumerRegistration(string solutionDirectory, string endpointRegistrationName, string projectBaseName)
+    public sealed record AddConsumerRegistrationCommand(string EndpointRegistrationName) : IRequest;
+    public sealed record AddProducerRegistrationCommand(string EndpointRegistrationName) : IRequest;
+
+    public class AddConsumerRegistrationHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddConsumerRegistrationCommand>
+    {
+        public Task Handle(AddConsumerRegistrationCommand request, CancellationToken cancellationToken)
+        {
+            AddConsumerRegistration(scaffoldingDirectoryStore.SrcDirectory, request.EndpointRegistrationName, scaffoldingDirectoryStore.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
+    }
+
+    public class AddProducerRegistrationHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddProducerRegistrationCommand>
+    {
+        public Task Handle(AddProducerRegistrationCommand request, CancellationToken cancellationToken)
+        {
+            AddProducerRegistration(scaffoldingDirectoryStore.SrcDirectory, request.EndpointRegistrationName, scaffoldingDirectoryStore.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void AddConsumerRegistration(string solutionDirectory, string endpointRegistrationName, string projectBaseName, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"{FileNames.GetMassTransitRegistrationName()}.cs", projectBaseName);
 
@@ -64,7 +86,7 @@ public class MassTransitModifier(IFileSystem fileSystem)
         }
     }
 
-    public void AddProducerRegistration(string solutionDirectory, string endpointRegistrationName, string projectBaseName)
+    private static void AddProducerRegistration(string solutionDirectory, string endpointRegistrationName, string projectBaseName, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.WebApiServiceExtensionsClassPath(solutionDirectory, $"{FileNames.GetMassTransitRegistrationName()}.cs", projectBaseName);
 

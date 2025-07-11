@@ -37,7 +37,7 @@ public class RegisterProducerCommand(
 
         var producer = RunPrompt();
         mediator.Send(new ProducerRegistrationBuilder.ProducerRegistrationBuilderCommand(potentialBoundaryDirectory, scaffoldingDirectoryStore.SrcDirectory, producer, scaffoldingDirectoryStore.ProjectBaseName)).GetAwaiter().GetResult();
-        new MassTransitModifier(fileSystem).AddProducerRegistration(scaffoldingDirectoryStore.SrcDirectory, producer.EndpointRegistrationMethodName, scaffoldingDirectoryStore.ProjectBaseName);
+        mediator.Send(new MassTransitModifier.AddProducerRegistrationCommand(producer.EndpointRegistrationMethodName)).GetAwaiter().GetResult();
 
         consoleWriter.WriteHelpHeader($"{Environment.NewLine}Your producer has been successfully registered. Keep up the good work!");
 

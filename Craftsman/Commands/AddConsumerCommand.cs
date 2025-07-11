@@ -79,7 +79,7 @@ public class AddConsumerCommand : Command<AddConsumerCommand.Settings>
         {
             await _mediator.Send(new ConsumerBuilder.Command(consumer));
             await _mediator.Send(new ConsumerRegistrationBuilder.ConsumerRegistrationBuilderCommand(srcDirectory, consumer, projectBaseName));
-            new MassTransitModifier(_fileSystem).AddConsumerRegistration(srcDirectory, consumer.EndpointRegistrationMethodName, projectBaseName);
+            _mediator.Send(new MassTransitModifier.AddConsumerRegistrationCommand(consumer.EndpointRegistrationMethodName)).GetAwaiter().GetResult();
 
             new IntegrationTestFixtureModifier(_fileSystem, _consoleWriter).AddMasstransitConsumer(testDirectory, consumer.ConsumerName, consumer.DomainDirectory, projectBaseName, srcDirectory);
         }

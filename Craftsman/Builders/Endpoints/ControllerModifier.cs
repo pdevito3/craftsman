@@ -6,30 +6,45 @@ using System.IO.Abstractions;
 using Domain;
 using Domain.Enums;
 using Services;
+using MediatR;
 
-public class ControllerModifier
+public static class ControllerModifier
 {
-    private readonly IFileSystem _fileSystem;
+    public sealed record AddEndpointCommand(FeatureType FeatureType, Entity Entity, bool AddSwaggerComments, Feature Feature) : IRequest;
+    public sealed record AddCustomUserEndpointCommand() : IRequest;
 
-    public ControllerModifier(IFileSystem fileSystem)
+    public class AddEndpointHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddEndpointCommand>
     {
-        _fileSystem = fileSystem;
+        public Task Handle(AddEndpointCommand request, CancellationToken cancellationToken)
+        {
+            AddEndpoint(scaffoldingDirectoryStore.SrcDirectory, request.FeatureType, request.Entity, request.AddSwaggerComments, request.Feature, scaffoldingDirectoryStore.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
     }
 
-    public void AddEndpoint(string srcDirectory, FeatureType featureType, Entity entity, bool addSwaggerComments, Feature feature, string projectBaseName)
+    public class AddCustomUserEndpointHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddCustomUserEndpointCommand>
+    {
+        public Task Handle(AddCustomUserEndpointCommand request, CancellationToken cancellationToken)
+        {
+            AddCustomUserEndpoint(scaffoldingDirectoryStore.SrcDirectory, scaffoldingDirectoryStore.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void AddEndpoint(string srcDirectory, FeatureType featureType, Entity entity, bool addSwaggerComments, Feature feature, string projectBaseName, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{FileNames.GetControllerName(entity.Plural)}.cs", projectBaseName, "v1");
 
-        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
-            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+        if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+            fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        if (!fileSystem.File.Exists(classPath.FullClassPath))
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
         var tempPath = $"{classPath.FullClassPath}temp";
-        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
+        using (var input = fileSystem.File.OpenText(classPath.FullClassPath))
         {
-            using var output = _fileSystem.File.CreateText(tempPath);
+            using var output = fileSystem.File.CreateText(tempPath);
             {
                 string line;
                 while (null != (line = input.ReadLine()))
@@ -64,23 +79,23 @@ public class ControllerModifier
         }
 
         // delete the old file and set the name of the new one to the original name
-        _fileSystem.File.Delete(classPath.FullClassPath);
-        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+        fileSystem.File.Delete(classPath.FullClassPath);
+        fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
-    public void AddCustomUserEndpoint(string srcDirectory, string projectBaseName)
+    private static void AddCustomUserEndpoint(string srcDirectory, string projectBaseName, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.ControllerClassPath(srcDirectory, $"{FileNames.GetControllerName("Users")}.cs", projectBaseName, "v1");
 
-        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
-            _fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
+        if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
+            fileSystem.Directory.CreateDirectory(classPath.ClassDirectory);
 
-        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        if (!fileSystem.File.Exists(classPath.FullClassPath))
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
         var tempPath = $"{classPath.FullClassPath}temp";
-        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
+        using (var input = fileSystem.File.OpenText(classPath.FullClassPath))
         {
-            using var output = _fileSystem.File.CreateText(tempPath);
+            using var output = fileSystem.File.CreateText(tempPath);
             {
                 string line;
                 while (null != (line = input.ReadLine()))
@@ -100,7 +115,7 @@ public class ControllerModifier
         }
 
         // delete the old file and set the name of the new one to the original name
-        _fileSystem.File.Delete(classPath.FullClassPath);
-        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+        fileSystem.File.Delete(classPath.FullClassPath);
+        fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 }

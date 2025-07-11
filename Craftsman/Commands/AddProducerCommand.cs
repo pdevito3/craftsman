@@ -68,7 +68,7 @@ public class AddProducerCommand(
         {
             mediator.Send(new ProducerBuilder.Command(producer)).GetAwaiter().GetResult();
             mediator.Send(new ProducerRegistrationBuilder.ProducerRegistrationBuilderCommand(solutionDirectory, srcDirectory, producer, projectBaseName)).GetAwaiter().GetResult();
-            new MassTransitModifier(fileSystem).AddProducerRegistration(srcDirectory, producer.EndpointRegistrationMethodName, projectBaseName);
+            mediator.Send(new MassTransitModifier.AddProducerRegistrationCommand(producer.EndpointRegistrationMethodName)).GetAwaiter().GetResult();
         }
     }
 }

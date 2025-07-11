@@ -6,10 +6,22 @@ using System.IO;
 using System.IO.Abstractions;
 using Domain;
 using Services;
+using MediatR;
 
-public class DbContextModifier(IFileSystem fileSystem)
+public static class DbContextModifier
 {
-    public void AddDbSetAndConfig(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName)
+    public sealed record AddDbSetAndConfigCommand(List<Entity> Entities, string DbContextName) : IRequest;
+
+    public class AddDbSetAndConfigHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddDbSetAndConfigCommand>
+    {
+        public Task Handle(AddDbSetAndConfigCommand request, CancellationToken cancellationToken)
+        {
+            AddDbSetAndConfig(scaffoldingDirectoryStore.SrcDirectory, request.Entities, request.DbContextName, scaffoldingDirectoryStore.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void AddDbSetAndConfig(string solutionDirectory, List<Entity> entities, string dbContextName, string projectBaseName, IFileSystem fileSystem)
     {
         var classPath = ClassPathHelper.DbContextClassPath(solutionDirectory, $"{dbContextName}.cs", projectBaseName);
         var entitiesUsings = "";
