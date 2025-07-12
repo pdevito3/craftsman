@@ -24,6 +24,7 @@ public static class SharedKernelCsProjBuilder
 
     public static string GetMessagesCsProjFileText()
     {
+        // lang=xml
         return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>

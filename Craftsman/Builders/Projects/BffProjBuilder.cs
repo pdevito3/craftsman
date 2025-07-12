@@ -24,6 +24,7 @@ public static class BffProjBuilder
 
     public static string ProjectFileText(int? proxyPort, string projectBaseName)
     {
+        // lang=xml
         return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>

@@ -24,6 +24,7 @@ public static class AuthServerProjBuilder
 
     public static string ProjectFileText()
     {
+        // lang=xml
         return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>

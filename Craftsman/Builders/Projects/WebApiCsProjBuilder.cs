@@ -26,6 +26,7 @@ public static class WebApiCsProjBuilder
         if (!useCustomErrorHandler)
             errorPackages = $@"{Environment.NewLine}    <PackageReference Include=""Hellang.Middleware.ProblemDetails"" Version=""6.5.1"" />";
         
+        // lang=xml
         return @$"<Project Sdk=""Microsoft.NET.Sdk.Web"">
 
   <PropertyGroup>

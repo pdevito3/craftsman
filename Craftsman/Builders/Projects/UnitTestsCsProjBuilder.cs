@@ -26,6 +26,7 @@ public static class UnitTestsCsProjBuilder
         var apiClassPath = ClassPathHelper.WebApiProjectClassPath(solutionDirectory, projectBaseName);
         var sharedTestClassPath = ClassPathHelper.SharedTestProjectClassPath(solutionDirectory, projectBaseName);
 
+        // lang=xml
         return @$"<Project Sdk=""Microsoft.NET.Sdk"">
 
   <PropertyGroup>
