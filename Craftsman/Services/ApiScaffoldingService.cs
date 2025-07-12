@@ -103,7 +103,7 @@ public class ApiScaffoldingService(
             mediator.Send(new PermissionsBuilder.Command(template.AddJwtAuthentication)).GetAwaiter().GetResult(); // <-- needs to run before entity features
             mediator.Send(new UserPolicyHandlerBuilder.Command(template.DbContext.ContextName)).GetAwaiter().GetResult();
             mediator.Send(new InfrastructureServiceRegistrationModifier.InitializeAuthServicesCommand()).GetAwaiter().GetResult();
-            new EntityScaffoldingService(utilities, fileSystem, mediator, consoleWriter).ScaffoldRolePermissions(solutionDirectory,
+            new EntityScaffoldingService(utilities, fileSystem, mediator).ScaffoldRolePermissions(solutionDirectory,
                 srcDirectory,
                 testDirectory,
                 projectBaseName,
@@ -111,7 +111,7 @@ public class ApiScaffoldingService(
                 template.SwaggerConfig.AddSwaggerComments,
                 template.UseSoftDelete);
 
-            new EntityScaffoldingService(utilities, fileSystem, mediator, consoleWriter).ScaffoldUser(solutionDirectory,
+            new EntityScaffoldingService(utilities, fileSystem, mediator).ScaffoldUser(solutionDirectory,
                 srcDirectory,
                 testDirectory,
                 projectBaseName,
@@ -123,7 +123,7 @@ public class ApiScaffoldingService(
         }
 
         //entities
-        new EntityScaffoldingService(utilities, fileSystem, mediator, consoleWriter).ScaffoldEntities(solutionDirectory,
+        new EntityScaffoldingService(utilities, fileSystem, mediator).ScaffoldEntities(solutionDirectory,
             srcDirectory,
             testDirectory,
             projectBaseName,

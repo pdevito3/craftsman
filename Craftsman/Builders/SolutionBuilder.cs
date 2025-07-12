@@ -21,7 +21,6 @@ public static class SolutionBuilder
     public class BuildSolutionHandler(
         ICraftsmanUtilities utilities,
         IFileSystem fileSystem,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore,
         IMediator mediator)
         : IRequestHandler<BuildSolutionCommand>
     {
@@ -36,7 +35,6 @@ public static class SolutionBuilder
     public class AddProjectsHandler(
         ICraftsmanUtilities utilities,
         IFileSystem fileSystem,
-        IScaffoldingDirectoryStore scaffoldingDirectoryStore,
         IMediator mediator)
         : IRequestHandler<AddProjectsCommand>
     {
@@ -134,7 +132,6 @@ public static class SolutionBuilder
 
     public class BuildSharedKernelProjectHandler(
         ICraftsmanUtilities utilities,
-        IFileSystem fileSystem,
         IMediator mediator)
         : IRequestHandler<BuildSharedKernelProjectCommand>
     {
@@ -151,7 +148,6 @@ public static class SolutionBuilder
 
     public class BuildAuthServerProjectHandler(
         ICraftsmanUtilities utilities,
-        IFileSystem fileSystem,
         IMediator mediator)
         : IRequestHandler<BuildAuthServerProjectCommand>
     {
@@ -168,7 +164,6 @@ public static class SolutionBuilder
 
     public class BuildBffProjectHandler(
         ICraftsmanUtilities utilities,
-        IFileSystem fileSystem,
         IMediator mediator)
         : IRequestHandler<BuildBffProjectCommand>
     {

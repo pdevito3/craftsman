@@ -20,7 +20,7 @@ using Domain.Enums;
 using Helpers;
 using MediatR;
 
-public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem fileSystem, IMediator mediator, IConsoleWriter consoleWriter)
+public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem fileSystem, IMediator mediator)
 {
     public void ScaffoldEntities(string solutionDirectory,
         string srcDirectory,
