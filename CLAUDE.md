@@ -103,53 +103,57 @@ The tool's primary function is translating YAML/JSON configuration files into co
           }
   ```
 
-  
+- When creating a `Builder` or `Modifier`, be sure to set it up as a MediatR command with DI in the handler as needed for services like
+  - `IScaffoldingDirectoryStore`  for sln and project info (instead of needing to pass with props)
+  - `ICraftsmanUtilities` for various Craftsman utilities
+  - `IFileSystem` for file operations
+  - `IConsoleWriter` for console output
 
-- When creating a `Builder` or `Modifier`, be sure to set it up as a MediatR command like with DI in the handler for `IScaffoldingDirectoryStore`  or whatever else is needed. Here is an example:
+Here is an example:
 
-  ```c#
-  public static class CreatedDomainEventBuilder
-  {
-      public class CreatedDomainEventBuilderCommand(string entityName, string entityPlural) : IRequest<bool>
-      {
-          public string EntityName { get; set; } = entityName;
-          public string EntityPlural { get; set; } = entityPlural;
-      }
+    ```c#
+    public static class CreatedDomainEventBuilder
+    {
+        public class CreatedDomainEventBuilderCommand(string entityName, string entityPlural) : IRequest<bool>
+        {
+            public string EntityName { get; set; } = entityName;
+            public string EntityPlural { get; set; } = entityPlural;
+        }
   
-      public class Handler(
-          ICraftsmanUtilities utilities,
-          IScaffoldingDirectoryStore scaffoldingDirectoryStore)
-          : IRequestHandler<CreatedDomainEventBuilderCommand, bool>
-      {
-          public Task<bool> Handle(CreatedDomainEventBuilderCommand request, CancellationToken cancellationToken)
-          {
-              var classPath = ClassPathHelper.DomainEventsClassPath(scaffoldingDirectoryStore.SrcDirectory,
-                  $"{FileNames.EntityCreatedDomainMessage(request.EntityName)}.cs",
-                  request.EntityPlural,
-                  scaffoldingDirectoryStore.ProjectBaseName);
-              var fileText = GetFileText(classPath.ClassNamespace, request.EntityName);
-              utilities.CreateFile(classPath, fileText);
-              return Task.FromResult(true);
-          }
+        public class Handler(
+            ICraftsmanUtilities utilities,
+            IScaffoldingDirectoryStore scaffoldingDirectoryStore)
+            : IRequestHandler<CreatedDomainEventBuilderCommand, bool>
+        {
+            public Task<bool> Handle(CreatedDomainEventBuilderCommand request, CancellationToken cancellationToken)
+            {
+                var classPath = ClassPathHelper.DomainEventsClassPath(scaffoldingDirectoryStore.SrcDirectory,
+                    $"{FileNames.EntityCreatedDomainMessage(request.EntityName)}.cs",
+                    request.EntityPlural,
+                    scaffoldingDirectoryStore.ProjectBaseName);
+                var fileText = GetFileText(classPath.ClassNamespace, request.EntityName);
+                utilities.CreateFile(classPath, fileText);
+                return Task.FromResult(true);
+            }
   
-          private static string GetFileText(string classNamespace, string entityName)
-          {
-              // lang=csharp
-              return $$"""
-                       namespace {{classNamespace}};
+            private static string GetFileText(string classNamespace, string entityName)
+            {
+                // lang=csharp
+                return $$"""
+                         namespace {{classNamespace}};
   
-                       public sealed class {{FileNames.EntityCreatedDomainMessage(entityName)}} : DomainEvent
-                       {
-                           public {{entityName}} {{entityName}} { get; set; } 
-                       }
+                         public sealed class {{FileNames.EntityCreatedDomainMessage(entityName)}} : DomainEvent
+                         {
+                             public {{entityName}} {{entityName}} { get; set; } 
+                         }
                                    
-                       """;
-          }
-      }
-  }
-  ```
+                         """;
+            }
+        }
+    }
+    ```
 
   
 
-- When a new feature is added, bug is fixed, etc. be sure to add the updates to the Changelog
+- When a new feature is added, bug is fixed, etc. be sure to add the updates to the Changelog.
 
