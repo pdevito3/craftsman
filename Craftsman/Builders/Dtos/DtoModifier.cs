@@ -7,38 +7,38 @@ using System.IO.Abstractions;
 using Domain;
 using Domain.Enums;
 using Services;
+using MediatR;
 
-public class DtoModifier
+public static class DtoModifier
 {
-    private readonly IFileSystem _fileSystem;
-
-    public DtoModifier(IFileSystem fileSystem)
+    public sealed record AddPropertiesToDtosCommand(string EntityName, List<EntityProperty> Props, string ProjectBaseName) : IRequest;
+    
+    public class AddPropertiesToDtosHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddPropertiesToDtosCommand>
     {
-        _fileSystem = fileSystem;
+        public Task Handle(AddPropertiesToDtosCommand request, CancellationToken cancellationToken)
+        {
+            UpdateDtoFile(scaffoldingDirectoryStore.SolutionDirectory, request.EntityName, request.Props, Dto.Read, request.ProjectBaseName, fileSystem);
+            UpdateDtoFile(scaffoldingDirectoryStore.SolutionDirectory, request.EntityName, request.Props, Dto.Creation, request.ProjectBaseName, fileSystem);
+            UpdateDtoFile(scaffoldingDirectoryStore.SolutionDirectory, request.EntityName, request.Props, Dto.Update, request.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
     }
 
-    public void AddPropertiesToDtos(string solutionDirectory, string entityName, List<EntityProperty> props, string projectBaseName)
-    {
-        UpdateDtoFile(solutionDirectory, entityName, props, Dto.Read, projectBaseName);
-        UpdateDtoFile(solutionDirectory, entityName, props, Dto.Creation, projectBaseName);
-        UpdateDtoFile(solutionDirectory, entityName, props, Dto.Update, projectBaseName);
-    }
-
-    private void UpdateDtoFile(string solutionDirectory, string entityName, List<EntityProperty> props, Dto dto, string projectBaseName)
+    private static void UpdateDtoFile(string solutionDirectory, string entityName, List<EntityProperty> props, Dto dto, string projectBaseName, IFileSystem fileSystem)
     {
         var dtoFileName = $"{FileNames.GetDtoName(entityName, dto)}.cs";
         var classPath = ClassPathHelper.DtoClassPath(solutionDirectory, dtoFileName, entityName, projectBaseName);
 
-        if (!_fileSystem.Directory.Exists(classPath.ClassDirectory))
+        if (!fileSystem.Directory.Exists(classPath.ClassDirectory))
             throw new DirectoryNotFoundException($"The `{classPath.ClassDirectory}` directory could not be found.");
 
-        if (!_fileSystem.File.Exists(classPath.FullClassPath))
+        if (!fileSystem.File.Exists(classPath.FullClassPath))
             throw new FileNotFoundException($"The `{classPath.FullClassPath}` file could not be found.");
 
         var tempPath = $"{classPath.FullClassPath}temp";
-        using (var input = _fileSystem.File.OpenText(classPath.FullClassPath))
+        using (var input = fileSystem.File.OpenText(classPath.FullClassPath))
         {
-            using var output = _fileSystem.File.CreateText(tempPath);
+            using var output = fileSystem.File.CreateText(tempPath);
             {
                 string line;
 
@@ -56,7 +56,7 @@ public class DtoModifier
         }
 
         // delete the old file and set the name of the new one to the original name
-        _fileSystem.File.Delete(classPath.FullClassPath);
-        _fileSystem.File.Move(tempPath, classPath.FullClassPath);
+        fileSystem.File.Delete(classPath.FullClassPath);
+        fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 }

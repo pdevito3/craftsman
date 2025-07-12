@@ -39,7 +39,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
             mediator.Send(new DtoBuilder.CreateDtosCommand(entity));
             mediator.Send(new EntityModelBuilder.EntityModelBuilderCommand(entity));
             mediator.Send(new EntityMappingBuilder.EntityMappingBuilderCommand(entity.Name, entity.Plural));
-            new ApiRouteModifier(fileSystem, consoleWriter).AddRoutes(testDirectory, entity, projectBaseName); // api routes always added to testing by default. too much of a pain to scaffold dynamically
+            mediator.Send(new ApiRouteModifier.AddRoutesCommand(entity, projectBaseName)).GetAwaiter().GetResult(); // api routes always added to testing by default. too much of a pain to scaffold dynamically
 
             mediator.Send(new DatabaseEntityConfigBuilder.Command(entity.Name, entity.Plural, entity.Properties));
 
@@ -98,11 +98,11 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
                     entity.Name, 
                     entity.Plural));
                 
-                new DatabaseEntityConfigModifier(fileSystem, consoleWriter).AddRelationships(srcDirectory, 
+                mediator.Send(new DatabaseEntityConfigModifier.AddRelationshipsCommand(
                     entity.Name,
                     entity.Plural, 
                     entityProperty, 
-                    projectBaseName);
+                    projectBaseName)).GetAwaiter().GetResult();
             }
         }
     }
@@ -114,10 +114,10 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
             var valueObjectProps = entity.Properties.Where(x => x.IsValueObject).ToList();
             foreach (var valueObjectProp in valueObjectProps)
             {
-                new DatabaseEntityConfigModifier(fileSystem, consoleWriter).AddValueObjectConfig(srcDirectory, 
+                mediator.Send(new DatabaseEntityConfigModifier.AddValueObjectConfigCommand(
                     entity.Name,
                     valueObjectProp, 
-                    projectBaseName);
+                    projectBaseName)).GetAwaiter().GetResult();
             }
         }
         
@@ -177,12 +177,11 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
             {
                 if (entityProperty.Type.ToLowerInvariant() != "string")
                 {
-                    new EntityMappingModifier(fileSystem, consoleWriter)
-                        .UpdateMappingAttributesForValueObject(srcDirectory, 
-                            entityThatHasValueObjectProperties.Name,
-                            entityThatHasValueObjectProperties.Plural, 
-                            entityProperty, 
-                            projectBaseName);
+                    mediator.Send(new EntityMappingModifier.UpdateMappingAttributesForValueObjectCommand(
+                        entityThatHasValueObjectProperties.Name,
+                        entityThatHasValueObjectProperties.Plural, 
+                        entityProperty, 
+                        projectBaseName)).GetAwaiter().GetResult();
                 }
             }
         }
@@ -200,11 +199,11 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
                     entity.Name,
                     entity.Plural));
                 
-                new DatabaseEntityConfigModifier(fileSystem, consoleWriter).AddStringArrayProperty(srcDirectory, 
+                mediator.Send(new DatabaseEntityConfigModifier.AddStringArrayPropertyCommand(
                     entity.Name,
                     stringArrayProp, 
                     dbProvider,
-                    projectBaseName);
+                    projectBaseName)).GetAwaiter().GetResult();
             }
             
         }
@@ -241,7 +240,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         mediator.Send(new DtoBuilder.CreateDtosCommand(entity));
         mediator.Send(new EntityModelBuilder.EntityModelBuilderCommand(entity));
         mediator.Send(new EntityMappingBuilder.EntityMappingBuilderCommand(entity.Name, entity.Plural));
-        new ApiRouteModifier(fileSystem, consoleWriter).AddRoutes(testDirectory, entity, projectBaseName);
+        mediator.Send(new ApiRouteModifier.AddRoutesCommand(entity, projectBaseName)).GetAwaiter().GetResult();
         mediator.Send(new DatabaseEntityConfigRolePermissionBuilder.Command());
 
         if (entity.Features.Count > 0)
@@ -306,7 +305,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         
         mediator.Send(new EntityModelBuilder.EntityModelBuilderCommand(userEntity));
         mediator.Send(new EntityMappingBuilder.EntityMappingBuilderCommand("User", "Users"));
-        new ApiRouteModifier(fileSystem, consoleWriter).AddRoutesForUser(testDirectory, projectBaseName);
+        mediator.Send(new ApiRouteModifier.AddRoutesForUserCommand(projectBaseName)).GetAwaiter().GetResult();
         mediator.Send(new DatabaseEntityConfigUserBuilder.Command());
         mediator.Send(new DatabaseEntityConfigUserRoleBuilder.Command());
         
@@ -320,7 +319,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
         mediator.Send(new CommandAddUserRoleBuilder.CommandAddUserRoleBuilderCommand(userEntity, dbContextName));
         mediator.Send(new CommandRemoveUserRoleBuilder.CommandRemoveUserRoleBuilderCommand(userEntity, dbContextName));
         // new AddUserFeatureBuilder(_utilities).AddFeature(srcDirectory, projectBaseName);
-        new AddUserFeatureOverrideModifier(fileSystem).UpdateAddUserFeature(srcDirectory, projectBaseName, dbContextName);
+        mediator.Send(new AddUserFeatureOverrideModifier.UpdateAddUserFeatureCommand(projectBaseName, dbContextName)).GetAwaiter().GetResult();
 
         // extra testing
         mediator.Send(new FakesBuilder.CreateUserFakesCommand(userEntity)).GetAwaiter().GetResult();
@@ -350,7 +349,7 @@ public class EntityScaffoldingService(ICraftsmanUtilities utilities, IFileSystem
             mediator.Send(new ControllerBuilder.ControllerBuilderCommand(entity.Plural, projectBaseName, feature.IsProtected));
 
         if (feature.IsProtected)
-            new PermissionsModifier(fileSystem).AddPermission(srcDirectory, feature.PermissionName, projectBaseName);
+            mediator.Send(new Builders.Auth.PermissionsModifier.AddPermissionCommand(feature.PermissionName)).GetAwaiter().GetResult();
 
         if (feature.Type == FeatureType.AddRecord.Name)
         {

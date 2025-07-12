@@ -7,10 +7,42 @@ using System.IO.Abstractions;
 using Domain;
 using Helpers;
 using Services;
+using MediatR;
 
-public class DatabaseEntityConfigModifier(IFileSystem fileSystem, IConsoleWriter consoleWriter)
+public static class DatabaseEntityConfigModifier
 {
-    public void AddRelationships(string srcDirectory, string entityName, string entityPlural, EntityProperty entityProperty, string projectBaseName)
+    public sealed record AddRelationshipsCommand(string EntityName, string EntityPlural, EntityProperty EntityProperty, string ProjectBaseName) : IRequest;
+    public sealed record AddStringArrayPropertyCommand(string EntityName, EntityProperty EntityProperty, DbProvider DbProvider, string ProjectBaseName) : IRequest;
+    public sealed record AddValueObjectConfigCommand(string EntityName, EntityProperty EntityProperty, string ProjectBaseName) : IRequest;
+
+    public class AddRelationshipsHandler(IFileSystem fileSystem, IConsoleWriter consoleWriter, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddRelationshipsCommand>
+    {
+        public Task Handle(AddRelationshipsCommand request, CancellationToken cancellationToken)
+        {
+            AddRelationships(scaffoldingDirectoryStore.SrcDirectory, request.EntityName, request.EntityPlural, request.EntityProperty, request.ProjectBaseName, fileSystem, consoleWriter);
+            return Task.CompletedTask;
+        }
+    }
+
+    public class AddStringArrayPropertyHandler(IFileSystem fileSystem, IConsoleWriter consoleWriter, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddStringArrayPropertyCommand>
+    {
+        public Task Handle(AddStringArrayPropertyCommand request, CancellationToken cancellationToken)
+        {
+            AddStringArrayProperty(scaffoldingDirectoryStore.SrcDirectory, request.EntityName, request.EntityProperty, request.DbProvider, request.ProjectBaseName, fileSystem, consoleWriter);
+            return Task.CompletedTask;
+        }
+    }
+
+    public class AddValueObjectConfigHandler(IFileSystem fileSystem, IConsoleWriter consoleWriter, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddValueObjectConfigCommand>
+    {
+        public Task Handle(AddValueObjectConfigCommand request, CancellationToken cancellationToken)
+        {
+            AddValueObjectConfig(scaffoldingDirectoryStore.SrcDirectory, request.EntityName, request.EntityProperty, request.ProjectBaseName, fileSystem, consoleWriter);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void AddRelationships(string srcDirectory, string entityName, string entityPlural, EntityProperty entityProperty, string projectBaseName, IFileSystem fileSystem, IConsoleWriter consoleWriter)
     {       
         var classPath = ClassPathHelper.DatabaseConfigClassPath(srcDirectory, 
             $"{FileNames.GetDatabaseEntityConfigName(entityName)}.cs",
@@ -58,11 +90,13 @@ public class DatabaseEntityConfigModifier(IFileSystem fileSystem, IConsoleWriter
         fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 
-    public void AddStringArrayProperty(string srcDirectory, 
+    private static void AddStringArrayProperty(string srcDirectory, 
         string entityName, 
         EntityProperty entityProperty,
         DbProvider dbProvider,
-        string projectBaseName)
+        string projectBaseName,
+        IFileSystem fileSystem,
+        IConsoleWriter consoleWriter)
     {
         var classPath = ClassPathHelper.DatabaseConfigClassPath(srcDirectory,
             $"{FileNames.GetDatabaseEntityConfigName(entityName)}.cs",
@@ -120,10 +154,12 @@ for {entityProperty.Name} in the {classPath.ClassName} class.");
         fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 
-    public void AddValueObjectConfig(string srcDirectory, 
+    private static void AddValueObjectConfig(string srcDirectory, 
         string entityName,
         EntityProperty entityProperty,
-        string projectBaseName)
+        string projectBaseName,
+        IFileSystem fileSystem,
+        IConsoleWriter consoleWriter)
     {
         var classPath = ClassPathHelper.DatabaseConfigClassPath(srcDirectory,
             $"{FileNames.GetDatabaseEntityConfigName(entityName)}.cs",

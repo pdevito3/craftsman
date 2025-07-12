@@ -5,10 +5,32 @@ using System.IO.Abstractions;
 using Domain;
 using Helpers;
 using Services;
+using MediatR;
 
-public class ApiRouteModifier(IFileSystem fileSystem, IConsoleWriter consoleWriter)
+public static class ApiRouteModifier
 {
-    public void AddRoutes(string testDirectory, Entity entity, string projectBaseName)
+    public sealed record AddRoutesCommand(Entity Entity, string ProjectBaseName) : IRequest;
+    public sealed record AddRoutesForUserCommand(string ProjectBaseName) : IRequest;
+
+    public class AddRoutesHandler(IFileSystem fileSystem, IConsoleWriter consoleWriter, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddRoutesCommand>
+    {
+        public Task Handle(AddRoutesCommand request, CancellationToken cancellationToken)
+        {
+            AddRoutes(scaffoldingDirectoryStore.TestDirectory, request.Entity, request.ProjectBaseName, fileSystem, consoleWriter);
+            return Task.CompletedTask;
+        }
+    }
+
+    public class AddRoutesForUserHandler(IFileSystem fileSystem, IConsoleWriter consoleWriter, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddRoutesForUserCommand>
+    {
+        public Task Handle(AddRoutesForUserCommand request, CancellationToken cancellationToken)
+        {
+            AddRoutesForUser(scaffoldingDirectoryStore.TestDirectory, request.ProjectBaseName, fileSystem, consoleWriter);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void AddRoutes(string testDirectory, Entity entity, string projectBaseName, IFileSystem fileSystem, IConsoleWriter consoleWriter)
     {
         var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "ApiRoutes.cs");
 
@@ -46,7 +68,7 @@ public class ApiRouteModifier(IFileSystem fileSystem, IConsoleWriter consoleWrit
         fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 
-    public void AddRoutesForUser(string testDirectory, string projectBaseName)
+    private static void AddRoutesForUser(string testDirectory, string projectBaseName, IFileSystem fileSystem, IConsoleWriter consoleWriter)
     {
         var classPath = ClassPathHelper.FunctionalTestUtilitiesClassPath(testDirectory, projectBaseName, "ApiRoutes.cs");
 

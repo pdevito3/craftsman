@@ -5,10 +5,22 @@ using Domain;
 using Domain.Enums;
 using Helpers;
 using Services;
+using MediatR;
 
-public class EntityMappingModifier(IFileSystem fileSystem, IConsoleWriter consoleWriter)
+public static class EntityMappingModifier
 {
-    public void UpdateMappingAttributesForValueObject(string srcDirectory, string entityName, string entityPlural, EntityProperty entityProperty, string projectBaseName)
+    public sealed record UpdateMappingAttributesForValueObjectCommand(string EntityName, string EntityPlural, EntityProperty EntityProperty, string ProjectBaseName) : IRequest;
+    
+    public class UpdateMappingAttributesForValueObjectHandler(IFileSystem fileSystem, IConsoleWriter consoleWriter, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<UpdateMappingAttributesForValueObjectCommand>
+    {
+        public Task Handle(UpdateMappingAttributesForValueObjectCommand request, CancellationToken cancellationToken)
+        {
+            UpdateMappingAttributesForValueObject(scaffoldingDirectoryStore.SrcDirectory, request.EntityName, request.EntityPlural, request.EntityProperty, request.ProjectBaseName, fileSystem, consoleWriter);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void UpdateMappingAttributesForValueObject(string srcDirectory, string entityName, string entityPlural, EntityProperty entityProperty, string projectBaseName, IFileSystem fileSystem, IConsoleWriter consoleWriter)
     {
         var classPath = ClassPathHelper.EntityMappingClassPath(srcDirectory,
             $"{FileNames.GetMappingName(entityName)}.cs",

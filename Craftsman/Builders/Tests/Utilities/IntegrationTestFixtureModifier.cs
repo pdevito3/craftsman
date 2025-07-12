@@ -5,10 +5,32 @@ using System.IO;
 using System.IO.Abstractions;
 using Helpers;
 using Services;
+using MediatR;
 
-public class IntegrationTestFixtureModifier(IFileSystem fileSystem, IConsoleWriter consoleWriter)
+public static class IntegrationTestFixtureModifier
 {
-    public void AddMassTransit(string testDirectory, string projectBaseName)
+    public sealed record AddMassTransitCommand() : IRequest;
+    public sealed record AddMasstransitConsumerCommand(string ConsumerName, string DomainDirectory) : IRequest;
+
+    public class AddMassTransitHandler(IFileSystem fileSystem, IConsoleWriter consoleWriter, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddMassTransitCommand>
+    {
+        public Task Handle(AddMassTransitCommand request, CancellationToken cancellationToken)
+        {
+            AddMassTransit(scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.ProjectBaseName, fileSystem, consoleWriter);
+            return Task.CompletedTask;
+        }
+    }
+
+    public class AddMasstransitConsumerHandler(IFileSystem fileSystem, IConsoleWriter consoleWriter, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddMasstransitConsumerCommand>
+    {
+        public Task Handle(AddMasstransitConsumerCommand request, CancellationToken cancellationToken)
+        {
+            AddMasstransitConsumer(scaffoldingDirectoryStore.TestDirectory, request.ConsumerName, request.DomainDirectory, scaffoldingDirectoryStore.ProjectBaseName, scaffoldingDirectoryStore.SrcDirectory, fileSystem, consoleWriter);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void AddMassTransit(string testDirectory, string projectBaseName, IFileSystem fileSystem, IConsoleWriter consoleWriter)
     {
         var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
 
@@ -119,7 +141,7 @@ public class IntegrationTestFixtureModifier(IFileSystem fileSystem, IConsoleWrit
         fileSystem.File.Move(tempPath, classPath.FullClassPath);
     }
 
-    public void AddMasstransitConsumer(string testDirectory, string consumerName, string domainDirectory, string projectBaseName, string srcDirectory)
+    private static void AddMasstransitConsumer(string testDirectory, string consumerName, string domainDirectory, string projectBaseName, string srcDirectory, IFileSystem fileSystem, IConsoleWriter consoleWriter)
     {
         var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(testDirectory, "TestFixture.cs", projectBaseName);
 

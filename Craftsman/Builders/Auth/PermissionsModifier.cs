@@ -2,10 +2,22 @@
 
 using System.IO.Abstractions;
 using Services;
+using MediatR;
 
-public class PermissionsModifier(IFileSystem fileSystem)
+public static class PermissionsModifier
 {
-    public void AddPermission(string srcDirectory, string permission, string projectBaseName)
+    public sealed record AddPermissionCommand(string Permission) : IRequest;
+
+    public class AddPermissionHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<AddPermissionCommand>
+    {
+        public Task Handle(AddPermissionCommand request, CancellationToken cancellationToken)
+        {
+            AddPermission(scaffoldingDirectoryStore.SrcDirectory, request.Permission, scaffoldingDirectoryStore.ProjectBaseName, fileSystem);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void AddPermission(string srcDirectory, string permission, string projectBaseName, IFileSystem fileSystem)
     {
         if(string.IsNullOrWhiteSpace(permission))
             return;

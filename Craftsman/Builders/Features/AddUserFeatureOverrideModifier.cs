@@ -5,10 +5,22 @@ using System.IO.Abstractions;
 using Craftsman.Domain.Enums;
 using Craftsman.Helpers;
 using Craftsman.Services;
+using MediatR;
 
-public class AddUserFeatureOverrideModifier(IFileSystem fileSystem)
+public static class AddUserFeatureOverrideModifier
 {
-    public void UpdateAddUserFeature(string srcDirectory, string projectBaseName, string dbContextName)
+    public sealed record UpdateAddUserFeatureCommand(string ProjectBaseName, string DbContextName) : IRequest;
+
+    public class UpdateAddUserFeatureHandler(IFileSystem fileSystem, IScaffoldingDirectoryStore scaffoldingDirectoryStore) : IRequestHandler<UpdateAddUserFeatureCommand>
+    {
+        public Task Handle(UpdateAddUserFeatureCommand request, CancellationToken cancellationToken)
+        {
+            UpdateAddUserFeature(scaffoldingDirectoryStore.SrcDirectory, request.ProjectBaseName, request.DbContextName, fileSystem);
+            return Task.CompletedTask;
+        }
+    }
+
+    private static void UpdateAddUserFeature(string srcDirectory, string projectBaseName, string dbContextName, IFileSystem fileSystem)
     {
         var entityName = "User";
         var entityPlural = "Users";

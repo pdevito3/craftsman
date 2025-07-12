@@ -76,7 +76,7 @@ public class AddBusCommand(
         mediator.Send(new WebApiLaunchSettingsModifier.UpdateLaunchSettingEnvVarCommand("RMQ_PASSWORD", template.Environment.BrokerSettings.Password)).GetAwaiter().GetResult();
         mediator.Send(new ProgramModifier.RegisterMassTransitServiceCommand()).GetAwaiter().GetResult();
 
-        new IntegrationTestFixtureModifier(fileSystem, consoleWriter).AddMassTransit(testDirectory, projectBaseName);
+        mediator.Send(new IntegrationTestFixtureModifier.AddMassTransitCommand()).GetAwaiter().GetResult();
         new DockerComposeBuilders(utilities, fileSystem).AddRmqToDockerCompose(solutionDirectory, template.Environment.BrokerSettings);
     }
 }
