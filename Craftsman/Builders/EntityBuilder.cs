@@ -326,7 +326,7 @@ using {voClassPath.ClassNamespace};";
             return !string.IsNullOrEmpty(defaultValue) ? @$" = Guid.Parse(""{defaultValue}"");" : "";
 
         if (prop.IsStringArray)
-            return " = Array.Empty<string>();";
+            return " = [];";
 
         return string.IsNullOrEmpty(defaultValue) ? "" : $" = {defaultValue};";
     }
