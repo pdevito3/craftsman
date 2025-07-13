@@ -15,7 +15,7 @@ public static class SharedTestsCsProjBuilder
     {
         public Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var classPath = ClassPathHelper.SharedTestProjectClassPath(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            var classPath = ClassPathHelper.SharedTestProjectClassPath(scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.ProjectBaseName);
             utilities.CreateFile(classPath, GetTestsCsProjFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName));
             return Task.CompletedTask;
         }

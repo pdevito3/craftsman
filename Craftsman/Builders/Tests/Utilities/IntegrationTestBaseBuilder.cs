@@ -15,7 +15,7 @@ public static class IntegrationTestBaseBuilder
     {
         public Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(scaffoldingDirectoryStore.SolutionDirectory, "TestBase.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(scaffoldingDirectoryStore.TestDirectory, "TestBase.cs", scaffoldingDirectoryStore.ProjectBaseName);
             var fileText = GetBaseText(classPath.ClassNamespace);
             utilities.CreateFile(classPath, fileText);
             return Task.CompletedTask;

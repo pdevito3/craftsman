@@ -16,7 +16,7 @@ public static class FunctionalTestsCsProjBuilder
     {
         public Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var classPath = ClassPathHelper.FunctionalTestProjectClassPath(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            var classPath = ClassPathHelper.FunctionalTestProjectClassPath(scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.ProjectBaseName);
             utilities.CreateFile(classPath, GetTestsCsProjFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.Provider));
             return Task.CompletedTask;
         }

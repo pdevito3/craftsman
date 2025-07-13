@@ -341,14 +341,14 @@ public static class ClassPathHelper
         return new ClassPath(solutionDirectory, Path.Combine($"{projectBaseName}{withSuffix}"), className);
     }
 
-    public static ClassPath IntegrationTestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
+    public static ClassPath IntegrationTestProjectRootClassPath(string testDirectory, string className, string projectBaseName)
     {
-        return new ClassPath(solutionDirectory, $"{projectBaseName}.{IntegrationTestProjectSuffix}", className);
+        return new ClassPath(testDirectory, $"{projectBaseName}.{IntegrationTestProjectSuffix}", className);
     }
 
-    public static ClassPath UnitTestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
+    public static ClassPath UnitTestProjectRootClassPath(string testDirectory, string className, string projectBaseName)
     {
-        return new ClassPath(solutionDirectory, $"{projectBaseName}.{UnitTestProjectSuffix}", className);
+        return new ClassPath(testDirectory, $"{projectBaseName}.{UnitTestProjectSuffix}", className);
     }
 
     public static ClassPath SharedKernelProjectRootClassPath(string solutionDirectory, string className)
@@ -366,9 +366,9 @@ public static class ClassPathHelper
         return new ClassPath(testDirectory, $"{projectBaseName}.{FunctionalTestProjectSuffix}", className);
     }
 
-    public static ClassPath SharedTestProjectRootClassPath(string solutionDirectory, string className, string projectBaseName)
+    public static ClassPath SharedTestProjectRootClassPath(string testDirectory, string className, string projectBaseName)
     {
-        return new ClassPath(solutionDirectory, $"{projectBaseName}.{SharedTestProjectSuffix}", className);
+        return new ClassPath(testDirectory, $"{projectBaseName}.{SharedTestProjectSuffix}", className);
     }
 
     public static ClassPath DtoClassPath(string srcDirectory, string className, string entityPlural, string projectBaseName)

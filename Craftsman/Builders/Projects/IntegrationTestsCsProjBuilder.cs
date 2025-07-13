@@ -14,7 +14,7 @@ public static class IntegrationTestsCsProjBuilder
     {
         public Task Handle(IntegrationTestsCsProjBuilderCommand request, CancellationToken cancellationToken)
         {
-            var classPath = ClassPathHelper.IntegrationTestProjectClassPath(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName);
+            var classPath = ClassPathHelper.IntegrationTestProjectClassPath(scaffoldingDirectoryStore.TestDirectory, scaffoldingDirectoryStore.ProjectBaseName);
             utilities.CreateFile(classPath, GetTestsCsProjFileText(scaffoldingDirectoryStore.SolutionDirectory, scaffoldingDirectoryStore.ProjectBaseName, request.Provider));
             return Task.CompletedTask;
         }

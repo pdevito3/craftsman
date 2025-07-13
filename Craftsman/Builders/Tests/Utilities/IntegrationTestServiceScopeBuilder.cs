@@ -15,7 +15,7 @@ public static class IntegrationTestServiceScopeBuilder
     {
         public Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(scaffoldingDirectoryStore.SolutionDirectory, $"{FileNames.TestingServiceScope()}.cs", scaffoldingDirectoryStore.ProjectBaseName);
+            var classPath = ClassPathHelper.IntegrationTestProjectRootClassPath(scaffoldingDirectoryStore.TestDirectory, $"{FileNames.TestingServiceScope()}.cs", scaffoldingDirectoryStore.ProjectBaseName);
             var fileText = GetBaseText(classPath.ClassNamespace, request.DbContextName, request.IsProtected);
             utilities.CreateFile(classPath, fileText);
             return Task.CompletedTask;
