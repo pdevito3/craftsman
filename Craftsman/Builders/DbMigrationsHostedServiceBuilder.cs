@@ -28,57 +28,69 @@ public static class DbMigrationsHostedServiceBuilder
         }
         private string GetFileText(string classNamespace, DbProvider dbProvider)
         {
+            // TODO update to a built in method on DbProvider
             var usingStatement = dbProvider == DbProvider.Postgres ? $@"
-using Npgsql;" : "";
+using Npgsql;
+using Medallion.Threading.Postgres;" : @"
+using Medallion.Threading.SqlServer;";
             var catchStatement = dbProvider == DbProvider.Postgres 
                 ? $@"catch (Exception ex) when (ex is SocketException or NpgsqlException)"
                 : $@"catch (Exception ex) when (ex is SocketException)";
-            return @$"namespace {classNamespace};
+            
+            //lang=csharp
+            return $$"""
+                     namespace {{classNamespace}};
 
-using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Serilog;{usingStatement}
+                     using System.Net.Sockets;
+                     using System.Threading;
+                     using System.Threading.Tasks;
+                     using Microsoft.EntityFrameworkCore;
+                     using Microsoft.Extensions.DependencyInjection;
+                     using Microsoft.Extensions.Hosting;
+                     using Resources;
+                     using Serilog;{{usingStatement}}
 
-public class {FileNames.GetMigrationHostedServiceFileName()}<TDbContext>(
-    IServiceScopeFactory scopeFactory)
-    : IHostedService
-    where TDbContext : DbContext
-{{
-    private readonly ILogger _logger = Log.ForContext<{FileNames.GetMigrationHostedServiceFileName()}<TDbContext>>();
+                     public class {{FileNames.GetMigrationHostedServiceFileName()}}<TDbContext>(IServiceScopeFactory scopeFactory,
+                        IConfiguration configuration) : IHostedService
+                         where TDbContext : DbContext
+                     {
+                         private readonly ILogger _logger = Log.ForContext<{{FileNames.GetMigrationHostedServiceFileName()}}<TDbContext>>();
 
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {{
-        try
-        {{
-            _logger.Information(""Applying migrations for {{DbContext}}"", typeof(TDbContext).Name);
+                         public async Task StartAsync(CancellationToken cancellationToken)
+                         {
+                             try
+                             {
+                                 _logger.Information("Applying migrations for {DbContext}", typeof(TDbContext).Name);
+                     
+                                var connectionString = configuration.GetConnectionStringOptions().{{CraftsmanUtilities.GetCleanProjectName(scaffoldingDirectoryStore.ProjectBaseName)}};
+                                 var @lock = new PostgresDistributedLock(new PostgresAdvisoryLockKey("{{scaffoldingDirectoryStore.ProjectBaseName}}_MigrationLock", allowHashing: true), connectionString);
+                                 await using (await @lock.AcquireAsync(cancellationToken: cancellationToken))
+                                 {
+                                     await using var scope = scopeFactory.CreateAsyncScope();
+                                     var context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+                                     await context.Database.MigrateAsync(cancellationToken);
+                                 }
 
-            await using var scope = scopeFactory.CreateAsyncScope();
-            var context = scope.ServiceProvider.GetRequiredService<TDbContext>();
-            await context.Database.MigrateAsync(cancellationToken);
+                                 _logger.Information("Migrations complete for {DbContext}", typeof(TDbContext).Name);
+                             }
+                             {{catchStatement}}
+                             {
+                                 _logger.Error(ex, "Could not connect to the database. Please check the connection string and make sure the database is running.");
+                                 throw;
+                             }
+                             catch (Exception ex)
+                             {
+                                 _logger.Error(ex, "An error occurred while applying the database migrations.");
+                                 throw;
+                             }
+                         }
 
-            _logger.Information(""Migrations complete for {{DbContext}}"", typeof(TDbContext).Name);
-        }}
-        {catchStatement}
-        {{
-            _logger.Error(ex, ""Could not connect to the database. Please check the connection string and make sure the database is running."");
-            throw;
-        }}
-        catch (Exception ex)
-        {{
-            _logger.Error(ex, ""An error occurred while applying the database migrations."");
-            throw;
-        }}
-    }}
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {{
-        return Task.CompletedTask;
-    }}
-}}";
+                         public Task StopAsync(CancellationToken cancellationToken)
+                         {
+                             return Task.CompletedTask;
+                         }
+                     }
+                     """;
         }
     }
     

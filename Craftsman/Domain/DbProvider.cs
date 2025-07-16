@@ -31,7 +31,8 @@ public abstract class DbProvider : SmartEnum<DbProvider>
     {
         public PostgresType() : base(nameof(Postgres), 1) { }
         public override string ApiPackageInclusionString(string version)
-            => @$"<PackageReference Include=""Npgsql.EntityFrameworkCore.PostgreSQL"" Version=""{version}"" />";
+            => @$"<PackageReference Include=""Npgsql.EntityFrameworkCore.PostgreSQL"" Version=""{version}"" />
+    <PackageReference Include=""DistributedLock.Postgres"" Version=""1.3.0"" />";
         public override string OTelSource()
             => @$"Npgsql";
         public override string DbRegistrationStatement() => @$"UseNpgsql";
@@ -70,7 +71,8 @@ public abstract class DbProvider : SmartEnum<DbProvider>
         public SqlServerType() : base(nameof(SqlServer), 2) { }
         public override string ApiPackageInclusionString(string version) 
             => @$"<PackageReference Include=""Microsoft.EntityFrameworkCore.SqlServer"" Version=""{version}"" />
-    <PackageReference Include = ""Microsoft.EntityFrameworkCore.Tools"" Version = ""{version}"" /> ";
+    <PackageReference Include = ""Microsoft.EntityFrameworkCore.Tools"" Version = ""{version}"" />
+    <PackageReference Include=""DistributedLock.SqlServer"" Version=""1.3.0"" />";
         
         public override string OTelSource()
             => @$"Microsoft.EntityFrameworkCore.SqlServer";        
