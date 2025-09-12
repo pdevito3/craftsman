@@ -30,6 +30,7 @@ public static class InfrastructureServiceRegistrationModifier
 
         var authUsings = $@"
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using HeimGuard;";
         var authServices = $@"
         var authOptions = configuration.GetAuthOptions();
@@ -46,6 +47,9 @@ using HeimGuard;";
 
         services.AddAuthorization(options =>
         {{
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
         }});
 
         services.AddHeimGuard<UserPolicyHandler>()
