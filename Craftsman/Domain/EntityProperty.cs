@@ -225,6 +225,16 @@ public class EntityProperty
             Type = "Guid"
         };
     }
+
+    /// <summary>
+    /// The summary used in the documentation - visible in swagger
+    /// </summary>
+    public string Summary { get; set; }
+
+    /// <summary>
+    /// An example value to fill swagger example
+    /// </summary>
+    public string Example { get; set; }
 }
 
 public class SmartOption

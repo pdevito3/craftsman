@@ -55,9 +55,15 @@ public sealed record {FileNames.GetDtoName(entity.Name, dto)}
 
             var defaultValue = props[eachProp].IsStringArray ? " = Array.Empty<string>();" : "";
 
+            string summary = string.IsNullOrWhiteSpace(props[eachProp].Summary) ? "" : $@"    ///<summary>{Environment.NewLine}    ///{props[eachProp].Summary}{Environment.NewLine}    ///</summary>{Environment.NewLine}";
+            string example = string.IsNullOrWhiteSpace(props[eachProp].Example) ? "" : $@"    ///<example>{props[eachProp].Example}</example>{Environment.NewLine}";
+
+
             var attributes = AttributeBuilder(props[eachProp]);
             string newLine = eachProp == props.Count - 1 ? "" : Environment.NewLine;
-            propString += $@"{attributes}    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{defaultValue}{newLine}";
+
+            propString += $@"{Environment.NewLine}{summary}{example}{attributes}    public {props[eachProp].Type} {props[eachProp].Name} {{ get; set; }}{defaultValue}{newLine}";
+
         }
 
         return propString;
