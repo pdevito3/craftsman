@@ -9,6 +9,8 @@ using System.Text.Json;
 using Domain;
 using Exceptions;
 using Services;
+using Spectre.Console;
+using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
 public interface IFileParsingHelper : ICraftsmanService
@@ -40,24 +42,56 @@ public class FileParsingHelper : IFileParsingHelper
 
     public T ReadYaml<T>(string yamlFile)
     {
-        var deserializer = new Deserializer();
-        T templatefromYaml = deserializer.Deserialize<T>(_fileSystem.File.ReadAllText(yamlFile));
+        try
+        {
+            var deserializer = new Deserializer();
+            T templatefromYaml = deserializer.Deserialize<T>(_fileSystem.File.ReadAllText(yamlFile));
 
-        return templatefromYaml;
+            return templatefromYaml;
+        }
+        catch (YamlException e)
+        {
+            var message = e.InnerException != null
+                ? $"{e.Message}: {e.InnerException.Message}"
+                : e.Message;
+            throw new InvalidTemplateException(Markup.Escape(message), e);
+        }
     }
 
     public static T ReadYamlString<T>(string yamlString)
     {
-        var deserializer = new Deserializer();
-        T templatefromYaml = deserializer.Deserialize<T>(yamlString);
+        try
+        {
+            var deserializer = new Deserializer();
+            T templatefromYaml = deserializer.Deserialize<T>(yamlString);
 
-        return templatefromYaml;
+            return templatefromYaml;
+        }
+        catch (YamlException e)
+        {
+            var message = e.InnerException != null
+                ? $"{e.Message}: {e.InnerException.Message}"
+                : e.Message;
+            throw new InvalidTemplateException(Markup.Escape(message), e);
+        }
     }
 
     public T ReadJson<T>(string jsonFile)
     {
-        var jsonString = _fileSystem.File.ReadAllText(jsonFile);
-        return JsonSerializer.Deserialize<T>(jsonString);
+        try
+        {
+            var jsonString = _fileSystem.File.ReadAllText(jsonFile);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true,
+            };
+            return JsonSerializer.Deserialize<T>(jsonString, options);
+        }
+        catch (JsonException e)
+        {
+            throw new InvalidTemplateException(Markup.Escape(e.Message), e);
+        }
     }
 
     public bool IsJsonOrYaml(string filePath)

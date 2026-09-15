@@ -83,4 +83,9 @@ public class ApiTemplate
     public DockerConfig DockerConfig { get; set; } = new DockerConfig();
     public bool UseCustomErrorHandler { get; set; } = false;
     public bool IncludeGithubTestActions { get; set; } = true;
+
+    /// <summary>
+    /// Complete list of messages for the bounded context (Issue #145).
+    /// </summary>
+    public List<Message> Messages { get; set; } = new List<Message>();
 }

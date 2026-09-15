@@ -20,20 +20,24 @@ public static class FileNames
         => $"WebAppServiceConfiguration";    
     public static string GetMassTransitRegistrationName() 
         => "MassTransitServiceExtension";
-    public static string MessageClassName(string messageName) 
-        => $"{messageName}";
-    public static string ConnectionStringOptionKey(string projectBaseName) 
+    // Normalize message class name and ensure bidirectional symmetry with interface naming (Issue #145)
+    public static string MessageClassName(string messageName)
+    {
+        var className = messageName?.UppercaseFirstLetter();
+        if (className != null && className.StartsWith("I") && className.Length > 1 && char.IsUpper(className[1]))
+            className = className.Remove(0, 1);
+
+        return className;
+    }
+    public static string ConnectionStringOptionKey(string projectBaseName)
         => $"{CraftsmanUtilities.GetCleanProjectName(projectBaseName)}Key";
     public static string TestingServiceScope() => "TestingServiceScope";
     public static string OptionsClassName(string projectBaseName) => $"{CraftsmanUtilities.GetCleanProjectName(projectBaseName)}Options";
     public static string FakeBuilderName(string entityName) => $"Fake{entityName}Builder";
     public static string MessageInterfaceName(string messageName)
     {
-        var nameWithI = $"I{messageName}";
-        if (nameWithI.StartsWith("II") && nameWithI.Length > 2 && char.IsUpper(nameWithI[2]))
-            nameWithI = nameWithI.Remove(1, 1);
-        
-        return nameWithI;
+        var className = MessageClassName(messageName);
+        return string.IsNullOrEmpty(className) ? className : $"I{className}";
     }
     public static string EntityCreatedDomainMessage(string entityName) => $"{entityName}Created";    
     public static string EntityUpdatedDomainMessage(string entityName) => $"{entityName}Updated";    
