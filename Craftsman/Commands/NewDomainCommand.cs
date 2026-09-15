@@ -1,6 +1,9 @@
 namespace Craftsman.Commands;
 
+using System;
+using System.Collections.Generic;
 using System.IO.Abstractions;
+using System.Linq;
 using Builders;
 using Builders.Docker;
 using Domain;
@@ -73,10 +76,17 @@ public class NewDomainCommand(
             new AddAuthServerCommand(fileSystem, consoleWriter, utilities, scaffoldingDirectoryStore, fileParsingHelper, mediator, console)
                 .AddAuthServer(solutionDirectory, domainProject.AuthServer);
 
-        // messages
-        if (domainProject.Messages.Count > 0)
+        // messages (Issue #145: aggregate and deduplicate across domain root and bounded contexts)
+        var allMessages = (domainProject.Messages ?? new List<Message>())
+            .Concat(domainProject.BoundedContexts?.SelectMany(bc => bc.Messages ?? new List<Message>()) ?? Enumerable.Empty<Message>())
+            .Where(m => m != null && !string.IsNullOrWhiteSpace(m.Name))
+            .GroupBy(m => m.Name, StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.First())
+            .ToList();
+
+        if (allMessages.Count > 0)
             new AddMessageCommand(fileSystem, consoleWriter, utilities, scaffoldingDirectoryStore, console, fileParsingHelper, mediator)
-                .AddMessages(solutionDirectory, domainProject.Messages);
+                .AddMessages(solutionDirectory, allMessages);
 
         // migrations
         dbMigrator.RunDbMigrations(domainProject.BoundedContexts, solutionDirectory);

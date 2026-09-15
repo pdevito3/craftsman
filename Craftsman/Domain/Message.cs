@@ -14,8 +14,9 @@ public class Message
     {
         get
         {
-            var baseName = _name ?? Name.UppercaseFirstLetter();
-            if (baseName.StartsWith("I") && baseName.Length > 1 && char.IsUpper(baseName[1]))
+            // Fix recursion on null and normalize casing (Issue #145)
+            var baseName = _name?.UppercaseFirstLetter();
+            if (baseName != null && baseName.StartsWith("I") && baseName.Length > 1 && char.IsUpper(baseName[1]))
                 baseName = baseName.Remove(0, 1);
 
             return baseName;

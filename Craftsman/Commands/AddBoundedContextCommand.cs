@@ -1,6 +1,9 @@
 namespace Craftsman.Commands;
 
+using System;
+using System.Collections.Generic;
 using System.IO.Abstractions;
+using System.Linq;
 using Domain;
 using Helpers;
 using MediatR;
@@ -37,6 +40,23 @@ public class AddBoundedContextCommand(
         foreach (var template in boundedContexts.BoundedContexts)
             new ApiScaffoldingService(console, consoleWriter, utilities, scaffoldingDirectoryStore, fileSystem, mediator, fileParsingHelper)
                 .ScaffoldApi(potentialSolutionDir, template);
+
+        // Scaffold bounded context messages into SharedKernel/Messages with collision guards (Issue #145)
+        var allBcMessages = (boundedContexts?.BoundedContexts ?? new List<ApiTemplate>())
+            .SelectMany(bc => bc.Messages ?? new List<Message>())
+            .Where(m => m != null && !string.IsNullOrWhiteSpace(m.Name))
+            .GroupBy(m => m.Name, StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.First())
+            .Where(m =>
+            {
+                var classPath = ClassPathHelper.MessagesClassPath(potentialSolutionDir, $"{FileNames.MessageClassName(m.Name)}.cs");
+                return !fileSystem.File.Exists(classPath.FullClassPath);
+            })
+            .ToList();
+
+        if (allBcMessages.Count > 0)
+            new AddMessageCommand(fileSystem, consoleWriter, utilities, scaffoldingDirectoryStore, console, fileParsingHelper, mediator)
+                .AddMessages(potentialSolutionDir, allBcMessages);
 
         consoleWriter.WriteHelpHeader(
             $"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
