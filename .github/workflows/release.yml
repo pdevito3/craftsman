@@ -1,0 +1,67 @@
+name: Release
+
+# Publishes the craftsman dotnet tool to nuget.org and creates the GitHub release at the version a git
+# tag sets. MinVer turns a tag `v0.29.0` into package version 0.29.0 (see Craftsman/Craftsman.csproj),
+# so releasing is `git tag -a v0.29.0 -m ... && git push origin v0.29.0`. workflow_dispatch is a
+# manual re-run; --skip-duplicate makes a re-push a no-op.
+#
+# The GitHub release matters: VersionChecker compares the installed version to releases/latest to
+# tell users to update.
+#
+# Auth is NuGet Trusted Publishing (OIDC) - no long-lived API key secret. This job mints a GitHub
+# OIDC token, NuGet/login exchanges it for a 1-hour nuget.org key that matches a Trusted Publishing
+# policy configured on nuget.org (owner pdevito3, repo craftsman, workflow file release.yml). The
+# only config on GitHub is the non-secret NUGET_USER (your nuget.org profile name).
+
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # mint the OIDC token NuGet exchanges for a short-lived key
+      contents: write # checkout + create the GitHub release
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # MinVer needs full history + tags to compute the version
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Pack
+        run: dotnet pack Craftsman/Craftsman.csproj --no-restore -c Release -o "${{ runner.temp }}/nupkgs"
+
+      # Exchange the job's OIDC token for a short-lived nuget.org API key (valid 1 hour). Done right
+      # before the push so it can't expire mid-run. `user` is your nuget.org profile name, not email.
+      - name: NuGet login (OIDC -> short-lived key)
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push to nuget.org
+        run: >
+          dotnet nuget push "${{ runner.temp }}/nupkgs/*.nupkg"
+          --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      # Skipped on a manual re-run of an existing tag, so a re-run doesn't fail on a duplicate release.
+      - name: Create GitHub release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 \
+            || gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes --title "$GITHUB_REF_NAME"
