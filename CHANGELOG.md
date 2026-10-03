@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Fixed deserialization exception when defining Messages in BoundedContexts (#145)
+- Commands now find `.slnx` solution files, which the .NET 10 SDK creates by default. Before, scaffolding stopped with missing files and no error.
 
 ## [0.28.3] - 12/06/2024
 
