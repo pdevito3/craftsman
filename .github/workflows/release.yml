@@ -39,6 +39,10 @@ jobs:
       - name: Build
         run: dotnet build --no-restore -c Release
 
+      # A failed test stops the job before anything is published.
+      - name: Test
+        run: dotnet test --no-build -c Release
+
       - name: Pack
         run: dotnet pack Craftsman/Craftsman.csproj --no-restore -c Release -o "${{ runner.temp }}/nupkgs"
 
