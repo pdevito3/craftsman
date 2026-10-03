@@ -81,12 +81,7 @@ public class FileParsingHelper : IFileParsingHelper
         try
         {
             var jsonString = _fileSystem.File.ReadAllText(jsonFile);
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                PropertyNameCaseInsensitive = true,
-            };
-            return JsonSerializer.Deserialize<T>(jsonString, options);
+            return JsonSerializer.Deserialize<T>(jsonString);
         }
         catch (JsonException e)
         {

@@ -1,9 +1,6 @@
 namespace Craftsman.Commands;
 
-using System;
-using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Linq;
 using Domain;
 using Helpers;
 using MediatR;
@@ -37,16 +34,16 @@ public class AddBoundedContextCommand(
         var boundedContexts = fileParsingHelper.GetTemplateFromFile<BoundedContextsTemplate>(settings.Filepath);
         consoleWriter.WriteHelpText($"Your template file was parsed successfully.");
 
+        // merge before anything is written, so a conflicting message definition fails fast
+        var bcMessages = Message.MergeByName(boundedContexts.BoundedContexts
+            .SelectMany(bc => bc.Messages ?? new List<Message>()));
+
         foreach (var template in boundedContexts.BoundedContexts)
             new ApiScaffoldingService(console, consoleWriter, utilities, scaffoldingDirectoryStore, fileSystem, mediator, fileParsingHelper)
                 .ScaffoldApi(potentialSolutionDir, template);
 
-        // Scaffold bounded context messages into SharedKernel/Messages with collision guards (Issue #145)
-        var allBcMessages = (boundedContexts?.BoundedContexts ?? new List<ApiTemplate>())
-            .SelectMany(bc => bc.Messages ?? new List<Message>())
-            .Where(m => m != null && !string.IsNullOrWhiteSpace(m.Name))
-            .GroupBy(m => m.Name, StringComparer.OrdinalIgnoreCase)
-            .Select(g => g.First())
+        // bounded context messages go to the SharedKernel. Skip messages that the solution already has.
+        var newBcMessages = bcMessages
             .Where(m =>
             {
                 var classPath = ClassPathHelper.MessagesClassPath(potentialSolutionDir, $"{FileNames.MessageClassName(m.Name)}.cs");
@@ -54,9 +51,9 @@ public class AddBoundedContextCommand(
             })
             .ToList();
 
-        if (allBcMessages.Count > 0)
+        if (newBcMessages.Count > 0)
             new AddMessageCommand(fileSystem, consoleWriter, utilities, scaffoldingDirectoryStore, console, fileParsingHelper, mediator)
-                .AddMessages(potentialSolutionDir, allBcMessages);
+                .AddMessages(potentialSolutionDir, newBcMessages);
 
         consoleWriter.WriteHelpHeader(
             $"{Environment.NewLine}Your feature has been successfully added. Keep up the good work! {Emoji.Known.Sparkles}");
