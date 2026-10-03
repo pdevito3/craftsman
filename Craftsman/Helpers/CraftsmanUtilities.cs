@@ -34,6 +34,7 @@ public class CraftsmanUtilities : ICraftsmanUtilities
     private readonly IFileSystem _fileSystem;
     private readonly IAnsiConsole _console;
     private readonly IScaffoldingDirectoryStore _scaffoldingDirectoryStore;
+    private static readonly string[] SolutionFileExtensions = [".sln", ".slnx"];
 
     public CraftsmanUtilities(IConsoleWriter consoleWriter, IFileSystem fileSystem, IAnsiConsole console, IScaffoldingDirectoryStore scaffoldingDirectoryStore)
     {
@@ -66,7 +67,9 @@ public class CraftsmanUtilities : ICraftsmanUtilities
 
     public void IsSolutionDirectoryGuard(string proposedDirectory, bool slnIsInParent = false)
     {
-        if (_fileSystem.Directory.EnumerateFiles(proposedDirectory, "*.sln").Any())
+        // the .NET 10 SDK creates .slnx files by default
+        if (_fileSystem.Directory.EnumerateFiles(proposedDirectory)
+            .Any(file => SolutionFileExtensions.Contains(_fileSystem.Path.GetExtension(file), StringComparer.OrdinalIgnoreCase)))
             return;
 
         if(slnIsInParent) 

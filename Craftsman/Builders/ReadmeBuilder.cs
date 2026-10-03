@@ -25,7 +25,7 @@ public static class ReadmeBuilder
 This project was created with [Craftsman](https://github.com/pdevito3/craftsman).
 
 ## Getting Started
-1. Run `docker-compose up --build` from your `.sln` directory to spin up your database(s) and other supporting 
+1. Run `docker-compose up --build` from your solution directory to spin up your database(s) and other supporting 
 infrastructure depending on your configuration (e.g. RabbitMQ, Keycloak, Jaeger, etc.).
 2. If using a Keycloak auth server, you'll need to configure it manually (new realm, client, etc) or use the scaffolded Pulumi setup.
     1. [Install the pulumi CLI](https://www.pulumi.com/docs/get-started/) 
