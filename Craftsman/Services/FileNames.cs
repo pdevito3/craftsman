@@ -20,7 +20,6 @@ public static class FileNames
         => $"WebAppServiceConfiguration";    
     public static string GetMassTransitRegistrationName() 
         => "MassTransitServiceExtension";
-    // Normalize message class name and ensure bidirectional symmetry with interface naming (Issue #145)
     public static string MessageClassName(string messageName)
     {
         var className = messageName?.UppercaseFirstLetter();

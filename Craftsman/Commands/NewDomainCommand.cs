@@ -1,9 +1,6 @@
 namespace Craftsman.Commands;
 
-using System;
-using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Linq;
 using Builders;
 using Builders.Docker;
 using Domain;
@@ -51,6 +48,10 @@ public class NewDomainCommand(
 
     public void CreateNewDomainProject(DomainProject domainProject)
     {
+        // merge before anything is written, so a conflicting message definition fails fast
+        var allMessages = Message.MergeByName((domainProject.Messages ?? new List<Message>())
+            .Concat(domainProject.BoundedContexts?.SelectMany(bc => bc.Messages ?? new List<Message>()) ?? Enumerable.Empty<Message>()));
+
         var solutionDirectory = scaffoldingDirectoryStore.SolutionDirectory;
         fileSystem.Directory.CreateDirectory(solutionDirectory);
         mediator.Send(new SolutionBuilder.BuildSolutionCommand(solutionDirectory, domainProject.DomainName)).GetAwaiter().GetResult();
@@ -76,14 +77,7 @@ public class NewDomainCommand(
             new AddAuthServerCommand(fileSystem, consoleWriter, utilities, scaffoldingDirectoryStore, fileParsingHelper, mediator, console)
                 .AddAuthServer(solutionDirectory, domainProject.AuthServer);
 
-        // messages (Issue #145: aggregate and deduplicate across domain root and bounded contexts)
-        var allMessages = (domainProject.Messages ?? new List<Message>())
-            .Concat(domainProject.BoundedContexts?.SelectMany(bc => bc.Messages ?? new List<Message>()) ?? Enumerable.Empty<Message>())
-            .Where(m => m != null && !string.IsNullOrWhiteSpace(m.Name))
-            .GroupBy(m => m.Name, StringComparer.OrdinalIgnoreCase)
-            .Select(g => g.First())
-            .ToList();
-
+        // messages
         if (allMessages.Count > 0)
             new AddMessageCommand(fileSystem, consoleWriter, utilities, scaffoldingDirectoryStore, console, fileParsingHelper, mediator)
                 .AddMessages(solutionDirectory, allMessages);

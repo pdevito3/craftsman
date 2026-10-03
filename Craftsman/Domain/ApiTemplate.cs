@@ -85,7 +85,7 @@ public class ApiTemplate
     public bool IncludeGithubTestActions { get; set; } = true;
 
     /// <summary>
-    /// Complete list of messages for the bounded context (Issue #145).
+    /// List of messages for the bounded context. They scaffold into the SharedKernel with the domain messages.
     /// </summary>
     public List<Message> Messages { get; set; } = new List<Message>();
 }

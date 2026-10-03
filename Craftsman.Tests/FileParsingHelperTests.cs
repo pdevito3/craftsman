@@ -104,8 +104,7 @@ public class FileParsingHelperTests
         domainProject.DomainName.Should().Be("WeSendReportsCompany");
         domainProject.BoundedContexts.Should().HaveCount(1);
 
-        dynamic bc = domainProject.BoundedContexts[0];
-        List<Message> messages = bc.Messages;
+        var messages = domainProject.BoundedContexts[0].Messages;
         messages.Should().NotBeNull();
         messages.Should().HaveCount(1);
 
@@ -139,8 +138,7 @@ public class FileParsingHelperTests
         domainProject.DomainName.Should().Be("WeSendReportsCompany");
         domainProject.BoundedContexts.Should().HaveCount(1);
 
-        dynamic bc = domainProject.BoundedContexts[0];
-        List<Message> messages = bc.Messages;
+        var messages = domainProject.BoundedContexts[0].Messages;
         messages.Should().NotBeNull();
         messages.Should().HaveCount(1);
         messages[0].Name.Should().Be("SendReportRequest");
@@ -168,8 +166,7 @@ public class FileParsingHelperTests
         bcTemplate.Should().NotBeNull();
         bcTemplate.BoundedContexts.Should().HaveCount(1);
 
-        dynamic bc = bcTemplate.BoundedContexts[0];
-        List<Message> messages = bc.Messages;
+        var messages = bcTemplate.BoundedContexts[0].Messages;
         messages.Should().NotBeNull();
         messages.Should().HaveCount(1);
         messages[0].Name.Should().Be("SendReportRequest");
@@ -191,8 +188,7 @@ public class FileParsingHelperTests
         domainProject.Messages[0].Name.Should().Be("GlobalDomainMessage");
 
         domainProject.BoundedContexts.Should().HaveCount(1);
-        dynamic bc = domainProject.BoundedContexts[0];
-        List<Message> bcMessages = bc.Messages;
+        var bcMessages = domainProject.BoundedContexts[0].Messages;
         bcMessages.Should().NotBeNull();
         bcMessages.Should().HaveCount(1);
         bcMessages[0].Name.Should().Be("SendReportRequest");
@@ -230,8 +226,7 @@ public class FileParsingHelperTests
         domainProject.DomainName.Should().Be("WeSendReportsCompany");
         domainProject.BoundedContexts.Should().HaveCount(1);
 
-        dynamic bc = domainProject.BoundedContexts[0];
-        List<Message> messages = bc.Messages;
+        var messages = domainProject.BoundedContexts[0].Messages;
         messages.Should().NotBeNull();
         messages.Should().HaveCount(1);
         messages[0].Name.Should().Be("SendReportRequest");
